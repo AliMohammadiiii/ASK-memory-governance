@@ -1,0 +1,17 @@
+version: 1
+experiments:
+  - id: offline_unit_suite
+    status: prepared
+    command: make test
+  - id: mgp6_schema_validation
+    status: prepared
+    command: make validate-data
+  - id: openrouter_qwen_gemma_mgp6
+    status: blocked_network
+    config: configs/models/openrouter_qwen_gemma.yaml
+    main_model: qwen/qwen3.5-9b
+    judge_model: google/gemma-4-31b-it:free
+    fallback_judge_model: google/gemma-4-31b-it
+  - id: longmemeval_transfer
+    status: blocked_external_data
+    command: make reproduce-longmemeval

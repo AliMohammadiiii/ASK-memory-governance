@@ -1,0 +1,25 @@
+﻿annotator,type,n,raw_agreement_with_author_gold,errors
+Gemini Pro,T1,15,1.0,0
+Gemini Pro,T2,15,1.0,0
+Gemini Pro,T3,15,1.0,0
+Gemini Pro,T4,15,1.0,0
+Gemini Pro,T5,15,1.0,0
+Gemini Pro,T6,15,1.0,0
+GPT Sol High,T1,15,0.9333333333333333,1
+GPT Sol High,T2,15,0.9333333333333333,1
+GPT Sol High,T3,15,1.0,0
+GPT Sol High,T4,15,1.0,0
+GPT Sol High,T5,15,1.0,0
+GPT Sol High,T6,15,1.0,0
+Kimi,T1,15,1.0,0
+Kimi,T2,15,1.0,0
+Kimi,T3,15,1.0,0
+Kimi,T4,15,1.0,0
+Kimi,T5,15,1.0,0
+Kimi,T6,15,1.0,0
+Z,T1,15,1.0,0
+Z,T2,15,1.0,0
+Z,T3,15,1.0,0
+Z,T4,15,1.0,0
+Z,T5,15,1.0,0
+Z,T6,15,1.0,0

@@ -1,0 +1,39 @@
+dataset:
+  name: MGP-6 v1 author-designed diagnostic slice
+  path: data/mgp6_v1_seed0.jsonl
+  sha256: 12e17af530067f0ec1cefa1131898e2c8bd2414ef20cfc4c37fb936148e65701
+
+run:
+  target: runs/m4w14
+  tier: final-candidate
+  systems:
+    - b1
+    - b2
+    - b3
+    - b4
+    - controller
+  seed: 0
+  n_bootstrap: 1000
+  raw_turn_fallback: false
+  judge_tier: direct_label_state_comparison
+  thesis_use: final_candidate_pending_review
+
+models:
+  profile: light
+  extractor: llama3.2:3b
+  classifier: phi3.5:3.8b
+  judge: phi3.5:3.8b
+
+controller:
+  scorecard_config: configs/controller_active.yaml
+  scorecard_config_sha256: 620188b36d14165566c41e606d56e48bf2211e57488d8a404af830e70cfa10cc
+
+command: >-
+  python scripts/run_mgp6.py
+  --input data/mgp6_v1_seed0.jsonl
+  --out runs/m4w14
+  --systems all
+  --model-profile light
+  --seed 0
+  --n-bootstrap 1000
+  --scorecard-config configs/controller_active.yaml

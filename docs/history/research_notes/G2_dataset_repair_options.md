@@ -1,0 +1,160 @@
+# G2 Dataset Repair Options
+
+Date: 2026-05-20
+
+Goal: replace the invalid local `relation_dev100_seed0.jsonl`, which contains
+only `support` labels, with a measurement set that can actually evaluate
+`contradict-F1` and `supersede-F1`.
+
+## Recommendation
+
+Use a **research-backed hybrid candidate set** for repairing W6/W8:
+
+1. **AlpsBench Task 2: Update** as the primary source for `supersede`.
+2. **DialogueNLI** as the supplemental source for `support`, `contradict`,
+   and `unclear`.
+3. **personal-facts-msc** as a manual-audit taxonomy aid, especially for
+   rejecting invalid or under-specified personal facts.
+
+The archived deep-research report is stored at:
+
+`docs/research/2026-05-21_memory_relation_datasets_deep_research.md`
+
+Strict conclusion from that report: no public dataset natively releases the
+exact unit `{prior memory, candidate memory, support/contradict/supersede/unclear}`.
+The repaired dev set must therefore be treated as a derived candidate set until
+manual audit is complete.
+
+Use **AlpsBench Task 2: Update** as the primary single source if the evaluation
+must use only one dataset.
+
+Why:
+
+- It is designed for LLM personalization and memory lifecycle evaluation.
+- It includes real-world human-LLM dialogue sequences from WildChat.
+- It explicitly defines four cascade tasks, including **Task 2: Update**.
+- Public dev and validation splits expose `reference_output.jsonl`, so it is
+  more suitable for a measurable dev set than the current synthetic artifact.
+
+Source:
+
+- Hugging Face: https://huggingface.co/datasets/Cosineyx/Alpsbench
+- Paper: https://arxiv.org/abs/2603.26680
+
+Verified public surface:
+
+- The dataset is public and not gated.
+- Public files include `dataset/dev/task2/model_input.jsonl`,
+  `dataset/dev/task2/reference_output.jsonl`,
+  `dataset/validation/task2/model_input.jsonl`, and
+  `dataset/validation/task2/reference_output.jsonl`.
+- The release manifest reports 469 public dev rows and 469 public validation
+  rows for Task 2.
+- Task 2 inputs expose existing `memory` items and `new_dialogue`; gold
+  outputs expose the updated memory list. This can be converted into relation
+  pairs by comparing a selected old memory with the corresponding gold output.
+
+Mapping plan:
+
+- `support`: incoming memory confirms an existing memory item.
+- `supersede`: incoming dialogue changes a prior memory value and should update
+  it.
+- `contradict`: incoming dialogue conflicts with prior memory but lacks enough
+  temporal/update evidence to safely supersede.
+- `unclear`: incoming dialogue is unrelated or under-specified relative to the
+  prior memory.
+
+Expected work:
+
+1. Inspect `task2` dev/validation schema.
+2. Convert rows into `{candidate, prior_memory, gold_label}` pairs.
+3. Hand-audit a 100-row balanced sample before rerunning W7/W8.
+
+## Secondary Option: LoCoMo
+
+LoCoMo is a strong long-term conversational memory benchmark with multi-session
+conversations, event summaries, and QA evidence. It is good for realistic
+conversation context, but it does not directly expose the relation labels
+needed by G2. It would still require manual relation labelling.
+
+Sources:
+
+- GitHub: https://github.com/snap-research/locomo
+- Paper: https://arxiv.org/abs/2402.17753
+
+Use LoCoMo if AlpsBench Task 2 is too hard to map cleanly or if advisor wants
+continuity with established long-term-memory benchmarks over update-specific
+benchmarks.
+
+## Tertiary Option: LUFY
+
+LUFY is a long-form conversational dataset for studying selective forgetting
+and long-term memory management in RAG chatbots. It has dialogue turns and
+evidence-grounded QA pairs, but not direct supersession labels.
+
+Source:
+
+- Hugging Face: https://huggingface.co/datasets/RuiSumida/LUFY
+
+Use only if the goal shifts toward evidence-grounded extraction/retrieval
+rather than relation-classifier G2.
+
+## Tertiary Option: Personal Facts MSC
+
+`adugeen/personal-facts-msc` is useful for extraction/type/duration work. It has
+2,779 manually annotated personal facts from Multi-Session Chat with category,
+time, referent, duration, validity, and follow-up labels.
+
+Source:
+
+- Hugging Face: https://huggingface.co/datasets/adugeen/personal-facts-msc
+
+This is not sufficient for G2 by itself because it does not directly label
+support/contradict/supersede between candidate and prior memories. It can,
+however, help build a better extraction/type dev set.
+
+## Not Recommended For Repair Alone
+
+Actual LongMemEval-S should still be used later for end-to-end evaluation, but
+it is not enough by itself for the W8 G2 relation-classifier gate unless we
+hand-label relation pairs. The local checked-in LongMemEval artifact is
+synthetic and unusable for G2 threshold measurement.
+
+Source:
+
+- Hugging Face search result: https://huggingface.co/datasets?other=longmemeval
+
+## Next Concrete Step
+
+Completed repair artifact:
+
+`data/dev/relation_dev100_seed0.jsonl`
+
+Current distribution:
+
+- 25 `support`
+- 25 `contradict`
+- 25 `supersede`
+- 25 `unclear`
+
+It was generated by:
+
+`scripts/build_relation_dev100_from_research.py`
+
+The previous synthetic-controlled file was retained as:
+
+`data/dev/relation_dev100_seed0.synthetic_controlled_backup.jsonl`
+
+Now rerun:
+
+1. W7 classifier predictions and metrics.
+2. W8 G2 decision.
+
+Repaired run result:
+
+- `runs/m2w7_research_temporal/pr_table.csv`
+- `contradict-F1 = 0.653061`
+- `supersede-F1 = 0.809524`
+
+The repaired measurement clears G2. The remaining caveat is that the dev set is
+derived from public datasets rather than a native four-way relation benchmark.

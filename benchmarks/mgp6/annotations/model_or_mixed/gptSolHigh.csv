@@ -1,0 +1,91 @@
+scenario_id,annotator_action,annotator_confidence,annotator_rationale
+MGP6V2-T1-TEST-016,SUPERSEDE,0.88,The first-person statement describes a repeated standing default: cool light on every desk lamp before work. That current default is incompatible with the stored warm-light desk preference.
+MGP6V2-T1-TEST-017,ABSTAIN,0.74,"The user reports a weekday breakfast routine rather than a general breakfast preference. A fruit-based weekday habit can coexist with an overall savory preference, so a same-slot replacement is not sufficiently established."
+MGP6V2-T1-TEST-018,SUPERSEDE,0.91,The user describes the fastest route as the standing basis for every trip. This is a durable same-dimension default that conflicts with the stored scenic-route preference.
+MGP6V2-T1-TEST-019,SUPERSEDE,0.92,The user states a repeated task-order rule for every work block. Hardest-first is incompatible with the active easiest-first task-order preference.
+MGP6V2-T1-TEST-020,SUPERSEDE,0.95,The user identifies 45 minutes as the current setting for every focus session. This standing value directly conflicts with the stored 25-minute session length.
+MGP6V2-T1-TEST-021,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-022,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-023,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-024,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-025,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-026,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-027,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-028,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-029,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T1-TEST-030,SUPERSEDE,0.99,The user explicitly makes the new value permanent and tells the assistant to stop using the old value. This is a reliable durable contradiction in the same memory dimension.
+MGP6V2-T2-TEST-016,ABSTAIN,0.96,The date printed on a renewal notice is not necessarily the subscription's renewal day. The event therefore does not clearly update the same semantic fact as the stored 18th renewal day.
+MGP6V2-T2-TEST-017,SUPERSEDE,0.98,The user gives a confirmed start time for the same volunteer shift. The 3:00 PM value is a reliable replacement for the earlier 1:00 PM time.
+MGP6V2-T2-TEST-018,SUPERSEDE,0.95,The user reports an authoritative current date for the same exam review session. June 4 conflicts with and replaces the stored June 2 date.
+MGP6V2-T2-TEST-019,SUPERSEDE,0.94,The user's ticket supplies the current departure time for their ferry. The 8:05 AM time is incompatible with the stored 7:20 AM value.
+MGP6V2-T2-TEST-020,SUPERSEDE,0.94,The user reports the confirmed current window for the same meal delivery. The 1:00-2:00 PM window replaces the earlier 12:00-1:00 PM window.
+MGP6V2-T2-TEST-021,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-022,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-023,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-024,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-025,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-026,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-027,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-028,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-029,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T2-TEST-030,SUPERSEDE,0.99,The user explicitly corrects the earlier value for the same event or setting. The later first-person correction should replace the active memory.
+MGP6V2-T3-TEST-016,SUPERSEDE,0.86,The first-person statement establishes stereo as the standing default across the user's audio devices. That current default is incompatible with mono as the active audio-output value.
+MGP6V2-T3-TEST-017,SUPERSEDE,0.98,The user gives a standing cross-device instruction to use list layout. It directly conflicts with the active grid-layout preference.
+MGP6V2-T3-TEST-018,SUPERSEDE,0.99,The user establishes left-aligned text as the default for all reading. This durable same-dimension value replaces the stored justified alignment.
+MGP6V2-T3-TEST-019,SUPERSEDE,0.99,The user sets PDF as the standing default document format. It is mutually incompatible with DOCX as the active default.
+MGP6V2-T3-TEST-020,SUPERSEDE,0.94,The user states that conversation practice is the standing default for language sessions. This current mode conflicts with the stored vocabulary-drill mode.
+MGP6V2-T3-TEST-021,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-022,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-023,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-024,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-025,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-026,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-027,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-028,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-029,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T3-TEST-030,SUPERSEDE,0.99,The user explicitly establishes a new standing value and rejects the old one in the same memory dimension. The active memory should be replaced.
+MGP6V2-T4-TEST-016,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-017,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-018,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-019,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-020,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-021,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-022,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-023,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-024,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-025,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-026,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-027,ABSTAIN,0.99,"The quoted statement has no identified author, so it cannot be reliably attributed to the user. Its content is therefore insufficient for any memory write."
+MGP6V2-T4-TEST-028,ABSTAIN,0.99,"The shared-device log does not identify whose preference it records. Because attribution to the user is unresolved, no memory update is justified."
+MGP6V2-T4-TEST-029,ABSTAIN,0.99,"The shared-device log does not identify whose preference it records. Because attribution to the user is unresolved, no memory update is justified."
+MGP6V2-T4-TEST-030,ABSTAIN,0.99,"The shared-device log does not identify whose preference it records. Because attribution to the user is unresolved, no memory update is justified."
+MGP6V2-T5-TEST-016,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-017,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-018,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-019,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-020,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-021,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-022,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-023,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-024,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-025,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-026,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-027,KEEP,0.99,The user explicitly limits the new value to tonight and confirms that the usual preference remains in force. The temporary exception must not replace the durable memory.
+MGP6V2-T5-TEST-028,ABSTAIN,0.99,"The proposed temporary value is explicitly hedged, and the user says they are not sure. The evidence is too uncertain to commit even as a temporary memory."
+MGP6V2-T5-TEST-029,ABSTAIN,0.99,"The proposed temporary value is explicitly hedged, and the user says they are not sure. The evidence is too uncertain to commit even as a temporary memory."
+MGP6V2-T5-TEST-030,ABSTAIN,0.99,"The proposed temporary value is explicitly hedged, and the user says they are not sure. The evidence is too uncertain to commit even as a temporary memory."
+MGP6V2-T6-TEST-016,ABSTAIN,0.99,"The underlying voice note is garbled and hedged, while the asserted value comes from an extractor. The extractor's confidence cannot repair the unreliable source evidence."
+MGP6V2-T6-TEST-017,ABSTAIN,0.99,"The candidate value is an assistant guess, not a clear user assertion. The user's limited comment does not establish a durable or reliable update."
+MGP6V2-T6-TEST-018,ABSTAIN,0.99,The new value is only a tool recommendation and was never confirmed by the user. Tool output alone is not valid evidence for a memory write.
+MGP6V2-T6-TEST-019,ABSTAIN,0.99,The statement belongs to a stranger rather than the user. It cannot support changing the user's memory.
+MGP6V2-T6-TEST-020,ABSTAIN,0.99,"The proposed value comes from unlabeled, mutually contradictory source fragments. Provenance and content are too unreliable for a memory write."
+MGP6V2-T6-TEST-021,ABSTAIN,0.99,"The underlying voice note is garbled and hedged, while the asserted value comes from an extractor. The extractor's confidence cannot repair the unreliable source evidence."
+MGP6V2-T6-TEST-022,ABSTAIN,0.99,"The candidate value is an assistant guess, not a clear user assertion. The user's limited comment does not establish a durable or reliable update."
+MGP6V2-T6-TEST-023,ABSTAIN,0.99,The new value is only a tool recommendation and was never confirmed by the user. Tool output alone is not valid evidence for a memory write.
+MGP6V2-T6-TEST-024,ABSTAIN,0.99,The statement belongs to a stranger rather than the user. It cannot support changing the user's memory.
+MGP6V2-T6-TEST-025,ABSTAIN,0.99,"The proposed value comes from unlabeled, mutually contradictory source fragments. Provenance and content are too unreliable for a memory write."
+MGP6V2-T6-TEST-026,ABSTAIN,0.99,"The underlying voice note is garbled and hedged, while the asserted value comes from an extractor. The extractor's confidence cannot repair the unreliable source evidence."
+MGP6V2-T6-TEST-027,ABSTAIN,0.99,"The candidate value is an assistant guess, not a clear user assertion. The user's limited comment does not establish a durable or reliable update."
+MGP6V2-T6-TEST-028,ABSTAIN,0.99,The new value is only a tool recommendation and was never confirmed by the user. Tool output alone is not valid evidence for a memory write.
+MGP6V2-T6-TEST-029,ABSTAIN,0.99,The statement belongs to a stranger rather than the user. It cannot support changing the user's memory.
+MGP6V2-T6-TEST-030,ABSTAIN,0.99,"The proposed value comes from unlabeled, mutually contradictory source fragments. Provenance and content are too unreliable for a memory write."

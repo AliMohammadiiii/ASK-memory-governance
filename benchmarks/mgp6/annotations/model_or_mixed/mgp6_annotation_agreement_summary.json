@@ -1,0 +1,289 @@
+{
+  "validation": {
+    "test_items": 90,
+    "annotators": [
+      "Gemini Pro",
+      "GPT Sol High",
+      "Kimi",
+      "Z"
+    ],
+    "all_files_complete_and_aligned": true
+  },
+  "author_gold_distribution": {
+    "SUPERSEDE": 45,
+    "ABSTAIN": 33,
+    "KEEP": 12
+  },
+  "per_annotator_vs_author_gold": {
+    "Gemini Pro": {
+      "n": 90,
+      "action_counts": {
+        "SUPERSEDE": 45,
+        "ABSTAIN": 33,
+        "KEEP": 12
+      },
+      "raw_agreement_accuracy": 1.0,
+      "accuracy_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "cohen_kappa": 1.0,
+      "cohen_kappa_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": 1.0,
+      "errors_vs_author_gold": 0,
+      "mean_confidence": 0.977,
+      "mean_confidence_correct": 0.977,
+      "mean_confidence_incorrect": null,
+      "per_class": {
+        "KEEP": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "SUPERSEDE": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 45
+        },
+        "ABSTAIN": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 33
+        }
+      },
+      "confusion_matrix": {
+        "KEEP": {
+          "KEEP": 12,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 0
+        },
+        "SUPERSEDE": {
+          "KEEP": 0,
+          "SUPERSEDE": 45,
+          "ABSTAIN": 0
+        },
+        "ABSTAIN": {
+          "KEEP": 0,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 33
+        }
+      }
+    },
+    "GPT Sol High": {
+      "n": 90,
+      "action_counts": {
+        "SUPERSEDE": 43,
+        "ABSTAIN": 35,
+        "KEEP": 12
+      },
+      "raw_agreement_accuracy": 0.9777777777777777,
+      "accuracy_ci95_bootstrap": [
+        0.9444444444444444,
+        1.0
+      ],
+      "cohen_kappa": 0.9630086313193585,
+      "cohen_kappa_ci95_bootstrap": [
+        0.9046408137317228,
+        1.0
+      ],
+      "macro_f1": 0.9826203208556149,
+      "errors_vs_author_gold": 2,
+      "mean_confidence": 0.9797777777777777,
+      "mean_confidence_correct": 0.9827272727272727,
+      "mean_confidence_incorrect": 0.85,
+      "per_class": {
+        "KEEP": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "SUPERSEDE": {
+          "precision": 1.0,
+          "recall": 0.9555555555555556,
+          "f1": 0.9772727272727273,
+          "support": 45
+        },
+        "ABSTAIN": {
+          "precision": 0.9428571428571428,
+          "recall": 1.0,
+          "f1": 0.9705882352941176,
+          "support": 33
+        }
+      },
+      "confusion_matrix": {
+        "KEEP": {
+          "KEEP": 12,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 0
+        },
+        "SUPERSEDE": {
+          "KEEP": 0,
+          "SUPERSEDE": 43,
+          "ABSTAIN": 2
+        },
+        "ABSTAIN": {
+          "KEEP": 0,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 33
+        }
+      }
+    },
+    "Kimi": {
+      "n": 90,
+      "action_counts": {
+        "SUPERSEDE": 45,
+        "ABSTAIN": 33,
+        "KEEP": 12
+      },
+      "raw_agreement_accuracy": 1.0,
+      "accuracy_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "cohen_kappa": 1.0,
+      "cohen_kappa_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": 1.0,
+      "errors_vs_author_gold": 0,
+      "mean_confidence": 0.9706666666666667,
+      "mean_confidence_correct": 0.9706666666666667,
+      "mean_confidence_incorrect": null,
+      "per_class": {
+        "KEEP": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "SUPERSEDE": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 45
+        },
+        "ABSTAIN": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 33
+        }
+      },
+      "confusion_matrix": {
+        "KEEP": {
+          "KEEP": 12,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 0
+        },
+        "SUPERSEDE": {
+          "KEEP": 0,
+          "SUPERSEDE": 45,
+          "ABSTAIN": 0
+        },
+        "ABSTAIN": {
+          "KEEP": 0,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 33
+        }
+      }
+    },
+    "Z": {
+      "n": 90,
+      "action_counts": {
+        "SUPERSEDE": 45,
+        "ABSTAIN": 33,
+        "KEEP": 12
+      },
+      "raw_agreement_accuracy": 1.0,
+      "accuracy_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "cohen_kappa": 1.0,
+      "cohen_kappa_ci95_bootstrap": [
+        1.0,
+        1.0
+      ],
+      "macro_f1": 1.0,
+      "errors_vs_author_gold": 0,
+      "mean_confidence": 0.9565555555555555,
+      "mean_confidence_correct": 0.9565555555555555,
+      "mean_confidence_incorrect": null,
+      "per_class": {
+        "KEEP": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 12
+        },
+        "SUPERSEDE": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 45
+        },
+        "ABSTAIN": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1": 1.0,
+          "support": 33
+        }
+      },
+      "confusion_matrix": {
+        "KEEP": {
+          "KEEP": 12,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 0
+        },
+        "SUPERSEDE": {
+          "KEEP": 0,
+          "SUPERSEDE": 45,
+          "ABSTAIN": 0
+        },
+        "ABSTAIN": {
+          "KEEP": 0,
+          "SUPERSEDE": 0,
+          "ABSTAIN": 33
+        }
+      }
+    }
+  },
+  "multi_annotator_agreement": {
+    "n_items": 90,
+    "n_annotators": 4,
+    "fleiss_kappa": 0.9814566807458536,
+    "fleiss_kappa_ci95_bootstrap": [
+      0.9519577227960605,
+      1.0
+    ],
+    "krippendorff_alpha_nominal": 0.9815081899660039,
+    "krippendorff_alpha_ci95_bootstrap": [
+      0.9519835219217292,
+      1.0
+    ],
+    "mean_observed_pairwise_agreement_fleiss_Pbar": 0.9888888888888889,
+    "fleiss_expected_agreement": 0.4008024691358025,
+    "pooled_action_proportions": {
+      "KEEP": 0.13333333333333333,
+      "SUPERSEDE": 0.49444444444444446,
+      "ABSTAIN": 0.37222222222222223
+    },
+    "unanimous_items": 88,
+    "unanimous_rate": 0.9777777777777777,
+    "three_to_one_items": 2,
+    "two_to_two_ties": 0,
+    "majority_consensus_accuracy_vs_author_gold": 1.0
+  },
+  "disagreement_scenarios": [
+    "MGP6V2-T1-TEST-017",
+    "MGP6V2-T2-TEST-016"
+  ]
+}

@@ -1,0 +1,51 @@
+# Thesis Readiness Audit - 2026-07-07
+
+Source plans checked:
+
+- `/Users/ali/Documents/Master/KSA_CODEX_IMPLEMENTATION_PLAN.md`
+- `/Users/ali/.codex/attachments/46b0833b-1a70-4fb7-8379-b1d727397ac8/pasted-text.txt`
+
+## P0/P1 Status
+
+| Task | Priority | Status | Evidence |
+|---|---:|---|---|
+| T-01 environment repair | P0 | complete | `python -m pytest -q` passes; `pyproject.toml` declares `numpy`; `requirements-lock.txt` updated |
+| T-02 documentation truth | P0 | complete | `README.md`, `ARTIFACT_MANIFEST.md`, invalid markers under `runs/m4w14` and `runs/m4w15` |
+| T-03 LongMemEval-S B4 + controller | P0 | blocked | `LONGMEMEVAL_B4_TODO.md`; Ollama not serving locally; `FINAL_OK.json` uses `partial_ok` |
+| T-04 valid RC@C replay | P0 | complete | `runs/m4w15_thesis_colab_20260608` regenerated from valid M4-W14 source |
+| T-05 MGP-6 rerun if controller/extraction changed | P0 conditional | not triggered | no controller/extraction semantic change was made after accepting the Jun-8 valid run |
+| T-06 initialize git | P1 | complete | baseline commit exists before thesis-readiness changes |
+| T-07 Ruff cleanup | P1 | complete | `ruff check .` passes |
+| T-08 frozen-test protocol | P1 | complete | `docs/evaluation_protocol.md` |
+| T-09 transient-scope decision | P1 | documented limitation | `docs/known_limitations.md`; no behavior change without rerun |
+| T-10 action-log docs/export/retrieved priors | P1 | open | not implemented in this pass |
+| T-11 keep-only baseline | P1 | open | not implemented in this pass |
+| T-12 extra unit/integration tests | P1 | open | not implemented beyond existing suite |
+| T-13 metric additions | P1 | open | not implemented in this pass |
+
+## Current Verification
+
+- `python -m pytest -q`: 381 passed, 5 skipped
+- `python -m pytest -q -p no:cov`: 381 passed, 5 skipped
+- `ruff check .`: All checks passed
+- `git status --short`: clean before workspace cleanup
+
+## Evidence Status
+
+Accepted:
+
+- MGP-6: `runs/m4w14_thesis_colab_20260608`
+- RC@C: `runs/m4w15_thesis_colab_20260608`
+- LongMemEval-S partial B1/B2/B3 provenance: `artifacts/m4w13_50_llama`
+
+Invalid/quarantined:
+
+- `runs/m4w14`
+- `runs/m4w15`
+
+Blocked:
+
+- LongMemEval-S B4/controller final-candidate run.
+
+Open P1 items remain explicitly open; the repository is therefore
+reproducibility-clean but not `final_ok`.

@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software or MGP-6, cite the associated paper/thesis."
+title: "KSA Memory Governance"
+type: software
+authors:
+  - family-names: Mohammadi
+    given-names: Ali
+version: 0.2.0
+date-released: 2026-07-12
+license: MIT
+repository-code: "https://github.com/OWNER/ksa-memory-governance"

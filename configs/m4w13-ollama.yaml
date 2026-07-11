@@ -1,0 +1,25 @@
+ollama_host: "http://localhost:11434"
+
+available_models:
+  - "gemma4:e4b"
+  - "gemma4:e2b"
+  - "qwen3.5:9b"
+  - "llama3.2:3b"
+  - "phi3.5:3.8b"
+  - "phi4:14b"
+
+roles:
+  # Keep answer generation shared across baselines unless running
+  # scripts/run_m4w13_ollama.py --model-sweep.
+  answerer: "gemma4:e4b"
+  judge: "phi4:14b"
+  recency_extractor: "llama3.2:3b"
+  extractor: "llama3.2:3b"
+  classifier: "phi3.5:3.8b"
+
+judge:
+  backend: "ollama"
+  model_id: "phi4:14b"
+  ollama_host: "http://localhost:11434"
+  num_ctx: 2048
+  response_format: "json"

@@ -1,0 +1,23 @@
+[
+  {
+    "figure": "figure_04_annotation_agreement",
+    "png": "04_documents/figures/figure_04_annotation_agreement.png",
+    "svg": "04_documents/figures/figure_04_annotation_agreement.svg",
+    "source": "03_evidence/annotation_agreement_all.json",
+    "note": "89 agreements; one retained T3 ambiguity"
+  },
+  {
+    "figure": "figure_06_evaluation_causal_chain",
+    "png": "04_documents/figures/figure_06_evaluation_causal_chain.png",
+    "svg": "04_documents/figures/figure_06_evaluation_causal_chain.svg",
+    "source": "SYSTEM_SPECIFICATION.md",
+    "note": "Decision, memory state, and answer behavior are measured separately"
+  },
+  {
+    "figure": "figure_07_ksa_controller_architecture",
+    "png": "04_documents/figures/figure_07_ksa_controller_architecture.png",
+    "svg": "04_documents/figures/figure_07_ksa_controller_architecture.svg",
+    "source": "SYSTEM_SPECIFICATION.md",
+    "note": "Conceptual architecture; not a performance result"
+  }
+]

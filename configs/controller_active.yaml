@@ -1,0 +1,16 @@
+weights:
+  w1: 1.0
+  w2: 0.8
+  w3: 0.7
+  w4: 1.2
+  w5: 0.5
+
+theta_sup:
+  stable_pref: 0.90
+  episodic_fact: 0.75
+  transient_pref: 0.55
+
+theta_abs:
+  stable_pref: 0.60
+  episodic_fact: 0.70
+  transient_pref: 0.80

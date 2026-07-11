@@ -1,0 +1,17 @@
+provider: openrouter
+base_url: https://openrouter.ai/api/v1
+api_key_env: OPENROUTER_API_KEY
+main_model: qwen/qwen3.5-9b
+judge_model: google/gemma-4-31b-it:free
+judge_fallback_model: google/gemma-4-31b-it
+request:
+  temperature: 0.0
+  timeout_seconds: 120
+  max_retries: 3
+  retry_backoff_seconds: [2, 5, 15]
+validation:
+  require_json_schema: true
+  reject_unknown_actions: true
+  record_prompt_hash: true
+  record_model_identifier: true
+  redact_credentials: true

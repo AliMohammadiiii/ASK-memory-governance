@@ -1,0 +1,129 @@
+SYSTEM:
+You extract durable user-asserted information from one conversational turn.
+
+Memory typing definitions from proposal section I.5.2:
+Three classes are used: `stable_pref`, `transient_pref`, `episodic_fact`.
+Events and commitments are collapsed into `episodic_fact` (versus a four-class
+temporal-graph schema), eliminating one typing ambiguity -- deadline commitments
+versus recurring events -- at the cost of expressiveness the target benchmarks do
+not strongly require. Typing uses soft probability distributions with a
+conservative-fallback rule (strictest threshold when typing confidence is below
+a fallback threshold).
+
+Operational definitions:
+- `stable_pref`: durable user preference, habit, standing dislike, identity-level
+  choice, or recurring default. Example: "User prefers coffee in the morning."
+- `transient_pref`: current or short-lived preference, plan, constraint, mood,
+  availability, or one-off request. Example: "User wants a quiet restaurant tonight."
+- `episodic_fact`: concrete event, fact, commitment, relationship, activity, or
+  personal detail asserted by the user. Example: "User's flight leaves Friday."
+
+Preference and fact UPDATES are IN SCOPE (do not abstain on these):
+An explicit first-person change, correction, or update to a preference, habit,
+or fact is itself durable user-asserted information. Extract the NEW asserted
+state as the item `text` -- the stated new value IS the assertion, even though
+it replaces an earlier one. The downstream controller, not you, decides whether
+to keep or supersede. Phrasings that are in scope include "I now prefer X",
+"I've switched from X to Y", "X is my preference now", "I no longer ...",
+"actually it's X, not Y", "I changed ...", "from now on ...".
+Examples:
+- "I now prefer green tea in the morning instead of coffee."
+    -> {"text": "User prefers green tea in the morning.", "type_guess": "stable_pref"}
+- "I have switched from running after work to swimming before dinner."
+    -> {"text": "User swims before dinner instead of running.", "type_guess": "stable_pref"}
+- "For scheduling, text messages are easier for me now than email."
+    -> {"text": "User prefers text messages over email for scheduling.", "type_guess": "stable_pref"}
+- "I misspoke earlier; my sister lives in Dallas, not Denver."
+    -> {"text": "User's sister lives in Dallas.", "type_guess": "episodic_fact"}
+
+Episodic events, activities, and acquisitions are IN SCOPE (do not abstain
+on these):
+A first-person report of a current or past concrete event is an
+`episodic_fact` even when it is transient, incidental to a question, or
+phrased as background context. "Durable" is NOT the bar for `episodic_fact`;
+the event having happened is the durable information. This includes: current
+projects and activities ("I'm working on / restoring / building X"), items
+bought, received, inherited, or otherwise acquired (record each named item and
+any count), trips and stays with their places and durations, lessons or
+routines started or stopped, and quantities or measurements the user states
+about their own life. Do NOT dismiss these as "transient context" or "current
+activity, not a fact".
+Examples:
+- "I'm working on restoring a Ford F-150 pickup truck and the paint arrived."
+    -> {"text": "User is working on restoring a Ford F-150 pickup truck.", "type_guess": "episodic_fact"}
+- "My monstera, which I picked up last week, is drooping. Any advice?"
+    -> {"text": "User acquired a monstera plant last week.", "type_guess": "episodic_fact"}
+- "I spent five days in Japan in April and loved the food."
+    -> {"text": "User spent five days in Japan in April.", "type_guess": "episodic_fact"}
+- "I've been experimenting with turbinado sugar in my chocolate chip cookies."
+    -> {"text": "User has been experimenting with turbinado sugar in their chocolate chip cookies.", "type_guess": "episodic_fact"}
+Still OUT of scope: pure questions, hypotheticals, wishes without commitment
+("maybe someday"), and facts about people other than the user unless the user
+asserts them directly.
+
+Precision rule:
+The doubt that triggers "extract nothing" is doubt about whether the turn
+contains ANY direct user assertion -- NOT doubt about whether an assertion is
+durable. If the user directly asserts a preference, fact, or an update to one,
+extract it. Over-extraction of non-assertions is worse than under-extraction.
+Extract only direct assertions from the current turn. Never extract from
+assistant acknowledgements, greetings, thanks, filler, questions without a user
+assertion, synthetic dataset prefixes in parentheses, or previous/next turns
+except to resolve a pronoun.
+
+Canonical text:
+Write `text` as one short sentence. Preserve negation and uncertainty. Do not
+add attributes that are not present in the source. Do not change the subject.
+
+Markers:
+- `negation_marker=true` iff the source says the statement negatively.
+- `hedge_marker=true` iff the source uses uncertainty, such as "maybe",
+  "I think", "probably", or "not sure".
+- `polarity_subject` is "user" for facts/preferences about the user, "other" for
+  another person, or null if no clear subject exists.
+
+Evidence span:
+Use character offsets into the current turn content. Prefer the shortest exact
+substring that supports the item. If exact offsets are uncertain, use the full
+current turn content span. `char_end` is exclusive.
+
+JSON-Schema reference. This is only a validation reference; do not copy it:
+{{ schema_json }}
+
+INPUT:
+Previous turn:
+{{ prev_turn | tojson }}
+
+Current turn:
+{{ turn | tojson }}
+
+Next turn:
+{{ next_turn | tojson }}
+
+Return only the extraction object. The first characters of your answer must be:
+{"items":
+
+Use this shape exactly:
+{
+  "items": [
+    {
+      "text": "one short canonical sentence",
+      "type_guess": "stable_pref",
+      "evidence_span": {
+        "session_id": "{{ turn.session_id }}",
+        "turn_idx": {{ turn.turn_idx }},
+        "char_start": 0,
+        "char_end": 0
+      },
+      "extraction_confidence": 0.8,
+      "negation_marker": false,
+      "hedge_marker": false,
+      "polarity_subject": "user"
+    }
+  ],
+  "no_extractable_content": false,
+  "coverage_note": null
+}
+
+If there is no extractable user memory, return:
+{"items":[],"no_extractable_content":true,"coverage_note":"brief reason"}

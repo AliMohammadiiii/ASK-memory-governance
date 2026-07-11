@@ -1,0 +1,57 @@
+dataset:
+  name: LongMemEval-S cleaned 50-scenario local slice
+  path: data/slices/longmemeval_s_cleaned_50_seed0.jsonl
+  sha256: 777a8d6fabfd782c05f05267d8af9e7738ad2672dc8626f872209bdc23799831
+
+run:
+  target: runs/m4w13_thesis
+  # NOTE: tier is decided by the runner's guard, not this file. A full,
+  # non-synthetic `thesis` run is stamped `final-candidate`; anything else is
+  # `development`. promote_lme_to_final.py is the barrier to `final`.
+  tier: final-candidate
+  systems:
+    - b1
+    - b2
+    - b3
+    - b4
+    - controller
+  seed: 0
+  n_bootstrap: 1000
+  raw_turn_fallback: false
+  thesis_use: final_candidate_pending_review
+
+models:
+  # Proposal-spec'd shared 7-8B model for roles under test; MiniLM retrieval
+  # embedder (proposal I.5.6 / M1W3 flat-vector). The judge stays a small local
+  # model and is therefore DEV-tier evidence (proposal Risk 11): the gate will
+  # not stamp FINAL on it without --allow-dev-judge (which caps at
+  # final-candidate). Swap to the LongMemEval-published judge / GPT-4o for true
+  # final numbers.
+  profile: thesis
+  answerer: llama3:8b
+  judge_backend: ollama
+  judge: phi3.5:3.8b
+  judge_tier: dev            # upgrade (published judge / GPT-4o) for FINAL
+  embedder_backend: sentence_transformer
+  embedder: sentence-transformers/all-MiniLM-L6-v2
+  extractor: llama3:8b
+  recency_extractor: llama3:8b
+  classifier: llama3:8b
+
+controller:
+  scorecard_config: configs/controller_active.yaml
+  scorecard_config_sha256: 620188b36d14165566c41e606d56e48bf2211e57488d8a404af830e70cfa10cc
+
+command: >-
+  python scripts/run_m4w13_ollama.py
+  --model-profile thesis
+  --slice data/slices/longmemeval_s_cleaned_50_seed0.jsonl
+  --out runs/m4w13_thesis
+  --systems all
+  --seed 0
+  --n-bootstrap 1000
+  --ollama-host http://localhost:11434
+  --ollama-timeout-s 900
+  --judge-timeout-s 900
+  --embedder-backend sentence_transformer
+  --embedder-model sentence-transformers/all-MiniLM-L6-v2

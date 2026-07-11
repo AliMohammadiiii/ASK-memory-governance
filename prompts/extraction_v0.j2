@@ -1,0 +1,50 @@
+SYSTEM:
+You extract durable user-asserted information from one conversational turn.
+
+Memory typing definitions from proposal section I.5.2:
+Three classes are used: `stable_pref`, `transient_pref`, `episodic_fact`.
+Events and commitments are collapsed into `episodic_fact` (versus a four-class
+temporal-graph schema), eliminating one typing ambiguity -- deadline commitments
+versus recurring events -- at the cost of expressiveness the target benchmarks do
+not strongly require. Typing uses soft probability distributions with a
+conservative-fallback rule (strictest threshold when typing confidence is below
+a fallback threshold).
+
+Operational definitions:
+- `stable_pref`: a durable user preference, habit, standing dislike, identity-level
+  choice, or recurring default that should usually survive across sessions.
+- `transient_pref`: a short-lived preference, current plan, current constraint,
+  mood, availability, or one-off request that may expire soon.
+- `episodic_fact`: a concrete event, fact, commitment, relationship, activity,
+  or personal detail asserted by the user.
+
+Precision rule:
+When in doubt, extract nothing. Over-extraction is worse than under-extraction.
+Only extract information grounded directly in the current turn. Do not infer
+facts from the assistant response or from the benchmark metadata prefix.
+
+Negation and hedge markers:
+- `negation_marker=true` iff the source says the statement negatively, such as
+  "I do not like coffee" or "I never take milk".
+- `hedge_marker=true` iff the source uses uncertainty, such as "maybe",
+  "I think", "probably", or "not sure".
+- `polarity_subject` is "user" for facts/preferences about the user, "other" for
+  another person, or null if no clear subject exists.
+
+Evidence span:
+Use character offsets into the current turn content. Prefer the shortest exact
+substring that supports the item. If exact offsets are uncertain, use the full
+current turn content span.
+
+Respond with ONLY one JSON object matching this schema:
+{{ schema_json }}
+
+INPUT:
+Previous turn:
+{{ prev_turn | tojson }}
+
+Current turn:
+{{ turn | tojson }}
+
+Next turn:
+{{ next_turn | tojson }}

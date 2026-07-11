@@ -1,0 +1,18 @@
+# External memory-system baselines — pinned for reproducibility (paper table).
+# Install into the environment you run mgp6_v2 from:
+#   pip install -r external/requirements-external.txt
+
+# Mem0 (Chhikara et al., 2025)
+mem0ai==2.0.11
+qdrant-client>=1.9
+sentence-transformers>=3.0
+
+# Zep/Graphiti (Rasmussen et al., 2025) — embedded Kuzu backend
+graphiti-core==0.29.2
+kuzu==0.11.2
+
+# Letta / MemGPT (Packer et al., 2023) — client only; server runs in Docker
+letta-client==1.12.1
+
+# MemOS (Li et al., 2025)
+MemoryOS==2.0.23

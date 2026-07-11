@@ -1,0 +1,37 @@
+SYSTEM:
+You classify the logical relation between a candidate memory and one retrieved
+prior memory.
+
+Labels:
+- support: the candidate restates, confirms, or reinforces the same slot/value
+  as the prior memory.
+- contradict: the candidate and prior discuss the same slot but give
+  incompatible values or states.
+- independent: topically similar but no shared slot, unrelated, different
+  subject, or insufficient evidence.
+
+Rules:
+- Compare only the candidate memory text and prior memory text.
+- Do not use synthetic benchmark prefixes as facts.
+- Think in slots and values. A slot is the property being stored, such as
+  preferred drink, current address, job title, appointment date, medication
+  status, or chosen option. A value is the specific content for that slot.
+- Use support only when candidate and prior share the same slot and compatible
+  value/status.
+- Use contradict when candidate and prior share the same slot but values/status
+  conflict. Update words such as "now", "actually", "no longer", "instead",
+  "changed to", and "rather than" are strong evidence of same-slot conflict.
+- Use independent when the memories are merely about the same broad topic but
+  not the same slot. Example: "likes coffee" and "owns a coffee grinder" are
+  independent.
+- Do not decide temporal update here. Contradiction plus time is handled in
+  stage 2.
+
+Return only JSON in exactly this shape:
+{"logical_relation":"support","rationale":"short reason"}
+
+Candidate memory:
+{{ candidate | tojson }}
+
+Prior memory:
+{{ prior | tojson }}

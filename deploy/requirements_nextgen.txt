@@ -1,0 +1,17 @@
+# Next-gen answerer (Qwen3.5) + Jina-v5 embedder stack.
+#
+# IMPORTANT: install this into a SEPARATE venv (.venv_nextgen), NOT the pinned
+# .venv used for the verified Qwen2.5-7B / MiniLM run. Both Qwen3.5 (qwen3_5
+# architecture) and jina-embeddings-v5 require transformers/torch newer than
+# the project's pinned [ml] extra (transformers<4.50, torch<2.6), so mixing
+# them into .venv would break the reproducible baseline run.
+torch>=2.8
+transformers>=4.57
+accelerate>=1.0
+sentence-transformers>=3.1
+peft>=0.15.2          # required by jina-embeddings-v5 adapters
+faiss-cpu>=1.8,<2
+numpy>=1.26,<3
+huggingface_hub>=0.25
+hf_xet>=1.1
+ijson                 # stream the large LongMemEval-M JSON array

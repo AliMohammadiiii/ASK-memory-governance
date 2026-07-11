@@ -1,0 +1,14 @@
+# Inference harness config (M1-W1 §3.2).
+# Llama-3-8B-Instruct is the primary; Qwen2.5-7B-Instruct is the fallback
+# (config flip; harness is model-agnostic).
+
+model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+fallback_model_id: "Qwen/Qwen2.5-7B-Instruct"
+
+dtype: "bfloat16"          # bfloat16 (A100) | float16 (V100) | float32 (CPU/debug)
+device_map: "auto"
+use_flash_attn_2: false    # flip true once flash-attn-2 is verified-installed
+load_in_4bit: false        # bitsandbytes optional path
+
+trust_remote_code: false
+max_seq_len: 8192

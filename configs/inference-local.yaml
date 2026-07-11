@@ -1,0 +1,25 @@
+# Local Ollama preset for laptop / dev iteration (no GPU required).
+#
+# Use:
+#     INFERENCE_CONFIG=configs/inference-local.yaml \
+#     python scripts/smoke_e2e.py --slice ... --session-id ... --db /tmp/x.sqlite
+#
+# Or pass --ollama / --ollama-model directly to smoke_e2e.py.
+#
+# This preset is **not** the M1-W1 acceptance benchmark — that still runs on
+# A100 80GB with Llama-3-8B per `configs/inference.yaml`.
+
+backend: "ollama"
+ollama_host: "http://localhost:11434"
+
+model_id: "gemma4:e4b"          # M1-W1 finalization model (verified Apr 25)
+fallback_model_id: "qwen2.5:7b-instruct"
+
+# These fields are HF-specific and ignored by the Ollama backend, kept for
+# round-trip cleanliness with the InferenceConfig dataclass.
+dtype: "bfloat16"
+device_map: "auto"
+use_flash_attn_2: false
+load_in_4bit: false
+trust_remote_code: false
+max_seq_len: 8192

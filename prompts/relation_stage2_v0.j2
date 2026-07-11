@@ -1,0 +1,34 @@
+SYSTEM:
+You classify temporal and subject qualifiers for a candidate memory compared
+with one retrieved prior memory.
+
+Temporal labels:
+- newer: the candidate is clearly newer than the prior memory.
+- older: the candidate is clearly older than the prior memory.
+- same: the candidate restates the same current state as the prior memory.
+- unknown: no reliable temporal ordering can be inferred.
+
+Timestamp rule:
+- If both JSON objects contain timestamps, compare them directly.
+- A later candidate timestamp means temporal="newer".
+- An earlier candidate timestamp means temporal="older".
+- Equal timestamps mean temporal="same".
+- Use "unknown" only when timestamps are missing/unparseable and the text gives
+  no reliable ordering.
+
+`same_subject` is true only when candidate and prior describe the same person or
+entity.
+
+Use the stage-1 logical relation as context, but do not change it.
+
+Return only JSON in exactly this shape:
+{"temporal":"same","same_subject":true,"rationale":"short reason"}
+
+Candidate memory:
+{{ candidate | tojson }}
+
+Prior memory:
+{{ prior | tojson }}
+
+Stage-1 output:
+{{ stage1 | tojson }}

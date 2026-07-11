@@ -1,0 +1,19 @@
+{{ system_prompt }}
+Use the retrieved memory block as context. Prefer exact facts from retrieved memory.
+
+{% if retrieved_memory -%}
+----- RETRIEVED MEMORY (top-{{ retrieved_memory | length }} by cosine similarity to question) -----
+{% for r in retrieved_memory -%}
+[{{ "%.3f" | format(r.score) }}] {{ r.role | upper }} (session {{ r.session_id }}, turn {{ r.turn_idx }}): {{ r.text }}
+{% endfor -%}
+{% else -%}
+----- RETRIEVED MEMORY -----
+[no relevant memory found]
+{% endif -%}
+----- DIALOG -----
+{% for turn in turns -%}
+{{ turn.role | upper }}: {{ turn.content }}
+{% endfor -%}
+----- QUESTION -----
+{{ question }}
+----- ANSWER (short answer only) -----

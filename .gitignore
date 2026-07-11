@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+dist/
+build/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local datasets and large run artifacts
+data/external/
+runs/
+artifacts/raw/
+artifacts/final/
+*.sqlite
+*.db
+*.qdrant/
+.memos/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Generated publication outputs
+paper/**/compiled/
+thesis/compiled/

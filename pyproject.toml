@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68,<82", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ksa-memory-governance"
+version = "0.2.0"
+description = "Interpretable KEEP/SUPERSEDE/ABSTAIN governance for long-lived LLM memory"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Ali Mohammadi"}]
+keywords = ["llm", "agents", "memory", "governance", "abstention", "benchmark"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+  "pyyaml==6.0.3",
+  "jsonschema==4.26.0",
+  "pydantic==2.12.3",
+  "Jinja2>=3.1,<4",
+  "numpy>=1.26,<3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=9,<10", "pytest-cov>=5,<7", "ruff>=0.5,<1", "mypy>=1.10,<2", "types-PyYAML>=6.0.12", "build>=1.2,<2"]
+schema = ["linkml>=1.7,<2", "linkml-runtime>=1.7,<2"]
+ml = [
+  "torch>=2.8,<3",
+  "transformers>=4.57,<4.58",
+  "accelerate>=0.34,<2",
+  "sentence-transformers>=5.1,<6",
+  "peft>=0.15.2,<1",
+  "faiss-cpu>=1.8,<2",
+]
+pai = ["pydantic-ai>=0.0.13"]
+
+[project.urls]
+Repository = "https://github.com/OWNER/ksa-memory-governance"
+Issues = "https://github.com/OWNER/ksa-memory-governance/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+markers = [
+  "network: requires network access",
+  "external_data: requires non-redistributed datasets",
+  "slow: long-running test",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["docs/history", "paper", "thesis"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501", "B905", "B904", "B027", "B007", "E741", "E702", "UP031", "UP042", "B017"]
+
+[tool.mypy]
+python_version = "3.11"
+packages = ["ksa"]
+warn_unused_configs = true
+check_untyped_defs = true
+ignore_missing_imports = true

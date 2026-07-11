@@ -1,0 +1,17 @@
+version: 1
+artifacts:
+  - id: ksa_source
+    role: authoritative_implementation_source
+    source_archive: KSACodes.zip
+    sha256: a076ecb68e99070a09a4bc2e6dcbd4c1a787402a3833a88cd473ac01ae00da01
+  - id: mgp6_v2
+    role: frozen_diagnostic_dataset
+    path: benchmarks/mgp6/data/mgp6_v2.jsonl
+    rows: 180
+    sha256: 870705e71170026fc2e75dcc5b275f9a99ca3cc5501f054c2ac0d1a013b4a583
+  - id: mgp6_human_annotations
+    role: independent_human_annotation
+    path: benchmarks/mgp6/annotations/human
+  - id: longmemeval
+    role: external_dataset_not_redistributed
+    path: data/external/longmemeval

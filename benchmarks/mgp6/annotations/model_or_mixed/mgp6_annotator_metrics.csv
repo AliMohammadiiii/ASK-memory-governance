@@ -1,0 +1,5 @@
+﻿annotator,n,KEEP_count,SUPERSEDE_count,ABSTAIN_count,raw_agreement_accuracy,accuracy_ci95_low,accuracy_ci95_high,cohen_kappa,kappa_ci95_low,kappa_ci95_high,macro_f1,errors_vs_author_gold,mean_confidence,mean_confidence_correct,mean_confidence_incorrect
+Gemini Pro,90,12,45,33,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0,0.977,0.977,
+GPT Sol High,90,12,43,35,0.9777777777777777,0.9444444444444444,1.0,0.9630086313193585,0.9046408137317228,1.0,0.9826203208556149,2,0.9797777777777777,0.9827272727272727,0.85
+Kimi,90,12,45,33,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0,0.9706666666666667,0.9706666666666667,
+Z,90,12,45,33,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0,0.9565555555555555,0.9565555555555555,
