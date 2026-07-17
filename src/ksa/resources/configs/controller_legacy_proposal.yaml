@@ -1,0 +1,17 @@
+types:
+  stable_pref:
+    weights: {alpha: 0.35, beta: 0.30, gamma: 0.15, delta: 0.10, epsilon: 0.10}
+    theta_sup: 0.75
+    tau: 40
+  transient_pref:
+    weights: {alpha: 0.30, beta: 0.25, gamma: 0.20, delta: 0.15, epsilon: 0.10}
+    theta_sup: 0.55
+    tau: 10
+  episodic_fact:
+    weights: {alpha: 0.40, beta: 0.20, gamma: 0.25, delta: 0.05, epsilon: 0.10}
+    theta_sup: 0.65
+    tau: 30
+abstain:
+  sigma: 0.50
+  zeta: 0.50
+  theta_abs: 0.50

@@ -1,0 +1,477 @@
+{
+  "title": "LongMemEval-M controller run comparison",
+  "generated_for": "reproducibility audit (docs/audit)",
+  "dataset": "LongMemEval-M stratified, 30 items x 6 competencies = 180 (seed 0) for strat30 runs; earlier runs are partial ranges",
+  "competencies": [
+    "knowledge-update",
+    "multi-session",
+    "single-session-assistant",
+    "single-session-preference",
+    "single-session-user",
+    "temporal-reasoning"
+  ],
+  "answerer_model": "qwen/qwen3.5-9b",
+  "claim_eligibility_legend": {
+    "diagnostic_only": "informative historical or contaminated run; not a final result",
+    "failure_replay_only": "selection-biased replay/merge over prior failures; never a final result",
+    "incomplete": "run did not finish; bounds only",
+    "invalid": "unusable artifact",
+    "externally_pending": "pre-registered homogeneous run not completed"
+  },
+  "key_discrepancies": [
+    "v8 adjudicated manifest/summary provenance.replay_run = 'runs/lme_m_modal_qwen35_9b_v8_v7_failures_nothink' does not exist; real dir is 'runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink'.",
+    "v5 dir named _100_129_ actually contains range_200_239.jsonl and was KeyboardInterrupt-aborted (no report).",
+    "v7 controller HTTP-402 count is 316 (audit scan of extraction_trace.jsonl); the report says 'at least 315'.",
+    "139/180 is a selection-biased failure-replay construction over 2 judge models (Gemma 110 + Qwen 70) + 4 Codex/GPT-5 model-assisted overrides, not a homogeneous single-judge run or an estimate of final performance.",
+    "The Modal v8 top-up completed 84/110 retained-success items and only 71 stayed correct (13 regressions). Combined with the 70-item replay, the observed v8 attempt is 96/154; its full-180 raw bound is 53.3%-67.8%, so the 77.2% replay merge is non-reproducible for this attempt.",
+    "For single-session preference, 8/10 top-upped former successes remained correct and 0/19 replay failures repaired; with one unresolved former success, this attempt can reach at most 9/30 (30.0%)."
+  ],
+  "runs": [
+    {
+      "run_id": "v3_10_19",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_10_19_seed0_v3/controller",
+      "status": "complete",
+      "n_items": 10,
+      "n_correct": 5,
+      "overall_accuracy": 0.5,
+      "judge_models": [
+        "google/gemma-4-31b-it"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 3,
+          "accuracy": 0.3333333333333333,
+          "n_correct": 1
+        },
+        "multi-session": {
+          "n": 3,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "single-session-preference": {
+          "n": 1,
+          "accuracy": 1.0,
+          "n_correct": 1
+        },
+        "single-session-user": {
+          "n": 2,
+          "accuracy": 1.0,
+          "n_correct": 2
+        },
+        "temporal-reasoning": {
+          "n": 1,
+          "accuracy": 1.0,
+          "n_correct": 1
+        }
+      },
+      "claim_eligibility": "diagnostic_only",
+      "notes": "Early partial-range probe, items 10-19 (10 sessions). Superseded by the full strat30 v7 run."
+    },
+    {
+      "run_id": "v3_20_29",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_20_29_seed0_v3/controller",
+      "status": "complete",
+      "n_items": 10,
+      "n_correct": 4,
+      "overall_accuracy": 0.4,
+      "judge_models": [
+        "google/gemma-4-31b-it"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 2,
+          "accuracy": 1.0,
+          "n_correct": 2
+        },
+        "multi-session": {
+          "n": 2,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "single-session-preference": {
+          "n": 2,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "temporal-reasoning": {
+          "n": 4,
+          "accuracy": 0.5,
+          "n_correct": 2
+        }
+      },
+      "claim_eligibility": "diagnostic_only",
+      "notes": "Early partial-range probe, items 20-29 (10 sessions)."
+    },
+    {
+      "run_id": "v4_100_129",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v4/controller",
+      "status": "complete",
+      "n_items": 30,
+      "n_correct": 17,
+      "overall_accuracy": 0.5666666666666667,
+      "judge_models": [
+        "google/gemma-4-31b-it"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 6,
+          "accuracy": 0.6666666666666666,
+          "n_correct": 4
+        },
+        "multi-session": {
+          "n": 10,
+          "accuracy": 0.4,
+          "n_correct": 4
+        },
+        "single-session-assistant": {
+          "n": 6,
+          "accuracy": 0.8333333333333334,
+          "n_correct": 5
+        },
+        "single-session-preference": {
+          "n": 1,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "single-session-user": {
+          "n": 5,
+          "accuracy": 0.6,
+          "n_correct": 3
+        },
+        "temporal-reasoning": {
+          "n": 2,
+          "accuracy": 0.5,
+          "n_correct": 1
+        }
+      },
+      "claim_eligibility": "diagnostic_only",
+      "notes": "Partial range, items 100-129 (30 sessions). Has ANALYSIS_fa.md."
+    },
+    {
+      "run_id": "v5_misnamed_aborted",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v5/controller",
+      "status": "aborted",
+      "n_items": null,
+      "n_correct": null,
+      "overall_accuracy": null,
+      "judge_models": [],
+      "per_competency": null,
+      "claim_eligibility": "invalid",
+      "notes": "Directory named _100_129_ but the only data file is range_200_239.jsonl (MISNAMED; actually items 200-239). No merged report.json; controller/ holds only _shard*/ dirs. KeyboardInterrupt in logs/main.log and several shard logs -> aborted, unusable."
+    },
+    {
+      "run_id": "v6_200_239",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_200_239_seed0_v6/controller",
+      "status": "complete",
+      "n_items": 40,
+      "n_correct": 29,
+      "overall_accuracy": 0.725,
+      "judge_models": [
+        "google/gemma-4-31b-it"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 7,
+          "accuracy": 0.8571428571428571,
+          "n_correct": 6
+        },
+        "multi-session": {
+          "n": 11,
+          "accuracy": 0.5454545454545454,
+          "n_correct": 6
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "accuracy": 0.7777777777777778,
+          "n_correct": 7
+        },
+        "single-session-preference": {
+          "n": 3,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "single-session-user": {
+          "n": 8,
+          "accuracy": 1.0,
+          "n_correct": 8
+        },
+        "temporal-reasoning": {
+          "n": 2,
+          "accuracy": 1.0,
+          "n_correct": 2
+        }
+      },
+      "claim_eligibility": "diagnostic_only",
+      "notes": "Partial range, items 200-239 (40 sessions, 72.5%). Fed the v7 fix list. Has ANALYSIS_200_239_v6.md and VERIFY_v6_FAILURES.md."
+    },
+    {
+      "run_id": "v7_strat30_controller",
+      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller",
+      "status": "complete",
+      "n_items": 180,
+      "n_correct": 110,
+      "overall_accuracy": 0.6111111111111112,
+      "overall_accuracy_pre_adjudication": 0.6,
+      "n_correct_pre_adjudication": 108,
+      "answerable_accuracy": 0.6081871345029239,
+      "answerable_n": 171,
+      "abstention_accuracy": 0.6666666666666666,
+      "abstention_n": 9,
+      "judge_models": [
+        "google/gemma-4-31b-it"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 30,
+          "accuracy": 0.7,
+          "n_correct": 21
+        },
+        "multi-session": {
+          "n": 30,
+          "accuracy": 0.5,
+          "n_correct": 15
+        },
+        "single-session-assistant": {
+          "n": 30,
+          "accuracy": 0.8666666666666667,
+          "n_correct": 26
+        },
+        "single-session-preference": {
+          "n": 30,
+          "accuracy": 0.36666666666666664,
+          "n_correct": 11
+        },
+        "single-session-user": {
+          "n": 30,
+          "accuracy": 0.7333333333333333,
+          "n_correct": 22
+        },
+        "temporal-reasoning": {
+          "n": 30,
+          "accuracy": 0.5,
+          "n_correct": 15
+        }
+      },
+      "claim_eligibility": "diagnostic_only",
+      "notes": "Full 6x30 stratified (n=180), seed 0. 110/180 post-v7-adjudication (2 items 5c40ec5b, 58ef2f1c overridden); 108/180 pre-adjudication. Marked DIAGNOSTIC ONLY in ANALYSIS_REPORT.md: >=12 cascade relaunches, 736 error extraction traces, 316 HTTP-402, 388 empty no-response fallbacks. BIG_MODEL==FAST_MODEL made escalation a no-op. This is the base run for the v8 failure-replay merge."
+    },
+    {
+      "run_id": "v8_replay_nothink",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller",
+      "status": "complete",
+      "n_items": 70,
+      "n_correct": 25,
+      "overall_accuracy": 0.35714285714285715,
+      "answerable_accuracy": 0.3283582089552239,
+      "answerable_n": 67,
+      "abstention_accuracy": 1.0,
+      "abstention_n": 3,
+      "judge_models": [
+        "Qwen/Qwen3.5-9B"
+      ],
+      "per_competency": {
+        "knowledge-update": {
+          "n": 9,
+          "accuracy": 0.5555555555555556,
+          "n_correct": 5
+        },
+        "multi-session": {
+          "n": 15,
+          "accuracy": 0.6666666666666666,
+          "n_correct": 10
+        },
+        "single-session-assistant": {
+          "n": 4,
+          "accuracy": 0.25,
+          "n_correct": 1
+        },
+        "single-session-preference": {
+          "n": 19,
+          "accuracy": 0.0,
+          "n_correct": 0
+        },
+        "single-session-user": {
+          "n": 8,
+          "accuracy": 0.625,
+          "n_correct": 5
+        },
+        "temporal-reasoning": {
+          "n": 15,
+          "accuracy": 0.26666666666666666,
+          "n_correct": 4
+        }
+      },
+      "claim_eligibility": "failure_replay_only",
+      "notes": "Complete replay of the 70 v7 controller failures (enable_thinking:false, shared MiniLM). 25/70 = 35.7% machine. single-session-preference row is 0/19 (no SSP failure repaired). Feeds the adjudicated merge as the replay half."
+    },
+    {
+      "run_id": "v8_replay_invalid",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures",
+      "status": "invalid",
+      "n_items": 0,
+      "n_correct": 0,
+      "overall_accuracy": null,
+      "judge_models": [],
+      "per_competency": null,
+      "claim_eligibility": "invalid",
+      "notes": "Zero completed predictions across 10 shards. Two failures (INVALID.md): (1) per-shard local MiniLM -> all shards signal 11; (2) Qwen thinking mode burned the 512-token extraction budget, strict v8 extraction aborted. Retained for diagnostics only."
+    },
+    {
+      "run_id": "v8_topup110_modal",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
+      "status": "incomplete",
+      "n_items": 110,
+      "n_predictions_written": 84,
+      "n_correct": null,
+      "overall_accuracy": null,
+      "judge_models": [],
+      "per_competency": null,
+      "claim_eligibility": "incomplete",
+      "notes": "Incomplete but non-empty: 84/110 former v7-success items completed, with 71 correct and 13 regressions. Together with the 70-item replay, this v8 attempt cannot reach the 77.2% replay-merge figure.",
+      "observed_n": 84,
+      "observed_correct": 71,
+      "observed_accuracy": 0.8452380952,
+      "combined_with_failure_replay_observed": "96/154",
+      "full_180_raw_accuracy_bounds": [
+        0.5333333333,
+        0.6777777778
+      ],
+      "full_180_adjudicated_accuracy_bounds": [
+        0.5555555556,
+        0.7
+      ],
+      "ssp_observed": "8/29 with one unresolved; maximum 9/30"
+    },
+    {
+      "run_id": "v8_topup110_openrouter",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
+      "status": "incomplete",
+      "n_items": 110,
+      "n_predictions_written": 3,
+      "n_correct": null,
+      "overall_accuracy": null,
+      "judge_models": [],
+      "per_competency": null,
+      "claim_eligibility": "incomplete",
+      "notes": "Top-up of items 0-109. No merged report.json; only 3/110 shard predictions written. Incomplete."
+    },
+    {
+      "run_id": "v8_adjudicated_raw",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw",
+      "status": "complete",
+      "n_items": 180,
+      "n_correct": 135,
+      "overall_accuracy": 0.75,
+      "answerable_accuracy": 0.7368421052631579,
+      "answerable_n": 171,
+      "abstention_accuracy": 1.0,
+      "abstention_n": 9,
+      "judge_models": [
+        "google/gemma-4-31b-it (110 retained v7-correct)",
+        "Qwen/Qwen3.5-9B (70 replay)"
+      ],
+      "judge_model_id_field": "Qwen3.5-9B replay; Gemma-4-31B retained successes",
+      "per_competency": {
+        "knowledge-update": {
+          "n": 30,
+          "accuracy": 0.8666666666666667,
+          "n_correct": 26
+        },
+        "multi-session": {
+          "n": 30,
+          "accuracy": 0.8333333333333334,
+          "n_correct": 25
+        },
+        "single-session-assistant": {
+          "n": 30,
+          "accuracy": 0.9,
+          "n_correct": 27
+        },
+        "single-session-preference": {
+          "n": 30,
+          "accuracy": 0.36666666666666664,
+          "n_correct": 11
+        },
+        "single-session-user": {
+          "n": 30,
+          "accuracy": 0.9,
+          "n_correct": 27
+        },
+        "temporal-reasoning": {
+          "n": 30,
+          "accuracy": 0.6333333333333333,
+          "n_correct": 19
+        }
+      },
+      "claim_eligibility": "failure_replay_only",
+      "notes": "Selection-biased construction: 110 v7 successes carried forward plus 25/70 replay repairs. It is not a homogeneous rerun and is contradicted by the non-empty top-up evidence; classify failure_replay_only."
+    },
+    {
+      "run_id": "v8_adjudicated_final",
+      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller",
+      "status": "complete",
+      "n_items": 180,
+      "n_correct": 139,
+      "overall_accuracy": 0.7722222222222223,
+      "answerable_accuracy": 0.7602339181286549,
+      "answerable_n": 171,
+      "abstention_accuracy": 1.0,
+      "abstention_n": 9,
+      "judge_models": [
+        "google/gemma-4-31b-it (110 retained v7-correct)",
+        "Qwen/Qwen3.5-9B (25 machine-correct of 70 replay)",
+        "Codex/GPT-5 independent semantic adjudication (4 overrides)"
+      ],
+      "judge_model_id_field": "machine judgments plus four documented Codex/GPT-5 semantic adjudications",
+      "per_competency": {
+        "knowledge-update": {
+          "n": 30,
+          "accuracy": 0.9,
+          "n_correct": 27
+        },
+        "multi-session": {
+          "n": 30,
+          "accuracy": 0.8666666666666667,
+          "n_correct": 26
+        },
+        "single-session-assistant": {
+          "n": 30,
+          "accuracy": 0.9,
+          "n_correct": 27
+        },
+        "single-session-preference": {
+          "n": 30,
+          "accuracy": 0.36666666666666664,
+          "n_correct": 11
+        },
+        "single-session-user": {
+          "n": 30,
+          "accuracy": 0.9333333333333333,
+          "n_correct": 28
+        },
+        "temporal-reasoning": {
+          "n": 30,
+          "accuracy": 0.6666666666666666,
+          "n_correct": 20
+        }
+      },
+      "assembly": {
+        "retained_v7_correct": 110,
+        "replay_machine_correct": 25,
+        "adjudication_overrides": 4,
+        "total_correct": 139,
+        "replay_adjudicated_correct_of_70": 29,
+        "machine_vs_adjudicator_agreement": 0.9428571428571428,
+        "cohen_kappa": 0.8798283261802575,
+        "override_session_ids": [
+          "07741c44",
+          "118b2229",
+          "9a707b81",
+          "gpt4_59c863d7"
+        ]
+      },
+      "claim_eligibility": "failure_replay_only",
+      "notes": "Selection-biased 139/180 construction (110 carried-forward v7 successes + 25 replay repairs + 4 Codex/GPT-5 overrides). The Modal top-up found 13 regressions among 84 completed carried-forward successes, proving this is not a reproducible v8 run result."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+benchmark,run_id,n,metric,value,ci95,claim_eligibility,evidence_path
+mgp6_v2,ref_5systems/controller_rule,180,action_accuracy,0.9222,,final_candidate,artifacts/mgp6_v2/ref_5systems/controller/report.json
+mgp6_v2,ref_5systems/controller_rule,180,macro_f1,0.9399,,final_candidate,artifacts/mgp6_v2/ref_5systems/controller/report.json
+mgp6_v2,ref_5systems/controller_rule,90,action_accuracy_test,0.8889,,final_candidate,artifacts/mgp6_v2/ref_5systems/controller/report.json
+mgp6_v2,ref_5systems/controller_rule,90,macro_f1_test,0.9145,,final_candidate,artifacts/mgp6_v2/ref_5systems/controller/report.json
+mgp6_v2,llm_controller_qwen35_9b,180,action_accuracy,0.8889,,final_candidate,artifacts/mgp6_v2/llm_qwen35_9b/controller/report.json
+mgp6_v2,llm_controller_qwen35_9b,180,macro_f1,0.8913,,final_candidate,artifacts/mgp6_v2/llm_qwen35_9b/controller/report.json
+mgp6_v2,llm_controller_qwen35_9b,180,premise_resistance,0.0889,,final_candidate,artifacts/mgp6_v2/llm_qwen35_9b/controller/report.json
+mgp6_v2,llm_decision_zero_shot,180,action_accuracy,0.700,,final_candidate,artifacts/mgp6_v2/llm_decision_zero/controller/report.json
+mgp6_v2,llm_decision_zero_shot,180,macro_f1,0.6657,,final_candidate,artifacts/mgp6_v2/llm_decision_zero/controller/report.json
+mgp6_v2,llm_decision_few6,180,coverage_aware_action_accuracy,0.7833,"[0.7333,0.8333]",incomplete,artifacts/results/mgp6_few6_report.json
+mgp6_v2,llm_decision_few6,180,coverage_aware_macro_f1,0.7692,"[0.7209,0.8182]",incomplete,artifacts/results/mgp6_few6_report.json
+mgp6_v2,ref_5systems/b1_no_memory,180,action_accuracy,0.3667,,final_candidate,artifacts/mgp6_v2/ref_5systems/b1/report.json
+mgp6_v2,ref_5systems/b2_flat_retrieval,180,action_accuracy,0.1333,,final_candidate,artifacts/mgp6_v2/ref_5systems/b2/report.json
+mgp6_v2,ref_5systems/b3_recency,180,action_accuracy,0.4222,,final_candidate,artifacts/mgp6_v2/ref_5systems/b3/report.json
+mgp6_v2,ref_5systems/b4_naive_overwrite,180,action_accuracy,0.4222,,final_candidate,artifacts/mgp6_v2/ref_5systems/b4/report.json
+mgp6_v2,ablation/no_abstain,180,action_accuracy,0.5556,,final_candidate,artifacts/mgp6_v2/ablations/no_abstain/report.json
+mgp6_v2,ablation/no_provenance,180,action_accuracy,0.700,,final_candidate,artifacts/mgp6_v2/ablations/no_provenance/report.json
+mgp6_v2,ablation/no_typing,180,action_accuracy,0.7889,,final_candidate,artifacts/mgp6_v2/ablations/no_typing/report.json
+mgp6_v2,ablation/no_lineage,180,lineage_integrity,0.3689,,final_candidate,artifacts/mgp6_v2/ablations/no_lineage/report.json
+mgp6_v2,external/letta,180,action_accuracy_noop_abstain,0.678,,final_candidate,artifacts/mgp6_v2/ext_letta_qwen35_9b/controller/report_noop_abstain.json
+mgp6_v2,external/mem0,180,action_accuracy_noop_abstain,0.622,,final_candidate,artifacts/mgp6_v2/ext_mem0/controller/report_noop_abstain.json
+mgp6_v2,external/graphiti,180,action_accuracy_noop_abstain,0.383,,final_candidate,artifacts/mgp6_v2/ext_graphiti/controller/report_noop_abstain.json
+mgp6_v2,external/memos,180,action_accuracy_noop_abstain,0.144,,diagnostic_only,artifacts/mgp6_v2/ext_memos/controller/report_noop_abstain.json
+mgp6_v2,annotation_human_independent,90,cohen_kappa,0.98146,"[0.93997,1.0]",final_candidate,benchmarks/mgp6/annotations/human/human_annotation_agreement_summary.json
+mgp6_v2,annotation_human_independent,90,raw_agreement,0.9889,"[0.9667,1.0]",final_candidate,benchmarks/mgp6/annotations/human/human_annotation_agreement_summary.json
+mgp6_v2,annotation_panel_4llm,90,fleiss_kappa,0.9815,,diagnostic_only,mgp6_v2/annotation/*.csv (computed 2026-07-12)
+longmemeval_m,v7/controller,180,accuracy_post_adjudication,0.6111,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/controller/report.json
+longmemeval_m,v7/b4_naive_overwrite,180,accuracy,0.6333,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b4/report.json
+longmemeval_m,v7/b2_flat_vector,180,accuracy,0.4444,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b2/report.json
+longmemeval_m,v7/b3_recency,180,accuracy,0.2389,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b3/report.json
+longmemeval_m,v7/b1_no_memory,180,accuracy,0.05,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b1/report.json
+longmemeval_m,v8_failure_replay_adjudicated,180,accuracy_adjudicated,0.7722,"[0.7111,0.8333]",failure_replay_only,"runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller/report.json"
+longmemeval_m,v8_failure_replay_adjudicated,180,accuracy_raw,0.75,,failure_replay_only,"runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw/report.json"
+longmemeval_m,v8_topup110_modal,84,observed_accuracy,0.8452,,incomplete,"runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards"
+longmemeval_m,final_1.1_homogeneous_5systems,180,status,,,externally_pending,runs_local/lme_final_5systems_180
+longmemeval_m,v8_failures_nothink_replay,70,accuracy,0.3571,,failure_replay_only,"runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/report.json"
+longmemeval_m,ssp_all_versions,30,accuracy,0.3667,"[0.20,0.5333]",diagnostic_only,per-type blocks v7 + adjudicated report.json

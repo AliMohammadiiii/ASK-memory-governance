@@ -6,6 +6,5 @@ authors:
   - family-names: Mohammadi
     given-names: Ali
 version: 0.2.0
-date-released: 2026-07-12
+date-released: 2026-07-13
 license: MIT
-repository-code: "https://github.com/OWNER/ksa-memory-governance"

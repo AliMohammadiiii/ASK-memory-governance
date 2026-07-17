@@ -1,7 +1,9 @@
 # Blockers
 
 - Network-backed Qwen/Gemma experiments were not executed in this repository build environment.
-- The OpenRouter credential previously shared in chat should be rotated before future use.
+- Hosted-provider authorization and credential rotation require the account owner;
+  no key value is stored in this repository.
 - LongMemEval fixtures are intentionally absent from Git.
 - External-system adapters require their own services, versions, and licenses.
-- Submission-ready claims require a frozen confirmation split and completed hosted-model matrix.
+- Generalization claims require execution of the frozen independent v3 protocol,
+  including independent writers, three human annotators, and a hidden test run.

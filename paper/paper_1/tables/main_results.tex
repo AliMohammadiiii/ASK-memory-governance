@@ -1,0 +1,19 @@
+% Source: per-item predictions under artifacts/mgp6_v2; test split only.
+\begin{table}[t]
+\centering
+\small
+\caption{Held-out test results ($n{=}90$). Family CIs resample the 48
+template families and report family-macro accuracy. Action false-commit is over 33
+gold-\abstain{} items; missed-update is over 45 gold-\supersede{} items. The
+shortcut result in Table~\ref{tab:shortcut} limits interpretation of all rows.}
+\label{tab:main}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Policy & Accuracy & Family 95\% CI & Macro-F1 & Action false-commit & Missed-update \\
+\midrule
+Reference policy & 0.8889 & [0.8125, 0.9688] & 0.9145 & 0.0000 & 0.2222 \\
+Structured LLM & 0.9000 & [0.8333, 0.9688] & 0.9040 & 0.0606 & 0.1556 \\
+Unstructured zero-shot LLM & 0.6778 & [0.5625, 0.7917] & 0.6542 & 0.5758 & 0.2222 \\
+\bottomrule
+\end{tabular}
+\end{table}

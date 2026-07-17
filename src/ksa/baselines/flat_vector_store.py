@@ -52,7 +52,7 @@ class _NumpyFlatIPIndex:
 
     def __init__(self, dim: int) -> None:
         self._dim = int(dim)
-        self._vecs = np.empty((0, self._dim), dtype=np.float32)
+        self._vecs: np.ndarray = np.empty((0, self._dim), dtype=np.float32)
 
     @property
     def ntotal(self) -> int:

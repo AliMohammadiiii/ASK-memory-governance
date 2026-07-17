@@ -1,13 +1,20 @@
 # Git push guide
 
-The downloadable `READY_TO_PUSH` archive already contains an initialized `.git` directory and an initial commit on `main`.
+The release archive deliberately contains no `.git` directory and no fabricated
+remote. After extracting the canonical repository package, initialize or attach
+the public repository that you control.
 
 ```bash
-unzip ksa-memory-governance_READY_TO_PUSH.zip
+unzip ksa-memory-governance-final.zip
 cd ksa-memory-governance
+git init
+git add .
+git commit -m "Initial public release"
 git status
 git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
 git push -u origin main
 ```
 
-Before publishing, replace `OWNER` in `pyproject.toml` and `CITATION.cff`, rotate the API credential previously shared in chat, and confirm the MGP-6 data license.
+Before publishing, rotate the API credential previously shared in chat, confirm
+the MGP-6 data-release consent/license, and review `LICENSE-DATA.md`. No repository
+or issue URL is advertised until you supply a real remote.

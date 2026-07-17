@@ -1,0 +1,8 @@
+{
+  "system": "memos",
+  "answer_model": "qwen/qwen3.5-9b",
+  "answers_natively": false,
+  "mapping": "SUPERSEDE only when replacement/removal is observable; dual-active conflict -> INVALID_COMMIT; NOOP->KEEP default; NOOP->ABSTAIN variant file",
+  "api": "memos.mem_os.main.MOS (env auto-config)",
+  "note": "replaced_old not observable; store-diff mapping only"
+}

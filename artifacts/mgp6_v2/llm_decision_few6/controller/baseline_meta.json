@@ -1,0 +1,16 @@
+{
+  "mode": "few",
+  "model": "qwen/qwen3.5-9b",
+  "shots": 6,
+  "exemplar_ids": [
+    "MGP6V2-T1-TRAIN-001",
+    "MGP6V2-T2-TRAIN-010",
+    "MGP6V2-T4-TRAIN-005",
+    "MGP6V2-T5-TRAIN-002",
+    "MGP6V2-T5-TRAIN-005",
+    "MGP6V2-T6-TRAIN-001"
+  ],
+  "seed": 0,
+  "split": "all",
+  "n_eval": 174
+}

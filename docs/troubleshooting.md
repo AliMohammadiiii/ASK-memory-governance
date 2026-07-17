@@ -1,0 +1,107 @@
+# Troubleshooting
+
+## Installation and package data
+
+Use Python 3.11 or 3.12 and install from the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+```
+
+If a wheel installation cannot find a default config, schema, or prompt, confirm
+that the wheel contains `ksa/resources/` and `ksa/baselines/prompts/`:
+
+```bash
+python -m build
+python -m zipfile -l dist/*.whl
+```
+
+Do not work around a missing resource with an absolute path. Installed defaults
+must resolve through the packaged `ksa` resources.
+
+## OpenRouter returns HTTP 401 or 403
+
+- `401` normally indicates a missing or invalid credential.
+- `403` with `Access denied by security policy` occurred with the credential
+  supplied for the 2026-07-13 audit under default, Venice-only, and
+  DeepInfra-only routing. Retrying the same key will not make the run valid.
+
+Create/authorize a replacement key in the account, export it only in the current
+shell, and run the two-item smoke before the full evaluation:
+
+```bash
+export OPENROUTER_API_KEY='...'
+export LONGMEMEVAL_DATA='/absolute/path/to/the/frozen-180-slice.jsonl'
+bash scripts/evaluation/run_longmemeval_final.sh --smoke
+```
+
+Never paste a real key into a config, command history committed to Git, issue,
+paper artifact, or review archive. The run wrapper records only key presence.
+
+## OpenRouter returns HTTP 402 or a free judge is unavailable
+
+The frozen policy first requests `google/gemma-4-31b-it:free` and may fall back
+to `google/gemma-4-31b-it`. Ensure the account can pay for the fallback before a
+full run. The evaluator records the actual judge, fallback use, attempt count,
+and raw-response hash. `scripts/verify_homogeneous_run.py` rejects missing or
+inconsistent provenance.
+
+Do not silently substitute a deterministic score for a failed judge. Such a row
+must be marked as a scoring fallback and is ineligible for the homogeneous final
+result unless the frozen protocol explicitly permits it.
+
+## LongMemEval data is missing
+
+The dataset is intentionally not shipped. Set `LONGMEMEVAL_DATA` to the exact
+frozen 180-item JSONL. The expected slice has 180 unique rows, six competencies
+with 30 items each, seed 0, and SHA-256
+`f10b4fb4173d3e2d9310d90c2b6bf8f5e7b147cea1d04affa9037b1b9fe6787d`.
+The verifier fails closed if the hash, item IDs, or coverage differ.
+
+For an offline command check that needs no data or credential:
+
+```bash
+bash scripts/evaluation/run_longmemeval_final.sh --dry-run
+```
+
+## A run was interrupted
+
+Resume the same immutable run directory:
+
+```bash
+bash scripts/evaluation/run_longmemeval_final.sh --resume
+```
+
+Do not combine shards from different configs, models, provider policies, slice
+hashes, or judge policies. After completion, run the exact verifier command in
+`FINAL_RUN_MATRIX.yaml` and then the judge audit.
+
+## MGP-6 few-shot has only 174 predictions
+
+This is expected for the archived 6-shot run. The release scorer aligns all 180
+gold IDs and treats the six missing predictions as `INVALID`, producing a
+coverage-aware accuracy of 0.7833 and macro-F1 of 0.7692. The result remains
+`incomplete` and must not enter final tables.
+
+## Repository validation reports secrets or absolute paths
+
+Run:
+
+```bash
+python scripts/validate_repository.py
+```
+
+The validator scans tracked and unignored release candidates, not virtual
+environments. Replace active local paths with repository-relative paths or
+`external://` pointers. Historical notes may describe old locations but must not
+enter the public release if they expose private information. Revoke any detected
+credential; redaction alone does not make an exposed key safe again.
+
+## Tests need unavailable external services
+
+Tests marked `network`, `external_data`, or `slow` may skip when their explicit
+prerequisites are absent. A skip is acceptable only when its reason is printed.
+The default unit suite, repository validator, schema validation, lint, type
+check, build, and offline smoke must still pass.

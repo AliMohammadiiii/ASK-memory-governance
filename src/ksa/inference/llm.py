@@ -25,22 +25,17 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol, runtime_checkable
 
+# Pydantic is a declared hard dependency. Import it directly so the runtime and
+# type contract agree: structured schemas are subclasses of ``BaseModel``.
+import pydantic
 import yaml
+from pydantic import BaseModel
 
-# pydantic is a hard dep for the structured wrapper. Keep import top-level so
-# the InvalidConfig error fires at import time on a misconfigured env.
-try:
-    import pydantic  # type: ignore[import-not-found]
-    from pydantic import BaseModel  # type: ignore[import-not-found]
-    _PYDANTIC_AVAILABLE = True
-except ImportError:  # pragma: no cover — only on truly bare envs
-    pydantic = None  # type: ignore[assignment]
-    BaseModel = object  # type: ignore[assignment, misc]
-    _PYDANTIC_AVAILABLE = False
+_PYDANTIC_AVAILABLE = True
 
 
 _DEFAULT_INFERENCE_CONFIG = (
-    Path(__file__).resolve().parents[3] / "configs" / "inference.yaml"
+    Path(__file__).resolve().parents[1] / "resources" / "configs" / "inference.yaml"
 )
 
 
@@ -83,7 +78,7 @@ class InferenceConfig:
     # answer, so the harness disables it via the chat template when this is set
     # to False. None = leave the template default untouched (Qwen2.5 etc.).
     enable_thinking: bool | None = None
-    backend: str = "huggingface"   # huggingface | ollama | openai_compatible
+    backend: str = "huggingface"  # huggingface | ollama | openai_compatible
     ollama_host: str = "http://localhost:11434"
     openai_base_url: str = "http://localhost:3001/v1"
     openai_api_key_env: str = "FREELLMAPI_KEY"
@@ -118,8 +113,7 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
         max_seq_len=int(raw.get("max_seq_len", 8192)),
         chat=bool(raw.get("chat", True)),
         enable_thinking=(
-            None if raw.get("enable_thinking") is None
-            else bool(raw.get("enable_thinking"))
+            None if raw.get("enable_thinking") is None else bool(raw.get("enable_thinking"))
         ),
         backend=str(raw.get("backend", "huggingface")),
         ollama_host=str(raw.get("ollama_host", "http://localhost:11434")),
@@ -182,7 +176,7 @@ def _strip_think_blocks(text: str) -> str:
     # completion (rare with some templates); keep only what follows it.
     lower = cleaned.lower()
     if "</think>" in lower:
-        cleaned = cleaned[lower.rindex("</think>") + len("</think>"):]
+        cleaned = cleaned[lower.rindex("</think>") + len("</think>") :]
     # An opening tag with no close = generation budget ran out inside the
     # think block; nothing usable remains, so drop it.
     cleaned = _THINK_OPEN_RE.sub("", cleaned)
@@ -262,8 +256,7 @@ class HuggingFaceLLM:
                 from transformers import BitsAndBytesConfig  # type: ignore[import-not-found]
             except ImportError as exc:
                 raise RuntimeError(
-                    "load_in_4bit=True requires bitsandbytes; "
-                    "pip install bitsandbytes"
+                    "load_in_4bit=True requires bitsandbytes; pip install bitsandbytes"
                 ) from exc
             load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True)
 
@@ -303,10 +296,13 @@ class HuggingFaceLLM:
         for name in candidates:
             try:
                 import transformers  # type: ignore[import-not-found]
+
                 cls = getattr(transformers, name, None)
                 if cls is None:
                     continue
-                print(f"[hf] {self.model_id}: AutoModelForCausalLM failed; trying {name}", flush=True)
+                print(
+                    f"[hf] {self.model_id}: AutoModelForCausalLM failed; trying {name}", flush=True
+                )
                 return cls.from_pretrained(self.model_id, **load_kwargs)
             except (ValueError, KeyError, OSError) as exc:  # pragma: no cover - depends on model
                 last_exc = exc
@@ -432,7 +428,9 @@ class HuggingFaceLLM:
             truncation=True,
             max_length=self.config.max_seq_len,
         )
-        encoded["_input_truncated"] = int(encoded["input_ids"].shape[-1]) >= int(self.config.max_seq_len)
+        encoded["_input_truncated"] = int(encoded["input_ids"].shape[-1]) >= int(
+            self.config.max_seq_len
+        )
         return encoded
 
 
@@ -519,7 +517,7 @@ def _iter_json_objects(text: str) -> list[str]:
     return objects
 
 
-def _validate_any_json_object(text: str, schema: type) -> Any:
+def _validate_any_json_object(text: str, schema: type[BaseModel]) -> BaseModel:
     """Validate the first object in text that matches the target schema."""
     last_err: Exception | None = None
     for obj_str in _iter_json_objects(text):
@@ -547,17 +545,14 @@ class StructuredLLM:
 
     def __init__(self, inner: LLM, *, max_repair_tokens: int = 512) -> None:
         if not _PYDANTIC_AVAILABLE:
-            raise RuntimeError(
-                "pydantic>=2 is required for StructuredLLM. "
-                "pip install pydantic"
-            )
+            raise RuntimeError("pydantic>=2 is required for StructuredLLM. pip install pydantic")
         self.inner = inner
         self.max_repair_tokens = max_repair_tokens
 
     def generate_json(
         self,
         prompt: str,
-        schema: type,
+        schema: type[BaseModel],
         *,
         max_new_tokens: int = 512,
         temperature: float = 0.0,
@@ -619,7 +614,7 @@ class StructuredLLM:
 
     @staticmethod
     def _build_repair_prompt(
-        original: str, bad_output: str, schema: type, err: Exception
+        original: str, bad_output: str, schema: type[BaseModel], err: Exception
     ) -> str:
         try:
             schema_dump = json.dumps(schema.model_json_schema(), indent=2)
@@ -665,6 +660,7 @@ def build_llm(
         cfg = dataclasses.replace(cfg, model_id=cfg.fallback_model_id)
     if cfg.backend == "ollama":
         from .ollama import OllamaLLM
+
         return OllamaLLM(model_id=cfg.model_id, host=cfg.ollama_host)
     if cfg.backend in {"openai_compatible", "openai-compatible", "openai"}:
         from .openai_compatible import OpenAICompatibleLLM

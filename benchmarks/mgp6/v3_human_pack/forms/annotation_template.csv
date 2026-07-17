@@ -1,0 +1,2 @@
+transition_id,annotator_code,manual_version,schema_version,action,target_record_ids_json,resulting_active_state_json,lineage_links_json,evidence_turn_ids_json,rationale,annotator_confidence,ambiguity_flag,input_defect_flag,started_at,submitted_at
+M3-C-EXAMPLE,A00,3.0,3.0,,,,,,,5,no,no,,

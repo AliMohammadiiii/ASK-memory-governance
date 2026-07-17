@@ -1,0 +1,1504 @@
+{
+  "breakdowns": {
+    "difficulty": {
+      "adversarial": {
+        "action_accuracy": {
+          "ci95": [
+            0.666667,
+            0.925926
+          ],
+          "value": 0.814815
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.555556,
+            0.851852
+          ],
+          "value": 0.703704
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.555556,
+            0.851852
+          ],
+          "value": 0.703704
+        },
+        "sample_size": {
+          "ci95": [
+            27,
+            27
+          ],
+          "value": 27
+        }
+      },
+      "easy": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "hard": {
+        "action_accuracy": {
+          "ci95": [
+            0.777778,
+            0.936508
+          ],
+          "value": 0.857143
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.777778,
+            0.936508
+          ],
+          "value": 0.857143
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.698413,
+            0.873413
+          ],
+          "value": 0.793651
+        },
+        "sample_size": {
+          "ci95": [
+            63,
+            63
+          ],
+          "value": 63
+        }
+      },
+      "medium": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            60,
+            60
+          ],
+          "value": 60
+        }
+      }
+    },
+    "query_mode": {
+      "direct_recall": {
+        "action_accuracy": {
+          "ci95": [
+            0.814815,
+            0.926157
+          ],
+          "value": 0.87037
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.796296,
+            0.916667
+          ],
+          "value": 0.851852
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.75,
+            0.87963
+          ],
+          "value": 0.814815
+        },
+        "sample_size": {
+          "ci95": [
+            108,
+            108
+          ],
+          "value": 108
+        }
+      },
+      "implicit_application": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.888889,
+            1.0
+          ],
+          "value": 0.962963
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.888889,
+            1.0
+          ],
+          "value": 0.962963
+        },
+        "sample_size": {
+          "ci95": [
+            27,
+            27
+          ],
+          "value": 27
+        }
+      },
+      "premise_resistance": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            45,
+            45
+          ],
+          "value": 45
+        }
+      }
+    },
+    "subtype": {
+      "clear_temporary_override": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            24,
+            24
+          ],
+          "value": 24
+        }
+      },
+      "confidence_laundering_assistant_inference": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "confidence_laundering_extractor_overconfidence": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "confidence_laundering_noisy_source_amplification": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "confidence_laundering_quoted_anecdote_as_evidence": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "confidence_laundering_tool_recommendation_laundering": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "explicit_cue": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.95,
+            1.0
+          ],
+          "value": 0.983333
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.95,
+            1.0
+          ],
+          "value": 0.983333
+        },
+        "sample_size": {
+          "ci95": [
+            60,
+            60
+          ],
+          "value": 60
+        }
+      },
+      "hedged_temporary_candidate": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      },
+      "implicit_conflict": {
+        "action_accuracy": {
+          "ci95": [
+            0.366667,
+            0.7
+          ],
+          "value": 0.533333
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.3,
+            0.633333
+          ],
+          "value": 0.466667
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.166667,
+            0.5
+          ],
+          "value": 0.333333
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "minimal_pair_ambiguity": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            24,
+            24
+          ],
+          "value": 24
+        }
+      },
+      "referent_ambiguity": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            6,
+            6
+          ],
+          "value": 6
+        }
+      }
+    },
+    "type": {
+      "T1": {
+        "action_accuracy": {
+          "ci95": [
+            0.7,
+            0.966667
+          ],
+          "value": 0.833333
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.6,
+            0.9
+          ],
+          "value": 0.766667
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.566667,
+            0.866667
+          ],
+          "value": 0.733333
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "T2": {
+        "action_accuracy": {
+          "ci95": [
+            0.8,
+            1.0
+          ],
+          "value": 0.9
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.8,
+            1.0
+          ],
+          "value": 0.9
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.666667,
+            0.933333
+          ],
+          "value": 0.833333
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "T3": {
+        "action_accuracy": {
+          "ci95": [
+            0.666667,
+            0.933333
+          ],
+          "value": 0.8
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            0.633333,
+            0.9
+          ],
+          "value": 0.766667
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            0.566667,
+            0.866667
+          ],
+          "value": 0.733333
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "T4": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "T5": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      },
+      "T6": {
+        "action_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "answer_presence_absence_conjunction": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "artifact_semantic_accuracy": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "sample_size": {
+          "ci95": [
+            30,
+            30
+          ],
+          "value": 30
+        }
+      }
+    }
+  },
+  "full": {
+    "abstention_precision": {
+      "ci95": [
+        0.758621,
+        0.891892
+      ],
+      "value": 0.825
+    },
+    "abstention_recall": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "action_accuracy": {
+      "ci95": [
+        0.883333,
+        0.955556
+      ],
+      "value": 0.922222
+    },
+    "artifact_exact_accuracy": {
+      "ci95": [
+        0.366667,
+        0.366667
+      ],
+      "value": 0.366667
+    },
+    "artifact_semantic_accuracy": {
+      "ci95": [
+        0.838889,
+        0.927778
+      ],
+      "value": 0.883333
+    },
+    "confusion_matrix": {
+      "ABSTAIN": {
+        "ABSTAIN": {
+          "ci95": [
+            66.0,
+            66.0
+          ],
+          "value": 66.0
+        },
+        "KEEP": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        }
+      },
+      "KEEP": {
+        "ABSTAIN": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "KEEP": {
+          "ci95": [
+            24.0,
+            24.0
+          ],
+          "value": 24.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        }
+      },
+      "SUPERSEDE": {
+        "ABSTAIN": {
+          "ci95": [
+            8.0,
+            21.0
+          ],
+          "value": 14.0
+        },
+        "KEEP": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            69.0,
+            82.0
+          ],
+          "value": 76.0
+        }
+      }
+    },
+    "cue_dependence_gap": {
+      "ci95": [
+        0.296242,
+        0.645161
+      ],
+      "value": 0.466667
+    },
+    "duplicate_write_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "explicit_cue_supersede_recall": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "fama_presence_absence_conjunction": {
+      "ci95": [
+        0.866667,
+        0.944444
+      ],
+      "value": 0.905556
+    },
+    "implicit_application_accuracy": {
+      "ci95": [
+        0.88,
+        1.0
+      ],
+      "value": 0.962963
+    },
+    "implicit_conflict_recall": {
+      "ci95": [
+        0.354839,
+        0.703758
+      ],
+      "value": 0.533333
+    },
+    "invalid_commit_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "judge_conjunction_rate": {
+      "ci95": [
+        0.866667,
+        0.944444
+      ],
+      "value": 0.905556
+    },
+    "judge_exclude_rate": {
+      "ci95": [
+        0.883333,
+        0.955556
+      ],
+      "value": 0.922222
+    },
+    "judge_include_rate": {
+      "ci95": [
+        0.866667,
+        0.944444
+      ],
+      "value": 0.905556
+    },
+    "lineage_correctness": {
+      "ci95": [
+        0.793333,
+        0.911111
+      ],
+      "value": 0.855556
+    },
+    "macro_f1": {
+      "ci95": [
+        0.910223,
+        0.965449
+      ],
+      "value": 0.939924
+    },
+    "over_forgetting_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "per_action": {
+      "ABSTAIN": {
+        "f1": {
+          "ci95": [
+            0.862745,
+            0.942857
+          ],
+          "value": 0.90411
+        },
+        "precision": {
+          "ci95": [
+            0.758621,
+            0.891892
+          ],
+          "value": 0.825
+        },
+        "recall": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        }
+      },
+      "KEEP": {
+        "f1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "precision": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "recall": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        }
+      },
+      "SUPERSEDE": {
+        "f1": {
+          "ci95": [
+            0.867925,
+            0.953488
+          ],
+          "value": 0.915663
+        },
+        "precision": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "recall": {
+          "ci95": [
+            0.766667,
+            0.911111
+          ],
+          "value": 0.844444
+        }
+      }
+    },
+    "premise_resistance_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "sample_size": {
+      "ci95": [
+        180,
+        180
+      ],
+      "value": 180
+    },
+    "stale_retrieval_rate": {
+      "ci95": [
+        0.044444,
+        0.116667
+      ],
+      "value": 0.077778
+    },
+    "transient_contamination_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "under_forgetting_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    }
+  },
+  "risk_coverage": {
+    "0.1": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.2": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.3": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.4": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.5": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.6": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.7": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.8": {
+      "action_accuracy": {
+        "ci95": [
+          1.0,
+          1.0
+        ],
+        "value": 1.0
+      },
+      "risk": {
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "value": 0.0
+      }
+    },
+    "0.9": {
+      "action_accuracy": {
+        "ci95": [
+          0.91358,
+          0.981481
+        ],
+        "value": 0.950617
+      },
+      "risk": {
+        "ci95": [
+          0.018519,
+          0.08642
+        ],
+        "value": 0.049383
+      }
+    },
+    "1.0": {
+      "action_accuracy": {
+        "ci95": [
+          0.883333,
+          0.961111
+        ],
+        "value": 0.922222
+      },
+      "risk": {
+        "ci95": [
+          0.038889,
+          0.116667
+        ],
+        "value": 0.077778
+      }
+    }
+  },
+  "test": {
+    "abstention_precision": {
+      "ci95": [
+        0.673469,
+        0.868421
+      ],
+      "value": 0.767442
+    },
+    "abstention_recall": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "action_accuracy": {
+      "ci95": [
+        0.822222,
+        0.944444
+      ],
+      "value": 0.888889
+    },
+    "artifact_exact_accuracy": {
+      "ci95": [
+        0.366667,
+        0.366667
+      ],
+      "value": 0.366667
+    },
+    "artifact_semantic_accuracy": {
+      "ci95": [
+        0.777778,
+        0.922222
+      ],
+      "value": 0.855556
+    },
+    "confusion_matrix": {
+      "ABSTAIN": {
+        "ABSTAIN": {
+          "ci95": [
+            33.0,
+            33.0
+          ],
+          "value": 33.0
+        },
+        "KEEP": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        }
+      },
+      "KEEP": {
+        "ABSTAIN": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "KEEP": {
+          "ci95": [
+            12.0,
+            12.0
+          ],
+          "value": 12.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        }
+      },
+      "SUPERSEDE": {
+        "ABSTAIN": {
+          "ci95": [
+            5.0,
+            16.0
+          ],
+          "value": 10.0
+        },
+        "KEEP": {
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "value": 0.0
+        },
+        "SUPERSEDE": {
+          "ci95": [
+            29.0,
+            40.0
+          ],
+          "value": 35.0
+        }
+      }
+    },
+    "cue_dependence_gap": {
+      "ci95": [
+        0.428571,
+        0.9
+      ],
+      "value": 0.666667
+    },
+    "duplicate_write_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "explicit_cue_supersede_recall": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "fama_presence_absence_conjunction": {
+      "ci95": [
+        0.822222,
+        0.944444
+      ],
+      "value": 0.888889
+    },
+    "implicit_application_accuracy": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "implicit_conflict_recall": {
+      "ci95": [
+        0.1,
+        0.571429
+      ],
+      "value": 0.333333
+    },
+    "invalid_commit_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "judge_conjunction_rate": {
+      "ci95": [
+        0.822222,
+        0.944444
+      ],
+      "value": 0.888889
+    },
+    "judge_exclude_rate": {
+      "ci95": [
+        0.822222,
+        0.944444
+      ],
+      "value": 0.888889
+    },
+    "judge_include_rate": {
+      "ci95": [
+        0.822222,
+        0.944444
+      ],
+      "value": 0.888889
+    },
+    "lineage_correctness": {
+      "ci95": [
+        0.702222,
+        0.897778
+      ],
+      "value": 0.808889
+    },
+    "macro_f1": {
+      "ci95": [
+        0.862887,
+        0.956918
+      ],
+      "value": 0.914474
+    },
+    "over_forgetting_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "per_action": {
+      "ABSTAIN": {
+        "f1": {
+          "ci95": [
+            0.804878,
+            0.929577
+          ],
+          "value": 0.868421
+        },
+        "precision": {
+          "ci95": [
+            0.673469,
+            0.868421
+          ],
+          "value": 0.767442
+        },
+        "recall": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        }
+      },
+      "KEEP": {
+        "f1": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "precision": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "recall": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        }
+      },
+      "SUPERSEDE": {
+        "f1": {
+          "ci95": [
+            0.783784,
+            0.941176
+          ],
+          "value": 0.875
+        },
+        "precision": {
+          "ci95": [
+            1.0,
+            1.0
+          ],
+          "value": 1.0
+        },
+        "recall": {
+          "ci95": [
+            0.644444,
+            0.888889
+          ],
+          "value": 0.777778
+        }
+      }
+    },
+    "premise_resistance_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    },
+    "sample_size": {
+      "ci95": [
+        90,
+        90
+      ],
+      "value": 90
+    },
+    "stale_retrieval_rate": {
+      "ci95": [
+        0.055556,
+        0.177778
+      ],
+      "value": 0.111111
+    },
+    "transient_contamination_rate": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "value": 0.0
+    },
+    "under_forgetting_rate": {
+      "ci95": [
+        1.0,
+        1.0
+      ],
+      "value": 1.0
+    }
+  }
+}

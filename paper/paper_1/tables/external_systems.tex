@@ -1,0 +1,40 @@
+% tables/external_systems.tex
+% All values from artifacts/results_ledger.json v1.1.
+%   mgp6_v2.results[*]:
+%     external/letta_memgpt   : action_accuracy 0.678, macro_f1 0.488,
+%                               mapping "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.489/0.302)"
+%     external/mem0_2.0.11     : 0.622 / 0.442, invalid_commit 1.0,
+%                               mapping "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.400/0.249)"
+%     external/graphiti_0.29.2 : 0.383 / 0.219,
+%                               mapping "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.139/0.104)"
+%     external/memos           : 0.144 / 0.164, claim_eligibility diagnostic_only
+% Reference row (rule controller) from ref_5systems/controller_rule for context.
+\begin{table}[t]
+\centering
+\small
+\caption{Deployed external memory systems on the \mgp{} items ($n{=}180$),
+through adapters we wrote. Because these systems do not emit
+\keep/\supersede/\abstain, each figure requires an action mapping: we report the
+favourable \texttt{NOOP}$\to$\abstain{} number as an \emph{upper bound} with the
+\texttt{NOOP}$\to$\keep{} number alongside. MemOS is \emph{diagnostic-only}: its
+adapter cannot express supersession, so $0.144$ is a floor imposed by that
+limitation, not a capability measurement. The rule \ksa{} controller is shown for
+context only. Values transcribed from
+\texttt{artifacts/results\_ledger.json} version 1.1.}
+\label{tab:external}
+\begin{tabular}{@{}l l r r@{}}
+\toprule
+System & Action mapping & Action acc. & Macro-F1 \\
+\midrule
+Letta / MemGPT       & \texttt{NOOP}$\to$\abstain{} (upper bound) & 0.678 & 0.488 \\
+                     & \texttt{NOOP}$\to$\keep{} (lower)          & 0.489 & 0.302 \\
+Mem0 (2.0.11)        & \texttt{NOOP}$\to$\abstain{} (upper bound) & 0.622 & 0.442 \\
+                     & \texttt{NOOP}$\to$\keep{} (lower)          & 0.400 & 0.249 \\
+Graphiti (0.29.2)    & \texttt{NOOP}$\to$\abstain{} (upper bound) & 0.383 & 0.219 \\
+                     & \texttt{NOOP}$\to$\keep{} (lower)          & 0.139 & 0.104 \\
+MemOS                & diagnostic (supersession inexpressible)   & 0.144 & 0.164 \\
+\midrule
+Rule \ksa{} controller (context) & native \keep/\supersede/\abstain{}    & 0.9222 & 0.9399 \\
+\bottomrule
+\end{tabular}
+\end{table}

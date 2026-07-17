@@ -1,0 +1,10 @@
+{
+  "system": "mem0",
+  "answer_model": "Qwen/Qwen3.5-9B",
+  "answers_natively": false,
+  "mapping": "NOOP->KEEP default; NOOP->ABSTAIN variant file",
+  "mem0_version": "2.0.11",
+  "llm_model": "Qwen/Qwen3.5-9B",
+  "embedder": "all-MiniLM-L6-v2",
+  "vector_store": "qdrant(local)"
+}

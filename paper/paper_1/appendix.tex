@@ -1,0 +1,147 @@
+\section{Dataset Schema}
+\label{app:schema}
+
+Each \mgp{} row is a JSON object. Exact field names are grouped below; the
+machine-readable schema remains authoritative.
+\begin{verbatim}
+identity: scenario_id, version, type, subtype, difficulty,
+          split, quality_flags
+dialogue: base_dialogue_prefix, initial_memory_state,
+          perturbation_event, semantic_slot
+evidence: evidence_source, source_reliability, temporal_scope,
+          conflict_type, memory_age
+gold:     gold_action, gold_memory_state
+answer:   query_mode, evaluation_query, expected_answer,
+          forbidden_answer_patterns, judge_spec
+audit:    rationale_notes, annotation_rule_ids, template_family_id,
+          minimal_pair_group_id
+\end{verbatim}
+A memory record contains the following fields:
+\begin{verbatim}
+id, type, text, confidence, status, supersedes_id, valid_from,
+semantic_slot, source
+\end{verbatim}
+The text field uses the auditable \texttt{slot = value} form; confidence lies in
+$[0,1]$; and status is active or superseded. In v2, the judge's
+\texttt{not\_include} list equals the forbidden-answer-pattern list. A correct
+answer must satisfy every include regex and no not-include regex. Scenario
+identifiers have the form \texttt{MGP6V2-TYPE-SPLIT-NNN}.
+
+\paragraph{State-transition invariants (enforced by the validator).}
+Every state has $\ge 1$ active record; a preference slot has exactly one active
+\textsf{stable\_pref}; every \texttt{supersedes\_id} points to a retained
+\textsf{superseded} record; \supersede{} retains the predecessor and adds one
+active successor pointing back at it; \keep{} preserves the prior durable record
+(a clear temporary override may be added only as a separate active
+\textsf{transient\_pref}); \abstain{} leaves the state byte-for-byte equivalent at
+the modeled field level; answers contain an active value and no superseded or
+forbidden value; duplicate equivalent active records are invalid.
+
+\section{Annotation Process}
+\label{app:annotation}
+
+The annotation manual encodes ten decision rules (R1--R10): require direct-user
+evidence else abstain (R1); require same user/slot/topic (R2); require an atomic
+self-contained claim (R3); durable lexical change cues (R4); a reliable durable
+same-slot contradiction supersedes (R5); a clear temporary override keeps durable
+memory while a hedged temporary candidate abstains (R6); low-confidence/garbled/
+laundered evidence abstains (R7); expected answers use active memory only (R8);
+preserve superseded records for lineage (R9); no duplicate active memories for
+paraphrases (R10). Cue-free rows do not depend on R4 and follow inferential
+certainty under R1--R3 and R5.
+
+Annotation evidence has two components (Section~\ref{sec:annotation}), reported
+separately and never conflated: (a) \textbf{one independent human annotator} over
+the $90$-item test split --- raw agreement $0.9889$ ($\text{CI}\,[0.9667,1.0]$),
+Cohen's $\kappa = 0.98146$ ($\text{CI}\,[0.93997,1.0]$), macro-F1 $0.9913$, one
+disagreement (\texttt{MGP6V2-T3-TEST-016}); and (b) a \textbf{four-model audit
+panel} over the same items --- Fleiss $\kappa = 0.9815$, majority vote matching
+gold on all $90$ ($88$ unanimous). The $180$-row human review sheet is unfilled; a
+multi-annotator human release is future work.
+
+\section{Prompts}
+\label{app:prompts}
+
+The extraction and relation-classification prompt templates are released under
+\texttt{prompts/}; baseline answer prompts are packaged under
+\texttt{src/ksa/baselines/prompts/}. The combined prompt set is frozen; its
+SHA-256 (computed as
+\texttt{sha256} over the sorted files, each contributed as
+\texttt{relpath + NUL + bytes + NUL}) is recorded in
+\texttt{artifacts/manifests/freeze\_hashes.json} and reproduced in
+Appendix~\ref{app:repro}.
+
+\section{Metric Formulas}
+\label{app:metrics}
+
+Action canonicalization (\texttt{KEPT}$\to$\keep, \texttt{NOOP}$\to$\abstain,
+unknown$\to$\texttt{INVALID}) is applied to both sides before comparison; gold
+actions are only \keep/\supersede/\abstain, so \texttt{INVALID}/\texttt{INVALID\_COMMIT}
+predictions are always incorrect.
+
+\begin{description}[leftmargin=0em,topsep=2pt,itemsep=3pt]
+\item[Action accuracy] $\frac{1}{N}\sum_i \mathbf{1}[\,\text{canon}(g_i) = \text{canon}(p_i)\,]$;
+the primary denominator is the $N=90$ held-out test split.
+\item[Macro-F1] unweighted mean of per-action F1 over $\{$\keep, \supersede,
+\abstain$\}$; an action's F1 is $0$ if precision$+$recall$=0$.
+\item[Action false-commit rate] over gold-\abstain{} items,
+$\frac{1}{|\text{ABS}|}\sum_{i\in\text{ABS}} \mathbf{1}[\,p_i \ne \abstain\,]$;
+lower is better. This is the denominator used in Table~\ref{tab:main} and the
+cost analysis.
+\item[State invalid-commit rate] over gold-\abstain{} items, the fraction for
+which the predicted state contains an active record outside the allowed gold
+state. This separate state-level diagnostic catches a nominal \abstain{} that
+still writes memory and is used in the full-corpus ablations.
+\item[Missed-update rate] fraction of gold-\supersede{} items not predicted as
+\supersede. \item[Unnecessary-abstention rate] fraction of non-\abstain{} items
+predicted as \abstain. These make the cost of conservative errors visible.
+\item[Calibration and selective risk] ten-bin top-label ECE, correctness Brier
+score, and accuracy/risk at coverage $0.25,0.50,0.75,1.00$. These are
+descriptive without an independent calibration set.
+\item[Expected cost] mean $C(a,y)$ under balanced, commit-averse, and
+update-responsive matrices declared in the released audit script.
+\item[Lineage integrity] over gold-\supersede{} items, mean of a five-point
+row score: (1) old record marked \textsf{superseded}; (2) new record
+\textsf{active} with correct text; (3) new record's \texttt{supersedes\_id} points
+at the old id; (4) old text no longer active in the slot; (5) exactly one active
+record of the new type in the slot.
+\item[Stale-retrieval rate] over items declaring forbidden-answer patterns,
+the fraction whose predicted answer matches any forbidden pattern; lower
+is better.
+\item[Premise-resistance rate] on premise-resistance items, the answer
+must include all required spans, exclude all forbidden spans, and contain an
+explicit rejection token.
+\item[Excluded] \texttt{over\_forgetting\_rate} and \texttt{under\_forgetting\_rate}
+saturate at $1.0$ for every system and never appear in a table.
+\end{description}
+
+\paragraph{Statistics.} The primary interval is a $10{,}000$-replicate cluster
+bootstrap over template families, repeated with minimal-pair groups and singleton
+unpaired items. Exact item-level McNemar is secondary. A zero action false-commit count
+uses the one-sided upper bound $1-0.05^{1/n}$. No equivalence or non-inferiority
+test is licensed because no margin was pre-specified.
+
+\section{Reproducibility Commands}
+\label{app:repro}
+
+\paragraph{Validate the dataset.}
+\begin{verbatim}
+python3 benchmarks/mgp6/validate_mgp6.py \
+  --input benchmarks/mgp6/data/mgp6_v2.jsonl --strict
+# expects: VALIDATION PASSED: 180 examples, 0 errors.
+\end{verbatim}
+
+\paragraph{Reproduce the validity, cluster, calibration, and cost audit.}
+\begin{verbatim}
+python3 scripts/analysis/audit_mgp6_validity.py
+# writes artifacts/analysis/mgp6_validity_audit.{json,md}
+\end{verbatim}
+
+\paragraph{Audit bibliography and citation coverage.}
+\begin{verbatim}
+python3 scripts/release/audit_bibliography.py
+\end{verbatim}
+
+\paragraph{Successor protocol.}
+The released v3 design is prospective: it is not evidence that independent
+construction or three-human annotation has occurred.

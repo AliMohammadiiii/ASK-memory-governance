@@ -1,0 +1,58 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Systems}
+
+The main test comparison contains the transparent reference policy, the
+structured LLM policy, and the unstructured zero-shot policy described in
+Section~\ref{sec:method}. Before interpreting them, we run type-only,
+conflict-type-only, and source/reliability/temporal lookup probes fitted on
+train+dev. Four structurally limited systems (no memory, flat retrieval,
+recency, and naive overwrite) and component ablations are retained as pilot
+mechanism checks in the appendix; they are not competitive peers.
+
+A six-demonstration LLM decision run produced $174/180$ predictions. Aligning
+its six missing identifiers to \texttt{INVALID} yields a coverage-aware audit,
+but the run is incomplete and excluded from every comparison and hypothesis
+test.
+
+Adapter runs for Mem0, Letta, Graphiti, and MemOS are preserved as harness
+diagnostics in the artifact. Their native operations do not match our action
+vocabulary, so mapped action accuracies are excluded from the main empirical
+claim. A successor evaluation must compare observable final state, stale
+retrieval, downstream answer, latency, and cost under each system's native API.
+
+\subsection{Metrics and denominators}
+
+Primary decision-level metrics are computed over the held-out $90$-item test:
+action accuracy, macro-F1, and per-action precision/recall/F1. We report
+action false-commit rate over gold-\abstain{} items, missed-update rate over
+gold-\supersede{} items, and unnecessary-abstention rate over non-\abstain{}
+items. A zero event count is accompanied by a finite-sample upper bound.
+
+Memory-state outcomes are lineage integrity (a five-condition per-item score on
+gold-\supersede{} cases) and stale-retrieval rate. We additionally report
+top-label ECE/Brier, risk--coverage, and expected loss under balanced,
+commit-averse, and update-responsive cost matrices. Confidence results are
+descriptive because neither policy was calibrated on an independent set. Full
+formulas and commands are in Appendix~\ref{app:metrics}.
+
+\subsection{Statistical methods}
+\label{sec:stats}
+
+Systems are paired by scenario id. The primary uncertainty estimate is a
+$10{,}000$-replicate bootstrap over \texttt{template\_family\_id}; we repeat it
+with minimal-pair groups plus singleton unpaired items. We report family-macro
+and item-weighted estimates. Exact two-sided McNemar tests are secondary because
+item independence is doubtful. No equivalence or non-inferiority claim is made:
+no margin was pre-specified.
+
+For zero observed action false commits we report the exact one-sided 95\% upper bound
+$1-0.05^{1/n}$ rather than interpreting the observed rate as population zero.
+These calculations quantify uncertainty inside this collection; they do not
+repair its construct leakage or establish external generalization.
+
+Annotation agreement is reported as Cohen's $\kappa$ for one independent human
+annotator against the author gold and, separately, Fleiss $\kappa$ for a
+four-model audit panel. The latter is never described as human
+inter-annotator agreement.

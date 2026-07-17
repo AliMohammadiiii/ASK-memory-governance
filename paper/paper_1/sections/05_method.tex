@@ -1,0 +1,53 @@
+\section{Reference Policies}
+\label{sec:method}
+
+The name \ksa{} simply abbreviates the three actions
+(\keep/\supersede/\abstain); it is not a claim that the action vocabulary is
+novel. The released pilot includes two policies over this vocabulary and two
+shortcut probes. All commit actions pass through the same deterministic state
+transition and invariant validator.
+
+\subsection{Transparent reference policy}
+\label{sec:policy}
+
+The reference policy parses the raw perturbation text and prior state with
+auditable lexical predicates. In priority order it (1) \abstain{}s on
+unattributed third-party, laundered, garbled, or unconfirmed evidence; (2)
+\abstain{}s on a hedged temporary candidate; (3) \keep{}s the durable value and
+optionally stores a separate transient note for a clear temporary override; (4)
+\supersede{}s when a usable durable candidate conflicts with the active value;
+and (5) otherwise \abstain{}s. The complete predicates and value parser are
+released in \texttt{benchmarks/mgp6/systems/}.
+
+This policy is deterministic and inspectable, but it was written against the
+same annotation manual and phrase generator as the pilot. It is therefore a
+\emph{reference implementation of the policy}, not an independently learned
+method. A five-feature weighted scorecard exists in the broader prototype code,
+but it did not generate the reported MGP-6 predictions; we do not describe or
+claim it as the evaluated method. This distinction removes an earlier
+implementation--manuscript mismatch.
+
+\subsection{State transition and lineage}
+
+On \supersede{} the transition marks the prior record superseded, appends one
+active successor, and points its \texttt{supersedes\_id} to the retained
+predecessor. On \keep{} a clear temporary override may be a separate transient
+record; on \abstain{} the modeled state is unchanged. The evaluator scores these
+state properties independently of the action, so a correct action with corrupted
+lineage is not counted as a correct state transition.
+
+\subsection{Structured and unstructured LLM policies}
+
+We also run the governance decision through a structured LLM policy prompted
+with the typed state, candidate, evidence fields, and the three action
+definitions, and an unstructured zero-shot policy that receives the raw event
+and prior state without that scaffold. Both use
+\texttt{qwen/qwen3.5-9b}. Because the prompt, candidate representation, and
+pilot were author-designed together, even this comparison remains diagnostic.
+
+\subsection{Shortcut probes}
+
+The type-only and conflict-type-only probes learn a majority action for each
+metadata value on train+dev and apply the lookup unchanged to test. They never
+read the dialogue, prior value, or candidate evidence. Their purpose is to test
+whether the collection rewards scenario recognition without memory reasoning.

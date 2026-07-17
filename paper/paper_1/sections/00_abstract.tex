@@ -1,0 +1,23 @@
+\begin{abstract}
+Persistent language agents can silently corrupt future behavior when they write
+an ambiguous update, retain a stale value, or replace a record without history.
+Existing end-to-end question-answering evaluations conflate this write decision
+with storage, retrieval, and answer generation. We formulate memory writing as
+\keep, lineage-preserving \supersede, or write-time \abstain, and introduce a
+layered harness that scores the action, resulting state, and later answer
+separately. We study the harness on \mgp, an author-designed 180-item pilot
+diagnostic with typed and provenance-tracked states. The held-out test results
+do not establish method superiority: a transparent reference policy reaches
+$0.8889$ action accuracy, versus $0.9000$ for a structured LLM policy, and their
+family-clustered difference includes zero. More importantly, a conflict-type-only
+lookup fitted on train and development reaches $1.000$ test accuracy (type-only:
+$0.9667$), demonstrating that the current pilot leaks its labels and cannot
+isolate evidence reasoning from scenario recognition. The reference policy has
+zero observed action false commits on 33 test abstention cases, but the one-sided 95\%
+upper bound is $0.0868$ and its missed-update rate is $0.2222$; under an
+update-responsive cost matrix the structured LLM is preferable. We release the
+per-item predictions, shortcut audits, cluster bootstrap, risk--coverage and
+state/lineage metrics. The contribution is therefore an auditable evaluation
+protocol and a measured negative finding about diagnostic design, not a claim
+of general memory-governance performance.
+\end{abstract}

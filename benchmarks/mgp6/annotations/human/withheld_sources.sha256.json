@@ -1,0 +1,9 @@
+{
+  "algorithm": "sha256",
+  "files": {
+    "human_independent_annotations_test.csv": "dbc649d7c846a9c8a187ffca34dd68e802ac9c0f9fcccd66994a789b121facd9",
+    "human_vs_author_disagreements.csv": "bb98a34e09ed3d9f6cda4bfe5be6f7cf2de85d4c1d9a31792d8e44e743602182"
+  },
+  "redistribution_status": "withheld_pending_written_annotator_consent",
+  "note": "The public release retains only these hashes and aggregate, non-identifying agreement statistics."
+}

@@ -1,0 +1,2 @@
+adjudication_id,transition_id,adjudicator_code,manual_version,independent_action,independent_target_json,independent_state_json,independent_lineage_json,independent_evidence_json,independent_rationale,independent_locked_at,blind_label_refs_json,final_action,final_target_json,final_state_json,final_lineage_json,final_evidence_json,disagreement_codes_json,final_rationale,changed_after_review,item_defect_flag,final_confidence,submitted_at
+ADJ-EXAMPLE,M3-C-EXAMPLE,J00,3.0,,,,,,,,,,,,,,,,no,no,5,

@@ -11,7 +11,7 @@ import sqlite3
 from pathlib import Path
 
 _SCHEMA_FILE = (
-    Path(__file__).resolve().parents[3] / "schema" / "generated" / "schema.sql"
+    Path(__file__).resolve().parents[1] / "resources" / "schema" / "schema.sql"
 )
 
 

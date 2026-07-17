@@ -219,16 +219,13 @@ def llm_extract(
     for ordinal, (idx, turn) in enumerate(selected_user_turns, start=1):
         if progress_label:
             print(
-                f"{progress_label}: extract user_turn {ordinal}/{total} "
-                f"{session.session_id}:{idx}",
+                f"{progress_label}: extract user_turn {ordinal}/{total} {session.session_id}:{idx}",
                 flush=True,
             )
         payload = _turn_payload(session, turn, idx)
         prev_payload = _turn_payload(session, turns[idx - 1], idx - 1) if idx > 0 else None
         next_payload = (
-            _turn_payload(session, turns[idx + 1], idx + 1)
-            if idx + 1 < len(turns)
-            else None
+            _turn_payload(session, turns[idx + 1], idx + 1) if idx + 1 < len(turns) else None
         )
         extracted = extractor.extract(
             payload,
@@ -419,10 +416,7 @@ class RecencyPruningBaseline:
         selected_by_session = self._prefilter_memory_turns(session, supporting_sessions)
         if selected_by_session is not None and self.progress:
             total_user_turns = sum(
-                1
-                for other in supporting_sessions
-                for turn in other.turns
-                if turn.role == "user"
+                1 for other in supporting_sessions for turn in other.turns if turn.role == "user"
             )
             selected_count = sum(len(turns) for turns in selected_by_session.values())
             print(
@@ -436,9 +430,7 @@ class RecencyPruningBaseline:
             if other is None:
                 continue
             selected_turns = (
-                selected_by_session.get(sid, set())
-                if selected_by_session is not None
-                else None
+                selected_by_session.get(sid, set()) if selected_by_session is not None else None
             )
             if selected_by_session is not None and not selected_turns:
                 continue
@@ -678,6 +670,8 @@ class RecencyPruningBaseline:
                 admitted_by_id = {db_id: itm for db_id, itm in admitted}
                 retrieval_items: list[RetrievalItem] = []
                 for active in actives_now:
+                    if active.id is None:
+                        continue
                     src = admitted_by_id.get(active.id)
                     if src is None:
                         continue  # defensive — shouldn't happen
@@ -745,13 +739,9 @@ class RecencyPruningBaseline:
                         "retrieval_session_ids": [r.item.session_id for r in retrieved],
                         "retrieval_turn_idxs": [r.item.turn_idx for r in retrieved],
                         "retrieval_memory_ids": [
-                            db_id
-                            for active in actives_now
-                            for db_id in [active.id]
+                            db_id for active in actives_now for db_id in [active.id]
                         ][: self.k],
-                        "embedder_model_id": getattr(
-                            self.embedder, "model_id", "unknown-embedder"
-                        ),
+                        "embedder_model_id": getattr(self.embedder, "model_id", "unknown-embedder"),
                         "memory_session_ids": list(memory_ids),
                         "unresolved_memory_ids": unresolved,
                         "supporting_session_ids": list(session.supporting_session_ids),

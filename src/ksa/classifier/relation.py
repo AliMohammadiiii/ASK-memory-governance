@@ -14,10 +14,12 @@ from jinja2 import Template
 from ..inference.llm import LLM, LLMResponse, StructuredLLM
 from .schema import (
     CandidateMemory,
+    FinalRelation,
     PriorMemory,
     RelationOutput,
     Stage1Output,
     Stage2Output,
+    TemporalRelation,
 )
 
 
@@ -83,9 +85,7 @@ class RelationClassifier:
         )
         prior_model = prior if isinstance(prior, PriorMemory) else PriorMemory.model_validate(prior)
         tracer = _ResponseTraceLLM(self.llm.inner)
-        traced_llm = StructuredLLM(
-            tracer, max_repair_tokens=self.llm.max_repair_tokens
-        )
+        traced_llm = StructuredLLM(tracer, max_repair_tokens=self.llm.max_repair_tokens)
 
         prompt1 = self._render_stage1(candidate_model, prior_model)
         response_count_before = _response_count(traced_llm)
@@ -276,7 +276,7 @@ def _final_relation(
     stage2: Stage2Output,
     candidate: CandidateMemory | None = None,
     prior: PriorMemory | None = None,
-) -> str:
+) -> FinalRelation:
     if stage1.logical_relation == "independent":
         return "unclear"
 
@@ -331,7 +331,7 @@ def _override_temporal_from_timestamps(
         return stage2
 
     if candidate_time > prior_time:
-        temporal = "newer"
+        temporal: TemporalRelation = "newer"
     elif candidate_time < prior_time:
         temporal = "older"
     else:

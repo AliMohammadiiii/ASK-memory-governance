@@ -95,8 +95,8 @@ echo "[topup] done -> ${OUT}/controller/report.json"
   --replay-run "${REPLAY_RUN}" \
   --out "${MERGED}"
 
-echo "[topup] merged full-180 v8 estimate -> ${MERGED}/report.json"
-echo "[topup] compare vs patched estimate:"
+echo "[topup] merged full-180 diagnostic construction -> ${MERGED}/report.json"
+echo "[topup] compare vs ineligible carry-forward construction:"
 echo "  python scripts/win_loss.py \\"
 echo "    --ref runs/lme_m_v8_failure_replay_adjudicated/controller/judgments.jsonl \\"
 echo "    --new ${MERGED}/judgments.jsonl \\"

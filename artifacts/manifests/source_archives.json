@@ -1,32 +1,117 @@
-[
-  {
-    "name": "ControllerRun.zip",
-    "size_bytes": 179738189,
-    "sha256": "618a1c5159a28bd4df2d4ee0660d095758fb268f57cc9f7c58f11e3608c0fbd0"
-  },
-  {
-    "name": "KSACodes.zip",
-    "size_bytes": 809821,
-    "sha256": "a076ecb68e99070a09a4bc2e6dcbd4c1a787402a3833a88cd473ac01ae00da01"
-  },
-  {
-    "name": "MGP6_annotation_complete_package.zip",
-    "size_bytes": 63883,
-    "sha256": "97f4f1b2a2dfa719eea1b9c92cf4466bd53b3b269ec6b91480b42b200dbd508d"
-  },
-  {
-    "name": "baseline.zip",
-    "size_bytes": 300191890,
-    "sha256": "7930d21603a64f41c73d13fcd9ae8673bbe76dd2528d0a49704d83e347760748"
-  },
-  {
-    "name": "docs.zip",
-    "size_bytes": 18268132,
-    "sha256": "f54a9eecdf7db2725383e26b7dd256b43de3fc31fec5592a8b5a568317ba4a2e"
-  },
-  {
-    "name": "mgp6_v2_COMPLETE_2026-07-11.zip",
-    "size_bytes": 1309244,
-    "sha256": "76594b2895e619e240072f5a6bff42580fd27ba0d518c74e14190575f1e739ec"
-  }
-]
+{
+  "algorithm": "sha256",
+  "computed_on": "2026-07-13",
+  "directory_tree_hash_method": "For every regular file sorted by repository-relative POSIX path: path + NUL + size_bytes + NUL + file_sha256 + newline.",
+  "manifest_version": "2.0",
+  "supplied_inputs": [
+    {
+      "files": 508,
+      "kind": "external_directory",
+      "label": "lme_m last version",
+      "pointer": "external://Master/ksa_controller/runs/lme_m last version",
+      "size_bytes": 2410997121,
+      "tree_sha256": "6e10915aefb613305af70e7fda83764fde03e7bc0c892de9556476fae09b3d4d"
+    },
+    {
+      "files": 1144,
+      "kind": "external_directory",
+      "label": "lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7",
+      "pointer": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7",
+      "size_bytes": 2307852573,
+      "tree_sha256": "9023a31b72a20d140f768d8cae3ecd3df14d1d337a296227c3cb2befcb5c7666"
+    },
+    {
+      "kind": "archive",
+      "label": "MGP6_annotation_complete_package.zip",
+      "pointer": "external://Downloads/MGP6_annotation_complete_package.zip",
+      "sha256": "97f4f1b2a2dfa719eea1b9c92cf4466bd53b3b269ec6b91480b42b200dbd508d",
+      "size_bytes": 63883
+    },
+    {
+      "kind": "document",
+      "label": "andreas_vlachos_research_report_en.md",
+      "pointer": "external://Downloads/andreas_vlachos_research_report_en.md",
+      "sha256": "06033bd8e098142c747b73d28ea393f2fde465dd6fef1370ed08289281624e09",
+      "size_bytes": 103612
+    },
+    {
+      "kind": "document",
+      "label": "Ali_Mohammadi_Cambridge_PhD_Proposal_and_Audits.docx",
+      "pointer": "external://Downloads/Ali_Mohammadi_Cambridge_PhD_Proposal_and_Audits.docx",
+      "sha256": "fae4c120203a4cf81ec193cb4a74569e9eb0d0b20a811e027b59a86d9342ff5c",
+      "size_bytes": 60587
+    },
+    {
+      "kind": "document",
+      "label": "Ali_Mohammadi_Cambridge_PhD_Proposal.docx",
+      "pointer": "external://Downloads/Ali_Mohammadi_Cambridge_PhD_Proposal.docx",
+      "sha256": "8b815bd2af564fd5764316a95deeb4fa5a93a48f9f48a551ed2662df6ab43532",
+      "size_bytes": 47192
+    },
+    {
+      "kind": "document",
+      "label": "Ali_Mohammadi_CV (1).docx",
+      "pointer": "external://Downloads/Ali_Mohammadi_CV (1).docx",
+      "sha256": "1ed670e21682afcae2436ea6f74e28206f4d0f0bab98ddd67481d6e5c30646e5",
+      "size_bytes": 13481
+    },
+    {
+      "kind": "document",
+      "label": "MGP6_LongMemEval_Final_Report_EN.md",
+      "pointer": "external://Master/MGP6_LongMemEval_Final_Report_EN.md",
+      "sha256": "ef34f04651fc34a1b66d35b92f132e67904949647a911f782ac4397de0dc9eaa",
+      "size_bytes": 33279
+    }
+  ],
+  "external_data_not_redistributed": [
+    {
+      "label": "LongMemEval-M cleaned full source (500 rows)",
+      "pointer": "external://Master/ksa_controller/data/slices/longmemeval_m_full.jsonl",
+      "sha256": "89a0745fba506c37407da74f004515ba8a337a2aadc9ba9ba543030483223942",
+      "size_bytes": 2638798639
+    },
+    {
+      "label": "LongMemEval-M stratified seed-0 slice (180 rows)",
+      "pointer": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/range_0_179.jsonl",
+      "sha256": "f10b4fb4173d3e2d9310d90c2b6bf8f5e7b147cea1d04affa9037b1b9fe6787d",
+      "size_bytes": 950452379
+    }
+  ],
+  "historical_archives": [
+    {
+      "label": "ControllerRun.zip",
+      "sha256": "618a1c5159a28bd4df2d4ee0660d095758fb268f57cc9f7c58f11e3608c0fbd0",
+      "size_bytes": 179738189,
+      "verification": "hash retained from the prior immutable archive inventory"
+    },
+    {
+      "label": "KSACodes.zip",
+      "sha256": "a076ecb68e99070a09a4bc2e6dcbd4c1a787402a3833a88cd473ac01ae00da01",
+      "size_bytes": 809821,
+      "verification": "hash retained from the prior immutable archive inventory"
+    },
+    {
+      "label": "baselineScore.zip",
+      "sha256": "7930d21603a64f41c73d13fcd9ae8673bbe76dd2528d0a49704d83e347760748",
+      "size_bytes": 300191890,
+      "verification": "hash retained from the prior immutable archive inventory"
+    },
+    {
+      "label": "docs.zip",
+      "sha256": "f54a9eecdf7db2725383e26b7dd256b43de3fc31fec5592a8b5a568317ba4a2e",
+      "size_bytes": 18268132,
+      "verification": "hash retained from the prior immutable archive inventory"
+    },
+    {
+      "label": "mgp6_v2_COMPLETE_2026-07-11.zip",
+      "sha256": "76594b2895e619e240072f5a6bff42580fd27ba0d518c74e14190575f1e739ec",
+      "size_bytes": 1309244,
+      "verification": "hash retained from the prior immutable archive inventory"
+    }
+  ],
+  "notes": [
+    "Pointers are descriptive external:// locations, never machine-local absolute paths.",
+    "Large source directories and LongMemEval data are immutable read-only evidence and are not copied into the public release.",
+    "No credential value is recorded in this manifest."
+  ]
+}

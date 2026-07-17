@@ -116,6 +116,19 @@ class GradeResult:
     # analysis. False on grades where the LLM judge produced a parseable
     # JSON output.
     used_fallback: bool = False
+    # Judge provenance. ``judge_model_id`` is the model that actually produced
+    # the verdict; ``requested_judge_model_id`` is the frozen primary route.
+    # Defaults preserve compatibility with historical judgment JSONL.
+    requested_judge_model_id: str | None = None
+    judge_was_called: bool = True
+    judge_cache_hit: bool = False
+    used_model_fallback: bool = False
+    used_scoring_fallback: bool = False
+    fallback_reason: str | None = None
+    judge_attempt_index: int = 0
+    judge_prompt_hash: str | None = None
+    judge_raw_response_hash: str | None = None
+    judge_raw_output: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return dataclasses.asdict(self)
@@ -161,6 +174,10 @@ class EvalReport:
     # artifacts like a bare "$"); a nonzero value flags a data-quality bug, not a
     # memory-quality signal (docx §8 / §9).
     n_degenerate_answers: int = 0
+    judge_models_used: dict[str, int] = field(default_factory=dict)
+    n_model_fallbacks: int = 0
+    n_scoring_fallbacks: int = 0
+    n_deterministic_guards: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -175,6 +192,10 @@ class EvalReport:
             "abstention_n": self.abstention_n,
             "abstention_accuracy": self.abstention_accuracy,
             "n_degenerate_answers": self.n_degenerate_answers,
+            "judge_models_used": self.judge_models_used,
+            "n_model_fallbacks": self.n_model_fallbacks,
+            "n_scoring_fallbacks": self.n_scoring_fallbacks,
+            "n_deterministic_guards": self.n_deterministic_guards,
             "rows": [r.to_dict() for r in self.rows],
         }
 
@@ -195,6 +216,10 @@ class EvalReport:
             f"{self.answerable_accuracy * 100:.{ci_decimals}f}% "
             f"({self.answerable_n} answerable; abstention "
             f"{self.abstention_accuracy * 100:.{ci_decimals}f}% of {self.abstention_n})",
+            f"- **Actual judge models:** `{self.judge_models_used}` "
+            f"(model fallbacks={self.n_model_fallbacks}; "
+            f"scoring fallbacks={self.n_scoring_fallbacks}; "
+            f"deterministic guards={self.n_deterministic_guards})",
         ]
         if self.n_degenerate_answers:
             lines.append(
@@ -345,7 +370,9 @@ def _parse_judge_output(text: str) -> tuple[bool, str]:
         lower = text.lower()
         if '"correct":true' in lower.replace(" ", "") or "'correct':true" in lower.replace(" ", ""):
             return True, "[parse-fallback] judge output not JSON; matched correct=true"
-        if '"correct":false' in lower.replace(" ", "") or "'correct':false" in lower.replace(" ", ""):
+        if '"correct":false' in lower.replace(" ", "") or "'correct':false" in lower.replace(
+            " ", ""
+        ):
             return False, "[parse-fallback] judge output not JSON; matched correct=false"
         return False, f"[parse-fail] judge output not parseable: {text[:200]!r}"
 
@@ -378,33 +405,100 @@ _THOUSANDS_SEP_RE = re.compile(r"(?<=\d)[,٬](?=\d)")
 # answer ("3", "A") from a degenerate punctuation-only one ("$", "...", "-").
 _ALNUM_RE = re.compile(r"\w", re.UNICODE)
 _REFUSAL_MARKERS = (
-    "i don't know", "i do not know",
-    "not sure", "unclear", "unable to", "cannot", "can't",
-    "do not have", "don't have", "not have access",
-    "does not contain information", "do not contain information",
-    "doesn't contain information", "not contain information",
-    "no information", "did not say", "didn't say", "did not state",
-    "not provided", "not available", "no record", "no mention",
-    "not mentioned", "abstain", "unknown", "not enough",
+    "i don't know",
+    "i do not know",
+    "not sure",
+    "unclear",
+    "unable to",
+    "cannot",
+    "can't",
+    "do not have",
+    "don't have",
+    "not have access",
+    "does not contain information",
+    "do not contain information",
+    "doesn't contain information",
+    "not contain information",
+    "no information",
+    "did not say",
+    "didn't say",
+    "did not state",
+    "not provided",
+    "not available",
+    "no record",
+    "no mention",
+    "not mentioned",
+    "abstain",
+    "unknown",
+    "not enough",
 )
-_STOPWORDS = frozenset({
-    "a", "an", "the", "is", "was", "were", "be", "been", "being",
-    "do", "does", "did", "of", "to", "in", "on", "at", "for", "with",
-    "and", "or", "but", "that", "this", "these", "those",
-    # mild paraphrase smoothing — verbs that judges commonly accept either way
-    "said", "says", "say", "told", "stated", "states",
-    # coreference smoothing — pronouns and the role nouns the LongMemEval
-    # gold answers and our predictions use interchangeably ("they prefer X"
-    # vs. "the user prefers X" describes the same person).
-    "i", "me", "my", "mine",
-    "you", "your", "yours",
-    "he", "him", "his",
-    "she", "her", "hers",
-    "they", "them", "their", "theirs",
-    "we", "us", "our", "ours",
-    "it", "its",
-    "user", "users", "assistant", "assistants",
-})
+_STOPWORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "is",
+        "was",
+        "were",
+        "be",
+        "been",
+        "being",
+        "do",
+        "does",
+        "did",
+        "of",
+        "to",
+        "in",
+        "on",
+        "at",
+        "for",
+        "with",
+        "and",
+        "or",
+        "but",
+        "that",
+        "this",
+        "these",
+        "those",
+        # mild paraphrase smoothing — verbs that judges commonly accept either way
+        "said",
+        "says",
+        "say",
+        "told",
+        "stated",
+        "states",
+        # coreference smoothing — pronouns and the role nouns the LongMemEval
+        # gold answers and our predictions use interchangeably ("they prefer X"
+        # vs. "the user prefers X" describes the same person).
+        "i",
+        "me",
+        "my",
+        "mine",
+        "you",
+        "your",
+        "yours",
+        "he",
+        "him",
+        "his",
+        "she",
+        "her",
+        "hers",
+        "they",
+        "them",
+        "their",
+        "theirs",
+        "we",
+        "us",
+        "our",
+        "ours",
+        "it",
+        "its",
+        "user",
+        "users",
+        "assistant",
+        "assistants",
+    }
+)
 
 
 def _crude_stem(token: str) -> str:
@@ -428,19 +522,46 @@ def _crude_stem(token: str) -> str:
 # "200"). Digits are left unchanged, so real value mismatches ("2" vs "3") still
 # fail.
 _NUMBER_UNITS = {
-    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
-    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11,
-    "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
-    "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
+    "zero": 0,
+    "one": 1,
+    "two": 2,
+    "three": 3,
+    "four": 4,
+    "five": 5,
+    "six": 6,
+    "seven": 7,
+    "eight": 8,
+    "nine": 9,
+    "ten": 10,
+    "eleven": 11,
+    "twelve": 12,
+    "thirteen": 13,
+    "fourteen": 14,
+    "fifteen": 15,
+    "sixteen": 16,
+    "seventeen": 17,
+    "eighteen": 18,
+    "nineteen": 19,
 }
 _NUMBER_TENS = {
-    "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
-    "seventy": 70, "eighty": 80, "ninety": 90,
+    "twenty": 20,
+    "thirty": 30,
+    "forty": 40,
+    "fifty": 50,
+    "sixty": 60,
+    "seventy": 70,
+    "eighty": 80,
+    "ninety": 90,
 }
 _NUMBER_SCALES = {"hundred": 100, "thousand": 1_000, "million": 1_000_000, "billion": 1_000_000_000}
 # Ordinal spellings map to the same cardinal digit so "twenty-seventh" == "27".
 _NUMBER_ORDINALS = {
-    "first": 1, "second": 2, "third": 3, "fifth": 5, "eighth": 8, "ninth": 9,
+    "first": 1,
+    "second": 2,
+    "third": 3,
+    "fifth": 5,
+    "eighth": 8,
+    "ninth": 9,
     "twelfth": 12,
 }
 # Multiplicative adverbs the cardinal table cannot express. Without this map a
@@ -462,9 +583,12 @@ def _collapse_number_words(tokens: list[str]) -> list[str]:
     n = len(tokens)
     while i < n:
         tok = tokens[i]
-        base = tok[:-2] if tok.endswith(("st", "nd", "rd", "th")) and tok[:-2] in (
-            _NUMBER_UNITS.keys() | _NUMBER_TENS.keys() | _NUMBER_SCALES.keys()
-        ) else tok
+        base = (
+            tok[:-2]
+            if tok.endswith(("st", "nd", "rd", "th"))
+            and tok[:-2] in (_NUMBER_UNITS.keys() | _NUMBER_TENS.keys() | _NUMBER_SCALES.keys())
+            else tok
+        )
         if base in _NUMBER_ORDINALS:
             out.append(str(_NUMBER_ORDINALS[base]))
             i += 1
@@ -479,9 +603,12 @@ def _collapse_number_words(tokens: list[str]) -> list[str]:
         consumed = 0
         while i < n:
             w = tokens[i]
-            w = w[:-2] if w.endswith(("st", "nd", "rd", "th")) and w[:-2] in (
-                _NUMBER_UNITS.keys() | _NUMBER_TENS.keys() | _NUMBER_SCALES.keys()
-            ) else w
+            w = (
+                w[:-2]
+                if w.endswith(("st", "nd", "rd", "th"))
+                and w[:-2] in (_NUMBER_UNITS.keys() | _NUMBER_TENS.keys() | _NUMBER_SCALES.keys())
+                else w
+            )
             if w in _NUMBER_UNITS:
                 current += _NUMBER_UNITS[w]
             elif w in _NUMBER_TENS:
@@ -584,9 +711,7 @@ def _looks_like_refusal(predicted: str) -> bool:
     return any(marker in lower for marker in _REFUSAL_MARKERS)
 
 
-def normalized_substring_grade(
-    *, predicted: str, gold: str, competency: str
-) -> tuple[bool, str]:
+def normalized_substring_grade(*, predicted: str, gold: str, competency: str) -> tuple[bool, str]:
     """Documented Week-2 mitigation for the self-judging empty-output failure mode.
 
     Used ONLY when the LLM judge emits empty / unparseable output. Returns:
@@ -643,9 +768,13 @@ class LongMemEvalGrader:
     def judge_model_id(self) -> str:
         return getattr(self.judge_llm, "model_id", "unknown-judge")
 
-    def grade(
-        self, answer: BaselineAnswer, session: LongMemEvalSession
-    ) -> GradeResult:
+    @property
+    def judge_policy_id(self) -> str:
+        """Stable cache identity for the complete primary/fallback policy."""
+        fallback_ids = tuple(getattr(self.judge_llm, "fallback_model_ids", ()))
+        return " -> ".join((self.judge_model_id, *fallback_ids))
+
+    def grade(self, answer: BaselineAnswer, session: LongMemEvalSession) -> GradeResult:
         is_abstention = _is_abstention_competency(
             session.competency
         ) or _looks_like_abstention_gold(session.gold_answer)
@@ -663,6 +792,8 @@ class LongMemEvalGrader:
                 completion_tokens=answer.completion_tokens,
                 latency_ms=answer.latency_ms,
                 used_fallback=False,
+                requested_judge_model_id=self.judge_model_id,
+                judge_was_called=False,
             )
 
         if looks_degenerate_answer(answer.text):
@@ -671,9 +802,7 @@ class LongMemEvalGrader:
                 competency=session.competency,
                 correct=False,
                 judge_score=0.0,
-                judge_rationale=(
-                    "[degenerate-answer] prediction contains no alphanumeric content"
-                ),
+                judge_rationale=("[degenerate-answer] prediction contains no alphanumeric content"),
                 judge_model_id=self.judge_model_id,
                 predicted=answer.text,
                 gold=session.gold_answer,
@@ -681,6 +810,8 @@ class LongMemEvalGrader:
                 completion_tokens=answer.completion_tokens,
                 latency_ms=answer.latency_ms,
                 used_fallback=False,
+                requested_judge_model_id=self.judge_model_id,
+                judge_was_called=False,
             )
 
         if not is_abstention and _looks_like_refusal(answer.text):
@@ -697,6 +828,8 @@ class LongMemEvalGrader:
                 completion_tokens=answer.completion_tokens,
                 latency_ms=answer.latency_ms,
                 used_fallback=False,
+                requested_judge_model_id=self.judge_model_id,
+                judge_was_called=False,
             )
 
         if is_abstention and _looks_like_refusal(answer.text):
@@ -713,6 +846,8 @@ class LongMemEvalGrader:
                 completion_tokens=answer.completion_tokens,
                 latency_ms=answer.latency_ms,
                 used_fallback=False,
+                requested_judge_model_id=self.judge_model_id,
+                judge_was_called=False,
             )
 
         if not is_abstention:
@@ -732,11 +867,7 @@ class LongMemEvalGrader:
         pred_numbers = _numeric_content_tokens(answer.text)
         gold_numbers = _numeric_content_tokens(session.gold_answer)
         numeric_conflict = bool(pred_numbers and gold_numbers and pred_numbers != gold_numbers)
-        if (
-            not is_abstention
-            and not token_match
-            and numeric_conflict
-        ):
+        if not is_abstention and not token_match and numeric_conflict:
             return GradeResult(
                 session_id=answer.session_id,
                 competency=session.competency,
@@ -752,6 +883,8 @@ class LongMemEvalGrader:
                 completion_tokens=answer.completion_tokens,
                 latency_ms=answer.latency_ms,
                 used_fallback=False,
+                requested_judge_model_id=self.judge_model_id,
+                judge_was_called=False,
             )
 
         prompt = _render_judge_prompt(
@@ -760,14 +893,33 @@ class LongMemEvalGrader:
             gold_answer=session.gold_answer,
             predicted_answer=answer.text,
         )
-        key = JudgmentCache.make_key(prompt, self.judge_model_id)
+        prompt_hash = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        key = JudgmentCache.make_key(prompt, self.judge_policy_id)
         cached = self.cache.get(key)
-        used_fallback = False
+        requested_model = self.judge_model_id
+        actual_model = requested_model
+        raw = ""
+        used_model_fallback = False
+        used_scoring_fallback = False
+        fallback_reasons: list[str] = []
+        attempt_index = 0
+        cache_hit = cached is not None
         if cached is not None:
             # When re-grading from cache (e.g. after a parser change), the
             # source of truth is the cached `raw` judge text, not the cached
             # parsed correctness. Re-parse so a regrade picks up new logic.
             raw = str(cached.get("raw", ""))
+            actual_model = str(
+                cached.get("actual_judge_model_id")
+                or cached.get("judge_model_id")
+                or requested_model
+            )
+            attempt_index = int(cached.get("judge_attempt_index", 0) or 0)
+            used_model_fallback = bool(cached.get("used_model_fallback", False))
+            if used_model_fallback:
+                fallback_reasons.append(
+                    str(cached.get("model_fallback_reason") or "judge model fallback")
+                )
             correct, rationale = _parse_judge_output(raw)
             if not raw.strip() or rationale.startswith("[parse-fail]"):
                 fb_correct, fb_rationale = normalized_substring_grade(
@@ -776,7 +928,8 @@ class LongMemEvalGrader:
                     competency=session.competency,
                 )
                 correct, rationale = fb_correct, fb_rationale
-                used_fallback = True
+                used_scoring_fallback = True
+                fallback_reasons.append("empty or unparseable judge output")
         else:
             resp = self.judge_llm.generate(
                 prompt,
@@ -784,25 +937,46 @@ class LongMemEvalGrader:
                 temperature=0.0,
                 seed=self.seed,
             )
-            correct, rationale = _parse_judge_output(resp.text)
-            if not resp.text.strip() or rationale.startswith("[parse-fail]"):
+            raw = str(getattr(resp, "text", ""))
+            metadata = dict(getattr(resp, "metadata", {}) or {})
+            actual_model = str(
+                getattr(resp, "model_id", "") or metadata.get("model") or requested_model
+            )
+            attempt_index = int(metadata.get("attempt_index", 0) or 0)
+            used_model_fallback = bool(metadata.get("fallback_used", False)) or attempt_index > 0
+            if used_model_fallback:
+                fallback_reasons.append(
+                    f"judge route fell back from {requested_model} to {actual_model}"
+                )
+            correct, rationale = _parse_judge_output(raw)
+            if not raw.strip() or rationale.startswith("[parse-fail]"):
                 fb_correct, fb_rationale = normalized_substring_grade(
                     predicted=answer.text,
                     gold=session.gold_answer,
                     competency=session.competency,
                 )
                 correct, rationale = fb_correct, fb_rationale
-                used_fallback = True
+                used_scoring_fallback = True
+                fallback_reasons.append("empty or unparseable judge output")
             self.cache.put(
                 key,
                 {
                     "correct": correct,
                     "rationale": rationale,
-                    "raw": resp.text,
-                    "judge_model_id": self.judge_model_id,
-                    "used_fallback": used_fallback,
+                    "raw": raw,
+                    "judge_model_id": actual_model,
+                    "actual_judge_model_id": actual_model,
+                    "requested_judge_model_id": requested_model,
+                    "judge_attempt_index": attempt_index,
+                    "used_model_fallback": used_model_fallback,
+                    "used_scoring_fallback": used_scoring_fallback,
+                    "used_fallback": used_model_fallback or used_scoring_fallback,
+                    "fallback_reason": "; ".join(fallback_reasons) or None,
                 },
             )
+
+        used_fallback = used_model_fallback or used_scoring_fallback
+        raw_hash = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
         return GradeResult(
             session_id=answer.session_id,
@@ -810,13 +984,23 @@ class LongMemEvalGrader:
             correct=correct,
             judge_score=1.0 if correct else 0.0,
             judge_rationale=rationale,
-            judge_model_id=self.judge_model_id,
+            judge_model_id=actual_model,
             predicted=answer.text,
             gold=session.gold_answer,
             prompt_tokens=answer.prompt_tokens,
             completion_tokens=answer.completion_tokens,
             latency_ms=answer.latency_ms,
             used_fallback=used_fallback,
+            requested_judge_model_id=requested_model,
+            judge_was_called=True,
+            judge_cache_hit=cache_hit,
+            used_model_fallback=used_model_fallback,
+            used_scoring_fallback=used_scoring_fallback,
+            fallback_reason="; ".join(fallback_reasons) or None,
+            judge_attempt_index=attempt_index,
+            judge_prompt_hash=prompt_hash,
+            judge_raw_response_hash=raw_hash,
+            judge_raw_output=raw,
         )
 
 
@@ -963,14 +1147,21 @@ def build_eval_report(
     abstention_n = len(abstention_grades)
     answerable_n = len(answerable_grades)
     abstention_acc = (
-        sum(1 for g in abstention_grades if g.correct) / abstention_n
-        if abstention_n else 0.0
+        sum(1 for g in abstention_grades if g.correct) / abstention_n if abstention_n else 0.0
     )
     answerable_acc = (
-        sum(1 for g in answerable_grades if g.correct) / answerable_n
-        if answerable_n else 0.0
+        sum(1 for g in answerable_grades if g.correct) / answerable_n if answerable_n else 0.0
     )
     n_degenerate = sum(1 for g in grades if looks_degenerate_answer(g.predicted))
+    judge_models_used: dict[str, int] = {}
+    for grade in grades:
+        if grade.judge_was_called:
+            judge_models_used[grade.judge_model_id] = (
+                judge_models_used.get(grade.judge_model_id, 0) + 1
+            )
+    n_model_fallbacks = sum(1 for g in grades if g.used_model_fallback)
+    n_scoring_fallbacks = sum(1 for g in grades if g.used_scoring_fallback)
+    n_deterministic_guards = sum(1 for g in grades if not g.judge_was_called)
 
     return EvalReport(
         baseline_name=baseline_name,
@@ -984,6 +1175,10 @@ def build_eval_report(
         abstention_n=abstention_n,
         abstention_accuracy=abstention_acc,
         n_degenerate_answers=n_degenerate,
+        judge_models_used=judge_models_used,
+        n_model_fallbacks=n_model_fallbacks,
+        n_scoring_fallbacks=n_scoring_fallbacks,
+        n_deterministic_guards=n_deterministic_guards,
         rows=rows,
         grades=grades,
     )

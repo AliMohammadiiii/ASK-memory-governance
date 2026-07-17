@@ -1,0 +1,30 @@
+% tables/ablation.tex
+% All values from artifacts/results_ledger.json v1.1 -> mgp6_v2.results[*].
+% The later shortcut audit makes these within-generator diagnostics only.
+%   ablation/full         : action_accuracy 0.9222, macro_f1 0.9399   (= rule controller)
+%   ablation/no_abstain   : 0.5556 / 0.4278 / invalid_commit 1.0
+%   ablation/no_provenance: 0.7000 / 0.7428 / invalid_commit 0.606
+%   ablation/no_typing    : 0.7889 / 0.5680 / keep_f1 0.0
+%   ablation/no_lineage   : 0.9222 / 0.9399 / lineage 0.3689
+% Full-system lineage integrity 0.8556 from ref_5systems/controller_rule.lineage.
+\begin{table}[t]
+\centering
+\small
+\caption{Within-generator component ablations of the reference policy on \mgp{}
+($n{=}180$). Each removal produces a distinct diagnostic signature.
+Invalid-commit is over gold-\abstain{} items; lineage integrity is over
+gold-\supersede{} items. Values transcribed from
+results-ledger version 1.1; these are not independent effect estimates.}
+\label{tab:ablation}
+\begin{tabular}{@{}l r r l@{}}
+\toprule
+Configuration & Action acc. & Macro-F1 & Induced failure signature \\
+\midrule
+Full system        & 0.9222 & 0.9399 & invalid-commit 0.0; lineage integrity 0.8556 \\
+$-$ abstention      & 0.5556 & 0.4278 & invalid-commit $0.0 \to 1.0$ \\
+$-$ provenance      & 0.7000 & 0.7428 & invalid-commit $0.0 \to 0.606$ \\
+$-$ typing          & 0.7889 & 0.5680 & \keep{} F1 $\to 0.0$ \\
+$-$ lineage         & 0.9222 & 0.9399 & action unchanged; lineage integrity $0.8556 \to 0.3689$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,71 @@
+% Venue-neutral manuscript for the KSA memory-governance project.
+% Build: pdflatex main -> bibtex main -> pdflatex main -> pdflatex main
+% (or: latexmk -pdf main.tex). See compiled/BUILD_INSTRUCTIONS.md.
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{times}
+% TeX Live Basic does not ship the Courier metrics selected by times.sty.
+% Keep Times for prose and use bundled Latin Modern faces for sans/monospace.
+\renewcommand{\sfdefault}{lmss}
+\renewcommand{\ttdefault}{lmtt}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[round]{natbib}
+\usepackage[margin=1in]{geometry}
+\usepackage{xspace}
+\usepackage{enumitem}
+\emergencystretch=1em
+
+% ---- Project-specific macros -------------------------------------------------
+\newcommand{\keep}{\textsc{Keep}\xspace}
+\newcommand{\supersede}{\textsc{Supersede}\xspace}
+\newcommand{\abstain}{\textsc{Abstain}\xspace}
+\newcommand{\mgp}{MGP-6~v2\xspace}
+\newcommand{\lme}{LongMemEval-M\xspace}
+\newcommand{\ksa}{KSA\xspace}
+\newcommand{\diag}[1]{#1\,(diagnostic)}
+
+\title{Beyond Recall: A Layered Diagnostic for Write-Time Memory Governance in
+Language Agents}
+
+% Keep the public draft anonymous by default. Set \anonymousfalse only for a
+% camera-ready build.
+\newif\ifanonymous
+\anonymoustrue
+\ifanonymous
+  \author{Anonymous submission}
+\else
+  \author{Ali Mohammadi}
+\fi
+\date{}
+
+\begin{document}
+\maketitle
+
+\input{sections/00_abstract}
+
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_problem_formulation}
+\input{sections/04_mgp6}
+\input{sections/05_method}
+\input{sections/06_experimental_setup}
+\input{sections/07_results}
+\input{sections/09_discussion_limitations}
+\input{sections/10_conclusion}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{appendix}
+
+\end{document}

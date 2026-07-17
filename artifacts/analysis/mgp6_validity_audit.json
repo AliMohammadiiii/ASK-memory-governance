@@ -1,0 +1,595 @@
+{
+  "action_counts": {
+    "ABSTAIN": 66,
+    "KEEP": 24,
+    "SUPERSEDE": 90
+  },
+  "bootstrap": {
+    "samples": 10000,
+    "seed": 20260715
+  },
+  "claim_boundary": [
+    "Type-only and metadata-only results quantify label leakage; they are not competitive memory systems.",
+    "Cluster bootstrap addresses within-collection dependence but cannot establish external validity.",
+    "No non-inferiority or equivalence claim is licensed because no margin was pre-specified.",
+    "Zero observed action false commits receive a finite-sample upper bound, never a zero-risk interpretation."
+  ],
+  "gold": "benchmarks/mgp6/data/mgp6_v2.jsonl",
+  "minimal_pair_groups": 24,
+  "n": 180,
+  "paired_cluster_bootstrap": {
+    "rule_minus_llm_structured_test_accuracy": {
+      "cluster_macro_ci95": [
+        -0.09375,
+        0.0625
+      ],
+      "cluster_macro_point": -0.010416666666666666,
+      "item_weighted_ci95": [
+        -0.1,
+        0.06896551724137931
+      ],
+      "item_weighted_point": -0.011111111111111112,
+      "n_clusters": 48,
+      "n_items": 90
+    }
+  },
+  "schema_version": "1.0",
+  "scope": "construct-validity audit of an author-designed diagnostic; not independent validation",
+  "shortcut_audit": {
+    "conflict_type": {
+      "conditional_entropy_bits": 0.0,
+      "full_distribution": {
+        "durable_same_slot_contradiction": {
+          "SUPERSEDE": 60
+        },
+        "implicit_invalidation": {
+          "SUPERSEDE": 30
+        },
+        "temporary_hedge": {
+          "ABSTAIN": 6
+        },
+        "temporary_override": {
+          "KEEP": 24
+        },
+        "unclear_referent": {
+          "ABSTAIN": 6
+        },
+        "unclear_speaker": {
+          "ABSTAIN": 24
+        },
+        "unsupported_high_confidence_candidate": {
+          "ABSTAIN": 30
+        }
+      },
+      "normalized_information_gain": 1.0,
+      "train_dev_lookup": {
+        "features": [
+          "conflict_type"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 33,
+          "KEEP": 12,
+          "SUPERSEDE": 45
+        },
+        "test_accuracy": 1.0,
+        "test_macro_f1": 1.0,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    },
+    "evidence_source": {
+      "conditional_entropy_bits": 0.6611734321206489,
+      "full_distribution": {
+        "ambiguous": {
+          "ABSTAIN": 6
+        },
+        "assistant_claim": {
+          "ABSTAIN": 6
+        },
+        "direct_user_assertion": {
+          "ABSTAIN": 6,
+          "KEEP": 24,
+          "SUPERSEDE": 90
+        },
+        "extractor_candidate": {
+          "ABSTAIN": 6
+        },
+        "mixed": {
+          "ABSTAIN": 6
+        },
+        "quoted_third_party": {
+          "ABSTAIN": 30
+        },
+        "tool_output": {
+          "ABSTAIN": 6
+        }
+      },
+      "normalized_information_gain": 0.533833507821512,
+      "train_dev_lookup": {
+        "features": [
+          "evidence_source"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 30,
+          "SUPERSEDE": 60
+        },
+        "test_accuracy": 0.8333333333333334,
+        "test_macro_f1": 0.6031746031746031,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    },
+    "metadata_tuple": {
+      "train_dev_lookup": {
+        "features": [
+          "evidence_source",
+          "source_reliability",
+          "temporal_scope"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 33,
+          "KEEP": 12,
+          "SUPERSEDE": 45
+        },
+        "test_accuracy": 1.0,
+        "test_macro_f1": 1.0,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    },
+    "source_reliability": {
+      "conditional_entropy_bits": 0.47024212737667825,
+      "full_distribution": {
+        "garbled": {
+          "ABSTAIN": 12
+        },
+        "high": {
+          "KEEP": 24,
+          "SUPERSEDE": 90
+        },
+        "low": {
+          "ABSTAIN": 12
+        },
+        "medium": {
+          "ABSTAIN": 36
+        },
+        "unknown": {
+          "ABSTAIN": 6
+        }
+      },
+      "normalized_information_gain": 0.6684514042092742,
+      "train_dev_lookup": {
+        "features": [
+          "source_reliability"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 33,
+          "SUPERSEDE": 57
+        },
+        "test_accuracy": 0.8666666666666667,
+        "test_macro_f1": 0.6274509803921569,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    },
+    "temporal_scope": {
+      "conditional_entropy_bits": 0.0,
+      "full_distribution": {
+        "durable": {
+          "SUPERSEDE": 90
+        },
+        "temporary": {
+          "KEEP": 24
+        },
+        "unknown": {
+          "ABSTAIN": 30
+        },
+        "vague": {
+          "ABSTAIN": 36
+        }
+      },
+      "normalized_information_gain": 1.0,
+      "train_dev_lookup": {
+        "features": [
+          "temporal_scope"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 33,
+          "KEEP": 12,
+          "SUPERSEDE": 45
+        },
+        "test_accuracy": 1.0,
+        "test_macro_f1": 1.0,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    },
+    "type": {
+      "conditional_entropy_bits": 0.12032134914789372,
+      "full_distribution": {
+        "T1": {
+          "SUPERSEDE": 30
+        },
+        "T2": {
+          "SUPERSEDE": 30
+        },
+        "T3": {
+          "SUPERSEDE": 30
+        },
+        "T4": {
+          "ABSTAIN": 30
+        },
+        "T5": {
+          "ABSTAIN": 6,
+          "KEEP": 24
+        },
+        "T6": {
+          "ABSTAIN": 30
+        }
+      },
+      "normalized_information_gain": 0.9151663110743058,
+      "train_dev_lookup": {
+        "features": [
+          "type"
+        ],
+        "fit_n": 90,
+        "predicted_counts": {
+          "ABSTAIN": 30,
+          "KEEP": 15,
+          "SUPERSEDE": 45
+        },
+        "test_accuracy": 0.9666666666666667,
+        "test_macro_f1": 0.9470899470899471,
+        "test_n": 90,
+        "unseen_feature_combinations": 0
+      }
+    }
+  },
+  "split_counts": {
+    "dev": 30,
+    "test": 90,
+    "train": 60
+  },
+  "systems": {
+    "llm_structured": {
+      "source": "artifacts/mgp6_v2/llm_qwen35_9b/controller/predictions.jsonl",
+      "test": {
+        "action_accuracy": 0.9,
+        "calibration_bins": [
+          {
+            "accuracy": 0.7878787878787878,
+            "mean_confidence": 0.0,
+            "n": 33,
+            "range": [
+              0.0,
+              0.1
+            ]
+          },
+          {
+            "accuracy": 0.9649122807017544,
+            "mean_confidence": 0.9850877192982456,
+            "n": 57,
+            "range": [
+              0.9,
+              1.0
+            ]
+          }
+        ],
+        "expected_cost": {
+          "balanced": 0.1,
+          "commit_averse": 0.18888888888888888,
+          "update_responsive": 0.43333333333333335
+        },
+        "false_commit_count": [
+          2,
+          33
+        ],
+        "false_commit_definition": "gold action ABSTAIN and predicted action is not ABSTAIN",
+        "false_commit_rate": 0.06060606060606061,
+        "macro_f1": 0.9039930034330169,
+        "minimal_pair_cluster_bootstrap": {
+          "cluster_macro_ci95": [
+            0.8461538461538461,
+            0.9615384615384616
+          ],
+          "cluster_macro_point": 0.9102564102564102,
+          "item_weighted_ci95": [
+            0.8372093023255814,
+            0.9545454545454546
+          ],
+          "item_weighted_point": 0.9,
+          "n_clusters": 78,
+          "n_items": 90
+        },
+        "missed_update_count": [
+          7,
+          45
+        ],
+        "missed_update_rate": 0.15555555555555556,
+        "missing_predictions": [],
+        "n": 90,
+        "per_action_f1": {
+          "ABSTAIN": 0.8732394366197183,
+          "KEEP": 0.923076923076923,
+          "SUPERSEDE": 0.9156626506024096
+        },
+        "risk_coverage": [
+          {
+            "accuracy": 1.0,
+            "coverage": 0.25,
+            "n": 23,
+            "risk": 0.0
+          },
+          {
+            "accuracy": 1.0,
+            "coverage": 0.5,
+            "n": 45,
+            "risk": 0.0
+          },
+          {
+            "accuracy": 0.8676470588235294,
+            "coverage": 0.75,
+            "n": 68,
+            "risk": 0.13235294117647056
+          },
+          {
+            "accuracy": 0.9,
+            "coverage": 1.0,
+            "n": 90,
+            "risk": 0.09999999999999998
+          }
+        ],
+        "template_family_bootstrap": {
+          "cluster_macro_ci95": [
+            0.84375,
+            0.9583333333333334
+          ],
+          "cluster_macro_point": 0.90625,
+          "item_weighted_ci95": [
+            0.8295454545454546,
+            0.9574468085106383
+          ],
+          "item_weighted_point": 0.9,
+          "n_clusters": 48,
+          "n_items": 90
+        },
+        "top_label_brier": 0.30936111111111114,
+        "top_label_ece_10bin": 0.3016666666666666,
+        "unnecessary_abstention_count": [
+          7,
+          57
+        ],
+        "unnecessary_abstention_rate": 0.12280701754385964
+      }
+    },
+    "llm_zero_shot": {
+      "source": "artifacts/mgp6_v2/llm_decision_zero/controller/predictions.jsonl",
+      "test": {
+        "action_accuracy": 0.6777777777777778,
+        "calibration_bins": [
+          {
+            "accuracy": 0.6777777777777778,
+            "mean_confidence": 0.5,
+            "n": 90,
+            "range": [
+              0.5,
+              0.6
+            ]
+          }
+        ],
+        "expected_cost": {
+          "balanced": 0.32222222222222224,
+          "commit_averse": 1.1666666666666667,
+          "update_responsive": 0.9777777777777777
+        },
+        "false_commit_count": [
+          19,
+          33
+        ],
+        "false_commit_definition": "gold action ABSTAIN and predicted action is not ABSTAIN",
+        "false_commit_rate": 0.5757575757575758,
+        "macro_f1": 0.6541641459971769,
+        "minimal_pair_cluster_bootstrap": {
+          "cluster_macro_ci95": [
+            0.5961538461538461,
+            0.782051282051282
+          ],
+          "cluster_macro_point": 0.6923076923076923,
+          "item_weighted_ci95": [
+            0.5934065934065934,
+            0.7640449438202247
+          ],
+          "item_weighted_point": 0.6777777777777778,
+          "n_clusters": 78,
+          "n_items": 90
+        },
+        "missed_update_count": [
+          10,
+          45
+        ],
+        "missed_update_rate": 0.2222222222222222,
+        "missing_predictions": [],
+        "n": 90,
+        "per_action_f1": {
+          "ABSTAIN": 0.4912280701754386,
+          "KEEP": 0.6666666666666666,
+          "SUPERSEDE": 0.8045977011494253
+        },
+        "risk_coverage": [
+          {
+            "accuracy": 0.7391304347826086,
+            "coverage": 0.25,
+            "n": 23,
+            "risk": 0.26086956521739135
+          },
+          {
+            "accuracy": 0.7777777777777778,
+            "coverage": 0.5,
+            "n": 45,
+            "risk": 0.2222222222222222
+          },
+          {
+            "accuracy": 0.7794117647058824,
+            "coverage": 0.75,
+            "n": 68,
+            "risk": 0.22058823529411764
+          },
+          {
+            "accuracy": 0.6777777777777778,
+            "coverage": 1.0,
+            "n": 90,
+            "risk": 0.3222222222222222
+          }
+        ],
+        "template_family_bootstrap": {
+          "cluster_macro_ci95": [
+            0.5625,
+            0.7916666666666666
+          ],
+          "cluster_macro_point": 0.6770833333333334,
+          "item_weighted_ci95": [
+            0.5632183908045977,
+            0.7888888888888889
+          ],
+          "item_weighted_point": 0.6777777777777778,
+          "n_clusters": 48,
+          "n_items": 90
+        },
+        "top_label_brier": 0.25,
+        "top_label_ece_10bin": 0.1777777777777778,
+        "unnecessary_abstention_count": [
+          10,
+          57
+        ],
+        "unnecessary_abstention_rate": 0.17543859649122806
+      }
+    },
+    "rule": {
+      "source": "artifacts/mgp6_v2/ref_5systems/controller/predictions.jsonl",
+      "test": {
+        "action_accuracy": 0.8888888888888888,
+        "calibration_bins": [
+          {
+            "accuracy": 0.375,
+            "mean_confidence": 0.4,
+            "n": 16,
+            "range": [
+              0.4,
+              0.5
+            ]
+          },
+          {
+            "accuracy": 1.0,
+            "mean_confidence": 0.75,
+            "n": 12,
+            "range": [
+              0.7,
+              0.8
+            ]
+          },
+          {
+            "accuracy": 1.0,
+            "mean_confidence": 0.8282258064516129,
+            "n": 62,
+            "range": [
+              0.8,
+              0.9
+            ]
+          }
+        ],
+        "expected_cost": {
+          "balanced": 0.1111111111111111,
+          "commit_averse": 0.1111111111111111,
+          "update_responsive": 0.5555555555555556
+        },
+        "false_commit_count": [
+          0,
+          33
+        ],
+        "false_commit_definition": "gold action ABSTAIN and predicted action is not ABSTAIN",
+        "false_commit_one_sided_95_upper": 0.08678118929147494,
+        "false_commit_rate": 0.0,
+        "macro_f1": 0.9144736842105264,
+        "minimal_pair_cluster_bootstrap": {
+          "cluster_macro_ci95": [
+            0.8525641025641025,
+            0.9615384615384616
+          ],
+          "cluster_macro_point": 0.9102564102564102,
+          "item_weighted_ci95": [
+            0.8241758241758241,
+            0.945054945054945
+          ],
+          "item_weighted_point": 0.8888888888888888,
+          "n_clusters": 78,
+          "n_items": 90
+        },
+        "missed_update_count": [
+          10,
+          45
+        ],
+        "missed_update_rate": 0.2222222222222222,
+        "missing_predictions": [],
+        "n": 90,
+        "per_action_f1": {
+          "ABSTAIN": 0.868421052631579,
+          "KEEP": 1.0,
+          "SUPERSEDE": 0.8750000000000001
+        },
+        "risk_coverage": [
+          {
+            "accuracy": 1.0,
+            "coverage": 0.25,
+            "n": 23,
+            "risk": 0.0
+          },
+          {
+            "accuracy": 1.0,
+            "coverage": 0.5,
+            "n": 45,
+            "risk": 0.0
+          },
+          {
+            "accuracy": 1.0,
+            "coverage": 0.75,
+            "n": 68,
+            "risk": 0.0
+          },
+          {
+            "accuracy": 0.8888888888888888,
+            "coverage": 1.0,
+            "n": 90,
+            "risk": 0.11111111111111116
+          }
+        ],
+        "template_family_bootstrap": {
+          "cluster_macro_ci95": [
+            0.8125,
+            0.96875
+          ],
+          "cluster_macro_point": 0.8958333333333334,
+          "item_weighted_ci95": [
+            0.8021978021978022,
+            0.9659090909090909
+          ],
+          "item_weighted_point": 0.8888888888888888,
+          "n_clusters": 48,
+          "n_items": 90
+        },
+        "top_label_brier": 0.07086111111111111,
+        "top_label_ece_10bin": 0.1561111111111111,
+        "unnecessary_abstention_count": [
+          10,
+          57
+        ],
+        "unnecessary_abstention_rate": 0.17543859649122806
+      }
+    }
+  },
+  "template_families": 96
+}

@@ -1,0 +1,258 @@
+==============================================================================
+MGP-6 v2 pre-specified paired significance tests (n=180 full corpus)
+Action-comparison logic replicated from mgp6_v2/metrics_mgp6.py
+==============================================================================
+
+Per-system action accuracy (full corpus, canonicalised):
+  rule_controller              166/180 = 0.9222  Wilson95 [0.8737, 0.9531]
+  b4_naive_overwrite            76/180 = 0.4222  Wilson95 [0.3524, 0.4953]
+  b2_flat_retrieval             24/180 = 0.1333  Wilson95 [0.0913, 0.1907]
+  llm_controller_qwen35_9b     160/180 = 0.8889  Wilson95 [0.8346, 0.9269]
+  zero_shot_decision           126/180 = 0.7000  Wilson95 [0.6294, 0.7622]
+
+------------------------------------------------------------------------------
+PAIR 1: rule_controller  vs  b4_naive_overwrite
+------------------------------------------------------------------------------
+  n paired items          : 180
+  accuracy A (rule_controller): 166/180 = 0.9222  Wilson95 [0.8737, 0.9531]
+  accuracy B (b4_naive_overwrite): 76/180 = 0.4222  Wilson95 [0.3524, 0.4953]
+  2x2 concordance table:
+        both correct (e) =  76   A-correct/B-wrong (b) =  90
+        A-wrong/B-correct(c) =   0   both wrong (d)        =  14
+  discordant pairs (b+c)  : 90  (b=90, c=0)
+  risk difference (A - B) : +0.5000
+    Newcombe95 (Wilson)   : [+0.4230, +0.5690]
+    bootstrap95 (10k,seed): [+0.4278, +0.5722]
+  McNemar odds ratio b/c  : inf (c=0)
+  McNemar exact 2-sided p : 1.616e-27
+  Holm-adjusted p         : 4.847e-27
+  Family decision (alpha=0.05, Holm): SIGNIFICANT
+
+------------------------------------------------------------------------------
+PAIR 2: rule_controller  vs  b2_flat_retrieval
+------------------------------------------------------------------------------
+  n paired items          : 180
+  accuracy A (rule_controller): 166/180 = 0.9222  Wilson95 [0.8737, 0.9531]
+  accuracy B (b2_flat_retrieval): 24/180 = 0.1333  Wilson95 [0.0913, 0.1907]
+  2x2 concordance table:
+        both correct (e) =  24   A-correct/B-wrong (b) = 142
+        A-wrong/B-correct(c) =   0   both wrong (d)        =  14
+  discordant pairs (b+c)  : 142  (b=142, c=0)
+  risk difference (A - B) : +0.7889
+    Newcombe95 (Wilson)   : [+0.7181, +0.8382]
+    bootstrap95 (10k,seed): [+0.7278, +0.8444]
+  McNemar odds ratio b/c  : inf (c=0)
+  McNemar exact 2-sided p : 3.587e-43
+  Holm-adjusted p         : 1.435e-42
+  Family decision (alpha=0.05, Holm): SIGNIFICANT
+
+------------------------------------------------------------------------------
+PAIR 3: rule_controller  vs  llm_controller_qwen35_9b
+------------------------------------------------------------------------------
+  n paired items          : 180
+  accuracy A (rule_controller): 166/180 = 0.9222  Wilson95 [0.8737, 0.9531]
+  accuracy B (llm_controller_qwen35_9b): 160/180 = 0.8889  Wilson95 [0.8346, 0.9269]
+  2x2 concordance table:
+        both correct (e) = 152   A-correct/B-wrong (b) =  14
+        A-wrong/B-correct(c) =   8   both wrong (d)        =   6
+  discordant pairs (b+c)  : 22  (b=14, c=8)
+  risk difference (A - B) : +0.0333
+    Newcombe95 (Wilson)   : [-0.0188, +0.0873]
+    bootstrap95 (10k,seed): [-0.0167, +0.0833]
+  McNemar odds ratio b/c  : 1.750
+  McNemar exact 2-sided p : 2.863e-01
+  Holm-adjusted p         : 2.863e-01
+  Family decision (alpha=0.05, Holm): not significant
+
+------------------------------------------------------------------------------
+PAIR 4: llm_controller_qwen35_9b  vs  zero_shot_decision
+------------------------------------------------------------------------------
+  n paired items          : 180
+  accuracy A (llm_controller_qwen35_9b): 160/180 = 0.8889  Wilson95 [0.8346, 0.9269]
+  accuracy B (zero_shot_decision): 126/180 = 0.7000  Wilson95 [0.6294, 0.7622]
+  2x2 concordance table:
+        both correct (e) = 114   A-correct/B-wrong (b) =  46
+        A-wrong/B-correct(c) =  12   both wrong (d)        =   8
+  discordant pairs (b+c)  : 58  (b=46, c=12)
+  risk difference (A - B) : +0.1889
+    Newcombe95 (Wilson)   : [+0.1096, +0.2664]
+    bootstrap95 (10k,seed): [+0.1111, +0.2667]
+  McNemar odds ratio b/c  : 3.833
+  McNemar exact 2-sided p : 8.220e-06
+  Holm-adjusted p         : 1.644e-05
+  Family decision (alpha=0.05, Holm): SIGNIFICANT
+
+==============================================================================
+Holm-Bonferroni family summary (4 tests, alpha=0.05)
+==============================================================================
+  pair                                                 raw p       Holm p  decision
+  rule_controller vs b4_naive_overwrite            1.616e-27    4.847e-27  reject H0
+  rule_controller vs b2_flat_retrieval             3.587e-43    1.435e-42  reject H0
+  rule_controller vs llm_controller_qwen35_9b      2.863e-01    2.863e-01  retain H0
+  llm_controller_qwen35_9b vs zero_shot_decision    8.220e-06    1.644e-05  reject H0
+
+Interpretation notes:
+  * H0 for each test: the two systems have equal action accuracy on the
+    180 paired items (McNemar marginal homogeneity).
+  * Odds ratio b/c > 1 favours system A; = inf when c=0 (B never uniquely correct).
+  * All numbers are full-corpus (train+dev+test); MGP-6 v2 is an author-designed
+    diagnostic slice and the rule controller encodes the labelling policy.
+  * These tests establish that accuracy differences are not sampling noise;
+    they do NOT establish general-capability superiority (see THREATS_TO_VALIDITY.md).
+
+JSON_RESULTS_BEGIN
+{
+  "family": [
+    {
+      "name_a": "rule_controller",
+      "name_b": "b4_naive_overwrite",
+      "n": 180,
+      "table": {
+        "both_correct": 76,
+        "a_only_correct": 90,
+        "b_only_correct": 0,
+        "both_wrong": 14
+      },
+      "n_discordant": 90,
+      "acc_a": 0.9222222222222223,
+      "acc_b": 0.4222222222222222,
+      "acc_a_correct": 166,
+      "acc_b_correct": 76,
+      "acc_a_wilson": [
+        0.8736927799483827,
+        0.9531065773622551
+      ],
+      "acc_b_wilson": [
+        0.35243236681656176,
+        0.4952624884156891
+      ],
+      "risk_difference": 0.5,
+      "rd_newcombe_ci": [
+        0.4229931968356594,
+        0.5689512668643391
+      ],
+      "rd_bootstrap_ci": [
+        0.42777777777777776,
+        0.5722222222222222
+      ],
+      "mcnemar_exact_p": 1.6155871338926322e-27,
+      "odds_ratio_b_over_c": Infinity,
+      "holm_adjusted_p": 4.8467614016778965e-27
+    },
+    {
+      "name_a": "rule_controller",
+      "name_b": "b2_flat_retrieval",
+      "n": 180,
+      "table": {
+        "both_correct": 24,
+        "a_only_correct": 142,
+        "b_only_correct": 0,
+        "both_wrong": 14
+      },
+      "n_discordant": 142,
+      "acc_a": 0.9222222222222223,
+      "acc_b": 0.13333333333333333,
+      "acc_a_correct": 166,
+      "acc_b_correct": 24,
+      "acc_a_wilson": [
+        0.8736927799483827,
+        0.9531065773622551
+      ],
+      "acc_b_wilson": [
+        0.09126281053659399,
+        0.19072722127258887
+      ],
+      "risk_difference": 0.788888888888889,
+      "rd_newcombe_ci": [
+        0.7180748217425479,
+        0.8381612625884837
+      ],
+      "rd_bootstrap_ci": [
+        0.7277777777777777,
+        0.8444444444444444
+      ],
+      "mcnemar_exact_p": 3.587324068671532e-43,
+      "odds_ratio_b_over_c": Infinity,
+      "holm_adjusted_p": 1.4349296274686127e-42
+    },
+    {
+      "name_a": "rule_controller",
+      "name_b": "llm_controller_qwen35_9b",
+      "n": 180,
+      "table": {
+        "both_correct": 152,
+        "a_only_correct": 14,
+        "b_only_correct": 8,
+        "both_wrong": 6
+      },
+      "n_discordant": 22,
+      "acc_a": 0.9222222222222223,
+      "acc_b": 0.8888888888888888,
+      "acc_a_correct": 166,
+      "acc_b_correct": 160,
+      "acc_a_wilson": [
+        0.8736927799483827,
+        0.9531065773622551
+      ],
+      "acc_b_wilson": [
+        0.83461326608738,
+        0.9269124577513652
+      ],
+      "risk_difference": 0.03333333333333344,
+      "rd_newcombe_ci": [
+        -0.018803563043719607,
+        0.0873351468278927
+      ],
+      "rd_bootstrap_ci": [
+        -0.016666666666666666,
+        0.08333333333333333
+      ],
+      "mcnemar_exact_p": 0.28627872467041016,
+      "odds_ratio_b_over_c": 1.75,
+      "holm_adjusted_p": 0.28627872467041016
+    },
+    {
+      "name_a": "llm_controller_qwen35_9b",
+      "name_b": "zero_shot_decision",
+      "n": 180,
+      "table": {
+        "both_correct": 114,
+        "a_only_correct": 46,
+        "b_only_correct": 12,
+        "both_wrong": 8
+      },
+      "n_discordant": 58,
+      "acc_a": 0.8888888888888888,
+      "acc_b": 0.7,
+      "acc_a_correct": 160,
+      "acc_b_correct": 126,
+      "acc_a_wilson": [
+        0.83461326608738,
+        0.9269124577513652
+      ],
+      "acc_b_wilson": [
+        0.6294468133268561,
+        0.7621949875044985
+      ],
+      "risk_difference": 0.18888888888888888,
+      "rd_newcombe_ci": [
+        0.10955930895629948,
+        0.2664104782566391
+      ],
+      "rd_bootstrap_ci": [
+        0.1111111111111111,
+        0.26666666666666666
+      ],
+      "mcnemar_exact_p": 8.219663963332513e-06,
+      "odds_ratio_b_over_c": 3.8333333333333335,
+      "holm_adjusted_p": 1.6439327926665026e-05
+    }
+  ],
+  "holm": [
+    4.8467614016778965e-27,
+    1.4349296274686127e-42,
+    0.28627872467041016,
+    1.6439327926665026e-05
+  ]
+}
+JSON_RESULTS_END

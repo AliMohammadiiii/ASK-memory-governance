@@ -1,0 +1,2 @@
+draft_id,writer_code,assignment_card_version,principal_code,source_kind,consent_code,trajectory_turns,trajectory_json,candidate_turn_id,memory_before_json,slot_description,evaluation_query,pair_id,changed_premise,writer_notes,pii_checked,submitted_at,submission_version
+M3-D-EXAMPLE,W00,CARD-0,USER_A,synthetic,,5,"[]",T05,"[]",example_slot,"",,,format_only,yes,,1

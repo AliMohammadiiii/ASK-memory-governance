@@ -140,7 +140,8 @@ def _grade_from_row(row: dict[str, Any]) -> GradeResult | None:
     # dataclass defaults, so adding a field to GradeResult never invalidates an
     # existing judgments.jsonl on resume.
     required = {
-        f.name for f in fields
+        f.name
+        for f in fields
         if f.default is dataclasses.MISSING and f.default_factory is dataclasses.MISSING
     }
     if required - payload.keys():
@@ -198,6 +199,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
     """Resolve the answerer LLM from CLI flags."""
     if args.fake:
         from ksa.inference.fake import FakeLLM
+
         return FakeLLM()
     if args.openai_compatible:
         return _openai_llm(args, require_json=False)
@@ -205,6 +207,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
         return HuggingFaceLLM(_hf_config(args, args.hf_model))
     if args.ollama:
         from ksa.inference.ollama import OllamaLLM
+
         return OllamaLLM(
             model_id=args.ollama_model,
             host=args.ollama_host,
@@ -213,6 +216,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
             num_ctx=args.ollama_num_ctx,
         )
     from ksa.inference.llm import build_llm, load_inference_config
+
     cfg = load_inference_config(args.config) if args.config else None
     return build_llm(cfg)
 
@@ -273,6 +277,9 @@ def _openai_llm(
         chat_template_kwargs=chat_template_kwargs,
         guided_json=guided_json,
         extra_body=extra_body,
+        retry_max_attempts=getattr(args, "openai_retry_max_attempts", 3),
+        retry_initial_delay_s=getattr(args, "openai_retry_initial_delay_s", 1.0),
+        retry_max_delay_s=getattr(args, "openai_retry_max_delay_s", 10.0),
         # Expose the server context window so the controller prompt-budget guard
         # trims retrieved context instead of overflowing vLLM (HTTP 400).
         num_ctx=getattr(args, "openai_max_model_len", None),
@@ -323,6 +330,7 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
     """Resolve the judge LLM from explicit M4 backend flags."""
     if args.fake_judge:
         from ksa.inference.fake import FakeLLM
+
         return FakeLLM()
 
     if args.judge_backend == "openai_compatible":
@@ -363,7 +371,8 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
     else:
         cfg = JudgeBackendConfig(
             backend=judge_backend,
-            model_id=args.judge_model or (args.hf_model if judge_backend in {"hf", "huggingface"} else None),
+            model_id=args.judge_model
+            or (args.hf_model if judge_backend in {"hf", "huggingface"} else None),
             ollama_host=args.ollama_host,
             num_ctx=args.judge_num_ctx,
             timeout_s=args.judge_timeout_s,
@@ -391,7 +400,9 @@ def _load_scorecard_config(args: argparse.Namespace) -> ScorecardConfig:
     )
 
 
-def _scorecard_config_payload(config: ScorecardConfig, args: argparse.Namespace) -> dict[str, object]:
+def _scorecard_config_payload(
+    config: ScorecardConfig, args: argparse.Namespace
+) -> dict[str, object]:
     return {
         "scorecard_config": str(args.scorecard_config),
         "scorecard_config_sha256": _sha256(args.scorecard_config),
@@ -501,6 +512,7 @@ def _build_extractor_and_classifier(args: argparse.Namespace, out_dir: Path):
     extractor = _build_extractor(args, out_dir)
     if args.ollama:
         from ksa.inference.ollama import OllamaLLM
+
         classifier_model = args.classifier_ollama_model or args.ollama_model
         classifier_inner = OllamaLLM(
             model_id=classifier_model,
@@ -556,6 +568,7 @@ def _build_classifier_escalation(args: argparse.Namespace, out_dir: Path):
         inner = HuggingFaceLLM(_hf_config(args, esc_hf))
     elif args.ollama and esc_hf:
         from ksa.inference.ollama import OllamaLLM
+
         inner = OllamaLLM(
             model_id=esc_hf,
             host=args.ollama_host,
@@ -635,7 +648,9 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
         action_log_path: Path | None = None
         if not args.no_action_log:
             action_log_path = args.out / "action_log.jsonl"
-        klass = NaiveOverwriteBaseline if args.baseline == "naive_overwrite" else ControllerOrchestrator
+        klass = (
+            NaiveOverwriteBaseline if args.baseline == "naive_overwrite" else ControllerOrchestrator
+        )
         scorecard_config = _load_scorecard_config(args)
         kwargs: dict[str, object] = dict(
             llm=llm,
@@ -674,9 +689,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             extraction_concurrency=args.extraction_concurrency,
             fail_on_extraction_error=args.fail_on_extraction_error,
             shared_extraction_cache_path=(
-                Path(args.shared_extraction_cache)
-                if args.shared_extraction_cache
-                else None
+                Path(args.shared_extraction_cache) if args.shared_extraction_cache else None
             ),
             answer_context_max_tokens=args.answer_context_max_tokens,
             answer_context_rerank=args.answer_context_rerank,
@@ -690,9 +703,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             kwargs["answer_escalation_llm"] = _openai_llm(
                 args,
                 model_id=args.answer_escalation_openai_model,
-                base_url=(
-                    args.answer_escalation_openai_base_url or args.openai_base_url
-                ),
+                base_url=(args.answer_escalation_openai_base_url or args.openai_base_url),
                 require_json=False,
             )
         if klass is ControllerOrchestrator:
@@ -797,484 +808,863 @@ def _apply_sample_range(sessions: list, args: argparse.Namespace) -> list:
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--baseline", required=True, choices=sorted(_BASELINES_KNOWN))
-    p.add_argument("--slice", required=True, type=Path,
-                   help="LongMemEval-S slice JSONL path")
-    p.add_argument("--out", required=True, type=Path,
-                   help="Output directory; will be created")
+    p.add_argument("--slice", required=True, type=Path, help="LongMemEval-S slice JSONL path")
+    p.add_argument("--out", required=True, type=Path, help="Output directory; will be created")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n-bootstrap", type=int, default=1000)
-    p.add_argument("--num-shards", type=int, default=1,
-                   help="Total session shards for parallel runs. >1 selects a "
-                        "round-robin subset (i %% num_shards == shard_index). "
-                        "Each shard is an independent process; merge afterwards.")
-    p.add_argument("--shard-index", type=int, default=0,
-                   help="This process's shard index in [0, num_shards).")
-    p.add_argument("--limit", type=int, default=None,
-                   help="Optional cap on sessions evaluated (smoke testing)")
-    p.add_argument("--sample-from", type=int, default=None,
-                   help="1-based inclusive first sample to evaluate, e.g. 50.")
-    p.add_argument("--sample-to", type=int, default=None,
-                   help="1-based inclusive last sample to evaluate, e.g. 100.")
-    p.add_argument("--sample-start", type=int, default=None,
-                   help="Zero-based inclusive start index. Alternative to --sample-from.")
-    p.add_argument("--sample-end", type=int, default=None,
-                   help="Zero-based exclusive end index. Alternative to --sample-to.")
-    p.add_argument("--allow-blank-answers", action="store_true",
-                   help="Do not fail the run if one or more answer texts are blank. "
-                        "Use only for debugging broken model backends.")
-    p.add_argument("--resume", action=argparse.BooleanOptionalAction, default=False,
-                   help="Resume from existing answers/judgments in --out. Completed "
-                        "session IDs are skipped, partial JSONL tails are ignored, "
-                        "and the final report is rebuilt from old plus new grades.")
-    p.add_argument("--quality-preset", choices=_QUALITY_PRESETS, default=_QUALITY_PRESET_NONE,
-                   help="Lock a recall/accuracy-focused runtime profile. "
-                        "'max-a10g' and 'max-a100-40gb' force HF Qwen2.5-7B "
-                        "fp16 plus controller quality knobs; intended for "
-                        "quality runs, not final thesis-comparable numbers.")
+    p.add_argument(
+        "--num-shards",
+        type=int,
+        default=1,
+        help="Total session shards for parallel runs. >1 selects a "
+        "round-robin subset (i %% num_shards == shard_index). "
+        "Each shard is an independent process; merge afterwards.",
+    )
+    p.add_argument(
+        "--shard-index", type=int, default=0, help="This process's shard index in [0, num_shards)."
+    )
+    p.add_argument(
+        "--limit", type=int, default=None, help="Optional cap on sessions evaluated (smoke testing)"
+    )
+    p.add_argument(
+        "--sample-from",
+        type=int,
+        default=None,
+        help="1-based inclusive first sample to evaluate, e.g. 50.",
+    )
+    p.add_argument(
+        "--sample-to",
+        type=int,
+        default=None,
+        help="1-based inclusive last sample to evaluate, e.g. 100.",
+    )
+    p.add_argument(
+        "--sample-start",
+        type=int,
+        default=None,
+        help="Zero-based inclusive start index. Alternative to --sample-from.",
+    )
+    p.add_argument(
+        "--sample-end",
+        type=int,
+        default=None,
+        help="Zero-based exclusive end index. Alternative to --sample-to.",
+    )
+    p.add_argument(
+        "--allow-blank-answers",
+        action="store_true",
+        help="Do not fail the run if one or more answer texts are blank. "
+        "Use only for debugging broken model backends.",
+    )
+    p.add_argument(
+        "--resume",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Resume from existing answers/judgments in --out. Completed "
+        "session IDs are skipped, partial JSONL tails are ignored, "
+        "and the final report is rebuilt from old plus new grades.",
+    )
+    p.add_argument(
+        "--quality-preset",
+        choices=_QUALITY_PRESETS,
+        default=_QUALITY_PRESET_NONE,
+        help="Lock a recall/accuracy-focused runtime profile. "
+        "'max-a10g' and 'max-a100-40gb' force HF Qwen2.5-7B "
+        "fp16 plus controller quality knobs; intended for "
+        "quality runs, not final thesis-comparable numbers.",
+    )
 
     # M1-W3 — flat-vector baseline knobs.
-    p.add_argument("--k", type=int, default=5,
-                   help="Top-k for flat_vector retrieval (default: 5; "
-                        "see NOTES/m1w3_design.md §2.4 for the choice). "
-                        "A k-sweep is deferred to Month-4 ablations.")
-    p.add_argument("--embedder-device", default="cpu",
-                   help="Device for TurnEmbedder ('cpu' or 'cuda'). "
-                        "Default cpu — MiniLM-L6-v2 is ~80 MB and fine on CPU.")
-    p.add_argument("--embedder-st-model", default=None,
-                   help="Override the sentence-transformers model id for the "
-                        "retrieval embedder (default: all-MiniLM-L6-v2). E.g. "
-                        "jinaai/jina-embeddings-v5-text-small — needs "
-                        "--embedder-trust-remote-code and a recent transformers.")
-    p.add_argument("--embedder-trust-remote-code", action="store_true",
-                   help="Pass trust_remote_code=True when loading the ST model "
-                        "(required by custom-architecture embedders like Jina v5).")
-    p.add_argument("--embedder-task", default=None,
-                   help="Optional encode() task for task-aware embedders "
-                        "(Jina v5: 'retrieval'). Ignored by models that don't "
-                        "accept it.")
-    p.add_argument("--embedder-prompt-name", default=None,
-                   help="Optional encode() prompt_name for task-aware embedders "
-                        "(Jina v5: 'query' or 'document'). Ignored otherwise.")
-    p.add_argument("--embedder-backend", choices=(
-                       "sentence_transformer",
-                       "ollama",
-                       "openai_compatible",
-                   ),
-                   default="sentence_transformer",
-                   help="Retrieval embedding backend. Use 'ollama' to avoid "
-                        "local sentence-transformers/torch and call /api/embed. "
-                        "Use 'openai_compatible' to call /v1/embeddings.")
-    p.add_argument("--embedder-ollama-model", default="llama3.2:3b",
-                   help="Ollama model tag for retrieval embeddings when "
-                        "--embedder-backend=ollama.")
-    p.add_argument("--embedder-ollama-host", default=None,
-                   help="Ollama host for retrieval embeddings. Defaults to --ollama-host.")
-    p.add_argument("--embedder-ollama-timeout-s", type=float, default=None,
-                   help="HTTP timeout for Ollama embedding calls. Defaults to --ollama-timeout-s.")
-    p.add_argument("--embedder-ollama-batch-size", type=int, default=16,
-                   help="Texts per Ollama /api/embed request.")
-    p.add_argument("--embedder-openai-model", default="auto",
-                   help="OpenAI-compatible embedding model id for "
-                        "--embedder-backend=openai_compatible.")
-    p.add_argument("--embedder-openai-base-url", default=None,
-                   help="Dedicated base_url for the embedding endpoint (e.g. the "
-                        "shared jina server at http://localhost:8100/v1). Defaults "
-                        "to --openai-base-url.")
-    p.add_argument("--embedder-openai-timeout-s", type=float, default=None,
-                   help="HTTP timeout for OpenAI-compatible embeddings. "
-                        "Defaults to --openai-timeout-s.")
-    p.add_argument("--embedder-openai-batch-size", type=int, default=16,
-                   help="Texts per OpenAI-compatible /v1/embeddings request.")
-    p.add_argument("--embedder-openai-max-retries", type=int, default=6,
-                   help="Retries for transient /v1/embeddings 429/5xx errors.")
-    p.add_argument("--embedder-openai-backoff-s", type=float, default=10.0,
-                   help="Initial exponential backoff for OpenAI-compatible "
-                        "embedding retries.")
-    p.add_argument("--embedder-openai-min-interval-s", type=float, default=0.0,
-                   help="Minimum wall-clock spacing between OpenAI-compatible "
-                        "/v1/embeddings requests. Use for provider quota pacing.")
-    p.add_argument("--embedder-openai-max-batch-chars", type=int, default=0,
-                   help="Split OpenAI-compatible embedding batches before the "
-                        "combined input character count exceeds this value. "
-                        "0 disables character-based splitting.")
-    p.add_argument("--fake-embedder", action="store_true",
-                   help="Use the hermetic FakeEmbedder (sha256-based) instead of "
-                        "MiniLM. Only useful for smoke-testing the pipeline "
-                        "without sentence-transformers — DO NOT use for the "
-                        "thesis run. Mirrors the --fake / --fake-judge pattern.")
+    p.add_argument(
+        "--k",
+        type=int,
+        default=5,
+        help="Top-k for flat_vector retrieval (default: 5; "
+        "see NOTES/m1w3_design.md §2.4 for the choice). "
+        "A k-sweep is deferred to Month-4 ablations.",
+    )
+    p.add_argument(
+        "--embedder-device",
+        default="cpu",
+        help="Device for TurnEmbedder ('cpu' or 'cuda'). "
+        "Default cpu — MiniLM-L6-v2 is ~80 MB and fine on CPU.",
+    )
+    p.add_argument(
+        "--embedder-st-model",
+        default=None,
+        help="Override the sentence-transformers model id for the "
+        "retrieval embedder (default: all-MiniLM-L6-v2). E.g. "
+        "jinaai/jina-embeddings-v5-text-small — needs "
+        "--embedder-trust-remote-code and a recent transformers.",
+    )
+    p.add_argument(
+        "--embedder-trust-remote-code",
+        action="store_true",
+        help="Pass trust_remote_code=True when loading the ST model "
+        "(required by custom-architecture embedders like Jina v5).",
+    )
+    p.add_argument(
+        "--embedder-task",
+        default=None,
+        help="Optional encode() task for task-aware embedders "
+        "(Jina v5: 'retrieval'). Ignored by models that don't "
+        "accept it.",
+    )
+    p.add_argument(
+        "--embedder-prompt-name",
+        default=None,
+        help="Optional encode() prompt_name for task-aware embedders "
+        "(Jina v5: 'query' or 'document'). Ignored otherwise.",
+    )
+    p.add_argument(
+        "--embedder-backend",
+        choices=(
+            "sentence_transformer",
+            "ollama",
+            "openai_compatible",
+        ),
+        default="sentence_transformer",
+        help="Retrieval embedding backend. Use 'ollama' to avoid "
+        "local sentence-transformers/torch and call /api/embed. "
+        "Use 'openai_compatible' to call /v1/embeddings.",
+    )
+    p.add_argument(
+        "--embedder-ollama-model",
+        default="llama3.2:3b",
+        help="Ollama model tag for retrieval embeddings when --embedder-backend=ollama.",
+    )
+    p.add_argument(
+        "--embedder-ollama-host",
+        default=None,
+        help="Ollama host for retrieval embeddings. Defaults to --ollama-host.",
+    )
+    p.add_argument(
+        "--embedder-ollama-timeout-s",
+        type=float,
+        default=None,
+        help="HTTP timeout for Ollama embedding calls. Defaults to --ollama-timeout-s.",
+    )
+    p.add_argument(
+        "--embedder-ollama-batch-size",
+        type=int,
+        default=16,
+        help="Texts per Ollama /api/embed request.",
+    )
+    p.add_argument(
+        "--embedder-openai-model",
+        default="auto",
+        help="OpenAI-compatible embedding model id for --embedder-backend=openai_compatible.",
+    )
+    p.add_argument(
+        "--embedder-openai-base-url",
+        default=None,
+        help="Dedicated base_url for the embedding endpoint (e.g. the "
+        "shared jina server at http://localhost:8100/v1). Defaults "
+        "to --openai-base-url.",
+    )
+    p.add_argument(
+        "--embedder-openai-timeout-s",
+        type=float,
+        default=None,
+        help="HTTP timeout for OpenAI-compatible embeddings. Defaults to --openai-timeout-s.",
+    )
+    p.add_argument(
+        "--embedder-openai-batch-size",
+        type=int,
+        default=16,
+        help="Texts per OpenAI-compatible /v1/embeddings request.",
+    )
+    p.add_argument(
+        "--embedder-openai-max-retries",
+        type=int,
+        default=6,
+        help="Retries for transient /v1/embeddings 429/5xx errors.",
+    )
+    p.add_argument(
+        "--embedder-openai-backoff-s",
+        type=float,
+        default=10.0,
+        help="Initial exponential backoff for OpenAI-compatible embedding retries.",
+    )
+    p.add_argument(
+        "--embedder-openai-min-interval-s",
+        type=float,
+        default=0.0,
+        help="Minimum wall-clock spacing between OpenAI-compatible "
+        "/v1/embeddings requests. Use for provider quota pacing.",
+    )
+    p.add_argument(
+        "--embedder-openai-max-batch-chars",
+        type=int,
+        default=0,
+        help="Split OpenAI-compatible embedding batches before the "
+        "combined input character count exceeds this value. "
+        "0 disables character-based splitting.",
+    )
+    p.add_argument(
+        "--fake-embedder",
+        action="store_true",
+        help="Use the hermetic FakeEmbedder (sha256-based) instead of "
+        "MiniLM. Only useful for smoke-testing the pipeline "
+        "without sentence-transformers — DO NOT use for the "
+        "thesis run. Mirrors the --fake / --fake-judge pattern.",
+    )
 
     # M1-W4 — recency baseline knobs.
-    p.add_argument("--capacity", type=int, default=50,
-                   help="FIFO queue size for the recency baseline (default: 50; "
-                        "see NOTES/m1w4_design.md §1b for the choice). "
-                        "A capacity-sweep (N ∈ {10, 25, 50, 100}) is deferred "
-                        "to Month-4 ablations.")
-    p.add_argument("--no-action-log", action="store_true",
-                   help="Disable action_log writing for recency. Default writes "
-                        "to <out>/action_log.jsonl.")
-    p.add_argument("--recency-extractor", choices=("trivial", "llm"), default="trivial",
-                   help="B3 extractor mode. Use 'llm' for M4-W13 so recency "
-                        "uses the M2 extraction prompt instead of the M1 "
-                        "trivial every-user-turn extractor.")
-    p.add_argument("--recency-memory-top-k", type=int, default=None,
-                   help="Optional fast-mode prefilter for B3 when "
-                        "--recency-extractor llm: embed all allowed haystack "
-                        "user turns and only run LLM extraction on the top-k "
-                        "turns nearest to the question. Omit for exact full "
-                        "B3 ingestion.")
-    p.add_argument("--recency-raw-turn-fallback", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="For B3 fast mode, if the extractor returns no items "
-                        "for a selected user turn, index the raw user turn as "
-                        "an episodic memory. Approximate recall-focused mode "
-                        "for small local HF extractors.")
-    p.add_argument("--recency-progress", action=argparse.BooleanOptionalAction, default=False,
-                   help="Emit heartbeat logs while B3 resolves memory, "
-                        "prefilters, extracts turns, retrieves, and answers.")
+    p.add_argument(
+        "--capacity",
+        type=int,
+        default=50,
+        help="FIFO queue size for the recency baseline (default: 50; "
+        "see NOTES/m1w4_design.md §1b for the choice). "
+        "A capacity-sweep (N ∈ {10, 25, 50, 100}) is deferred "
+        "to Month-4 ablations.",
+    )
+    p.add_argument(
+        "--no-action-log",
+        action="store_true",
+        help="Disable action_log writing for recency. Default writes to <out>/action_log.jsonl.",
+    )
+    p.add_argument(
+        "--recency-extractor",
+        choices=("trivial", "llm"),
+        default="trivial",
+        help="B3 extractor mode. Use 'llm' for M4-W13 so recency "
+        "uses the M2 extraction prompt instead of the M1 "
+        "trivial every-user-turn extractor.",
+    )
+    p.add_argument(
+        "--recency-memory-top-k",
+        type=int,
+        default=None,
+        help="Optional fast-mode prefilter for B3 when "
+        "--recency-extractor llm: embed all allowed haystack "
+        "user turns and only run LLM extraction on the top-k "
+        "turns nearest to the question. Omit for exact full "
+        "B3 ingestion.",
+    )
+    p.add_argument(
+        "--recency-raw-turn-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B3 fast mode, if the extractor returns no items "
+        "for a selected user turn, index the raw user turn as "
+        "an episodic memory. Approximate recall-focused mode "
+        "for small local HF extractors.",
+    )
+    p.add_argument(
+        "--recency-progress",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Emit heartbeat logs while B3 resolves memory, "
+        "prefilters, extracts turns, retrieves, and answers.",
+    )
 
     # M3-W10 — shared extractor/classifier knobs for B4 and controller.
     # v_final -> v_final3: adds the episodic-events/acquisitions in-scope
     # section after the v4 run showed the precision rule discarding current
     # projects (Ford F-150), acquisitions (third plant), and trip durations.
     p.add_argument("--extraction-prompt", type=Path, default=Path("prompts/extraction_v_final3.j2"))
-    p.add_argument("--relation-stage1-prompt", type=Path, default=Path("prompts/relation_stage1_v0.j2"))
-    p.add_argument("--relation-stage2-prompt", type=Path, default=Path("prompts/relation_stage2_v0.j2"))
+    p.add_argument(
+        "--relation-stage1-prompt", type=Path, default=Path("prompts/relation_stage1_v0.j2")
+    )
+    p.add_argument(
+        "--relation-stage2-prompt", type=Path, default=Path("prompts/relation_stage2_v0.j2")
+    )
     p.add_argument("--scorecard-config", type=Path, default=Path("configs/controller_active.yaml"))
-    p.add_argument("--theta-abs", type=float, default=None,
-                   help="Override every controller theta_abs threshold for RC@C sweeps.")
+    p.add_argument(
+        "--theta-abs",
+        type=float,
+        default=None,
+        help="Override every controller theta_abs threshold for RC@C sweeps.",
+    )
     p.add_argument("--extraction-max-new-tokens", type=int, default=512)
     p.add_argument("--relation-max-new-tokens", type=int, default=128)
-    p.add_argument("--controller-progress", action=argparse.BooleanOptionalAction, default=False,
-                   help="Emit heartbeat logs while B4/controller ingest memory, "
-                        "extract turns, retrieve, and answer. Useful for Colab "
-                        "runs where the first completed row can take a while.")
-    p.add_argument("--controller-memory-top-k", type=int, default=None,
-                   help="Optional fast-mode prefilter for B4/controller: embed all "
-                        "allowed haystack user turns and only run LLM extraction "
-                        "on the top-k turns nearest to the question. Keeps the "
-                        "haystack corpus boundary but is approximate; omit for "
-                        "exact full-ingestion controller runs.")
-    p.add_argument("--controller-raw-turn-fallback", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="For B4/controller fast mode, if the extractor returns no "
-                        "items for a selected user turn, index the raw user turn "
-                        "as an episodic memory. This improves recall for small "
-                        "local HF extractors but is approximate.")
-    p.add_argument("--controller-retrieval-neighbor-window", type=int, default=0,
-                   help="For B4/controller, append active memories from the same "
-                        "session within +/-N turn indices of each retrieved hit "
-                        "to the answer prompt. Useful when the answer requires "
-                        "nearby context from the same haystack session.")
-    p.add_argument("--controller-include-assistant-context",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="For B4/controller, add raw ASSISTANT turns from the allowed "
-                        "memory corpus to the retrieval pool. The user-only memory "
-                        "pipeline cannot otherwise answer questions whose evidence "
-                        "lives in assistant turns (the single-session-assistant "
-                        "competency; ~32%% of the LongMemEval dev slice). Default off "
-                        "so MGP-6 and validated controller runs are unchanged.")
-    p.add_argument("--controller-include-raw-user-context",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="For B4/controller, add raw USER turn chunks from the allowed "
-                        "memory corpus to the retrieval pool. Restores answer-time "
-                        "recall for facts the extraction prefilter never selected, "
-                        "with zero extra LLM extraction calls. Default off so "
-                        "validated runs are unchanged.")
-    p.add_argument("--controller-retrieval-query-augmentation",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="For B4/controller, run additive retrieval passes for "
-                        "aggregation/temporal questions: a widened main query, one "
-                        "query per event/item phrase named in the question, and a "
-                        "calendar-window pass for 'N weeks ago'/'in <month>' "
-                        "questions. Appended after the base top-k hits.")
-    p.add_argument("--controller-deterministic-numeric-supersede",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="For B4/controller, route same-slot numeric conflicts "
-                        "(shared anchor tokens, different numbers, newer timestamp) "
-                        "directly to Supersede without consulting the relation "
-                        "classifier LLM.")
-    p.add_argument("--answer-retry-on-unknown", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="For B4/controller, retry answer generation once when the "
-                        "first answer is exactly 'Unknown' but retrieved evidence "
-                        "is non-empty. Telemetry is written to answer extras.")
-    p.add_argument("--controller-prior-top-k", type=int, default=1,
-                   help="Same-type prior candidates to compare semantically for "
-                        "B4/controller. Default 1 preserves newest-prior behavior; "
-                        "quality mode uses 3.")
-    p.add_argument("--controller-temporal-scaffold", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="For B4/controller, append a deterministic scaffolding block "
-                        "to temporal questions: event dates parsed from the memory "
-                        "TEXT (not just the session timestamp) plus a reference 'today' "
-                        "date, so the answerer does not have to parse/sort/subtract "
-                        "dates. Additive only (never overrides the model); default off.")
-    p.add_argument("--controller-computation-answerer", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="For B4/controller, run deterministic date/numeric/list solvers "
-                        "before the answer LLM. High-confidence results bypass the LLM; "
-                        "lower-confidence results are added as an auditable computation "
-                        "block. Default off for backwards-compatible experiment runs.")
-    p.add_argument("--controller-prior-similarity-threshold", type=float, default=0.0,
-                   help="Minimum cosine similarity for a semantic prior to be sent "
-                        "to the relation classifier (only used when "
-                        "--controller-prior-top-k > 1). Priors below this are treated "
-                        "as independent without an LLM call, which cuts the dominant "
-                        "per-question latency and avoids small-model label noise on "
-                        "unrelated pairs. 0.0 (default) preserves current behavior.")
+    p.add_argument(
+        "--controller-progress",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Emit heartbeat logs while B4/controller ingest memory, "
+        "extract turns, retrieve, and answer. Useful for Colab "
+        "runs where the first completed row can take a while.",
+    )
+    p.add_argument(
+        "--controller-memory-top-k",
+        type=int,
+        default=None,
+        help="Optional fast-mode prefilter for B4/controller: embed all "
+        "allowed haystack user turns and only run LLM extraction "
+        "on the top-k turns nearest to the question. Keeps the "
+        "haystack corpus boundary but is approximate; omit for "
+        "exact full-ingestion controller runs.",
+    )
+    p.add_argument(
+        "--controller-raw-turn-fallback",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller fast mode, if the extractor returns no "
+        "items for a selected user turn, index the raw user turn "
+        "as an episodic memory. This improves recall for small "
+        "local HF extractors but is approximate.",
+    )
+    p.add_argument(
+        "--controller-retrieval-neighbor-window",
+        type=int,
+        default=0,
+        help="For B4/controller, append active memories from the same "
+        "session within +/-N turn indices of each retrieved hit "
+        "to the answer prompt. Useful when the answer requires "
+        "nearby context from the same haystack session.",
+    )
+    p.add_argument(
+        "--controller-include-assistant-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, add raw ASSISTANT turns from the allowed "
+        "memory corpus to the retrieval pool. The user-only memory "
+        "pipeline cannot otherwise answer questions whose evidence "
+        "lives in assistant turns (the single-session-assistant "
+        "competency; ~32%% of the LongMemEval dev slice). Default off "
+        "so MGP-6 and validated controller runs are unchanged.",
+    )
+    p.add_argument(
+        "--controller-include-raw-user-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, add raw USER turn chunks from the allowed "
+        "memory corpus to the retrieval pool. Restores answer-time "
+        "recall for facts the extraction prefilter never selected, "
+        "with zero extra LLM extraction calls. Default off so "
+        "validated runs are unchanged.",
+    )
+    p.add_argument(
+        "--controller-retrieval-query-augmentation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, run additive retrieval passes for "
+        "aggregation/temporal questions: a widened main query, one "
+        "query per event/item phrase named in the question, and a "
+        "calendar-window pass for 'N weeks ago'/'in <month>' "
+        "questions. Appended after the base top-k hits.",
+    )
+    p.add_argument(
+        "--controller-deterministic-numeric-supersede",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, route same-slot numeric conflicts "
+        "(shared anchor tokens, different numbers, newer timestamp) "
+        "directly to Supersede without consulting the relation "
+        "classifier LLM.",
+    )
+    p.add_argument(
+        "--answer-retry-on-unknown",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, retry answer generation once when the "
+        "first answer is exactly 'Unknown' but retrieved evidence "
+        "is non-empty. Telemetry is written to answer extras.",
+    )
+    p.add_argument(
+        "--controller-prior-top-k",
+        type=int,
+        default=1,
+        help="Same-type prior candidates to compare semantically for "
+        "B4/controller. Default 1 preserves newest-prior behavior; "
+        "quality mode uses 3.",
+    )
+    p.add_argument(
+        "--controller-temporal-scaffold",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, append a deterministic scaffolding block "
+        "to temporal questions: event dates parsed from the memory "
+        "TEXT (not just the session timestamp) plus a reference 'today' "
+        "date, so the answerer does not have to parse/sort/subtract "
+        "dates. Additive only (never overrides the model); default off.",
+    )
+    p.add_argument(
+        "--controller-computation-answerer",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For B4/controller, run deterministic date/numeric/list solvers "
+        "before the answer LLM. High-confidence results bypass the LLM; "
+        "lower-confidence results are added as an auditable computation "
+        "block. Default off for backwards-compatible experiment runs.",
+    )
+    p.add_argument(
+        "--controller-prior-similarity-threshold",
+        type=float,
+        default=0.0,
+        help="Minimum cosine similarity for a semantic prior to be sent "
+        "to the relation classifier (only used when "
+        "--controller-prior-top-k > 1). Priors below this are treated "
+        "as independent without an LLM call, which cuts the dominant "
+        "per-question latency and avoids small-model label noise on "
+        "unrelated pairs. 0.0 (default) preserves current behavior.",
+    )
     # --- docx v7 fixes (§4 accuracy / §5 efficiency; all opt-in) -------------
-    p.add_argument("--per-competency-answer-prompt", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="§4 fix 1: use a preference-profile answer prompt for "
-                        "single-session-preference questions (gold answers are "
-                        "'The user would prefer ...' profiles, not direct answers).")
-    p.add_argument("--controller-verify-computation-bypass",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="§4 fix 5: never blindly emit a deterministic computation "
-                        "result — also run the LLM answer and reconcile (keep the "
-                        "LLM answer on disagreement).")
-    p.add_argument("--controller-computation-bypass-min-confidence", type=float, default=0.0,
-                   help="§4 fix 5: minimum computation confidence required before a "
-                        "deterministic answer may bypass the LLM. 0.0 keeps prior behavior.")
-    p.add_argument("--controller-ordinal-list-reconstruction",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="§4 fix 6: for 'Nth item of the list' questions, reassemble "
-                        "the full enumerated assistant list before indexing item N.")
-    p.add_argument("--controller-aggregation-scaffold",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="§4 fix 4: for count/sum questions with no deterministic "
-                        "answer, ask the model to LIST matching mentions as JSON, "
-                        "then dedup + count/sum in code as a hint to the answerer.")
-    p.add_argument("--extraction-concurrency", type=int, default=1,
-                   help="§5 fix 1: number of concurrent per-turn extraction calls "
-                        "within one question. 1 = serial (default). The ordered "
-                        "Keep/Supersede/Abstain decisions still run sequentially.")
-    p.add_argument("--fail-on-extraction-error",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="Abort the current session on provider/no-response or "
-                        "unrecoverable extraction output so shard retry/resume "
-                        "cannot publish silently incomplete memory state.")
-    p.add_argument("--shared-extraction-cache", default=None,
-                   help="§5 fix 3: path to a content-keyed extraction cache shared "
-                        "across runs/ranges/systems (read at startup in addition to "
-                        "the per-run cache).")
-    p.add_argument("--answer-context-max-tokens", type=int, default=0,
-                   help="§5 fix 4: cap the answer context at this many tokens (below "
-                        "num_ctx) for a tighter, cleaner context. 0 disables the cap.")
-    p.add_argument("--answer-context-rerank", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="§5 fix 4: rerank retrieved items by score before the answer "
-                        "context cap so the highest-signal hits survive.")
-    p.add_argument("--controller-history-aware-retrieval",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="For explicit historical-state questions only, retrieve "
-                        "tagged superseded lineage alongside active memory. Current "
-                        "and unqualified questions remain active-only.")
-    p.add_argument("--controller-history-retrieval-k", type=int, default=4,
-                   help="Maximum tagged superseded lineage rows added for an "
-                        "explicit historical-state question.")
-    p.add_argument("--answer-context-session-cap", type=int, default=0,
-                   help="Before prompt-budget overflow, prioritize at most this "
-                        "many items per session in each role group. 0 disables.")
-    p.add_argument("--prefilter-chunk-turns", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="§5 fix 6: chunk user turns before the extraction prefilter "
-                        "embeds them, so a long turn's tail is not lost to the "
-                        "embedder's 256-token truncation.")
-    p.add_argument("--answer-escalation-openai-model", default=None,
-                   help="§4 fix 3: OpenAI-compatible model id for the escalate-on-"
-                        "Unknown answer retry (stronger than the primary answerer). "
-                        "Defaults to reusing the primary answerer when unset.")
-    p.add_argument("--answer-escalation-openai-base-url", default=None,
-                   help="Base URL for --answer-escalation-openai-model. Defaults to "
-                        "--openai-base-url.")
-    p.add_argument("--extractor-ollama-model", default=None,
-                   help="Ollama model for the M3-W10 extractor. Defaults to --ollama-model.")
-    p.add_argument("--classifier-ollama-model", default=None,
-                   help="Ollama model for the M3-W10 relation classifier. Defaults to --ollama-model.")
-    p.add_argument("--extractor-hf-model", default=None,
-                   help="HuggingFace model id for the M3-W10 extractor. Defaults to --hf-model.")
-    p.add_argument("--classifier-hf-model", default=None,
-                   help="HuggingFace model id for the M3-W10 relation classifier. Defaults to --hf-model.")
-    p.add_argument("--extractor-openai-model", default=None,
-                   help="OpenAI-compatible model id for the M3-W10 extractor. Defaults to --openai-model.")
-    p.add_argument("--classifier-openai-model", default=None,
-                   help="OpenAI-compatible model id for the M3-W10 relation classifier. Defaults to --openai-model.")
+    p.add_argument(
+        "--per-competency-answer-prompt",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§4 fix 1: use a preference-profile answer prompt for "
+        "single-session-preference questions (gold answers are "
+        "'The user would prefer ...' profiles, not direct answers).",
+    )
+    p.add_argument(
+        "--controller-verify-computation-bypass",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§4 fix 5: never blindly emit a deterministic computation "
+        "result — also run the LLM answer and reconcile (keep the "
+        "LLM answer on disagreement).",
+    )
+    p.add_argument(
+        "--controller-computation-bypass-min-confidence",
+        type=float,
+        default=0.0,
+        help="§4 fix 5: minimum computation confidence required before a "
+        "deterministic answer may bypass the LLM. 0.0 keeps prior behavior.",
+    )
+    p.add_argument(
+        "--controller-ordinal-list-reconstruction",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§4 fix 6: for 'Nth item of the list' questions, reassemble "
+        "the full enumerated assistant list before indexing item N.",
+    )
+    p.add_argument(
+        "--controller-aggregation-scaffold",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§4 fix 4: for count/sum questions with no deterministic "
+        "answer, ask the model to LIST matching mentions as JSON, "
+        "then dedup + count/sum in code as a hint to the answerer.",
+    )
+    p.add_argument(
+        "--extraction-concurrency",
+        type=int,
+        default=1,
+        help="§5 fix 1: number of concurrent per-turn extraction calls "
+        "within one question. 1 = serial (default). The ordered "
+        "Keep/Supersede/Abstain decisions still run sequentially.",
+    )
+    p.add_argument(
+        "--fail-on-extraction-error",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Abort the current session on provider/no-response or "
+        "unrecoverable extraction output so shard retry/resume "
+        "cannot publish silently incomplete memory state.",
+    )
+    p.add_argument(
+        "--shared-extraction-cache",
+        default=None,
+        help="§5 fix 3: path to a content-keyed extraction cache shared "
+        "across runs/ranges/systems (read at startup in addition to "
+        "the per-run cache).",
+    )
+    p.add_argument(
+        "--answer-context-max-tokens",
+        type=int,
+        default=0,
+        help="§5 fix 4: cap the answer context at this many tokens (below "
+        "num_ctx) for a tighter, cleaner context. 0 disables the cap.",
+    )
+    p.add_argument(
+        "--answer-context-rerank",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§5 fix 4: rerank retrieved items by score before the answer "
+        "context cap so the highest-signal hits survive.",
+    )
+    p.add_argument(
+        "--controller-history-aware-retrieval",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="For explicit historical-state questions only, retrieve "
+        "tagged superseded lineage alongside active memory. Current "
+        "and unqualified questions remain active-only.",
+    )
+    p.add_argument(
+        "--controller-history-retrieval-k",
+        type=int,
+        default=4,
+        help="Maximum tagged superseded lineage rows added for an "
+        "explicit historical-state question.",
+    )
+    p.add_argument(
+        "--answer-context-session-cap",
+        type=int,
+        default=0,
+        help="Before prompt-budget overflow, prioritize at most this "
+        "many items per session in each role group. 0 disables.",
+    )
+    p.add_argument(
+        "--prefilter-chunk-turns",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="§5 fix 6: chunk user turns before the extraction prefilter "
+        "embeds them, so a long turn's tail is not lost to the "
+        "embedder's 256-token truncation.",
+    )
+    p.add_argument(
+        "--answer-escalation-openai-model",
+        default=None,
+        help="§4 fix 3: OpenAI-compatible model id for the escalate-on-"
+        "Unknown answer retry (stronger than the primary answerer). "
+        "Defaults to reusing the primary answerer when unset.",
+    )
+    p.add_argument(
+        "--answer-escalation-openai-base-url",
+        default=None,
+        help="Base URL for --answer-escalation-openai-model. Defaults to --openai-base-url.",
+    )
+    p.add_argument(
+        "--extractor-ollama-model",
+        default=None,
+        help="Ollama model for the M3-W10 extractor. Defaults to --ollama-model.",
+    )
+    p.add_argument(
+        "--classifier-ollama-model",
+        default=None,
+        help="Ollama model for the M3-W10 relation classifier. Defaults to --ollama-model.",
+    )
+    p.add_argument(
+        "--extractor-hf-model",
+        default=None,
+        help="HuggingFace model id for the M3-W10 extractor. Defaults to --hf-model.",
+    )
+    p.add_argument(
+        "--classifier-hf-model",
+        default=None,
+        help="HuggingFace model id for the M3-W10 relation classifier. Defaults to --hf-model.",
+    )
+    p.add_argument(
+        "--extractor-openai-model",
+        default=None,
+        help="OpenAI-compatible model id for the M3-W10 extractor. Defaults to --openai-model.",
+    )
+    p.add_argument(
+        "--classifier-openai-model",
+        default=None,
+        help="OpenAI-compatible model id for the M3-W10 relation classifier. Defaults to --openai-model.",
+    )
     # --- Per-role OpenAI/vLLM endpoint routing (role-based model standard) ---
-    p.add_argument("--openai-enable-thinking", action=argparse.BooleanOptionalAction, default=None,
-                   help="vLLM chat_template_kwargs enable_thinking switch for "
-                        "Qwen3/Qwen3.5. --no-openai-enable-thinking suppresses "
-                        "<think> blocks server-side. Default unset.")
-    p.add_argument("--extractor-openai-base-url", default=None,
-                   help="Override the OpenAI/vLLM base_url for the extractor "
-                        "(e.g. the 4B fast-path server). Defaults to --openai-base-url.")
-    p.add_argument("--classifier-openai-base-url", default=None,
-                   help="Override the base_url for the primary relation classifier "
-                        "(4B fast path). Defaults to --openai-base-url.")
+    p.add_argument(
+        "--openai-enable-thinking",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="vLLM chat_template_kwargs enable_thinking switch for "
+        "Qwen3/Qwen3.5. --no-openai-enable-thinking suppresses "
+        "<think> blocks server-side. Default unset.",
+    )
+    p.add_argument(
+        "--extractor-openai-base-url",
+        default=None,
+        help="Override the OpenAI/vLLM base_url for the extractor "
+        "(e.g. the 4B fast-path server). Defaults to --openai-base-url.",
+    )
+    p.add_argument(
+        "--classifier-openai-base-url",
+        default=None,
+        help="Override the base_url for the primary relation classifier "
+        "(4B fast path). Defaults to --openai-base-url.",
+    )
     # --- Relation-classifier cascade (4B fast path -> 9B escalation) ---------
-    p.add_argument("--classifier-escalation-openai-model", default=None,
-                   help="Escalation relation classifier model id on an "
-                        "OpenAI/vLLM endpoint (e.g. the 9B server). Enables the "
-                        "cascade when set.")
-    p.add_argument("--classifier-escalation-openai-base-url", default=None,
-                   help="base_url for the escalation classifier (9B server). "
-                        "Defaults to --openai-base-url.")
-    p.add_argument("--classifier-escalation-hf-model", default=None,
-                   help="Escalation relation classifier HF model id (HF/ollama "
-                        "backends). Enables the cascade when set.")
-    p.add_argument("--escalation-extraction-confidence", type=float, default=0.75,
-                   help="Escalate to the larger relation model when extraction "
-                        "confidence is below this (cascade).")
-    p.add_argument("--escalation-marker-burden", type=float, default=0.35,
-                   help="Escalate when the negation/hedge marker burden exceeds "
-                        "this fraction (cascade).")
-    p.add_argument("--escalation-relations", default="contradict,supersede,unclear",
-                   help="Comma-separated final relations that always escalate to "
-                        "the larger model (decision-critical labels).")
+    p.add_argument(
+        "--classifier-escalation-openai-model",
+        default=None,
+        help="Escalation relation classifier model id on an "
+        "OpenAI/vLLM endpoint (e.g. the 9B server). Enables the "
+        "cascade when set.",
+    )
+    p.add_argument(
+        "--classifier-escalation-openai-base-url",
+        default=None,
+        help="base_url for the escalation classifier (9B server). Defaults to --openai-base-url.",
+    )
+    p.add_argument(
+        "--classifier-escalation-hf-model",
+        default=None,
+        help="Escalation relation classifier HF model id (HF/ollama "
+        "backends). Enables the cascade when set.",
+    )
+    p.add_argument(
+        "--escalation-extraction-confidence",
+        type=float,
+        default=0.75,
+        help="Escalate to the larger relation model when extraction "
+        "confidence is below this (cascade).",
+    )
+    p.add_argument(
+        "--escalation-marker-burden",
+        type=float,
+        default=0.35,
+        help="Escalate when the negation/hedge marker burden exceeds this fraction (cascade).",
+    )
+    p.add_argument(
+        "--escalation-relations",
+        default="contradict,supersede,unclear",
+        help="Comma-separated final relations that always escalate to "
+        "the larger model (decision-critical labels).",
+    )
     p.add_argument("--structured-num-ctx", type=int, default=4096)
-    p.add_argument("--structured-json-format", action=argparse.BooleanOptionalAction, default=True,
-                   help="Ask Ollama structured extractor/classifier calls for JSON output.")
+    p.add_argument(
+        "--structured-json-format",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Ask Ollama structured extractor/classifier calls for JSON output.",
+    )
 
     # Answerer LLM selection.
-    p.add_argument("--config", type=Path, default=None,
-                   help="Inference config YAML (overrides default)")
-    p.add_argument("--fake", action="store_true",
-                   help="Use the deterministic FakeLLM as the answerer")
-    p.add_argument("--ollama", action="store_true",
-                   help="Use a local Ollama daemon as the answerer")
-    p.add_argument("--hf", action="store_true",
-                   help="Use an in-process HuggingFace Transformers model as the answerer. "
-                        "For Colab/T4 speed, use one shared --hf-model for answerer, "
-                        "extractor, classifier, and judge.")
-    p.add_argument("--openai-compatible", action="store_true",
-                   help="Use an OpenAI-compatible /v1/chat/completions endpoint "
-                        "as the answerer, extractor, classifier, or judge. This "
-                        "is the FreeLLMAPI path for local thesis runs.")
+    p.add_argument(
+        "--config", type=Path, default=None, help="Inference config YAML (overrides default)"
+    )
+    p.add_argument(
+        "--fake", action="store_true", help="Use the deterministic FakeLLM as the answerer"
+    )
+    p.add_argument(
+        "--ollama", action="store_true", help="Use a local Ollama daemon as the answerer"
+    )
+    p.add_argument(
+        "--hf",
+        action="store_true",
+        help="Use an in-process HuggingFace Transformers model as the answerer. "
+        "For Colab/T4 speed, use one shared --hf-model for answerer, "
+        "extractor, classifier, and judge.",
+    )
+    p.add_argument(
+        "--openai-compatible",
+        action="store_true",
+        help="Use an OpenAI-compatible /v1/chat/completions endpoint "
+        "as the answerer, extractor, classifier, or judge. This "
+        "is the FreeLLMAPI path for local thesis runs.",
+    )
     p.add_argument("--openai-base-url", default="http://localhost:3001/v1")
-    p.add_argument("--openai-max-model-len", type=int, default=8192,
-                   help="Server context window (vLLM --max-model-len). Exposed as "
-                        "the answerer's num_ctx so the controller prompt-budget "
-                        "guard trims retrieved context and never overflows the "
-                        "context window (avoids vLLM HTTP 400).")
-    p.add_argument("--openai-api-key", default=None,
-                   help="Bearer token for the OpenAI-compatible endpoint. Prefer "
-                        "setting --openai-api-key-env instead of passing secrets "
-                        "on the command line.")
-    p.add_argument("--openai-api-key-env", default="FREELLMAPI_KEY",
-                   help="Environment variable containing the OpenAI-compatible "
-                        "Bearer token.")
-    p.add_argument("--openai-model", default="cogito-2.1:671b",
-                   help="Primary OpenAI-compatible model id. Defaults to the "
-                        "FreeLLMAPI route that passed the thesis supersession "
-                        "probe fastest.")
-    p.add_argument("--openai-fallback-model", action="append", default=None,
-                   help="Additional OpenAI-compatible model id to try if the "
-                        "validation gate fails. Can be repeated.")
+    p.add_argument(
+        "--openai-max-model-len",
+        type=int,
+        default=8192,
+        help="Server context window (vLLM --max-model-len). Exposed as "
+        "the answerer's num_ctx so the controller prompt-budget "
+        "guard trims retrieved context and never overflows the "
+        "context window (avoids vLLM HTTP 400).",
+    )
+    p.add_argument(
+        "--openai-api-key",
+        default=None,
+        help="Bearer token for the OpenAI-compatible endpoint. Prefer "
+        "setting --openai-api-key-env instead of passing secrets "
+        "on the command line.",
+    )
+    p.add_argument(
+        "--openai-api-key-env",
+        default="FREELLMAPI_KEY",
+        help="Environment variable containing the OpenAI-compatible Bearer token.",
+    )
+    p.add_argument(
+        "--openai-model",
+        default="cogito-2.1:671b",
+        help="Primary OpenAI-compatible model id. Defaults to the "
+        "FreeLLMAPI route that passed the thesis supersession "
+        "probe fastest.",
+    )
+    p.add_argument(
+        "--openai-fallback-model",
+        action="append",
+        default=None,
+        help="Additional OpenAI-compatible model id to try if the "
+        "validation gate fails. Can be repeated.",
+    )
     p.add_argument("--openai-timeout-s", type=float, default=120.0)
-    p.add_argument("--openai-chat-template-kwargs-json", default=None,
-                   help="JSON object merged as chat_template_kwargs for "
-                        "OpenAI-compatible requests. Overrides "
-                        "--openai-enable-thinking when set.")
-    p.add_argument("--openai-extra-body-json", default=None,
-                   help="JSON object merged into OpenAI-compatible request "
-                        "bodies. Use this for provider-specific routing such "
-                        "as OpenRouter's provider.order/provider.only.")
-    p.add_argument("--openmodel-primary", action=argparse.BooleanOptionalAction, default=False,
-                   help="Try OpenModel Messages API before the OpenAI-compatible "
-                        "endpoint for answer/extractor/classifier calls.")
+    p.add_argument("--openai-retry-max-attempts", type=int, default=3)
+    p.add_argument("--openai-retry-initial-delay-s", type=float, default=1.0)
+    p.add_argument("--openai-retry-max-delay-s", type=float, default=10.0)
+    p.add_argument(
+        "--openai-chat-template-kwargs-json",
+        default=None,
+        help="JSON object merged as chat_template_kwargs for "
+        "OpenAI-compatible requests. Overrides "
+        "--openai-enable-thinking when set.",
+    )
+    p.add_argument(
+        "--openai-extra-body-json",
+        default=None,
+        help="JSON object merged into OpenAI-compatible request "
+        "bodies. Use this for provider-specific routing such "
+        "as OpenRouter's provider.order/provider.only.",
+    )
+    p.add_argument(
+        "--openmodel-primary",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Try OpenModel Messages API before the OpenAI-compatible "
+        "endpoint for answer/extractor/classifier calls.",
+    )
     p.add_argument("--openmodel-base-url", default="https://api.openmodel.ai/v1")
     p.add_argument("--openmodel-api-key-env", default="OPENMODEL_API_KEY")
-    p.add_argument("--openmodel-api-key-envs", default=None,
-                   help="Comma-separated OpenModel API key env names. Calls "
-                        "start from the next key in round-robin order and try "
-                        "the remaining keys before falling back.")
-    p.add_argument("--openmodel-model", default=None,
-                   help="OpenModel model id for primary calls. Defaults to a "
-                        "mapped form of --openai-model, e.g. deepseek-v4-flash.")
+    p.add_argument(
+        "--openmodel-api-key-envs",
+        default=None,
+        help="Comma-separated OpenModel API key env names. Calls "
+        "start from the next key in round-robin order and try "
+        "the remaining keys before falling back.",
+    )
+    p.add_argument(
+        "--openmodel-model",
+        default=None,
+        help="OpenModel model id for primary calls. Defaults to a "
+        "mapped form of --openai-model, e.g. deepseek-v4-flash.",
+    )
     p.add_argument("--openmodel-timeout-s", type=float, default=120.0)
-    p.add_argument("--openai-log-path", type=Path, default=None,
-                   help="JSONL metadata log for OpenAI-compatible calls. "
-                        "Defaults to <out>/llm_calls.jsonl.")
-    p.add_argument("--openai-include-raw-responses", action="store_true",
-                   help="Store raw response text in llm_calls.jsonl. Default "
-                        "keeps only hashes and metadata.")
-    p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct",
-                   help="HuggingFace model id for --hf runs.")
+    p.add_argument(
+        "--openai-log-path",
+        type=Path,
+        default=None,
+        help="JSONL metadata log for OpenAI-compatible calls. Defaults to <out>/llm_calls.jsonl.",
+    )
+    p.add_argument(
+        "--openai-include-raw-responses",
+        action="store_true",
+        help="Store raw response text in llm_calls.jsonl. Default keeps only hashes and metadata.",
+    )
+    p.add_argument(
+        "--hf-model", default="Qwen/Qwen2.5-3B-Instruct", help="HuggingFace model id for --hf runs."
+    )
     p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
     p.add_argument("--hf-device-map", default="auto")
     p.add_argument("--hf-load-in-4bit", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-trust-remote-code", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-max-seq-len", type=int, default=4096)
-    p.add_argument("--hf-enable-thinking", action=argparse.BooleanOptionalAction, default=None,
-                   help="Control the chat-template thinking switch for reasoning "
-                        "models (Qwen3/Qwen3.5). Pass --no-hf-enable-thinking to "
-                        "suppress <think> blocks so the small answer/JSON budget is "
-                        "spent on the final answer. Default (unset) leaves the "
-                        "template alone — correct for non-thinking models like "
-                        "Qwen2.5. The harness also strips any stray <think> span.")
-    p.add_argument("--ollama-model", default="gemma4:e4b",
-                   help="Ollama tag for the answerer (default: gemma4:e4b)")
-    p.add_argument("--ollama-num-ctx", type=int, default=8192,
-                   help="Context window for the answerer Ollama model. Must exceed "
-                        "the answer prompt size, or Ollama truncates the prompt and "
-                        "leaves no room to generate (the answer comes back as a single "
-                        "token). The controller/quality prompts (k>=10, assistant "
-                        "context, neighbor window) can reach ~8k tokens, so the old "
-                        "2048 default broke them. Raise further for very large k.")
+    p.add_argument(
+        "--hf-enable-thinking",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Control the chat-template thinking switch for reasoning "
+        "models (Qwen3/Qwen3.5). Pass --no-hf-enable-thinking to "
+        "suppress <think> blocks so the small answer/JSON budget is "
+        "spent on the final answer. Default (unset) leaves the "
+        "template alone — correct for non-thinking models like "
+        "Qwen2.5. The harness also strips any stray <think> span.",
+    )
+    p.add_argument(
+        "--ollama-model",
+        default="gemma4:e4b",
+        help="Ollama tag for the answerer (default: gemma4:e4b)",
+    )
+    p.add_argument(
+        "--ollama-num-ctx",
+        type=int,
+        default=8192,
+        help="Context window for the answerer Ollama model. Must exceed "
+        "the answer prompt size, or Ollama truncates the prompt and "
+        "leaves no room to generate (the answer comes back as a single "
+        "token). The controller/quality prompts (k>=10, assistant "
+        "context, neighbor window) can reach ~8k tokens, so the old "
+        "2048 default broke them. Raise further for very large k.",
+    )
     p.add_argument("--ollama-host", default="http://localhost:11434")
-    p.add_argument("--ollama-timeout-s", type=float, default=900.0,
-                   help="HTTP timeout for answerer/extractor/classifier Ollama calls.")
-    p.add_argument("--ollama-think", action=argparse.BooleanOptionalAction, default=False,
-                   help="Enable Ollama thinking output for answerer/extractor/classifier. "
-                        "Default false so reasoning models return final content instead of "
-                        "spending the token budget on hidden thinking.")
+    p.add_argument(
+        "--ollama-timeout-s",
+        type=float,
+        default=900.0,
+        help="HTTP timeout for answerer/extractor/classifier Ollama calls.",
+    )
+    p.add_argument(
+        "--ollama-think",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Enable Ollama thinking output for answerer/extractor/classifier. "
+        "Default false so reasoning models return final content instead of "
+        "spending the token budget on hidden thinking.",
+    )
 
     # Judge LLM selection.
-    p.add_argument("--fake-judge", action="store_true",
-                   help="Use the FakeLLM as the judge (smoke runs only)")
-    p.add_argument("--judge-config", type=Path, default=None,
-                   help="YAML file containing a 'judge:' backend config")
-    p.add_argument("--judge-backend", choices=(
-                       "same_as_answerer",
-                       "ollama",
-                       "huggingface",
-                       "hf",
-                       "fake",
-                       "openai_compatible",
-                   ),
-                   default="same_as_answerer",
-                   help="Judge backend. M4-W13 Ollama runs should use --judge-backend "
-                        "ollama with --judge-model. Fast HF runs can use "
-                        "--judge-backend same_as_answerer or hf. FreeLLMAPI runs "
-                        "can use --judge-backend openai_compatible.")
-    p.add_argument("--judge-model", default=None,
-                   help="Explicit judge model id. With --judge-backend ollama, "
-                        "this is the Ollama tag.")
+    p.add_argument(
+        "--fake-judge", action="store_true", help="Use the FakeLLM as the judge (smoke runs only)"
+    )
+    p.add_argument(
+        "--judge-config",
+        type=Path,
+        default=None,
+        help="YAML file containing a 'judge:' backend config",
+    )
+    p.add_argument(
+        "--judge-backend",
+        choices=(
+            "same_as_answerer",
+            "ollama",
+            "huggingface",
+            "hf",
+            "fake",
+            "openai_compatible",
+        ),
+        default="same_as_answerer",
+        help="Judge backend. M4-W13 Ollama runs should use --judge-backend "
+        "ollama with --judge-model. Fast HF runs can use "
+        "--judge-backend same_as_answerer or hf. FreeLLMAPI runs "
+        "can use --judge-backend openai_compatible.",
+    )
+    p.add_argument(
+        "--judge-model",
+        default=None,
+        help="Explicit judge model id. With --judge-backend ollama, this is the Ollama tag.",
+    )
     p.add_argument("--judge-num-ctx", type=int, default=2048)
-    p.add_argument("--judge-timeout-s", type=float, default=900.0,
-                   help="HTTP timeout for judge Ollama calls. Large local judges can cold-load slowly.")
-    p.add_argument("--judge-json-format", action=argparse.BooleanOptionalAction, default=True,
-                   help="Ask Ollama judge calls for JSON output.")
-    p.add_argument("--judge-think", action=argparse.BooleanOptionalAction, default=False,
-                   help="Enable Ollama thinking output for judge calls. Default false.")
-    p.add_argument("--judge-openai-chat-template-kwargs-json", default=None,
-                   help="JSON object used as chat_template_kwargs only for an "
-                        "OpenAI-compatible judge.")
-    p.add_argument("--judge-openai-extra-body-json", default=None,
-                   help="JSON object merged into OpenAI-compatible judge "
-                        "request bodies.")
-    p.add_argument("--judge-openai-fallback-model", action="append", default=None,
-                   help="Additional OpenAI-compatible judge model id to try if "
-                        "the primary judge is unavailable or fails validation. "
-                        "Can be repeated. Defaults to --openai-fallback-model "
-                        "when omitted.")
-    p.add_argument("--judge-openai-base-url", default=None,
-                   help="Endpoint for the OpenAI-compatible judge. Defaults to --openai-base-url.")
-    p.add_argument("--judge-openai-api-key-env", default=None,
-                   help="Environment variable containing the OpenAI-compatible Bearer token for the judge. "
-                        "Defaults to --openai-api-key-env.")
-    p.add_argument("--ollama-judge-model", default=None,
-                   help="Legacy alias for --judge-backend ollama --judge-model MODEL.")
+    p.add_argument(
+        "--judge-timeout-s",
+        type=float,
+        default=900.0,
+        help="HTTP timeout for judge Ollama calls. Large local judges can cold-load slowly.",
+    )
+    p.add_argument(
+        "--judge-json-format",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Ask Ollama judge calls for JSON output.",
+    )
+    p.add_argument(
+        "--judge-think",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Enable Ollama thinking output for judge calls. Default false.",
+    )
+    p.add_argument(
+        "--judge-openai-chat-template-kwargs-json",
+        default=None,
+        help="JSON object used as chat_template_kwargs only for an OpenAI-compatible judge.",
+    )
+    p.add_argument(
+        "--judge-openai-extra-body-json",
+        default=None,
+        help="JSON object merged into OpenAI-compatible judge request bodies.",
+    )
+    p.add_argument(
+        "--judge-openai-fallback-model",
+        action="append",
+        default=None,
+        help="Additional OpenAI-compatible judge model id to try if "
+        "the primary judge is unavailable or fails validation. "
+        "Can be repeated. Defaults to --openai-fallback-model "
+        "when omitted.",
+    )
+    p.add_argument(
+        "--judge-openai-base-url",
+        default=None,
+        help="Endpoint for the OpenAI-compatible judge. Defaults to --openai-base-url.",
+    )
+    p.add_argument(
+        "--judge-openai-api-key-env",
+        default=None,
+        help="Environment variable containing the OpenAI-compatible Bearer token for the judge. "
+        "Defaults to --openai-api-key-env.",
+    )
+    p.add_argument(
+        "--ollama-judge-model",
+        default=None,
+        help="Legacy alias for --judge-backend ollama --judge-model MODEL.",
+    )
     args = p.parse_args()
     _apply_quality_preset(args)
 
@@ -1287,8 +1677,7 @@ def main() -> int:
     report_path = out_dir / "report.json"
     md_path = out_dir / "results.md"
 
-    print(f"[run_baseline] baseline={args.baseline} slice={args.slice} out={out_dir}",
-          flush=True)
+    print(f"[run_baseline] baseline={args.baseline} slice={args.slice} out={out_dir}", flush=True)
     # Memory-safe streaming load. Previously every shard did
     # `list(iter_longmemeval_s(...))`, materializing the ENTIRE slice (all rows
     # WITH their full haystack corpus_sessions, ~5 MB/row) before selecting its
@@ -1370,7 +1759,9 @@ def main() -> int:
     args.append_action_log = args.resume and bool(resume_state.completed_session_ids)
 
     if not remaining_sessions:
-        judge_model_id = resume_state.grades[0].judge_model_id if resume_state.grades else "unknown-judge"
+        judge_model_id = (
+            resume_state.grades[0].judge_model_id if resume_state.grades else "unknown-judge"
+        )
         report = build_eval_report(
             baseline_name=args.baseline,
             judge_model_id=judge_model_id,
@@ -1401,8 +1792,11 @@ def main() -> int:
     print("[run_baseline] build judge start", flush=True)
     judge = _build_judge(args, answerer)
     print(f"[run_baseline] build judge done: {getattr(judge, 'model_id', '?')}", flush=True)
-    print(f"[run_baseline] answerer={getattr(answerer, 'model_id', '?')} "
-          f"judge={getattr(judge, 'model_id', '?')}", flush=True)
+    print(
+        f"[run_baseline] answerer={getattr(answerer, 'model_id', '?')} "
+        f"judge={getattr(judge, 'model_id', '?')}",
+        flush=True,
+    )
 
     print("[run_baseline] build baseline start", flush=True)
     baseline = _build_baseline(args, answerer, sessions)
@@ -1417,7 +1811,8 @@ def main() -> int:
         "n": len(resume_state.answer_rows),
         "blank": sum(1 for row in resume_state.answer_rows if not str(row.get("text", "")).strip()),
         "degenerate": sum(
-            1 for row in resume_state.answer_rows
+            1
+            for row in resume_state.answer_rows
             if looks_degenerate_answer(str(row.get("text", "")))
         ),
     }
@@ -1519,10 +1914,12 @@ def main() -> int:
 
     print("", flush=True)
     print("=" * 72, flush=True)
-    print(f"[run_baseline] done in {wall_s:.1f}s. "
-          f"overall={report.overall_accuracy*100:.1f}% "
-          f"(95% CI {report.overall_ci_low*100:.1f} – {report.overall_ci_high*100:.1f})",
-          flush=True)
+    print(
+        f"[run_baseline] done in {wall_s:.1f}s. "
+        f"overall={report.overall_accuracy * 100:.1f}% "
+        f"(95% CI {report.overall_ci_low * 100:.1f} – {report.overall_ci_high * 100:.1f})",
+        flush=True,
+    )
     print(f"[run_baseline] report → {report_path}", flush=True)
     print(f"[run_baseline] judgments → {judgments_path}", flush=True)
     print(f"[run_baseline] answers → {answers_path}", flush=True)

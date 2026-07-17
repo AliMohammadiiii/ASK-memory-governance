@@ -23,7 +23,7 @@ import json
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import TextIO
+from typing import TextIO, cast
 
 import jsonschema
 from pydantic import BaseModel, ConfigDict, Field
@@ -32,10 +32,7 @@ from ..controller.active import ScorecardDecision
 from ..memory.models import ActionLogEntry, ControllerAction, MemoryType
 
 _SCHEMA_FILE = (
-    Path(__file__).resolve().parents[3]
-    / "schema"
-    / "generated"
-    / "ksa_memory.schema.json"
+    Path(__file__).resolve().parents[1] / "resources" / "schema" / "ksa_memory.schema.json"
 )
 
 
@@ -121,8 +118,7 @@ class ActionLogWriter:
             raise ValueError(f"mode must be 'w' or 'a'; got {mode!r}")
         if baseline is not None and baseline not in self._ALLOWED_BASELINES:
             raise ValueError(
-                f"baseline {baseline!r} not in allowed set "
-                f"{sorted(self._ALLOWED_BASELINES)}"
+                f"baseline {baseline!r} not in allowed set {sorted(self._ALLOWED_BASELINES)}"
             )
         self.path = Path(path)
         self.baseline = baseline
@@ -138,7 +134,7 @@ class ActionLogWriter:
 
     def __enter__(self) -> ActionLogWriter:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._fp = self.path.open(self.mode, encoding="utf-8")
+        self._fp = cast(TextIO, self.path.open(self.mode, encoding="utf-8"))
         return self
 
     def __exit__(self, *_exc_info: object) -> None:
@@ -226,8 +222,7 @@ class ActionLogWriter:
         )
         if missing:
             raise ValueError(
-                "controller action_log rows require full feature snapshot; "
-                f"missing {missing}"
+                f"controller action_log rows require full feature snapshot; missing {missing}"
             )
 
 

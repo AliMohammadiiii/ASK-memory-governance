@@ -18,7 +18,7 @@ import time
 from collections.abc import Iterable, Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -175,8 +175,7 @@ PREFERENCE_SYSTEM_PROMPT = (
 # context). This version forces a committed best guess: it may only abstain when
 # the fact is genuinely absent, not when it is merely hard to locate.
 ANSWER_RETRY_SYSTEM_PROMPT = (
-    DEFAULT_SYSTEM_PROMPT
-    + " IMPORTANT: your previous final answer was 'Unknown' even though "
+    DEFAULT_SYSTEM_PROMPT + " IMPORTANT: your previous final answer was 'Unknown' even though "
     "retrieved memory was available. The answer is almost certainly present in "
     "the retrieved lines — re-read every retrieved item and its neighboring "
     "context slowly, and in the WORK section list each candidate evidence line "
@@ -203,7 +202,7 @@ AGGREGATION_SCAFFOLD_PROMPT = (
     "do not describe the entity, event, or quantity asked about. "
     "Two mentions are the same item only if they refer to the same thing "
     "(same name/place/date); otherwise list them separately. For 'how much/"
-    "total' questions put the amount in \"value\" (digits only, no currency "
+    'total\' questions put the amount in "value" (digits only, no currency '
     "symbol); for 'how many' questions \"value\" may be null. If nothing "
     "matches, output [].\n\n"
     # Sentinel placeholders (not str.format fields) because the template above
@@ -274,6 +273,7 @@ def _extract_final_answer(text: str) -> str:
         return raw
     lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
     return lines[-1] if lines else raw
+
 
 _PROMPT_DIR = Path(__file__).resolve().parents[1] / "baselines" / "prompts"
 
@@ -592,9 +592,7 @@ class ControllerOrchestrator:
         self._env = build_jinja_env()
         self._template = self._env.get_template(self.prompt_template)
         self._action_log_started = self.append_action_log
-        self._next_log_id = (
-            _next_jsonl_id(self.action_log_path) if self.append_action_log else 1
-        )
+        self._next_log_id = _next_jsonl_id(self.action_log_path) if self.append_action_log else 1
         self._next_candidate_id = 1
         self._last_summary: PipelineRunSummary | None = None
         # Guards the extraction cache dict/counters/file when turns are extracted
@@ -602,7 +600,9 @@ class ControllerOrchestrator:
         self._extraction_lock = threading.Lock()
         if self.action_log_path is not None:
             parent = self.action_log_path.parent
-            self.extraction_cache_path = self.extraction_cache_path or parent / "extraction_cache.jsonl"
+            self.extraction_cache_path = (
+                self.extraction_cache_path or parent / "extraction_cache.jsonl"
+            )
             self.relation_cache_path = self.relation_cache_path or parent / "relation_cache.jsonl"
         self._extraction_prompt_fingerprint = _fingerprint(
             getattr(self.extractor, "prompt_template", type(self.extractor).__qualname__)
@@ -679,7 +679,12 @@ class ControllerOrchestrator:
                 else None
             )
             prefilter_total = (
-                sum(1 for support in supporting_sessions for turn in support.turns if turn.role == "user")
+                sum(
+                    1
+                    for support in supporting_sessions
+                    for turn in support.turns
+                    if turn.role == "user"
+                )
                 if prefilter_turns is not None
                 else None
             )
@@ -736,9 +741,7 @@ class ControllerOrchestrator:
             # Lineage instructions only when the historical gate fired (set in
             # _retrieve above); current-state prompts stay lineage-free.
             if self._last_history_query_detected:
-                effective_system_prompt = (
-                    effective_system_prompt + HISTORY_LINEAGE_INSTRUCTION
-                )
+                effective_system_prompt = effective_system_prompt + HISTORY_LINEAGE_INSTRUCTION
 
             # Prompt-budget guard: keep the answer prompt strictly under the
             # answerer's context window so the model always has room to
@@ -767,9 +770,7 @@ class ControllerOrchestrator:
                 # §5 fix 4: rerank retrieved by score (question-similarity) so
                 # the highest-signal items survive the cap.
                 trim_input = (
-                    self._rerank_for_answer(retrieved)
-                    if self.answer_context_rerank
-                    else retrieved
+                    self._rerank_for_answer(retrieved) if self.answer_context_rerank else retrieved
                 )
                 answer_retrieved, budget_debug = self._budget_trim_for_answer(
                     session, trim_input, computed, prompt_budget_tokens
@@ -778,14 +779,8 @@ class ControllerOrchestrator:
                 # will actually fit in the answer prompt. The v7 path ran it on
                 # the much larger pre-trim pool, which amplified distractors and
                 # could exceed the answerer's intended context budget.
-                if (
-                    computed is None
-                    and self.computation_answerer
-                    and self.aggregation_scaffold
-                ):
-                    computed = self._aggregation_scaffold(
-                        session, answer_retrieved
-                    )
+                if computed is None and self.computation_answerer and self.aggregation_scaffold:
+                    computed = self._aggregation_scaffold(session, answer_retrieved)
                     if computed is not None:
                         first_trim_debug = budget_debug
                         answer_retrieved, scaffold_trim_debug = self._budget_trim_for_answer(
@@ -794,9 +789,9 @@ class ControllerOrchestrator:
                             computed,
                             prompt_budget_tokens,
                         )
-                        scaffold_trim_debug["memory_items_before_trim"] = (
-                            first_trim_debug["memory_items_before_trim"]
-                        )
+                        scaffold_trim_debug["memory_items_before_trim"] = first_trim_debug[
+                            "memory_items_before_trim"
+                        ]
                         scaffold_trim_debug["estimated_prompt_tokens_before_trim"] = (
                             first_trim_debug["estimated_prompt_tokens_before_trim"]
                         )
@@ -874,9 +869,7 @@ class ControllerOrchestrator:
                     retry_llm = self.answer_escalation_llm or self.llm
                     retry_system_prompt = ANSWER_RETRY_SYSTEM_PROMPT
                     if self._last_history_query_detected:
-                        retry_system_prompt = (
-                            retry_system_prompt + HISTORY_LINEAGE_INSTRUCTION
-                        )
+                        retry_system_prompt = retry_system_prompt + HISTORY_LINEAGE_INSTRUCTION
                     final_prompt = self._render_prompt(
                         session,
                         answer_retrieved,
@@ -944,9 +937,7 @@ class ControllerOrchestrator:
 
             action_counts = _action_counts(decisions)
             retrieved_session_ids = [r.item.session_id for r in retrieved]
-            answer_context_session_ids = [
-                r.item.session_id for r in answer_retrieved
-            ]
+            answer_context_session_ids = [r.item.session_id for r in answer_retrieved]
             answer_context_item_refs = [
                 {
                     "session_id": r.item.session_id,
@@ -958,16 +949,12 @@ class ControllerOrchestrator:
             ]
             supporting_id_set = set(session.supporting_session_ids)
             retrieved_supporting = supporting_id_set & set(retrieved_session_ids)
-            answer_context_supporting = supporting_id_set & set(
-                answer_context_session_ids
-            )
+            answer_context_supporting = supporting_id_set & set(answer_context_session_ids)
             support_denominator = len(supporting_id_set)
             leakage_count = sum(1 for sid in retrieved_session_ids if sid == session.session_id)
             cache_hits = self._extraction_cache_hits - cache_hits_before
             cache_misses = self._extraction_cache_misses - cache_misses_before
-            uncached_failures = (
-                self._extraction_uncached_failures - uncached_failures_before
-            )
+            uncached_failures = self._extraction_uncached_failures - uncached_failures_before
             relation_cache_hits = self._relation_cache_hits - relation_cache_hits_before
             relation_cache_misses = self._relation_cache_misses - relation_cache_misses_before
             self._log_progress(
@@ -1011,12 +998,8 @@ class ControllerOrchestrator:
                     "retrieval_session_ids_before_trim": retrieved_session_ids,
                     "answer_context_session_ids": answer_context_session_ids,
                     "answer_context_item_refs": answer_context_item_refs,
-                    "retrieval_supporting_sessions_before_trim": sorted(
-                        retrieved_supporting
-                    ),
-                    "answer_context_supporting_sessions": sorted(
-                        answer_context_supporting
-                    ),
+                    "retrieval_supporting_sessions_before_trim": sorted(retrieved_supporting),
+                    "answer_context_supporting_sessions": sorted(answer_context_supporting),
                     "retrieval_support_coverage_before_trim": (
                         None
                         if support_denominator == 0
@@ -1081,12 +1064,8 @@ class ControllerOrchestrator:
                         "estimated_prompt_tokens_before_trim"
                     ),
                     "prompt_token_estimate_is_approximate": True,
-                    "prompt_memory_items_before_trim": budget_debug.get(
-                        "memory_items_before_trim"
-                    ),
-                    "prompt_memory_items_after_trim": budget_debug.get(
-                        "memory_items_after_trim"
-                    ),
+                    "prompt_memory_items_before_trim": budget_debug.get("memory_items_before_trim"),
+                    "prompt_memory_items_after_trim": budget_debug.get("memory_items_after_trim"),
                     "prompt_trimmed": bool(budget_debug.get("prompt_trimmed", False)),
                     "prompt_assistant_context_included": self.include_assistant_context,
                     "prompt_neighbor_window": self.retrieval_neighbor_window,
@@ -1157,11 +1136,7 @@ class ControllerOrchestrator:
                 # sentence/line chunks (each tagged with the same turn_idx) so a
                 # fact anywhere in the turn can rank; default embeds the whole
                 # turn (byte-stable with prior runs).
-                chunks = (
-                    _chunk_text(turn.content)
-                    if self.prefilter_chunk_turns
-                    else [turn.content]
-                )
+                chunks = _chunk_text(turn.content) if self.prefilter_chunk_turns else [turn.content]
                 for chunk in chunks:
                     items.append(
                         RetrievalMemoryItem(
@@ -1286,9 +1261,8 @@ class ControllerOrchestrator:
                 or not isinstance(output, Mapping)
             ):
                 continue
-            model_id = (
-                _trace_model_id(row.get("stage1_responses"))
-                or _trace_model_id(row.get("stage2_responses"))
+            model_id = _trace_model_id(row.get("stage1_responses")) or _trace_model_id(
+                row.get("stage2_responses")
             )
             if model_id is not None and model_id != self._relation_model_id:
                 continue
@@ -1329,9 +1303,7 @@ class ControllerOrchestrator:
             payload = turn_payload(session, turn, idx)
             prev_payload = turn_payload(session, turns[idx - 1], idx - 1) if idx > 0 else None
             next_payload = (
-                turn_payload(session, turns[idx + 1], idx + 1)
-                if idx + 1 < len(turns)
-                else None
+                turn_payload(session, turns[idx + 1], idx + 1) if idx + 1 < len(turns) else None
             )
             eligible.append((idx, turn, payload, (prev_payload, next_payload)))
 
@@ -1373,8 +1345,7 @@ class ControllerOrchestrator:
             for seen, (idx, _turn, payload, window) in enumerate(eligible, start=1):
                 if self.progress and (seen == 1 or seen == total or seen % 10 == 0):
                     self._log_progress(
-                        f"{prefix}: extract user_turn {seen}/{total} "
-                        f"{session.session_id}:{idx}"
+                        f"{prefix}: extract user_turn {seen}/{total} {session.session_id}:{idx}"
                     )
                 outputs[idx] = self._extract_turn(payload, window)
             return outputs
@@ -1621,10 +1592,7 @@ class ControllerOrchestrator:
         the cases that move Supersede/Abstain.
         """
         relation = str(base_output.relation_to_prior_state)
-        if (
-            str(base_output.logical_relation) == "independent"
-            and relation == "unclear"
-        ):
+        if str(base_output.logical_relation) == "independent" and relation == "unclear":
             # The downstream scorecard already treats independent+unclear as a
             # safe Keep. It is not a decision-critical ambiguity.
             return False
@@ -1659,9 +1627,7 @@ class ControllerOrchestrator:
             candidate_timestamp=candidate.timestamp,
             prior_text=prior.text,
             prior_type=prior.type.value,
-            prior_timestamp=(
-                prior_provenance.timestamp if prior_provenance is not None else None
-            ),
+            prior_timestamp=(prior_provenance.timestamp if prior_provenance is not None else None),
         )
 
     def _relation_key_from_parts(
@@ -1681,16 +1647,10 @@ class ControllerOrchestrator:
                 "model": self._relation_model_id,
                 "prompt": self._relation_prompt_fingerprint,
                 "escalation_model": (
-                    self._escalation_model_id
-                    if self.classifier_escalation is not None
-                    else None
+                    self._escalation_model_id if self.classifier_escalation is not None else None
                 ),
-                "escalation_extraction_confidence": float(
-                    self.escalation_extraction_confidence
-                ),
-                "escalation_marker_burden": float(
-                    self.escalation_marker_burden
-                ),
+                "escalation_extraction_confidence": float(self.escalation_extraction_confidence),
+                "escalation_marker_burden": float(self.escalation_marker_burden),
                 "escalation_relations": list(self.escalation_relations),
                 "candidate_text": candidate_text,
                 "candidate_type": candidate_type,
@@ -1814,8 +1774,7 @@ class ControllerOrchestrator:
             same_subject=True,
             relation_to_prior_state="supersede",
             stage1_rationale=(
-                "deterministic: same fact slot (shared anchor tokens) with "
-                "different numeric values"
+                "deterministic: same fact slot (shared anchor tokens) with different numeric values"
             ),
             stage2_rationale=(
                 f"deterministic: candidate dated {cand_date.isoformat()} is newer "
@@ -1945,7 +1904,10 @@ class ControllerOrchestrator:
         provenance: Mapping[int, MemoryProvenance],
         session: LongMemEvalSession,
     ) -> list[RetrievedItem]:
-        store = FlatVectorStore(embedder=self.embedder)
+        embedder = self.embedder
+        if embedder is None:  # Defensive for objects restored without __post_init__.
+            raise RuntimeError("controller embedder is not initialized")
+        store = FlatVectorStore(embedder=embedder)
         items: list[RetrievalMemoryItem] = []
         active_memories = retrieve_active(conn)
         for memory in active_memories:
@@ -1981,28 +1943,21 @@ class ControllerOrchestrator:
         # explicitly asks for a historical state. A separate top-k guarantees
         # that the relevant predecessor is not crowded out by the active/raw
         # retrieval pool; every such row carries a conspicuous status tag.
-        history_items = self._historical_context_items(
-            conn, active_memories, provenance, session
-        )
+        history_items = self._historical_context_items(conn, active_memories, provenance, session)
         if history_items and self.history_retrieval_k > 0:
-            history_store = FlatVectorStore(embedder=self.embedder)
+            history_store = FlatVectorStore(embedder=embedder)
             history_store.add(history_items)
             history_hits = history_store.search(
                 session.question,
                 k=min(int(self.history_retrieval_k), len(history_items)),
             )
-            seen = {
-                (hit.item.session_id, hit.item.turn_idx, hit.item.text)
-                for hit in retrieved
-            }
+            seen = {(hit.item.session_id, hit.item.turn_idx, hit.item.text) for hit in retrieved}
             for hit in history_hits:
                 key = (hit.item.session_id, hit.item.turn_idx, hit.item.text)
                 if key in seen:
                     continue
                 seen.add(key)
-                retrieved.append(
-                    RetrievedItem(item=hit.item, score=hit.score, rank=len(retrieved))
-                )
+                retrieved.append(RetrievedItem(item=hit.item, score=hit.score, rank=len(retrieved)))
                 self._last_history_retrieved_count += 1
 
         context_items = items + history_items
@@ -2031,8 +1986,7 @@ class ControllerOrchestrator:
     ) -> list[RetrievalMemoryItem]:
         """Build tagged predecessor rows for an explicit history query only."""
         self._last_history_query_detected = bool(
-            self.history_aware_retrieval
-            and _requests_historical_memory(session.question)
+            self.history_aware_retrieval and _requests_historical_memory(session.question)
         )
         self._last_history_candidate_count = 0
         self._last_history_retrieved_count = 0
@@ -2065,9 +2019,7 @@ class ControllerOrchestrator:
         self._last_history_candidate_count = len(out)
         return out
 
-    def _assistant_context_items(
-        self, session: LongMemEvalSession
-    ) -> list[RetrievalMemoryItem]:
+    def _assistant_context_items(self, session: LongMemEvalSession) -> list[RetrievalMemoryItem]:
         """Raw assistant turns from the allowed memory corpus (anti-leakage safe)."""
         items: list[RetrievalMemoryItem] = []
         supporting = self._supporting_sessions_from_ids(memory_session_ids(session))
@@ -2096,9 +2048,7 @@ class ControllerOrchestrator:
                     )
         return items
 
-    def _raw_user_context_items(
-        self, session: LongMemEvalSession
-    ) -> list[RetrievalMemoryItem]:
+    def _raw_user_context_items(self, session: LongMemEvalSession) -> list[RetrievalMemoryItem]:
         """Raw user turns from the allowed memory corpus (anti-leakage safe).
 
         The extraction prefilter caps how many user turns reach the LLM
@@ -2237,9 +2187,11 @@ class ControllerOrchestrator:
                 for hit in store.search(question, k=min(len(items), 256))
             }
             window_candidates.sort(
-                key=lambda item: -(
-                    dense_rank.get((item.session_id, item.turn_idx, item.text), 0.0)
-                    + (0.05 if item.role == "user" else 0.0)
+                key=lambda item: (
+                    -(
+                        dense_rank.get((item.session_id, item.turn_idx, item.text), 0.0)
+                        + (0.05 if item.role == "user" else 0.0)
+                    )
                 )
             )
             for item in window_candidates[:4]:
@@ -2257,11 +2209,14 @@ class ControllerOrchestrator:
         cap: int = 4,
     ) -> list[RetrievalMemoryItem]:
         qdate = parse_any_date(question_date)
-        stamps = [
-            parse_any_date(item.timestamp) for item in items if item.timestamp
-        ]
-        stamps = [d for d in stamps if d is not None]
+        stamps: list[date] = []
+        for item in items:
+            parsed = parse_any_date(item.timestamp)
+            if parsed is not None:
+                stamps.append(parsed)
         ref = qdate or (max(stamps) if stamps else None)
+        if ref is None:
+            return []
         window = _question_relative_window(question, ref)
         month = _question_month(question)
         scored: list[tuple[float, RetrievalMemoryItem]] = []
@@ -2286,9 +2241,7 @@ class ControllerOrchestrator:
                     if not (target - timedelta(days=tolerance) <= item_date <= ref):
                         continue
                     anchor_distance = abs((ref - item_date).days)
-                score = float(
-                    tolerance + 30 - anchor_distance + (2 if item.role == "user" else 0)
-                )
+                score = float(tolerance + 30 - anchor_distance + (2 if item.role == "user" else 0))
             elif month is not None:
                 if item_date.month != month:
                     continue
@@ -2324,9 +2277,7 @@ class ControllerOrchestrator:
                 return PREFERENCE_SYSTEM_PROMPT
         return self.system_prompt
 
-    def _rerank_for_answer(
-        self, retrieved: list[RetrievedItem]
-    ) -> list[RetrievedItem]:
+    def _rerank_for_answer(self, retrieved: list[RetrievedItem]) -> list[RetrievedItem]:
         """Order retrieved items by descending score (docx §5 fix 4).
 
         Neighbor-window expansion and raw-context injection append items in
@@ -2336,9 +2287,7 @@ class ControllerOrchestrator:
         """
         return sorted(retrieved, key=lambda r: -float(r.score))
 
-    def _session_diverse_answer_order(
-        self, retrieved: list[RetrievedItem]
-    ) -> list[RetrievedItem]:
+    def _session_diverse_answer_order(self, retrieved: list[RetrievedItem]) -> list[RetrievedItem]:
         """Prioritize cross-session coverage before repeated same-session chunks.
 
         LongMemEval's aggregation and temporal questions require evidence from
@@ -2361,11 +2310,7 @@ class ControllerOrchestrator:
 
         out: list[RetrievedItem] = []
         for assistant_group in (False, True):
-            group = [
-                item
-                for item in ranked
-                if (item.item.role == "assistant") is assistant_group
-            ]
+            group = [item for item in ranked if (item.item.role == "assistant") is assistant_group]
             counts: dict[str, int] = {}
             overflow: list[RetrievedItem] = []
             for item in group:
@@ -2490,9 +2435,7 @@ class ControllerOrchestrator:
             conflict_block=_conflict_block(retrieved, session.question),
         )
 
-    def _temporal_block(
-        self, session: LongMemEvalSession, retrieved: list[RetrievedItem]
-    ) -> str:
+    def _temporal_block(self, session: LongMemEvalSession, retrieved: list[RetrievedItem]) -> str:
         """Additive scaffolding for temporal questions (roadmap P4).
 
         Surfaces event dates parsed from the memory text (not just the session
@@ -2585,9 +2528,9 @@ class ControllerOrchestrator:
             valid_sources.add(tag)
             date = f" ({hit.item.timestamp})" if hit.item.timestamp else ""
             lines.append(f"[{tag}]{date} {hit.item.text}")
-        prompt = AGGREGATION_SCAFFOLD_PROMPT.replace(
-            "__QUESTION__", session.question
-        ).replace("__MEMORY__", "\n".join(lines))
+        prompt = AGGREGATION_SCAFFOLD_PROMPT.replace("__QUESTION__", session.question).replace(
+            "__MEMORY__", "\n".join(lines)
+        )
         try:
             resp = self.llm.generate(
                 prompt, max_new_tokens=self.max_new_tokens, temperature=0.0, seed=self.seed
@@ -2642,9 +2585,7 @@ class ControllerOrchestrator:
             safe_to_bypass_llm=False,
         )
 
-    def _ordinal_list_evidence(
-        self, session: LongMemEvalSession
-    ) -> list[RetrievedEvidence]:
+    def _ordinal_list_evidence(self, session: LongMemEvalSession) -> list[RetrievedEvidence]:
         """Full assistant turns containing a numbered list (docx §4 fix 6)."""
         out: list[RetrievedEvidence] = []
         for support in self._supporting_sessions_from_ids(memory_session_ids(session)):
@@ -2741,9 +2682,35 @@ def _chunk_text(text: str, *, max_chars: int = 320, min_chars: int = 12) -> list
 
 
 _QUESTION_STOPWORDS = {
-    "about", "all", "and", "any", "are", "did", "do", "does", "for", "from",
-    "had", "has", "have", "how", "many", "much", "the", "that", "this", "was",
-    "were", "what", "when", "where", "which", "who", "why", "with", "you",
+    "about",
+    "all",
+    "and",
+    "any",
+    "are",
+    "did",
+    "do",
+    "does",
+    "for",
+    "from",
+    "had",
+    "has",
+    "have",
+    "how",
+    "many",
+    "much",
+    "the",
+    "that",
+    "this",
+    "was",
+    "were",
+    "what",
+    "when",
+    "where",
+    "which",
+    "who",
+    "why",
+    "with",
+    "you",
     "your",
 }
 
@@ -2819,14 +2786,67 @@ _NUMERIC_VALUE_RE = re.compile(r"\$?\d[\d,]*(?:\.\d+)?")
 # Conversational filler that two unrelated purchase/update sentences share
 # anyway; excluded so shared-anchor counting keys on real entities.
 _GENERIC_TOKENS = {
-    "about", "actually", "after", "again", "back", "been", "before", "being",
-    "definitely", "did", "doing", "finally", "forward", "from", "get", "getting",
-    "going", "got", "have", "having", "just", "know", "like", "looking", "make",
-    "really", "recently", "remember", "should", "since", "some", "something",
-    "thanks", "that", "them", "then", "there", "they", "thing", "things", "think",
-    "thinking", "this", "time", "told", "want", "wanted", "was", "way", "week",
-    "well", "were", "what", "when", "where", "which", "while", "will", "with",
-    "would", "your",
+    "about",
+    "actually",
+    "after",
+    "again",
+    "back",
+    "been",
+    "before",
+    "being",
+    "definitely",
+    "did",
+    "doing",
+    "finally",
+    "forward",
+    "from",
+    "get",
+    "getting",
+    "going",
+    "got",
+    "have",
+    "having",
+    "just",
+    "know",
+    "like",
+    "looking",
+    "make",
+    "really",
+    "recently",
+    "remember",
+    "should",
+    "since",
+    "some",
+    "something",
+    "thanks",
+    "that",
+    "them",
+    "then",
+    "there",
+    "they",
+    "thing",
+    "things",
+    "think",
+    "thinking",
+    "this",
+    "time",
+    "told",
+    "want",
+    "wanted",
+    "was",
+    "way",
+    "week",
+    "well",
+    "were",
+    "what",
+    "when",
+    "where",
+    "which",
+    "while",
+    "will",
+    "with",
+    "would",
+    "your",
 }
 
 
@@ -2877,20 +2897,19 @@ def _conflict_block(retrieved: list[RetrievedItem], question: str | None = None)
        to the full retrieved memory, instead of overriding the model's own
        date comparison with a possibly-incomplete "correct" verdict.
     """
-    numeric_items = [
-        (parse_any_date(hit.item.timestamp), hit)
-        for hit in retrieved
-        if _numeric_values_set(hit.item.text)
-    ]
-    numeric_items = [(d, hit) for d, hit in numeric_items if d is not None]
+    numeric_items: list[tuple[date, RetrievedItem]] = []
+    for hit in retrieved:
+        if not _numeric_values_set(hit.item.text):
+            continue
+        parsed = parse_any_date(hit.item.timestamp)
+        if parsed is not None:
+            numeric_items.append((parsed, hit))
     q_anchors = _anchor_tokens(question or "")
     if q_anchors:
         numeric_items = [
-            (d, hit)
-            for d, hit in numeric_items
-            if _anchor_tokens(hit.item.text) & q_anchors
+            (d, hit) for d, hit in numeric_items if _anchor_tokens(hit.item.text) & q_anchors
         ]
-    groups: list[list[tuple[Any, RetrievedItem]]] = []
+    groups: list[list[tuple[date, RetrievedItem]]] = []
     used: set[int] = set()
     for i in range(len(numeric_items)):
         if i in used:
@@ -2983,7 +3002,11 @@ def _current_location_block(question: str, retrieved: list[RetrievedItem]) -> st
         if not shared:
             continue
         text_l = hit.item.text.casefold()
-        if not location_re.search(hit.item.text) and "stored" not in text_l and "storing" not in text_l:
+        if (
+            not location_re.search(hit.item.text)
+            and "stored" not in text_l
+            and "storing" not in text_l
+        ):
             continue
         score = len(shared) + float(hit.score)
         candidates.append((datetime.combine(d, datetime.min.time()), score, hit))
@@ -3130,10 +3153,7 @@ def _expand_retrieval_neighbors(
     corpus: Mapping[str, LongMemEvalSession] | None = None,
 ) -> list[RetrievedItem]:
     out = list(retrieved)
-    seen = {
-        (hit.item.session_id, hit.item.turn_idx, hit.item.text)
-        for hit in retrieved
-    }
+    seen = {(hit.item.session_id, hit.item.turn_idx, hit.item.text) for hit in retrieved}
     for hit in retrieved:
         neighbors = [
             item
@@ -3170,9 +3190,7 @@ def _expand_retrieval_neighbors(
             and abs(idx - hit.item.turn_idx) <= window
             and (support.session_id, idx, turn.content) not in seen
         ]
-        raw_neighbors.sort(
-            key=lambda item: (abs(item.turn_idx - hit.item.turn_idx), item.turn_idx)
-        )
+        raw_neighbors.sort(key=lambda item: (abs(item.turn_idx - hit.item.turn_idx), item.turn_idx))
         for item in raw_neighbors:
             seen.add((item.session_id, item.turn_idx, item.text))
             out.append(

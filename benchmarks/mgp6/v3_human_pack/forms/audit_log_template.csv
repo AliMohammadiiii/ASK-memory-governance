@@ -1,0 +1,2 @@
+event_id,timestamp_utc,actor_code,artifact_role,path_or_id,old_sha256,new_sha256,event_type,reason,approval_reference,affects_split,affects_labels,notes
+EV-EXAMPLE,,COORD,protocol,MGP6_V3_INDEPENDENT_PROTOCOL.md,,,freeze,initial_freeze,,no,no,

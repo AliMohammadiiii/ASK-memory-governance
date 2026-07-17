@@ -1,0 +1,389 @@
+{"kind":"deck","id":"pr/s0wyy3","name":"Deck"}
+{"kind":"layout","layoutId":"6f87fdf8-a15a-462b-b34d-75ba5d6358a3","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"d4cdca3a-36e6-4637-a983-260744af6548","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/2yyuru","slide":1,"title":"MASTER’S THESIS DEFENSE","textShapes":4}
+{"kind":"textbox","id":"sh/0zyhs3y5","slide":1,"text":"MASTER’S THESIS DEFENSE","textPreview":"MASTER’S THESIS DEFENSE","textChars":23,"textLines":1,"bbox":[52,52,1176,36]}
+{"kind":"textbox","id":"sh/zypgzyhk","slide":1,"text":"Governing Long-Term Memory Before Retrieval","textPreview":"Governing Long-Term Memory Before Retrieval","textChars":43,"textLines":1,"bbox":[52,190,1176,210]}
+{"kind":"textbox","id":"sh/yxgfqtgz","slide":1,"text":"KEEP · SUPERSEDE · ABSTAIN over typed, provenance-tracked, lineage-preserving memory","textPreview":"KEEP · SUPERSEDE · ABSTAIN over typed, provenance-tracked, lineage-preserving memory","textChars":84,"textLines":1,"bbox":[52,466,790,110]}
+{"kind":"textbox","id":"sh/dw7yxoze","slide":1,"text":"Ali Mohammadi · KSA Memory Governance · 2026","textPreview":"Ali Mohammadi · KSA Memory Governance · 2026","textChars":44,"textLines":1,"bbox":[52,610,1176,48]}
+{"kind":"notes","id":"nt/2yyuru","slide":1,"text":"Open with the research question: can a memory system decide whether a new claim should be committed, replace an older claim, or be refused? Preview that the thesis evaluates this decision directly, not only downstream answer accuracy."}
+{"kind":"slide","id":"sl/l4hmib","slide":2,"title":"MOTIVATION","textShapes":5}
+{"kind":"textbox","id":"sh/el4nydcz","slide":2,"text":"MOTIVATION","textPreview":"MOTIVATION","textChars":10,"textLines":1,"bbox":[52,31,1176,24]}
+{"kind":"textbox","id":"sh/18fm98vq","slide":2,"text":"Long-term memory is a mutable state, not a document collection","textPreview":"Long-term memory is a mutable state, not a document collection","textChars":62,"textLines":1,"bbox":[52,65,1176,86]}
+{"kind":"textbox","id":"sh/076503u5","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/nax4bidg","slide":2,"text":"Every write changes what the agent will later treat as true.","textPreview":"Every write changes what the agent will later treat as true.","textChars":60,"textLines":1,"bbox":[52,185,1176,240]}
+{"kind":"shape","id":"sh/29on2dcv","slide":2,"bbox":[52,485,600,126]}
+{"kind":"textbox","id":"sh/pcfmdsvm","slide":2,"text":"A retrieval score cannot decide whether evidence is compatible, superseding, or too ambiguous to commit.","textPreview":"A retrieval score cannot decide whether evidence is compatible, superseding, or too ambiguous to commit.","textChars":104,"textLines":1,"bbox":[80,510,544,80]}
+{"kind":"notes","id":"nt/l4hmib","slide":2,"text":"Frame memory as an epistemic state. The key risk appears before retrieval: a bad write can remain active and influence many future answers."}
+{"kind":"slide","id":"sl/gcygww","slide":3,"title":"Retrieval-only pipelines leave the write decision implicit","textShapes":8}
+{"kind":"textbox","id":"sh/i103ydkv","slide":3,"text":"Retrieval-only pipelines leave the write decision implicit","textPreview":"Retrieval-only pipelines leave the write decision implicit","textChars":58,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/54b2ts3m","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/432l0n21","slide":3,"bbox":[52,178,574,398]}
+{"kind":"textbox","id":"sh/r6tkv2lc","slide":3,"text":"Retrieval-centric memory","textPreview":"Retrieval-centric memory","textChars":24,"textLines":1,"bbox":[80,209,518,42]}
+{"kind":"textbox","id":"sh/q5k32xkr","slide":3,"text":"store → rank → answer","textPreview":"store → rank → answer","textChars":21,"textLines":1,"bbox":[80,282,518,72]}
+{"kind":"textbox","id":"sh/d8b2xc3i","slide":3,"text":"Optimizes whether a relevant item is found. Conflict handling, uncertainty, and history are side effects.","textPreview":"Optimizes whether a relevant item is found. Conflict handling, uncertainty, and history are side effects.","textChars":105,"textLines":1,"bbox":[80,384,518,145]}
+{"kind":"shape","id":"sh/s72l472x","slide":3,"bbox":[654,178,574,398]}
+{"kind":"textbox","id":"sh/zudkz2lo","slide":3,"text":"Governed memory","textPreview":"Governed memory","textChars":15,"textLines":1,"bbox":[682,209,518,42]}
+{"kind":"textbox","id":"sh/e9k36xk3","slide":3,"text":"inspect → decide → transition","textPreview":"inspect → decide → transition","textChars":29,"textLines":1,"bbox":[682,282,518,72]}
+{"kind":"textbox","id":"sh/0n2dsr21","slide":3,"text":"Makes the write action explicit, preserves superseded history, and audits why state changed.","textPreview":"Makes the write action explicit, preserves superseded history, and audits why state changed.","textChars":92,"textLines":1,"bbox":[682,384,518,145]}
+{"kind":"notes","id":"nt/gcygww","slide":3,"text":"Contrast the two abstractions. This thesis does not argue retrieval is unnecessary; it argues retrieval begins after a governance decision has already shaped the state."}
+{"kind":"slide","id":"sl/7iy4cr","slide":4,"title":"The research gap is a missing, measurable write boundary","textShapes":10}
+{"kind":"textbox","id":"sh/6lsfqxw7","slide":4,"text":"The research gap is a missing, measurable write boundary","textPreview":"The research gap is a missing, measurable write boundary","textChars":56,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/to3ylsfy","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/snaxsned","slide":4,"text":"Action","textPreview":"Action","textChars":6,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/ji1wfixw","slide":4,"text":"Most systems expose ADD/UPDATE/NOOP but do not score whether the operation was correct under conflict.","textPreview":"Most systems expose ADD/UPDATE/NOOP but do not score whether the operation was correct under conflict.","textChars":102,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/ihsfmdwb","slide":4,"text":"Uncertainty","textPreview":"Uncertainty","textChars":11,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/5kjyhsfm","slide":4,"text":"NOOP often means ‘nothing new,’ not ‘evidence is unsafe to commit.’","textPreview":"NOOP often means ‘nothing new,’ not ‘evidence is unsafe to commit.’","textChars":67,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/kjaxone1","slide":4,"text":"History","textPreview":"History","textChars":7,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/3elgrmd0","slide":4,"text":"Overwrite can hide the losing claim; append-only memory can leave contradictions simultaneously active.","textPreview":"Overwrite can hide the losing claim; append-only memory can leave contradictions simultaneously active.","textChars":103,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/2dcfyhwf","slide":4,"text":"Evaluation","textPreview":"Evaluation","textChars":10,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/o32dgnqx","slide":4,"text":"Answer accuracy cannot localize whether failure came from a write, state transition, retrieval, or generation.","textPreview":"Answer accuracy cannot localize whether failure came from a write, state transition, retrieval, or generation.","textChars":110,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"notes","id":"nt/7iy4cr","slide":4,"text":"State the narrow gap. Avoid primacy claims: related systems contain update actions, versioning, and abstention-like ideas. The contribution is the operationalized combination and layered evaluation."}
+{"kind":"slide","id":"sl/p1ds3v","slide":5,"title":"The policy fixes three write actions and their state semantics","textShapes":10}
+{"kind":"textbox","id":"sh/j2dofql4","slide":5,"text":"The policy fixes three write actions and their state semantics","textPreview":"The policy fixes three write actions and their state semantics","textChars":62,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/4nm5ov2p","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/5of6h0ja","slide":5,"text":"The action vocabulary is fixed by code; the model may propose, but cannot invent a fourth transition.","textPreview":"The action vocabulary is fixed by code; the model may propose, but cannot invent a fourth transition.","textChars":101,"textLines":1,"bbox":[52,138,1176,62]}
+{"kind":"shape","id":"sh/6ponq5kv","slide":5,"bbox":[52,230,374,350]}
+{"kind":"textbox","id":"sh/rqxoja1g","slide":5,"text":"KEEP","textPreview":"KEEP","textChars":4,"textLines":1,"bbox":[80,270,318,55]}
+{"kind":"textbox","id":"sh/sr65sf2l","slide":5,"text":"Insert a compatible claim as active. Existing non-conflicting records remain active.","textPreview":"Insert a compatible claim as active. Existing non-conflicting records remain active.","textChars":84,"textLines":1,"bbox":[80,350,318,176]}
+{"kind":"shape","id":"sh/tsf6lkj6","slide":5,"bbox":[453,230,374,350]}
+{"kind":"textbox","id":"sh/etonu5kr","slide":5,"text":"SUPERSEDE","textPreview":"SUPERSEDE","textChars":9,"textLines":1,"bbox":[481,270,318,55]}
+{"kind":"textbox","id":"sh/fuxona1c","slide":5,"text":"Insert the new claim, deactivate the conflicting prior, and record a lineage link.","textPreview":"Insert the new claim, deactivate the conflicting prior, and record a lineage link.","textChars":82,"textLines":1,"bbox":[481,350,318,176]}
+{"kind":"shape","id":"sh/3ih4n2l8","slide":5,"bbox":[854,230,374,350]}
+{"kind":"textbox","id":"sh/ih8nex4n","slide":5,"text":"ABSTAIN","textPreview":"ABSTAIN","textChars":7,"textLines":1,"bbox":[882,270,318,55]}
+{"kind":"textbox","id":"sh/5kzmpc3e","slide":5,"text":"Do not mutate memory. Record the conflict or ambiguity for review.","textPreview":"Do not mutate memory. Record the conflict or ambiguity for review.","textChars":66,"textLines":1,"bbox":[882,350,318,176]}
+{"kind":"textbox","id":"sh/4jq5g7mt","slide":5,"text":"Source: thesis §3–4; src/ksa/memory/operations.py","textPreview":"Source: thesis §3–4; src/ksa/memory/operations.py","textChars":49,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/p1ds3v","slide":5,"text":"Define each action precisely. Stress that ABSTAIN is a no-mutation safety action, not an answer-level refusal, and that SUPERSEDE preserves the old record for audit."}
+{"kind":"slide","id":"sl/cqrejr","slide":6,"title":"KSA places model proposals inside a deterministic governance boundary","textShapes":15}
+{"kind":"textbox","id":"sh/50vmtczi","slide":6,"text":"KSA places model proposals inside a deterministic governance boundary","textPreview":"KSA places model proposals inside a deterministic governance boundary","textChars":69,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/idknyxgr","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/3et4r2hc","slide":6,"bbox":[52,258,160,96]}
+{"kind":"textbox","id":"sh/wb25wnyl","slide":6,"text":"Normalize","textPreview":"Normalize","textChars":9,"textLines":1,"bbox":[62,276,140,60]}
+{"kind":"textbox","id":"sh/hcbmpsz6","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[216,284,30,42]}
+{"kind":"shape","id":"sh/u9knudgv","slide":6,"bbox":[249,258,160,96]}
+{"kind":"textbox","id":"sh/vat4nihg","slide":6,"text":"Extract","textPreview":"Extract","textChars":7,"textLines":1,"bbox":[259,276,140,60]}
+{"kind":"textbox","id":"sh/07658ry5","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[413,284,30,42]}
+{"kind":"shape","id":"sh/18f61wzq","slide":6,"bbox":[446,258,160,96]}
+{"kind":"textbox","id":"sh/9kfut0fm","slide":6,"text":"Resolve prior","textPreview":"Resolve prior","textChars":13,"textLines":1,"bbox":[456,276,140,60]}
+{"kind":"textbox","id":"sh/8j6d0fe1","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[610,284,30,42]}
+{"kind":"shape","id":"sh/nidcraxg","slide":6,"bbox":[643,258,160,96]}
+{"kind":"textbox","id":"sh/mh4vy5wv","slide":6,"text":"Decide","textPreview":"Decide","textChars":6,"textLines":1,"bbox":[653,276,140,60]}
+{"kind":"textbox","id":"sh/lgvup0fa","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[807,284,30,42]}
+{"kind":"shape","id":"sh/0fmdwvep","slide":6,"bbox":[840,258,160,96]}
+{"kind":"textbox","id":"sh/zedcnqx4","slide":6,"text":"Apply transition","textPreview":"Apply transition","textChars":16,"textLines":1,"bbox":[850,276,140,60]}
+{"kind":"textbox","id":"sh/yt4vulwj","slide":6,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[1004,284,30,42]}
+{"kind":"shape","id":"sh/5cze14fe","slide":6,"bbox":[1037,258,160,96]}
+{"kind":"textbox","id":"sh/kbqd8ze9","slide":6,"text":"Retrieve / answer","textPreview":"Retrieve / answer","textChars":17,"textLines":1,"bbox":[1047,276,140,60]}
+{"kind":"shape","id":"sh/4vyx43m5","slide":6,"bbox":[250,430,780,116]}
+{"kind":"textbox","id":"sh/5g7yx8nq","slide":6,"text":"Typed evidence + relation signals → fixed policy → atomic, auditable memory transition","textPreview":"Typed evidence + relation signals → fixed policy → atomic, auditable memory transition","textChars":86,"textLines":1,"bbox":[282,456,716,68]}
+{"kind":"textbox","id":"sh/itwf2t4z","slide":6,"text":"Source: src/ksa/pipeline/orchestrator.py; docs/figures/figure_07_ksa_controller_architecture.svg","textPreview":"Source: src/ksa/pipeline/orchestrator.py; docs/figures/figure_07_ksa_controller_architecture.svg","textChars":96,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/cqrejr","slide":6,"text":"Walk left to right. Extraction and relation classification can be model-assisted; the action vocabulary, no-mutation behavior, lineage update, and active-only retrieval remain deterministic invariants."}
+{"kind":"slide","id":"sl/aez1p0","slide":7,"title":"The interpretable controller uses two scores and an ordered decision rule","textShapes":8}
+{"kind":"textbox","id":"sh/7qpof2h8","slide":7,"text":"The interpretable controller uses two scores and an ordered decision rule","textPreview":"The interpretable controller uses two scores and an ordered decision rule","textChars":73,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/8by587it","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/tc76hsze","slide":7,"bbox":[52,170,760,374]}
+{"kind":"textbox","id":"sh/ylwn2d0r","slide":7,"text":"if S_abs > θ_abs(τ):\n    ABSTAIN\nelif S_sup > θ_sup(τ) and max(0, −r) > 0:\n    SUPERSEDE\nelse:\n    KEEP","textPreview":"if S_abs > θ_abs(τ): |     ABSTAIN | elif S_sup > θ_sup(τ) and max(0, −r) > 0: |     SUPERSEDE | else: |     KEEP","textChars":103,"textLines":6,"bbox":[82,211,700,290]}
+{"kind":"shape","id":"sh/zm5obihw","slide":7,"bbox":[850,170,378,166]}
+{"kind":"textbox","id":"sh/kne54nih","slide":7,"text":"Five legible features","textPreview":"Five legible features","textChars":21,"textLines":1,"bbox":[878,198,322,40]}
+{"kind":"textbox","id":"sh/lon6dsz2","slide":7,"text":"Relation evidence, type compatibility, provenance, confidence, conflict signals.","textPreview":"Relation evidence, type compatibility, provenance, confidence, conflict signals.","textChars":80,"textLines":1,"bbox":[878,250,322,62]}
+{"kind":"shape","id":"sh/ih0neh0v","slide":7,"bbox":[850,378,378,166]}
+{"kind":"textbox","id":"sh/3i9onmhg","slide":7,"text":"Explainable branch","textPreview":"Explainable branch","textChars":18,"textLines":1,"bbox":[878,406,322,40]}
+{"kind":"textbox","id":"sh/bul4b6t8","slide":7,"text":"Every action logs scores, active thresholds, and the branch taken.","textPreview":"Every action logs scores, active thresholds, and the branch taken.","textChars":66,"textLines":1,"bbox":[878,458,322,62]}
+{"kind":"textbox","id":"sh/atc321sn","slide":7,"text":"Source: src/ksa/controller/policy.py and scoring.py","textPreview":"Source: src/ksa/controller/policy.py and scoring.py","textChars":51,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/aez1p0","slide":7,"text":"Explain the ordered rule. Abstention is evaluated first. Supersession also requires contradiction pressure, so a high score alone cannot deactivate a prior record."}
+{"kind":"slide","id":"sl/99ai8z","slide":8,"title":"Lineage makes revision reversible and auditable","textShapes":12}
+{"kind":"textbox","id":"sh/cbq1cnap","slide":8,"text":"Lineage makes revision reversible and auditable","textPreview":"Lineage makes revision reversible and auditable","textChars":47,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/rah0jit4","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/q98jadsz","slide":8,"bbox":[80,324,1120,2]}
+{"kind":"shape","id":"sh/p8zihsbe","slide":8,"bbox":[82,316,18,18]}
+{"kind":"textbox","id":"sh/47q18nat","slide":8,"text":"t₀","textPreview":"t₀","textChars":2,"textLines":1,"bbox":[82,255,300,38]}
+{"kind":"textbox","id":"sh/36h0fit8","slide":8,"text":"Prior active","textPreview":"Prior active","textChars":12,"textLines":1,"bbox":[82,376,300,45]}
+{"kind":"textbox","id":"sh/258j6dsn","slide":8,"text":"The current claim is retrievable as present state.","textPreview":"The current claim is retrievable as present state.","textChars":50,"textLines":1,"bbox":[82,438,300,120]}
+{"kind":"shape","id":"sh/9432tcbi","slide":8,"bbox":[454,316,18,18]}
+{"kind":"textbox","id":"sh/o3a1k7ax","slide":8,"text":"t₁","textPreview":"t₁","textChars":2,"textLines":1,"bbox":[454,255,300,38]}
+{"kind":"textbox","id":"sh/65wbyxw3","slide":8,"text":"New conflicting evidence","textPreview":"New conflicting evidence","textChars":24,"textLines":1,"bbox":[454,376,300,45]}
+{"kind":"textbox","id":"sh/765cr2xo","slide":8,"text":"Policy selects SUPERSEDE only with an identified prior.","textPreview":"Policy selects SUPERSEDE only with an identified prior.","textChars":55,"textLines":1,"bbox":[454,438,300,120]}
+{"kind":"shape","id":"sh/s7etk7e9","slide":8,"bbox":[826,316,18,18]}
+{"kind":"textbox","id":"sh/t8nutcfu","slide":8,"text":"t₂","textPreview":"t₂","textChars":2,"textLines":1,"bbox":[826,255,300,38]}
+{"kind":"textbox","id":"sh/i1cbuxw7","slide":8,"text":"Linked transition","textPreview":"Linked transition","textChars":17,"textLines":1,"bbox":[826,376,300,45]}
+{"kind":"textbox","id":"sh/j25sn2xs","slide":8,"text":"New record is active; old record is inactive but remains queryable.","textPreview":"New record is active; old record is inactive but remains queryable.","textChars":67,"textLines":1,"bbox":[826,438,300,120]}
+{"kind":"textbox","id":"sh/k3etw7ex","slide":8,"text":"Source: src/ksa/memory/operations.py; lineage-integrity metric","textPreview":"Source: src/ksa/memory/operations.py; lineage-integrity metric","textChars":62,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/99ai8z","slide":8,"text":"Describe lineage as a state invariant, not a decorative log. Normal retrieval excludes inactive records, while explicitly historical questions can still inspect the chain."}
+{"kind":"slide","id":"sl/38rdxr","slide":9,"title":"MGP-6 isolates the write decision across six conflict types","textShapes":10}
+{"kind":"textbox","id":"sh/ja50ni1o","slide":9,"text":"MGP-6 isolates the write decision across six conflict types","textPreview":"MGP-6 isolates the write decision across six conflict types","textChars":59,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/kbehgn29","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/5cnipsju","slide":9,"text":"Author-designed synthetic diagnostic; 60 train, 30 development, 90 held-out test items.","textPreview":"Author-designed synthetic diagnostic; 60 train, 30 development, 90 held-out test items.","textChars":87,"textLines":1,"bbox":[52,133,1176,72]}
+{"kind":"shape","id":"sh/6dwzixkf","slide":9,"bbox":[52,235,374,330]}
+{"kind":"textbox","id":"sh/7e50r210","slide":9,"text":"180","textPreview":"180","textChars":3,"textLines":1,"bbox":[84,308,310,90]}
+{"kind":"textbox","id":"sh/sfehkn25","slide":9,"text":"scenarios with stable IDs and gold actions","textPreview":"scenarios with stable IDs and gold actions","textChars":42,"textLines":1,"bbox":[84,433,310,92]}
+{"kind":"shape","id":"sh/tgnitsjq","slide":9,"bbox":[453,235,374,330]}
+{"kind":"textbox","id":"sh/mhsz6tkv","slide":9,"text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[485,308,310,90]}
+{"kind":"textbox","id":"sh/ni1gfylg","slide":9,"text":"scenario types spanning update, conflict, and ambiguity","textPreview":"scenario types spanning update, conflict, and ambiguity","textChars":55,"textLines":1,"bbox":[485,433,310,92]}
+{"kind":"shape","id":"sh/zu94jel8","slide":9,"bbox":[854,235,374,330]}
+{"kind":"textbox","id":"sh/etg3q94n","slide":9,"text":"90/66/24","textPreview":"90/66/24","textChars":8,"textLines":1,"bbox":[886,308,310,90]}
+{"kind":"textbox","id":"sh/1wrmlo3e","slide":9,"text":"SUPERSEDE / ABSTAIN / KEEP gold distribution","textPreview":"SUPERSEDE / ABSTAIN / KEEP gold distribution","textChars":44,"textLines":1,"bbox":[886,433,310,92]}
+{"kind":"textbox","id":"sh/0vilsjmt","slide":9,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/38rdxr","slide":9,"text":"Position MGP-6 correctly: it is a controlled diagnostic, not a community benchmark or population sample. Its role is causal localization of write-policy behavior."}
+{"kind":"slide","id":"sl/s958cx","slide":10,"title":"The protocol separates result status and evaluation layer","textShapes":11}
+{"kind":"textbox","id":"sh/8vmxwvmh","slide":10,"text":"The protocol separates result status and evaluation layer","textPreview":"The protocol separates result status and evaluation layer","textChars":57,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/7udg3qlw","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/mt4ful4b","slide":10,"text":"Decision layer","textPreview":"Decision layer","textChars":14,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/h0fy903y","slide":10,"text":"Action accuracy, macro-F1, per-action confusion, invalid commits.","textPreview":"Action accuracy, macro-F1, per-action confusion, invalid commits.","textChars":65,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/wzmh0vmd","slide":10,"text":"Stored-state layer","textPreview":"Stored-state layer","textChars":18,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/vydg7ql8","slide":10,"text":"Lineage integrity, stale retrieval, and transition invariants.","textPreview":"Lineage integrity, stale retrieval, and transition invariants.","textChars":62,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/ux4zy54n","slide":10,"text":"Answer layer","textPreview":"Answer layer","textChars":12,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/d4byxg3u","slide":10,"text":"Premise resistance, implicit application, and downstream QA.","textPreview":"Premise resistance, implicit application, and downstream QA.","textChars":60,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/c32xobm9","slide":10,"text":"Claim gate","textPreview":"Claim gate","textChars":10,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/mlwzexcb","slide":10,"text":"Only complete, provenance-valid rows become final_candidate; diagnostics remain labeled.","textPreview":"Only complete, provenance-valid rows become final_candidate; diagnostics remain labeled.","textChars":88,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"textbox","id":"sh/nm5gn2tg","slide":10,"text":"Source: FINAL_EVALUATION_PROTOCOL.md; results ledger v1.1","textPreview":"Source: FINAL_EVALUATION_PROTOCOL.md; results ledger v1.1","textChars":57,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/s958cx","slide":10,"text":"This is the methodological core. Separating layers prevents a downstream answer score from hiding unsafe writes or a decision score from hiding broken lineage."}
+{"kind":"slide","id":"sl/9xttwc","slide":11,"title":"Structured governance reaches the strongest MGP-6 decision accuracy","textShapes":5}
+{"kind":"textbox","id":"sh/juhkz6p4","slide":11,"text":"Structured governance reaches the strongest MGP-6 decision accuracy","textPreview":"Structured governance reaches the strongest MGP-6 decision accuracy","textChars":67,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/4vql8b6p","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/upo32h8n","slide":11,"bbox":[825,168,403,418]}
+{"kind":"textbox","id":"sh/vqhkvmp8","slide":11,"text":"+18.9 points","textPreview":"+18.9 points","textChars":12,"textLines":1,"bbox":[855,206,343,55]}
+{"kind":"textbox","id":"sh/wrql4r6t","slide":11,"text":"Rule KSA vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵.\n\nThe rule and LLM controllers are not significantly different on action accuracy (p = 0.286).","textPreview":"Rule KSA vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵. |  | The rule and LLM controllers are not significantly...","textChars":175,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/hsz2xw7y","slide":11,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated; Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated; Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textChars":110,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"chart","id":"ch/h47yh8ba","slide":11,"name":"","chartType":"bar","bbox":[48,145,735,500]}
+{"kind":"notes","id":"nt/9xttwc","slide":11,"text":"Lead with the completed full-corpus results. The safest inferential contrast is structured rule governance versus the unstructured zero-shot decision baseline. Do not claim the rule policy beats the LLM policy statistically."}
+{"kind":"slide","id":"sl/e6lavw","slide":12,"title":"The rule controller’s remaining errors are conservative","textShapes":10}
+{"kind":"textbox","id":"sh/bmtkjqhc","slide":12,"text":"The rule controller’s remaining errors are conservative","textPreview":"The rule controller’s remaining errors are conservative","textChars":55,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/cn21svyx","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/xob2l0zi","slide":12,"text":"Full-corpus confusion: KEEP 24/24; ABSTAIN 66/66; SUPERSEDE 76/90.","textPreview":"Full-corpus confusion: KEEP 24/24; ABSTAIN 66/66; SUPERSEDE 76/90.","textChars":66,"textLines":1,"bbox":[52,133,1176,72]}
+{"kind":"shape","id":"sh/2x0jmlgv","slide":12,"bbox":[52,235,374,330]}
+{"kind":"textbox","id":"sh/ny9kfqhg","slide":12,"text":"0.9222","textPreview":"0.9222","textChars":6,"textLines":1,"bbox":[84,308,310,90]}
+{"kind":"textbox","id":"sh/ozi1oby1","slide":12,"text":"action accuracy; macro-F1 0.9399","textPreview":"action accuracy; macro-F1 0.9399","textChars":32,"textLines":1,"bbox":[84,433,310,92]}
+{"kind":"shape","id":"sh/pkr2hgzm","slide":12,"bbox":[453,235,374,330]}
+{"kind":"textbox","id":"sh/etgji1gz","slide":12,"text":"0.0","textPreview":"0.0","textChars":3,"textLines":1,"bbox":[485,308,310,90]}
+{"kind":"textbox","id":"sh/fu9kb6h4","slide":12,"text":"invalid-commit rate on gold-ABSTAIN items","textPreview":"invalid-commit rate on gold-ABSTAIN items","textChars":41,"textLines":1,"bbox":[485,433,310,92]}
+{"kind":"shape","id":"sh/3qdkned4","slide":12,"bbox":[854,235,374,330]}
+{"kind":"textbox","id":"sh/2p4jutwj","slide":12,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[886,308,310,90]}
+{"kind":"textbox","id":"sh/psf2pova","slide":12,"text":"all misses are SUPERSEDE → ABSTAIN","textPreview":"all misses are SUPERSEDE → ABSTAIN","textChars":34,"textLines":1,"bbox":[886,433,310,92]}
+{"kind":"textbox","id":"sh/4rm1wjep","slide":12,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/e6lavw","slide":12,"text":"Interpret the error direction. The controller sometimes fails to update under weak evidence, but it does not commit a false write on any gold-ABSTAIN item in this diagnostic."}
+{"kind":"slide","id":"sl/u0ljwa","slide":13,"title":"Ablations attach a distinct failure signature to each component","textShapes":4}
+{"kind":"textbox","id":"sh/fqhcji14","slide":13,"text":"Ablations attach a distinct failure signature to each component","textPreview":"Ablations attach a distinct failure signature to each component","textChars":63,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/grqtsnip","slide":13,"text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/hszulsja","slide":13,"text":"Action accuracy alone misses lineage degradation; safety metrics expose different mechanisms.","textPreview":"Action accuracy alone misses lineage degradation; safety metrics expose different mechanisms.","textChars":93,"textLines":1,"bbox":[52,132,1176,62]}
+{"kind":"textbox","id":"sh/3ehcn21g","slide":13,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/bmpw3258","slide":13,"name":"","rows":6,"cols":4,"preview":"System | Accuracy | Macro-F1 | Measured signature","bbox":[52,220,1176,404]}
+{"kind":"notes","id":"nt/u0ljwa","slide":13,"text":"Use this slide to justify each component. The no-lineage row is especially important: action labels stay unchanged while the stored-state audit property collapses."}
+{"kind":"slide","id":"sl/m3sk2a","slide":14,"title":"External-system scores depend strongly on how NOOP is mapped","textShapes":5}
+{"kind":"textbox","id":"sh/7mx8fehk","slide":14,"text":"External-system scores depend strongly on how NOOP is mapped","textPreview":"External-system scores depend strongly on how NOOP is mapped","textChars":60,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/sn6p8ji5","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/ih472903","slide":14,"bbox":[825,168,403,418]}
+{"kind":"textbox","id":"sh/jidobeho","slide":14,"text":"Mapping-specific bounds","textPreview":"Mapping-specific bounds","textChars":23,"textLines":1,"bbox":[855,206,343,55]}
+{"kind":"textbox","id":"sh/kj6p4ji9","slide":14,"text":"These adapters do not expose KSA’s native action semantics. Report both mappings; do not read the favourable mapping as a capability estimate.\n\nMemOS 0.144 is diagnostic_only because supersession is unobservable.","textPreview":"These adapters do not expose KSA’s native action semantics. Report both mappings; do not read the favourable mapping as a capability esti...","textChars":212,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/5kf6d4zu","slide":14,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"chart","id":"ch/1of69kn6","slide":14,"name":"","chartType":"bar","bbox":[48,145,735,500]}
+{"kind":"notes","id":"nt/m3sk2a","slide":14,"text":"Explain why adapter comparisons need two mappings. These values describe behavior under the harness interface, not the systems’ full native capabilities."}
+{"kind":"slide","id":"sl/ifvalw","slide":15,"title":"Annotation evidence is strong but comes from one independent annotator","textShapes":10}
+{"kind":"textbox","id":"sh/rqpc3i1g","slide":15,"text":"Annotation evidence is strong but comes from one independent annotator","textPreview":"Annotation evidence is strong but comes from one independent annotator","textChars":70,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/crydcni1","slide":15,"text":"15","textPreview":"15","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/dsru5sjm","slide":15,"text":"Held-out test split only; raw labels are withheld from public release pending redistribution consent.","textPreview":"Held-out test split only; raw labels are withheld from public release pending redistribution consent.","textChars":101,"textLines":1,"bbox":[52,133,1176,72]}
+{"kind":"shape","id":"sh/2lgb6d0z","slide":15,"bbox":[52,235,374,330]}
+{"kind":"textbox","id":"sh/3mpczi1k","slide":15,"text":"89/90","textPreview":"89/90","textChars":5,"textLines":1,"bbox":[84,308,310,90]}
+{"kind":"textbox","id":"sh/4nyt83i5","slide":15,"text":"independent action-label agreement","textPreview":"independent action-label agreement","textChars":34,"textLines":1,"bbox":[84,433,310,92]}
+{"kind":"shape","id":"sh/po7u18jq","slide":15,"bbox":[453,235,374,330]}
+{"kind":"textbox","id":"sh/mh0vix03","slide":15,"text":"κ=0.981","textPreview":"κ=0.981","textChars":7,"textLines":1,"bbox":[485,308,310,90]}
+{"kind":"textbox","id":"sh/ni9cb21o","slide":15,"text":"Cohen’s kappa; 95% interval 0.940–1.0","textPreview":"Cohen’s kappa; 95% interval 0.940–1.0","textChars":37,"textLines":1,"bbox":[485,433,310,92]}
+{"kind":"shape","id":"sh/fe143ah0","slide":15,"bbox":[854,235,374,330]}
+{"kind":"textbox","id":"sh/edsnu5gf","slide":15,"text":"4 LLMs","textPreview":"4 LLMs","textChars":6,"textLines":1,"bbox":[886,308,310,90]}
+{"kind":"textbox","id":"sh/1g3m5kz6","slide":15,"text":"separate audit panel; Fleiss κ 0.9815—not human IAA","textPreview":"separate audit panel; Fleiss κ 0.9815—not human IAA","textChars":51,"textLines":1,"bbox":[886,433,310,92]}
+{"kind":"textbox","id":"sh/0fu5wfyl","slide":15,"text":"Source: human_annotation_agreement_summary.json; LLM panel audit","textPreview":"Source: human_annotation_agreement_summary.json; LLM panel audit","textChars":64,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/ifvalw","slide":15,"text":"Be precise about annotation. There is one independent annotator, not a multi-human panel. The four-model agreement study is a model audit and must never be described as human inter-annotator agreement."}
+{"kind":"slide","id":"sl/lza66s","slide":16,"title":"LongMemEval has no final result—and the 77.2% construction is rejected","textShapes":11}
+{"kind":"textbox","id":"sh/gry14fyx","slide":16,"text":"LongMemEval has no final result—and the 77.2% construction is rejected","textPreview":"LongMemEval has no final result—and the 77.2% construction is rejected","textChars":70,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/f6pkvahc","slide":16,"text":"16","textPreview":"16","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/e5gj25gr","slide":16,"text":"The clean homogeneous final-1.1 run is externally_pending after HTTP 403 before inference.","textPreview":"The clean homogeneous final-1.1 run is externally_pending after HTTP 403 before inference.","textChars":90,"textLines":1,"bbox":[52,132,1176,63]}
+{"kind":"shape","id":"sh/pwr214ze","slide":16,"bbox":[52,228,374,234]}
+{"kind":"textbox","id":"sh/ovy18zyt","slide":16,"text":"96/154","textPreview":"96/154","textChars":6,"textLines":1,"bbox":[80,275,318,72]}
+{"kind":"textbox","id":"sh/3upkzuh8","slide":16,"text":"raw correct across observed replay + top-up items","textPreview":"raw correct across observed replay + top-up items","textChars":49,"textLines":1,"bbox":[80,373,318,60]}
+{"kind":"shape","id":"sh/2tgj6pgn","slide":16,"bbox":[453,228,374,234]}
+{"kind":"textbox","id":"sh/50nip0za","slide":16,"text":"53.3–67.8%","textPreview":"53.3–67.8%","textChars":10,"textLines":1,"bbox":[481,275,318,72]}
+{"kind":"textbox","id":"sh/4ze1wvyp","slide":16,"text":"full-180 raw worst/best-case bounds","textPreview":"full-180 raw worst/best-case bounds","textChars":35,"textLines":1,"bbox":[481,373,318,60]}
+{"kind":"shape","id":"sh/2lo7a5wr","slide":16,"bbox":[854,228,374,234]}
+{"kind":"textbox","id":"sh/3mxojqxc","slide":16,"text":"55.6–70.0%","textPreview":"55.6–70.0%","textChars":10,"textLines":1,"bbox":[882,275,318,72]}
+{"kind":"textbox","id":"sh/on6pcvex","slide":16,"text":"bounds if four Codex/GPT-5 overrides are retained","textPreview":"bounds if four Codex/GPT-5 overrides are retained","textChars":49,"textLines":1,"bbox":[882,373,318,60]}
+{"kind":"shape","id":"sh/pof6l0fi","slide":16,"bbox":[196,505,888,98]}
+{"kind":"textbox","id":"sh/q9o7e5w3","slide":16,"text":"The historical 139/180 = 77.2% merge replayed only prior failures, carried prior successes forward, and is failure_replay_only—not a result.","textPreview":"The historical 139/180 = 77.2% merge replayed only prior failures, carried prior successes forward, and is failure_replay_only—not a result.","textChars":140,"textLines":1,"bbox":[228,526,824,56]}
+{"kind":"textbox","id":"sh/baxonaxo","slide":16,"text":"Source: docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md; controller_run_comparison.json","textPreview":"Source: docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md; controller_run_comparison.json","textChars":80,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/lza66s","slide":16,"text":"Treat this as a negative-result slide. The decisive top-up found 13 regressions among 84 previously successful items. Even the most favorable bound cannot reach 77.2 percent."}
+{"kind":"slide","id":"sl/ti2b1k","slide":17,"title":"Single-session preference remains the hardest downstream competency","textShapes":10}
+{"kind":"textbox","id":"sh/ne5sjedw","slide":17,"text":"Single-session preference remains the hardest downstream competency","textPreview":"Single-session preference remains the hardest downstream competency","textChars":67,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/8fe9cje1","slide":17,"text":"17","textPreview":"17","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/9gnalovm","slide":17,"text":"The failure replay changed prompts, so its 0/19 repair count cannot isolate the answer model.","textPreview":"The failure replay changed prompts, so its 0/19 repair count cannot isolate the answer model.","textChars":93,"textLines":1,"bbox":[52,133,1176,72]}
+{"kind":"shape","id":"sh/y9cr69wz","slide":17,"bbox":[52,235,374,330]}
+{"kind":"textbox","id":"sh/zalsfedk","slide":17,"text":"8/29","textPreview":"8/29","textChars":4,"textLines":1,"bbox":[84,308,310,90]}
+{"kind":"textbox","id":"sh/0bu98je5","slide":17,"text":"observed correct across resolved SSP items","textPreview":"observed correct across resolved SSP items","textChars":42,"textLines":1,"bbox":[84,433,310,92]}
+{"kind":"shape","id":"sh/lc3ah4vq","slide":17,"bbox":[453,235,374,330]}
+{"kind":"textbox","id":"sh/i5wbitwj","slide":17,"text":"≤9/30","textPreview":"≤9/30","textChars":5,"textLines":1,"bbox":[485,308,310,90]}
+{"kind":"textbox","id":"sh/j6psrydo","slide":17,"text":"most favorable full-competency total","textPreview":"most favorable full-competency total","textChars":36,"textLines":1,"bbox":[485,433,310,92]}
+{"kind":"shape","id":"sh/v2l0zu9g","slide":17,"bbox":[854,235,374,330]}
+{"kind":"textbox","id":"sh/u1cjqp8v","slide":17,"text":"12/19","textPreview":"12/19","textChars":5,"textLines":1,"bbox":[886,308,310,90]}
+{"kind":"textbox","id":"sh/ho3i1kr6","slide":17,"text":"failure cases localized to retrieval ranking","textPreview":"failure cases localized to retrieval ranking","textChars":44,"textLines":1,"bbox":[886,433,310,92]}
+{"kind":"textbox","id":"sh/gnu1sfql","slide":17,"text":"Source: artifacts/single_session_preference_error_taxonomy.json; ledger v1.1","textPreview":"Source: artifacts/single_session_preference_error_taxonomy.json; ledger v1.1","textChars":76,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/ti2b1k","slide":17,"text":"Emphasize that no SSP failure was traced to the governance decision policy. The dominant mechanisms are retrieval ranking and answer realization, which demonstrates why layered evaluation matters."}
+{"kind":"slide","id":"sl/nn30tg","slide":18,"title":"The error analysis separates safety failures from coverage failures","textShapes":11}
+{"kind":"textbox","id":"sh/o7uhgnyl","slide":18,"text":"The error analysis separates safety failures from coverage failures","textPreview":"The error analysis separates safety failures from coverage failures","textChars":67,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/n6lgnih0","slide":18,"text":"18","textPreview":"18","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/m5czedgf","slide":18,"text":"Rule KSA","textPreview":"Rule KSA","textChars":8,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/143yl8zu","slide":18,"text":"Conservative supersession recall: every residual error abstains instead of overwriting.","textPreview":"Conservative supersession recall: every residual error abstains instead of overwriting.","textChars":87,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/03uhc3y9","slide":18,"text":"Zero-shot decision","textPreview":"Zero-shot decision","textChars":18,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/zilgjyho","slide":18,"text":"Invalid commits on 60.6% of gold-ABSTAIN items.","textPreview":"Invalid commits on 60.6% of gold-ABSTAIN items.","textChars":47,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/ehczatgj","slide":18,"text":"No-lineage ablation","textPreview":"No-lineage ablation","textChars":19,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/l07ixsfy","slide":18,"text":"Decision accuracy is unchanged while auditability degrades sharply.","textPreview":"Decision accuracy is unchanged while auditability degrades sharply.","textChars":67,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/kzeho7yt","slide":18,"text":"LongMemEval SSP","textPreview":"LongMemEval SSP","textChars":15,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/ihcfqxc7","slide":18,"text":"Failures localize downstream to ranking, context construction, attribution, and generation.","textPreview":"Failures localize downstream to ranking, context construction, attribution, and generation.","textChars":91,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"textbox","id":"sh/3ilwz2ts","slide":18,"text":"Ref: ERROR_TAXONOMY.md · SSP taxonomy","textPreview":"Ref: ERROR_TAXONOMY.md · SSP taxonomy","textChars":37,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/nn30tg","slide":18,"text":"Tie each observed failure to a distinct layer. This is stronger than a single aggregate score because it tells us what intervention would actually address the failure."}
+{"kind":"slide","id":"sl/1axkpy","slide":19,"title":"The conclusions are deliberately bounded","textShapes":11}
+{"kind":"textbox","id":"sh/axgb218n","slide":19,"text":"The conclusions are deliberately bounded","textPreview":"The conclusions are deliberately bounded","textChars":40,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/xk7uxwre","slide":19,"text":"19","textPreview":"19","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/wjyd4rqt","slide":19,"text":"Synthetic diagnostic","textPreview":"Synthetic diagnostic","textChars":20,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/jm9cz69k","slide":19,"text":"MGP-6 is author-designed, small, and not a representative population sample.","textPreview":"MGP-6 is author-designed, small, and not a representative population sample.","textChars":76,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/yl0v618z","slide":19,"text":"Annotation","textPreview":"Annotation","textChars":10,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/loru1gra","slide":19,"text":"One independent annotator; identity and independence rest on author attestation.","textPreview":"One independent annotator; identity and independence rest on author attestation.","textChars":80,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/knid8bqp","slide":19,"text":"Adapter validity","textPreview":"Adapter validity","textChars":16,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/zq5cn290","slide":19,"text":"External comparisons are harness- and mapping-dependent upper bounds.","textPreview":"External comparisons are harness- and mapping-dependent upper bounds.","textChars":69,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/epwbuh8f","slide":19,"text":"Downstream evidence","textPreview":"Downstream evidence","textChars":19,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/47y547yh","slide":19,"text":"No clean final LongMemEval comparison; bespoke safety metrics need external validation.","textPreview":"No clean final LongMemEval comparison; bespoke safety metrics need external validation.","textChars":87,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"textbox","id":"sh/p87mdcf2","slide":19,"text":"Source: reports/THREATS_TO_VALIDITY.md; docs/limitations.md","textPreview":"Source: reports/THREATS_TO_VALIDITY.md; docs/limitations.md","textChars":59,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/1axkpy","slide":19,"text":"Do not rush this slide. The thesis makes a narrow supported claim and preserves null and negative findings. These limitations define the next experiments rather than invalidating the controlled diagnostic."}
+{"kind":"slide","id":"sl/givga6","slide":20,"title":"CONCLUSION","textShapes":9}
+{"kind":"textbox","id":"sh/yxo3i94z","slide":20,"text":"CONCLUSION","textPreview":"CONCLUSION","textChars":10,"textLines":1,"bbox":[52,45,1176,36]}
+{"kind":"textbox","id":"sh/lkz2d4nq","slide":20,"text":"Govern the write; then evaluate the state and the answer","textPreview":"Govern the write; then evaluate the state and the answer","textChars":56,"textLines":1,"bbox":[52,130,1176,160]}
+{"kind":"textbox","id":"sh/kj6lkzm5","slide":20,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[52,360,72,46]}
+{"kind":"textbox","id":"sh/7mhkfe5w","slide":20,"text":"A fixed KEEP / SUPERSEDE / ABSTAIN boundary makes memory transitions explicit and auditable.","textPreview":"A fixed KEEP / SUPERSEDE / ABSTAIN boundary makes memory transitions explicit and auditable.","textChars":92,"textLines":1,"bbox":[52,425,350,120]}
+{"kind":"textbox","id":"sh/6l83m94b","slide":20,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[453,360,72,46]}
+{"kind":"textbox","id":"sh/tozmhonm","slide":20,"text":"MGP-6 shows distinct safety and lineage signatures that answer accuracy alone would hide.","textPreview":"MGP-6 shows distinct safety and lineage signatures that answer accuracy alone would hide.","textChars":89,"textLines":1,"bbox":[453,425,350,120]}
+{"kind":"textbox","id":"sh/8nqlojmh","slide":20,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[854,360,72,46]}
+{"kind":"textbox","id":"sh/nqdk3a5c","slide":20,"text":"The downstream evidence remains incomplete; the clean homogeneous run is the next external action.","textPreview":"The downstream evidence remains incomplete; the clean homogeneous run is the next external action.","textChars":98,"textLines":1,"bbox":[854,425,350,120]}
+{"kind":"textbox","id":"sh/2p4ja5o7","slide":20,"text":"Questions — backup slides follow","textPreview":"Questions — backup slides follow","textChars":32,"textLines":1,"bbox":[52,622,1176,42]}
+{"kind":"notes","id":"nt/givga6","slide":20,"text":"Close by answering the research question: an interpretable governed write path can make memory revision explicit and measurable, but the evidence supports a controlled diagnostic claim, not a final downstream superiority claim."}
+{"kind":"slide","id":"sl/crk13z","slide":21,"title":"Backup — formal decision and failure definitions","textShapes":8}
+{"kind":"textbox","id":"sh/a14jytor","slide":21,"text":"Backup — formal decision and failure definitions","textPreview":"Backup — formal decision and failure definitions","textChars":48,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/x4fit8n2","slide":21,"text":"21","textPreview":"21","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/w361036h","slide":21,"bbox":[52,170,760,374]}
+{"kind":"textbox","id":"sh/j6x0vi58","slide":21,"text":"d_t = π(c_t, r_t, M_t) ∈ {KEEP, SUPERSEDE, ABSTAIN}\n\nInvalid commit = Pr(ŷ ∈ {K,S} | y=A)\nMissed supersession = Pr(ŷ ≠ S | y=S)\nLineage integrity = valid links / expected links","textPreview":"d_t = π(c_t, r_t, M_t) ∈ {KEEP, SUPERSEDE, ABSTAIN} |  | Invalid commit = Pr(ŷ ∈ {K,S} | y=A) | Missed supersession = Pr(ŷ ≠ S | y=S) | L...","textChars":176,"textLines":5,"bbox":[82,211,700,290]}
+{"kind":"shape","id":"sh/i5oj2don","slide":21,"bbox":[850,170,378,166]}
+{"kind":"textbox","id":"sh/58fix8ne","slide":21,"text":"Commit safety","textPreview":"Commit safety","textChars":13,"textLines":1,"bbox":[878,198,322,40]}
+{"kind":"textbox","id":"sh/k7614n6t","slide":21,"text":"ABSTAIN is the gold action whenever evidence must not mutate state.","textPreview":"ABSTAIN is the gold action whenever evidence must not mutate state.","textChars":67,"textLines":1,"bbox":[878,250,322,62]}
+{"kind":"shape","id":"sh/zad0je54","slide":21,"bbox":[850,378,378,166]}
+{"kind":"textbox","id":"sh/e9kzq9oj","slide":21,"text":"State correctness","textPreview":"State correctness","textChars":17,"textLines":1,"bbox":[878,406,322,40]}
+{"kind":"textbox","id":"sh/kjidc3el","slide":21,"text":"A correct label is insufficient if the transition or lineage is malformed.","textPreview":"A correct label is insufficient if the transition or lineage is malformed.","textChars":74,"textLines":1,"bbox":[878,458,322,62]}
+{"kind":"textbox","id":"sh/5kre5ofq","slide":21,"text":"Source: thesis Appendix C; FINAL_METRIC_DEFINITIONS.md","textPreview":"Source: thesis Appendix C; FINAL_METRIC_DEFINITIONS.md","textChars":54,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/crk13z","slide":21,"text":"Use this backup if asked for notation or metric definitions. Clarify that premise resistance and invalid-commit rate are project-defined diagnostic metrics."}
+{"kind":"slide","id":"sl/w713u9","slide":22,"title":"Backup — baseline mechanisms and what each can express","textShapes":3}
+{"kind":"textbox","id":"sh/ah4b6tkn","slide":22,"text":"Backup — baseline mechanisms and what each can express","textPreview":"Backup — baseline mechanisms and what each can express","textChars":54,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/xkvu18je","slide":22,"text":"22","textPreview":"22","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/nutsvylc","slide":22,"text":"Source: thesis §5.3; benchmark adapters","textPreview":"Source: thesis §5.3; benchmark adapters","textChars":39,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/hcnmdcv2","slide":22,"name":"","rows":7,"cols":4,"preview":"System | Mechanism | Abstain? | Lineage?","bbox":[52,162,1176,470]}
+{"kind":"notes","id":"nt/w713u9","slide":22,"text":"Use when a committee member asks whether baselines are capability-matched. They are reference mechanisms designed to isolate memory policies, not broad system rankings."}
+{"kind":"slide","id":"sl/31ae62","slide":23,"title":"Backup — statistical tests and inferential scope","textShapes":3}
+{"kind":"textbox","id":"sh/kf6xkby5","slide":23,"text":"Backup — statistical tests and inferential scope","textPreview":"Backup — statistical tests and inferential scope","textChars":48,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/jexwbqhk","slide":23,"text":"23","textPreview":"23","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/xcfe9gzu","slide":23,"text":"Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textPreview":"Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textChars":53,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/behcbip4","slide":23,"name":"","rows":5,"cols":4,"preview":"Contrast | Risk diff. | Holm p | Interpretation","bbox":[52,162,1176,470]}
+{"kind":"notes","id":"nt/31ae62","slide":23,"text":"Mention exact paired two-sided McNemar tests, Holm correction across the prespecified family, and paired risk differences. No LongMemEval hypothesis test is valid for the incomplete heterogeneous evidence."}
+{"kind":"slide","id":"sl/p20l85","slide":24,"title":"Backup — annotation agreement and the single boundary case","textShapes":10}
+{"kind":"textbox","id":"sh/hgfid8z6","slide":24,"text":"Backup — annotation agreement and the single boundary case","textPreview":"Backup — annotation agreement and the single boundary case","textChars":58,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/ud4jidgv","slide":24,"text":"24","textPreview":"24","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/ved0bih0","slide":24,"text":"The one disagreement is an implicit-conflict item: gold SUPERSEDE, independent annotator ABSTAIN.","textPreview":"The one disagreement is an implicit-conflict item: gold SUPERSEDE, independent annotator ABSTAIN.","textChars":97,"textLines":1,"bbox":[52,133,1176,72]}
+{"kind":"shape","id":"sh/8bm1g3yp","slide":24,"bbox":[52,235,374,330]}
+{"kind":"textbox","id":"sh/9cvi98za","slide":24,"text":"0.9889","textPreview":"0.9889","textChars":6,"textLines":1,"bbox":[84,308,310,90]}
+{"kind":"textbox","id":"sh/m94jetgj","slide":24,"text":"raw agreement on 90 held-out items","textPreview":"raw agreement on 90 held-out items","textChars":34,"textLines":1,"bbox":[84,433,310,92]}
+{"kind":"shape","id":"sh/7ad07yh4","slide":24,"bbox":[453,235,374,330]}
+{"kind":"textbox","id":"sh/kn21cjyd","slide":24,"text":"0.9815","textPreview":"0.9815","textChars":6,"textLines":1,"bbox":[485,308,310,90]}
+{"kind":"textbox","id":"sh/lobilozy","slide":24,"text":"four-LLM Fleiss kappa; separate model audit","textPreview":"four-LLM Fleiss kappa; separate model audit","textChars":43,"textLines":1,"bbox":[485,433,310,92]}
+{"kind":"shape","id":"sh/pgrid8ze","slide":24,"bbox":[854,235,374,330]}
+{"kind":"textbox","id":"sh/4fih43yt","slide":24,"text":"±1.1%","textPreview":"±1.1%","textChars":5,"textLines":1,"bbox":[886,308,310,90]}
+{"kind":"textbox","id":"sh/3e90byh8","slide":24,"text":"test-split sensitivity of one disputed item","textPreview":"test-split sensitivity of one disputed item","textChars":43,"textLines":1,"bbox":[886,433,310,92]}
+{"kind":"textbox","id":"sh/2t0z2tg3","slide":24,"text":"Source: annotation audit package and thesis Appendix D","textPreview":"Source: annotation audit package and thesis Appendix D","textChars":54,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/p20l85","slide":24,"text":"The disagreement sits on the same SUPERSEDE/ABSTAIN boundary as the controller’s conservative errors. It is retained with an explicit blinded-adjudication protocol."}
+{"kind":"slide","id":"sl/3iwlcb","slide":25,"title":"Backup — leakage controls and researcher degrees of freedom","textShapes":11}
+{"kind":"textbox","id":"sh/8rmtwb6p","slide":25,"text":"Backup — leakage controls and researcher degrees of freedom","textPreview":"Backup — leakage controls and researcher degrees of freedom","textChars":59,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/7qdc3qp4","slide":25,"text":"25","textPreview":"25","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/mp4buloz","slide":25,"text":"Fixed identifiers","textPreview":"Fixed identifiers","textChars":17,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/hgfu90nm","slide":25,"text":"Predictions align by stable scenario/session ID; duplicates and coverage are verified.","textPreview":"Predictions align by stable scenario/session ID; duplicates and coverage are verified.","textChars":86,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/wv6t0v61","slide":25,"text":"Split disclosure","textPreview":"Split disclosure","textChars":16,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/vuxc7q5g","slide":25,"text":"Full-180 MGP results include train and development; held-out test-90 is reported separately.","textPreview":"Full-180 MGP results include train and development; held-out test-90 is reported separately.","textChars":92,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/ut4bylov","slide":25,"text":"Run status","textPreview":"Run status","textChars":10,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/5kfux0ni","slide":25,"text":"Replay-only, incomplete, invalid, and diagnostic runs cannot enter final main tables.","textPreview":"Replay-only, incomplete, invalid, and diagnostic runs cannot enter final main tables.","textChars":85,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/4j6t4v6x","slide":25,"text":"Post-hoc changes","textPreview":"Post-hoc changes","textChars":16,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/elwnyhsn","slide":25,"text":"Overrides, selected-failure replay, model changes, and top-ups are recorded—not blended silently.","textPreview":"Overrides, selected-failure replay, model changes, and top-ups are recorded—not blended silently.","textChars":97,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"textbox","id":"sh/fm5o7mt8","slide":25,"text":"Source: docs/audit/DATA_LEAKAGE_AND_RESEARCHER_DOF.md","textPreview":"Source: docs/audit/DATA_LEAKAGE_AND_RESEARCHER_DOF.md","textChars":53,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/3iwlcb","slide":25,"text":"Use this slide to answer leakage concerns. The largest researcher degree of freedom was the LongMemEval failure-replay construction; the audit explicitly rejects it and preserves the contradiction from the complementary top-up."}
+{"kind":"slide","id":"sl/gcjsx3","slide":26,"title":"Backup — why the LongMemEval evidence is diagnostic only","textShapes":12}
+{"kind":"textbox","id":"sh/yh4zut87","slide":26,"text":"Backup — why the LongMemEval evidence is diagnostic only","textPreview":"Backup — why the LongMemEval evidence is diagnostic only","textChars":56,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/lkvi587y","slide":26,"text":"26","textPreview":"26","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/0jmhw3qd","slide":26,"bbox":[80,324,1120,2]}
+{"kind":"shape","id":"sh/nmx07ypo","slide":26,"bbox":[82,316,18,18]}
+{"kind":"textbox","id":"sh/ml4zyd83","slide":26,"text":"v7","textPreview":"v7","textChars":2,"textLines":1,"bbox":[82,255,300,38]}
+{"kind":"textbox","id":"sh/98fi987u","slide":26,"text":"Contaminated 180","textPreview":"Contaminated 180","textChars":16,"textLines":1,"bbox":[82,376,300,45]}
+{"kind":"textbox","id":"sh/8n6h03q9","slide":26,"text":"316 HTTP-402 traces; 388 empty fallbacks; no-op escalation.","textPreview":"316 HTTP-402 traces; 388 empty fallbacks; no-op escalation.","textChars":59,"textLines":1,"bbox":[82,438,300,120]}
+{"kind":"shape","id":"sh/3qtgve9k","slide":26,"bbox":[454,316,18,18]}
+{"kind":"textbox","id":"sh/2pkzm98z","slide":26,"text":"Replay","textPreview":"Replay","textChars":6,"textLines":1,"bbox":[454,255,300,38]}
+{"kind":"textbox","id":"sh/sni54zmd","slide":26,"text":"Selected 70 failures","textPreview":"Selected 70 failures","textChars":20,"textLines":1,"bbox":[454,376,300,45]}
+{"kind":"textbox","id":"sh/tor6x43y","slide":26,"text":"25/70 correct under changed prompts and judge regime.","textPreview":"25/70 correct under changed prompts and judge regime.","textChars":53,"textLines":1,"bbox":[454,438,300,120]}
+{"kind":"shape","id":"sh/6l0n2p47","slide":26,"bbox":[826,316,18,18]}
+{"kind":"textbox","id":"sh/7m9ovuls","slide":26,"text":"Top-up","textPreview":"Top-up","textChars":6,"textLines":1,"bbox":[826,255,300,38]}
+{"kind":"textbox","id":"sh/gr258zm9","slide":26,"text":"Complementary 110","textPreview":"Complementary 110","textChars":17,"textLines":1,"bbox":[826,376,300,45]}
+{"kind":"textbox","id":"sh/hsb6143u","slide":26,"text":"84 completed; 71 correct and 13 regressions.","textPreview":"84 completed; 71 correct and 13 regressions.","textChars":44,"textLines":1,"bbox":[826,438,300,120]}
+{"kind":"textbox","id":"sh/up0n6p4j","slide":26,"text":"Source: docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md; controller_run_comparison.json","textPreview":"Source: docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md; controller_run_comparison.json","textChars":80,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/gcjsx3","slide":26,"text":"Explain selection bias visually. Replaying only failures and retaining all old successes can inflate the merged score. The top-up directly tests that assumption and finds regressions."}
+{"kind":"slide","id":"sl/g5fyhz","slide":27,"title":"Backup — external action mappings","textShapes":3}
+{"kind":"textbox","id":"sh/f29szq5w","slide":27,"text":"Backup — external action mappings","textPreview":"Backup — external action mappings","textChars":33,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/03i98v6h","slide":27,"text":"27","textPreview":"27","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/qdgr2loz","slide":27,"text":"Source: external-system reports; ledger v1.1","textPreview":"Source: external-system reports; ledger v1.1","textChars":44,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/k7uhwn25","slide":27,"name":"","rows":5,"cols":4,"preview":"Adapter | NOOP→ABSTAIN | NOOP→KEEP | Structural caveat","bbox":[52,162,1176,470]}
+{"kind":"notes","id":"nt/g5fyhz","slide":27,"text":"Use this table if asked for exact adapter values. Repeat that both mappings are disclosed and MemOS is not included as a final-candidate capability result."}
+{"kind":"slide","id":"sl/65hiu5","slide":28,"title":"Backup — nearest conceptual neighbors narrow the novelty claim","textShapes":3}
+{"kind":"textbox","id":"sh/adwja98n","slide":28,"text":"Backup — nearest conceptual neighbors narrow the novelty claim","textPreview":"Backup — nearest conceptual neighbors narrow the novelty claim","textChars":62,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/xg72l47e","slide":28,"text":"28","textPreview":"28","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/jipknepk","slide":28,"text":"Source: reports/NEAREST_NEIGHBOR_ANALYSIS.md; NOVELTY_MATRIX.csv","textPreview":"Source: reports/NEAREST_NEIGHBOR_ANALYSIS.md; NOVELTY_MATRIX.csv","textChars":64,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/dwvqtgzu","slide":28,"name":"","rows":6,"cols":3,"preview":"Neighbor | Shared idea | Difference from evaluated KSA combination","bbox":[52,162,1176,470]}
+{"kind":"notes","id":"nt/65hiu5","slide":28,"text":"State the allowed novelty claim: operationalization and controlled layered evaluation of this combination. Do not claim invention of update actions, abstention, lineage, provenance, or memory governance."}
+{"kind":"slide","id":"sl/hgqtpu","slide":29,"title":"Backup — ethical and deployment risks","textShapes":11}
+{"kind":"textbox","id":"sh/rm5snqto","slide":29,"text":"Backup — ethical and deployment risks","textPreview":"Backup — ethical and deployment risks","textChars":37,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/snytgvu9","slide":29,"text":"29","textPreview":"29","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/to7ap0bu","slide":29,"text":"Revision abuse","textPreview":"Revision abuse","textChars":14,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/epgbi5cf","slide":29,"text":"Supersession can be used to rewrite records or manufacture provenance.","textPreview":"Supersession can be used to rewrite records or manufacture provenance.","textChars":70,"textLines":1,"bbox":[52,237,574,126]}
+{"kind":"textbox","id":"sh/fqpsrat0","slide":29,"text":"Retention risk","textPreview":"Retention risk","textChars":14,"textLines":1,"bbox":[654,175,574,48]}
+{"kind":"textbox","id":"sh/grytkfu5","slide":29,"text":"Preserved history increases privacy, extraction, and membership-inference exposure.","textPreview":"Preserved history increases privacy, extraction, and membership-inference exposure.","textChars":83,"textLines":1,"bbox":[654,237,574,126]}
+{"kind":"textbox","id":"sh/1s7atkbq","slide":29,"text":"Automation boundary","textPreview":"Automation boundary","textChars":19,"textLines":1,"bbox":[52,408,574,48]}
+{"kind":"textbox","id":"sh/utcr6lcv","slide":29,"text":"Research results do not justify unrestricted autonomous memory mutation.","textPreview":"Research results do not justify unrestricted autonomous memory mutation.","textChars":72,"textLines":1,"bbox":[52,470,574,126]}
+{"kind":"textbox","id":"sh/vulsf6tg","slide":29,"text":"Mitigations","textPreview":"Mitigations","textChars":11,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/7mpknmh0","slide":29,"text":"Append-only lineage, access control, dual control, review routing, and retention policy.","textPreview":"Append-only lineage, access control, dual control, review routing, and retention policy.","textChars":88,"textLines":1,"bbox":[654,470,574,126]}
+{"kind":"textbox","id":"sh/6lw3u10f","slide":29,"text":"Source: thesis §9; NIST AI RMF discussion","textPreview":"Source: thesis §9; NIST AI RMF discussion","textChars":41,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/hgqtpu","slide":29,"text":"Clarify that governance here is epistemic, not a legal-compliance guarantee. Deployment requires organizational access control and privacy policy beyond this research prototype."}
+{"kind":"slide","id":"sl/e8rlio","slide":30,"title":"Backup — additional complete MGP-6 results","textShapes":3}
+{"kind":"textbox","id":"sh/32hsju54","slide":30,"text":"Backup — additional complete MGP-6 results","textPreview":"Backup — additional complete MGP-6 results","textChars":42,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/43qtsz6p","slide":30,"text":"30","textPreview":"30","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"textbox","id":"sh/udormpo7","slide":30,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"table","id":"tb/kz6tcvyx","slide":30,"name":"","rows":6,"cols":5,"preview":"System | Accuracy | Macro-F1 | Invalid commit | Premise resistance","bbox":[52,162,1176,470]}
+{"kind":"notes","id":"nt/e8rlio","slide":30,"text":"The six-shot row is coverage-aware: six missing predictions are aligned as INVALID. It remains incomplete and is excluded from completed-run inferential comparisons."}
+{"kind":"slide","id":"sl/jurw63","slide":31,"title":"Backup — architecture and code ownership follow the evaluation layers","textShapes":15}
+{"kind":"textbox","id":"sh/lwruxwja","slide":31,"text":"Backup — architecture and code ownership follow the evaluation layers","textPreview":"Backup — architecture and code ownership follow the evaluation layers","textChars":69,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"textbox","id":"sh/yt0v210j","slide":31,"text":"31","textPreview":"31","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
+{"kind":"shape","id":"sh/zu9cv614","slide":31,"bbox":[52,258,160,96]}
+{"kind":"textbox","id":"sh/8jid8bi1","slide":31,"text":"data / schema","textPreview":"data / schema","textChars":13,"textLines":1,"bbox":[62,276,140,60]}
+{"kind":"textbox","id":"sh/9kbe1gj6","slide":31,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[216,284,30,42]}
+{"kind":"shape","id":"sh/mh0v610v","slide":31,"bbox":[249,258,160,96]}
+{"kind":"textbox","id":"sh/ni9cz61g","slide":31,"text":"extraction","textPreview":"extraction","textChars":10,"textLines":1,"bbox":[259,276,140,60]}
+{"kind":"textbox","id":"sh/onydwrih","slide":31,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[413,284,30,42]}
+{"kind":"shape","id":"sh/po7upcj2","slide":31,"bbox":[446,258,160,96]}
+{"kind":"textbox","id":"sh/1cjatkzi","slide":31,"text":"controller","textPreview":"controller","textChars":10,"textLines":1,"bbox":[456,276,140,60]}
+{"kind":"textbox","id":"sh/gbatkfyx","slide":31,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[610,284,30,42]}
+{"kind":"shape","id":"sh/fa1srahc","slide":31,"bbox":[643,258,160,96]}
+{"kind":"textbox","id":"sh/e9sbi5g7","slide":31,"text":"memory store","textPreview":"memory store","textChars":12,"textLines":1,"bbox":[653,276,140,60]}
+{"kind":"textbox","id":"sh/p03axkzu","slide":31,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[807,284,30,42]}
+{"kind":"shape","id":"sh/ozutofy9","slide":31,"bbox":[840,258,160,96]}
+{"kind":"textbox","id":"sh/3ylsvuho","slide":31,"text":"retrieval","textPreview":"retrieval","textChars":9,"textLines":1,"bbox":[850,276,140,60]}
+{"kind":"textbox","id":"sh/2dcbmpg3","slide":31,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[1004,284,30,42]}
+{"kind":"shape","id":"sh/d43u14zq","slide":31,"bbox":[1037,258,160,96]}
+{"kind":"textbox","id":"sh/c3utszy5","slide":31,"text":"evaluation","textPreview":"evaluation","textChars":10,"textLines":1,"bbox":[1047,276,140,60]}
+{"kind":"shape","id":"sh/w72do36h","slide":31,"bbox":[250,430,780,116]}
+{"kind":"textbox","id":"sh/x8vux8n2","slide":31,"text":"Tests cover invariants, recovery, merge, provenance verification, and deterministic MGP scoring","textPreview":"Tests cover invariants, recovery, merge, provenance verification, and deterministic MGP scoring","textChars":95,"textLines":1,"bbox":[282,456,716,68]}
+{"kind":"textbox","id":"sh/a5kvmtob","slide":31,"text":"Source: src/ksa; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textPreview":"Source: src/ksa; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textChars":87,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/jurw63","slide":31,"text":"Point to the repository structure if implementation questions arise: src/ksa contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs."}

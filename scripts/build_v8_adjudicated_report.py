@@ -3,7 +3,7 @@
 
 The replay contains exactly the sessions that were incorrect in v7.  This
 script keeps the machine judgment intact in an audit ledger, applies only the
-    four documented independent semantic-adjudication overrides, and rebuilds all aggregate
+four documented model-assisted semantic overrides, and rebuilds all aggregate
 statistics from the resulting 180 unique session IDs.
 """
 
@@ -99,8 +99,8 @@ def adjudicate(row: dict[str, Any]) -> dict[str, Any]:
     if sid in OVERRIDES:
         result["correct"] = True
         result["judge_score"] = 1.0
-        result["judge_rationale"] = "[human-adjudication] " + OVERRIDES[sid]
-        result["judge_model_id"] = "Codex/GPT-5 independent semantic adjudication"
+        result["judge_rationale"] = "[model-assisted-override] " + OVERRIDES[sid]
+        result["judge_model_id"] = "Codex/GPT-5 model-assisted semantic override"
     return result
 
 

@@ -1,0 +1,9 @@
+{
+  "mode": "zero",
+  "model": "qwen/qwen3.5-9b",
+  "shots": 0,
+  "exemplar_ids": [],
+  "seed": 0,
+  "split": "all",
+  "n_eval": 180
+}

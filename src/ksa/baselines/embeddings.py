@@ -63,8 +63,11 @@ class Embedder(Protocol):
         the same list of strings, it returns identical floats.
     """
 
-    embedding_dim: int
-    model_id: str
+    @property
+    def embedding_dim(self) -> int: ...
+
+    @property
+    def model_id(self) -> str: ...
 
     def embed(self, texts: list[str]) -> np.ndarray: ...
 
@@ -105,7 +108,7 @@ def role_tag(role: str, content: str) -> str:
 # every `TurnEmbedder` instance with the same `(model_id, device)` reuses
 # the same loaded weights.
 
-_MODEL_CACHE: dict[tuple[str, str], Any] = {}
+_MODEL_CACHE: dict[tuple[str, str, bool], Any] = {}
 
 
 _REMOTE_IMPORT_SHIM_APPLIED = False
@@ -147,11 +150,7 @@ def _apply_remote_code_import_shim() -> None:
     def _get_imports_ignoring_siblings(filename: Any) -> list[str]:
         imports = _original_get_imports(filename)
         module_dir = os.path.dirname(os.fspath(filename))
-        return [
-            imp
-            for imp in imports
-            if not os.path.isfile(os.path.join(module_dir, f"{imp}.py"))
-        ]
+        return [imp for imp in imports if not os.path.isfile(os.path.join(module_dir, f"{imp}.py"))]
 
     dynamic_module_utils.get_imports = _get_imports_ignoring_siblings
     _REMOTE_IMPORT_SHIM_APPLIED = True
@@ -192,9 +191,7 @@ def _resolve_sentence_transformer_device(device: str) -> str:
     return requested
 
 
-def _get_or_load_model(
-    model_id: str, device: str, trust_remote_code: bool = False
-) -> Any:
+def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = False) -> Any:
     """Lazy-load the sentence-transformers model the first time it's needed."""
     resolved_device = _resolve_sentence_transformer_device(device)
     key = (model_id, resolved_device, bool(trust_remote_code))
@@ -204,8 +201,7 @@ def _get_or_load_model(
         from sentence_transformers import SentenceTransformer  # type: ignore[import-not-found]
     except ImportError as exc:  # pragma: no cover — only on bare envs
         raise RuntimeError(
-            "sentence-transformers is required for TurnEmbedder. "
-            "Install with: pip install -e .[ml]"
+            "sentence-transformers is required for TurnEmbedder. Install with: pip install -e .[ml]"
         ) from exc
     # trust_remote_code is required by custom-architecture embedders such as
     # jinaai/jina-embeddings-v5-*; harmless for plain models like MiniLM.
@@ -318,9 +314,7 @@ class TurnEmbedder:
 
     def _ensure_loaded(self) -> None:
         if self._model is None:
-            self._model = _get_or_load_model(
-                self.model_id, self.device, self.trust_remote_code
-            )
+            self._model = _get_or_load_model(self.model_id, self.device, self.trust_remote_code)
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Embed a list of strings. Always returns L2-normalized float32 rows.
@@ -429,8 +423,7 @@ class OllamaEmbedder:
         arr = np.asarray(embeddings, dtype=np.float32)
         if arr.ndim != 2 or arr.shape[0] != len(texts) or arr.shape[1] <= 0:
             raise RuntimeError(
-                f"Ollama /api/embed returned invalid shape {arr.shape} "
-                f"for {self.model_id}"
+                f"Ollama /api/embed returned invalid shape {arr.shape} for {self.model_id}"
             )
         return arr
 
@@ -451,7 +444,7 @@ class OllamaEmbedder:
             except urllib.error.HTTPError as exc:
                 last_exc = exc
                 if exc.code in {500, 502, 503, 504} and attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     print(
                         f"[ollama-embed] {url} returned HTTP {exc.code}; "
                         f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
@@ -464,7 +457,7 @@ class OllamaEmbedder:
             except (urllib.error.URLError, TimeoutError) as exc:
                 last_exc = exc
                 if attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     print(
                         f"[ollama-embed] {url} failed ({exc}); retrying in "
                         f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
@@ -618,11 +611,7 @@ class OpenAICompatibleEmbedder:
         is_local = parsed_url.hostname in {"localhost", "127.0.0.1", "::1"}
         inputs = payload.get("input")
         input_count = len(inputs) if isinstance(inputs, list) else None
-        input_chars = (
-            sum(len(str(item)) for item in inputs)
-            if isinstance(inputs, list)
-            else None
-        )
+        input_chars = sum(len(str(item)) for item in inputs) if isinstance(inputs, list) else None
         req = urllib.request.Request(
             url,
             data=json.dumps(payload).encode("utf-8"),
@@ -647,7 +636,7 @@ class OpenAICompatibleEmbedder:
                 except Exception:
                     pass
                 if exc.code in {429, 500, 502, 503, 504} and attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     self._write_log(
                         {
                             "model": self.model_id,
@@ -676,7 +665,7 @@ class OpenAICompatibleEmbedder:
             except (urllib.error.URLError, TimeoutError) as exc:
                 last_exc = exc
                 if attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     self._write_log(
                         {
                             "model": self.model_id,
@@ -741,7 +730,9 @@ class FakeEmbedder:
     def embed(self, texts: list[str]) -> np.ndarray:
         if not texts:
             return np.zeros((0, self.embedding_dim), dtype=np.float32)
-        out = np.zeros((len(texts), self.embedding_dim), dtype=np.float32)
+        out: np.ndarray = np.zeros(
+            (len(texts), self.embedding_dim), dtype=np.float32
+        )
         for i, t in enumerate(texts):
             out[i] = _sha256_to_vec(t, self.embedding_dim)
         # L2-normalize — same contract as TurnEmbedder.

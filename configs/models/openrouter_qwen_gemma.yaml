@@ -7,8 +7,10 @@ judge_fallback_model: google/gemma-4-31b-it
 request:
   temperature: 0.0
   timeout_seconds: 120
-  max_retries: 3
-  retry_backoff_seconds: [2, 5, 15]
+  max_attempts: 5
+  retry_backoff: exponential
+  retry_initial_delay_seconds: 2
+  retry_max_delay_seconds: 60
 validation:
   require_json_schema: true
   reject_unknown_actions: true

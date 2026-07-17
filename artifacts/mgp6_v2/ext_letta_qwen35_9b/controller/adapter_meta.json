@@ -1,0 +1,9 @@
+{
+  "system": "letta",
+  "answer_model": "qwen/qwen3.5-9b",
+  "answers_natively": true,
+  "mapping": "SUPERSEDE only when replacement/removal is observable; dual-active conflict -> INVALID_COMMIT; NOOP->KEEP default; NOOP->ABSTAIN variant file",
+  "letta_url": "http://localhost:8283",
+  "letta_model": "openrouter/qwen/qwen3.5-9b",
+  "note": "native agent answers; answer model = letta agent"
+}

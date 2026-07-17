@@ -8,7 +8,7 @@ import threading
 from collections.abc import Mapping
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 from jinja2 import Template
 
@@ -485,8 +485,8 @@ def _rule_based_items(turn: Mapping[str, Any]) -> list[ExtractedItem]:
 def _turn_to_payload(turn: Any) -> dict[str, Any]:
     if isinstance(turn, Mapping):
         return dict(turn)
-    if is_dataclass(turn):
-        return asdict(turn)
+    if is_dataclass(turn) and not isinstance(turn, type):
+        return asdict(cast(Any, turn))
     payload: dict[str, Any] = {}
     for key in ("turn_id", "session_id", "turn_idx", "role", "content", "timestamp"):
         if hasattr(turn, key):

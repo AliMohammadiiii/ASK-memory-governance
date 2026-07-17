@@ -1,0 +1,183 @@
+# =====================================================================
+# FROZEN FINAL EVALUATION CONFIG  (KSA memory-governance, release freeze)
+# =====================================================================
+# This file is the machine-readable freeze of the evaluation protocol
+# (FINAL_EVALUATION_PROTOCOL.md). It is IMMUTABLE for the release: any change
+# invalidates the freeze and requires a new hash manifest.
+#
+# Scope of this config:
+#   * MGP-6 v2 final tables are ALREADY LOCKED in artifacts/results_ledger.json
+#     (final_candidate rows). This config governs (a) the pending homogeneous
+#     LongMemEval-M rerun, (b) the local MGP-6 few-shot rescore, (c) the SSP
+#     ablation matrix, and (d) the judge audit.
+#   * The self-hash of this file, plus the input hashes below, are recorded in
+#     artifacts/manifests/freeze_hashes.json.
+#
+# Re-frozen after provenance hardening on 2026-07-13:
+#   deploy/run_lme_v8_full_5systems.sh -> deploy/run_colab_modal_range.sh
+#   -> scripts/run_vllm_cascade.py ; benchmarks/mgp6/metrics_mgp6.py ;
+#   scripts/evaluation/evaluate_single_session_preferences.py .
+
+freeze:
+  version: "final-1.1"
+  frozen_on: "2026-07-13"
+  protocol_doc: FINAL_EVALUATION_PROTOCOL.md
+  run_matrix: FINAL_RUN_MATRIX.yaml
+  self_hash: "sha256 recorded in artifacts/manifests/freeze_hashes.json"
+
+# ---------------------------------------------------------------------
+# Models (identical across every pending run; no per-run model drift).
+# ---------------------------------------------------------------------
+models:
+  provider: openrouter
+  base_url: https://openrouter.ai/api/v1
+  api_key_env: OPENROUTER_API_KEY          # value NEVER stored in this repo
+  # Main model fills answerer + extractor + relation-classifier roles.
+  main_model: qwen/qwen3.5-9b
+  fast_model: qwen/qwen3.5-9b              # FAST_MODEL
+  big_model: qwen/qwen3.5-9b              # BIG_MODEL (== fast: no real escalation tier)
+  # Unknown-retry uses the same model so answer-side calls stay homogeneous.
+  answer_escalation_model: qwen/qwen3.5-9b
+  answer_escalation_base_url: https://openrouter.ai/api/v1
+  request:
+    temperature: 0.0
+    reasoning_enabled: false               # required for qwen3.5 via OpenRouter
+    timeout_seconds: 300
+    provider_order: [venice]
+    provider_only: [venice]
+    provider_fallbacks: false
+
+# ---------------------------------------------------------------------
+# Judge policy: primary is the :free route; the non-free route is the
+# fallback and fires ONLY on operational failure of the primary
+# (HTTP error / empty content / timeout after retries), never as a
+# silent A/B. Every judgment logs which judge actually graded it.
+# ---------------------------------------------------------------------
+judge:
+  primary_model: google/gemma-4-31b-it:free
+  fallback_model: google/gemma-4-31b-it
+  fallback_trigger: operational_failure_only   # not quality, not sampling
+  response_format: json
+  per_item_logging:
+    requested_judge: true
+    actual_judge: true          # judgments.jsonl field: judge_model_id
+    used_model_fallback: true   # declared primary -> paid route fallback
+    used_scoring_fallback: true # malformed-output repair, recorded separately
+    fallback_reason: true
+    attempts: true
+    raw_output: true            # judge_rationale + raw verdict retained
+    prompt_hash: true
+  # NOTE: the legacy deploy scripts hardcode JUDGE_MODEL=google/gemma-4-31b-it
+  # (non-free) with NO fallback. The final wrapper
+  # scripts/evaluation/run_longmemeval_final.sh overrides this to the
+  # primary(:free)+fallback policy above. See protocol doc section "Judge policy".
+
+# ---------------------------------------------------------------------
+# Embedder (retrieval) — pinned, CPU, deterministic.
+# ---------------------------------------------------------------------
+embedder:
+  backend: sentence_transformer
+  model: sentence-transformers/all-MiniLM-L6-v2
+  served_name: minilm
+  device: cpu
+  max_seq_length: 256
+  batch_size: 128
+  client_batch_size: 128
+
+# ---------------------------------------------------------------------
+# Determinism.
+# ---------------------------------------------------------------------
+seed: 0
+
+# ---------------------------------------------------------------------
+# LongMemEval-M slice spec (external data; NOT redistributed in-repo).
+# ---------------------------------------------------------------------
+slice:
+  benchmark: longmemeval_m
+  full_slice: data/slices/longmemeval_m_full.jsonl   # user-supplied (external data policy)
+  source_cleaned: data/longmemeval_m_cleaned.json    # user-supplied
+  builder: scripts/build_stratified_slice.py
+  stratified: ${LONGMEMEVAL_STRATIFIED_SLICE:-runs_local/_inputs/longmemeval_m_strat30_seed0.jsonl}
+  per_competency: 30
+  competencies: 6
+  n_items: 180
+  range: range_0_179                       # SAMPLE_FROM=0 SAMPLE_TO=179 (0-based inclusive)
+  competency_names:
+    - knowledge-update
+    - multi-session
+    - single-session-assistant
+    - single-session-preference
+    - single-session-user
+    - temporal-reasoning
+
+# ---------------------------------------------------------------------
+# Cascade run parameters (pinned to the v7+v8 frozen path).
+# ---------------------------------------------------------------------
+run:
+  systems: [controller, b4, b3, b2, b1]
+  shards: 10
+  extraction_concurrency: 8
+  retrieval_k: 16
+  controller_memory_top_k: 64
+  answer_context_max_tokens: 12000
+  answer_context_session_cap: 4
+  history_retrieval_k: 4
+  extraction_max_new_tokens: 512
+  relation_max_new_tokens: 256
+  openai_max_model_len: 32768
+  v7_fixes: true
+  v8_fixes: true
+  enable_thinking: false
+
+# ---------------------------------------------------------------------
+# Retry / resume / atomicity.
+# ---------------------------------------------------------------------
+retry:
+  max_attempts: 5                # judge/extraction transport retries
+  backoff: exponential
+  backoff_base_seconds: 2
+  backoff_cap_seconds: 60
+  shard_retries: 2
+  shard_retry_backoff_seconds: 5
+  # Integrity: a provider no-response propagates as an error (recorded in the
+  # trace) and is NOT cached as a valid empty extraction (v8 fix 6/7).
+  never_cache_transport_failure: true
+
+resume:
+  mode: shard_union
+  # Per-shard resume + append-only logs; merged via src/ksa/eval/merge.py
+  # (dedup by session_id, report rebuilt from the union of grades).
+  atomic_writes: true            # summaries written .tmp then renamed
+  shared_extraction_cache: "<OUT>/_shared_extraction_cache.jsonl"
+
+# ---------------------------------------------------------------------
+# Immutability rule for final output dirs.
+# ---------------------------------------------------------------------
+immutability:
+  final_output_root: runs_local
+  refuse_overwrite_nonempty_final_dir: true   # wrapper exits with error, never clobbers
+  resume_allowed: true                         # --resume continues in place
+
+# ---------------------------------------------------------------------
+# Output layout (per run_id under runs_local/).
+# ---------------------------------------------------------------------
+output_layout:
+  root: runs_local/<run_id>/
+  per_system_dir: runs_local/<run_id>/<system>/
+  answers: <system>/answers.jsonl
+  judgments: <system>/judgments.jsonl        # carries judge_model_id + used_fallback
+  report: <system>/report.json
+  logs: runs_local/<run_id>/logs/
+  manifest: runs_local/<run_id>/manifest.json
+  summary: runs_local/<run_id>/final_summary.json
+
+# ---------------------------------------------------------------------
+# Frozen input hashes (actual values recorded in the manifest).
+# ---------------------------------------------------------------------
+freeze_inputs:
+  hash_manifest: artifacts/manifests/freeze_hashes.json
+  hashed:
+    - benchmarks/mgp6/data/mgp6_v2.jsonl
+    - prompts/            # combined hash over sorted prompt files
+    - configs/models/openrouter_qwen_gemma.yaml
+    - configs/release/final.yaml   # self-hash

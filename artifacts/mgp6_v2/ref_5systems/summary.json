@@ -1,0 +1,112 @@
+{
+  "bootstrap": 1000,
+  "gold": "data/mgp6_v2.jsonl",
+  "n_scenarios": 180,
+  "systems": {
+    "b1": {
+      "headline": {
+        "abstention_precision": 0.366667,
+        "abstention_recall": 1.0,
+        "action_accuracy": 0.366667,
+        "artifact_semantic_accuracy": 0.0,
+        "cue_dependence_gap": 0.0,
+        "duplicate_write_rate": 0.0,
+        "fama_presence_absence_conjunction": 0.0,
+        "implicit_application_accuracy": 0.0,
+        "invalid_commit_rate": 0.0,
+        "lineage_correctness": 0.2,
+        "macro_f1": 0.178862,
+        "over_forgetting_rate": 1.0,
+        "premise_resistance_rate": 0.0,
+        "stale_retrieval_rate": 0.0,
+        "transient_contamination_rate": 0.0,
+        "under_forgetting_rate": 1.0
+      },
+      "label": "B1 no-memory (floor)"
+    },
+    "b2": {
+      "headline": {
+        "abstention_precision": 0.0,
+        "abstention_recall": 0.0,
+        "action_accuracy": 0.133333,
+        "artifact_semantic_accuracy": 0.366667,
+        "cue_dependence_gap": 0.0,
+        "duplicate_write_rate": 0.0,
+        "fama_presence_absence_conjunction": 0.5,
+        "implicit_application_accuracy": 0.481481,
+        "invalid_commit_rate": 1.0,
+        "lineage_correctness": 0.2,
+        "macro_f1": 0.078431,
+        "over_forgetting_rate": 1.0,
+        "premise_resistance_rate": 0.511111,
+        "stale_retrieval_rate": 0.5,
+        "transient_contamination_rate": 0.0,
+        "under_forgetting_rate": 1.0
+      },
+      "label": "B2 flat retrieval"
+    },
+    "b3": {
+      "headline": {
+        "abstention_precision": 0.0,
+        "abstention_recall": 0.0,
+        "action_accuracy": 0.422222,
+        "artifact_semantic_accuracy": 0.527778,
+        "cue_dependence_gap": 0.466667,
+        "duplicate_write_rate": 0.0,
+        "fama_presence_absence_conjunction": 0.55,
+        "implicit_application_accuracy": 0.888889,
+        "invalid_commit_rate": 1.0,
+        "lineage_correctness": 0.855556,
+        "macro_f1": 0.22029,
+        "over_forgetting_rate": 1.0,
+        "premise_resistance_rate": 0.622222,
+        "stale_retrieval_rate": 0.433333,
+        "transient_contamination_rate": 0.8,
+        "under_forgetting_rate": 1.0
+      },
+      "label": "B3 recency"
+    },
+    "b4": {
+      "headline": {
+        "abstention_precision": 0.0,
+        "abstention_recall": 0.0,
+        "action_accuracy": 0.422222,
+        "artifact_semantic_accuracy": 0.527778,
+        "cue_dependence_gap": 0.466667,
+        "duplicate_write_rate": 0.0,
+        "fama_presence_absence_conjunction": 0.55,
+        "implicit_application_accuracy": 0.888889,
+        "invalid_commit_rate": 1.0,
+        "lineage_correctness": 0.368889,
+        "macro_f1": 0.22029,
+        "over_forgetting_rate": 1.0,
+        "premise_resistance_rate": 0.622222,
+        "stale_retrieval_rate": 0.433333,
+        "transient_contamination_rate": 0.8,
+        "under_forgetting_rate": 1.0
+      },
+      "label": "B4 naive overwrite"
+    },
+    "controller": {
+      "headline": {
+        "abstention_precision": 0.825,
+        "abstention_recall": 1.0,
+        "action_accuracy": 0.922222,
+        "artifact_semantic_accuracy": 0.883333,
+        "cue_dependence_gap": 0.466667,
+        "duplicate_write_rate": 0.0,
+        "fama_presence_absence_conjunction": 0.905556,
+        "implicit_application_accuracy": 0.962963,
+        "invalid_commit_rate": 0.0,
+        "lineage_correctness": 0.855556,
+        "macro_f1": 0.939924,
+        "over_forgetting_rate": 1.0,
+        "premise_resistance_rate": 1.0,
+        "stale_retrieval_rate": 0.077778,
+        "transient_contamination_rate": 0.0,
+        "under_forgetting_rate": 1.0
+      },
+      "label": "Controller (governed)"
+    }
+  }
+}

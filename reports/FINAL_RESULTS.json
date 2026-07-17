@@ -1,0 +1,408 @@
+{
+  "generated_from": {
+    "generator": "scripts/analysis/build_final_results.py",
+    "ledger_created": "2026-07-13",
+    "ledger_path": "artifacts/results_ledger.json",
+    "ledger_sha256": "fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e",
+    "ledger_version": "1.1",
+    "note": "Deterministic transcription of the ledger under the frozen claim policy. No metric is recomputed here."
+  },
+  "longmemeval_m": {
+    "canonical_nonfinal_statuses": [
+      "diagnostic_only",
+      "failure_replay_only",
+      "incomplete",
+      "invalid",
+      "externally_pending"
+    ],
+    "dataset": {
+      "redistribution": "not included in repo (external data policy)",
+      "slice": "stratified 180 items, 6 competencies x 30, seed 0",
+      "source": "data/slices/longmemeval_m_full.jsonl -> range_0_179.jsonl"
+    },
+    "has_final_candidate": false,
+    "headline_disclosure": "There is no final LongMemEval result. The 77.2% (139/180) value is a selection-biased failure-replay construction, not a complete v8 run. A non-empty top-up re-evaluated 84/110 carried-forward items: 71 remained correct and 13 regressed. Combining those observations with the replay yields 96/154 raw and a full-180 raw bound of 53.3%-67.8%, so this attempt cannot reproduce 77.2%. The frozen final-1.1 homogeneous run remains externally pending because the supplied OpenRouter credential returned HTTP 403 before inference.",
+    "rows": [
+      {
+        "accuracy": 0.05,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 9,
+        "n": 180,
+        "run_id": "v7_strat30/b1_no_memory"
+      },
+      {
+        "accuracy": 0.4444,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 80,
+        "n": 180,
+        "run_id": "v7_strat30/b2_flat_vector",
+        "ssp": "6/30"
+      },
+      {
+        "accuracy": 0.2389,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 43,
+        "n": 180,
+        "run_id": "v7_strat30/b3_recency",
+        "ssp": "0/30"
+      },
+      {
+        "accuracy": 0.6333,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 114,
+        "n": 180,
+        "run_id": "v7_strat30/b4_naive_overwrite",
+        "ssp": "11/30"
+      },
+      {
+        "accuracy": 0.6111,
+        "claim_eligibility": "diagnostic_only",
+        "contamination": "316 HTTP-402 traces, 388 empty extraction fallbacks, >=12 manual relaunches, escalation no-op (BIG_MODEL==FAST_MODEL)",
+        "correct": 110,
+        "judge": "google/gemma-4-31b-it",
+        "n": 180,
+        "per_type": {
+          "knowledge_update": "21/30",
+          "multi_session": "15/30",
+          "single_session_assistant": "26/30",
+          "single_session_preference": "11/30",
+          "single_session_user": "22/30",
+          "temporal_reasoning": "15/30"
+        },
+        "pre_adjudication": "108/180",
+        "run_id": "v7_strat30/controller"
+      },
+      {
+        "accuracy": 0.3571,
+        "claim_eligibility": "failure_replay_only",
+        "correct": 25,
+        "judge": "Qwen/Qwen3.5-9B (Modal)",
+        "n": 70,
+        "note": "selection-biased replay of exactly the 70 v7 controller failures",
+        "run_id": "v8_failures_nothink_replay",
+        "ssp": "0/19 repaired"
+      },
+      {
+        "accuracy": 0.7722,
+        "adjudication_kappa": 0.88,
+        "ci95": [
+          0.7111,
+          0.8333
+        ],
+        "claim_eligibility": "failure_replay_only",
+        "composition": "110 retained v7 successes (108 original judge-correct + 2 manual v7 adjudications) + 25 Qwen replay repairs + 4 Codex/GPT-5 overrides",
+        "contradictory_topup_evidence": "Modal top-up completed 84/110 carried-forward successes; 71 correct, 13 regressed. Together with replay: raw 96/154 observed; full-180 bounds 53.3%-67.8% (55.6%-70.0% with four replay overrides). The construction cannot reproduce 77.2% for this attempt.",
+        "correct": 139,
+        "n": 180,
+        "raw_unadjudicated": "135/180 = 0.75",
+        "required_before_camera_ready": "homogeneous full 180-item rerun under frozen final-1.1 config",
+        "run_id": "v8_failure_replay_adjudicated",
+        "ssp_carry_forward_artifact": "11/30; not a clean v8 SSP measurement"
+      },
+      {
+        "claim_eligibility": "incomplete",
+        "combined_with_replay": "96/154 raw; full-180 bounds 53.3%-67.8%",
+        "correct_observed": 71,
+        "n_observed": 84,
+        "n_target": 110,
+        "note": "never merged, but scientifically decisive against the 77.2% carry-forward construction",
+        "regressions_observed": 13,
+        "run_id": "v8_topup110_modal",
+        "ssp": "8/29 observed with one unresolved; maximum 9/30",
+        "status": "INCOMPLETE"
+      },
+      {
+        "claim_eligibility": "incomplete",
+        "note": "3/110 shard judgments",
+        "run_id": "v8_topup110_openrouter",
+        "status": "INCOMPLETE"
+      },
+      {
+        "claim_eligibility": "externally_pending",
+        "n_target": 180,
+        "note": "API smoke on 2026-07-13 failed before inference: supplied OpenRouter key returned HTTP 403 Access denied by security policy even for a minimal direct Qwen request.",
+        "run_id": "final_1.1_homogeneous_5systems",
+        "status": "EXTERNALLY_PENDING",
+        "systems": [
+          "controller",
+          "b4",
+          "b3",
+          "b2",
+          "b1"
+        ]
+      },
+      {
+        "accuracy": 0.5,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 5,
+        "n": 10,
+        "run_id": "v3_range_10_19"
+      },
+      {
+        "accuracy": 0.4,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 4,
+        "n": 10,
+        "run_id": "v3_range_20_29"
+      },
+      {
+        "accuracy": 0.5667,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 17,
+        "n": 30,
+        "run_id": "v4_range_100_129"
+      },
+      {
+        "claim_eligibility": "invalid",
+        "note": "dir named 100_129 but ran items 200-239; KeyboardInterrupt abort; 32/40 shard judgments; no merged report",
+        "run_id": "v5_range_misnamed",
+        "status": "INVALID"
+      },
+      {
+        "accuracy": 0.725,
+        "claim_eligibility": "diagnostic_only",
+        "correct": 29,
+        "n": 40,
+        "run_id": "v6_range_200_239"
+      },
+      {
+        "claim_eligibility": "invalid",
+        "note": "zero completed predictions; see INVALID.md",
+        "run_id": "v8_failures (thinking-mode)",
+        "status": "INVALID"
+      }
+    ]
+  },
+  "mgp6_v2": {
+    "dataset": {
+      "gold_actions": {
+        "ABSTAIN": 66,
+        "KEEP": 24,
+        "SUPERSEDE": 90
+      },
+      "n_examples": 180,
+      "path": "benchmarks/mgp6/data/mgp6_v2.jsonl",
+      "query_modes": {
+        "direct_recall": 108,
+        "implicit_application": 27,
+        "premise_resistance": 45
+      },
+      "splits": {
+        "dev": 30,
+        "test": 90,
+        "train": 60
+      },
+      "status": "verified 2026-07-12 against raw JSONL",
+      "types": {
+        "T1": 30,
+        "T2": 30,
+        "T3": 30,
+        "T4": 30,
+        "T5": 30,
+        "T6": 30
+      }
+    },
+    "final_candidate": [
+      {
+        "action_accuracy": 0.3667,
+        "claim_eligibility": "final_candidate",
+        "macro_f1": 0.1789,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ref_5systems/b1/report.json",
+        "run_id": "ref_5systems/b1_no_memory"
+      },
+      {
+        "action_accuracy": 0.1333,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 1.0,
+        "macro_f1": 0.0784,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ref_5systems/b2/report.json",
+        "run_id": "ref_5systems/b2_flat_retrieval"
+      },
+      {
+        "action_accuracy": 0.4222,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 1.0,
+        "macro_f1": 0.2203,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ref_5systems/b3/report.json",
+        "run_id": "ref_5systems/b3_recency"
+      },
+      {
+        "action_accuracy": 0.4222,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 1.0,
+        "macro_f1": 0.2203,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ref_5systems/b4/report.json",
+        "run_id": "ref_5systems/b4_naive_overwrite"
+      },
+      {
+        "action_accuracy": 0.7,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 0.606,
+        "macro_f1": 0.6657,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/llm_decision_zero/controller/report.json",
+        "run_id": "llm_decision_zero_shot"
+      },
+      {
+        "action_accuracy": 0.8889,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 0.0758,
+        "macro_f1": 0.8913,
+        "model": "qwen/qwen3.5-9b",
+        "n": 180,
+        "path": "artifacts/mgp6_v2/llm_qwen35_9b/controller/report.json",
+        "per_action_f1": {
+          "ABSTAIN": 0.8592,
+          "KEEP": 0.9057,
+          "SUPERSEDE": 0.9091
+        },
+        "premise_resistance": 0.0889,
+        "run_id": "llm_controller_qwen35_9b",
+        "stale_retrieval_rate": 0.3056,
+        "test_split": {
+          "action_accuracy": 0.9,
+          "macro_f1": 0.904,
+          "n": 90
+        }
+      },
+      {
+        "action_accuracy": 0.9222,
+        "claim_eligibility": "final_candidate",
+        "confusion": "KEEP 24/24; SUPERSEDE 76 correct 14->ABSTAIN; ABSTAIN 66/66",
+        "implicit_application": 0.963,
+        "invalid_commit_rate": 0.0,
+        "lineage": 0.8556,
+        "macro_f1": 0.9399,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ref_5systems/controller/report.json",
+        "per_action_f1": {
+          "ABSTAIN": 0.9041,
+          "KEEP": 1.0,
+          "SUPERSEDE": 0.9157
+        },
+        "premise_resistance": 1.0,
+        "run_id": "ref_5systems/controller_rule",
+        "stale_retrieval_rate": 0.0778,
+        "test_split": {
+          "action_accuracy": 0.8889,
+          "macro_f1": 0.9145,
+          "n": 90
+        }
+      },
+      {
+        "action_accuracy": 0.9222,
+        "claim_eligibility": "final_candidate",
+        "macro_f1": 0.9399,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ablations/full/report.json",
+        "run_id": "ablation/full"
+      },
+      {
+        "action_accuracy": 0.5556,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 1.0,
+        "macro_f1": 0.4278,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ablations/no_abstain/report.json",
+        "run_id": "ablation/no_abstain"
+      },
+      {
+        "action_accuracy": 0.7,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 0.606,
+        "macro_f1": 0.7428,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ablations/no_provenance/report.json",
+        "run_id": "ablation/no_provenance"
+      },
+      {
+        "action_accuracy": 0.7889,
+        "claim_eligibility": "final_candidate",
+        "keep_f1": 0.0,
+        "macro_f1": 0.568,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ablations/no_typing/report.json",
+        "run_id": "ablation/no_typing"
+      },
+      {
+        "action_accuracy": 0.9222,
+        "claim_eligibility": "final_candidate",
+        "lineage": 0.3689,
+        "macro_f1": 0.9399,
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ablations/no_lineage/report.json",
+        "run_id": "ablation/no_lineage"
+      },
+      {
+        "action_accuracy": 0.678,
+        "claim_eligibility": "final_candidate",
+        "macro_f1": 0.488,
+        "mapping_disclosure": "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.489/0.302)",
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ext_letta_qwen35_9b/controller/report_noop_abstain.json",
+        "run_id": "external/letta_memgpt"
+      },
+      {
+        "action_accuracy": 0.622,
+        "claim_eligibility": "final_candidate",
+        "invalid_commit_rate": 1.0,
+        "macro_f1": 0.442,
+        "mapping_disclosure": "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.400/0.249)",
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ext_mem0/controller/report_noop_abstain.json",
+        "run_id": "external/mem0_2.0.11"
+      },
+      {
+        "action_accuracy": 0.383,
+        "claim_eligibility": "final_candidate",
+        "macro_f1": 0.219,
+        "mapping_disclosure": "NOOP->ABSTAIN upper bound (NOOP->KEEP: 0.139/0.104)",
+        "n": 180,
+        "path": "artifacts/mgp6_v2/ext_graphiti/controller/report_noop_abstain.json",
+        "run_id": "external/graphiti_0.29.2"
+      }
+    ],
+    "final_table_rows": 15,
+    "known_metric_issues": [
+      "over_forgetting_rate and under_forgetting_rate saturate at 1.0 for every system (uninformative as shipped)",
+      "invalid_commit metric recently revised; .bak files preserved"
+    ],
+    "not_citable": [
+      {
+        "action_accuracy": 0.144,
+        "claim_eligibility": "diagnostic_only",
+        "macro_f1": 0.164,
+        "n": 180,
+        "note": "structural adapter limitation: replaced_old not observable; supersession inexpressible in this harness",
+        "path": "artifacts/mgp6_v2/ext_memos/controller/report_noop_abstain.json",
+        "run_id": "external/memos"
+      },
+      {
+        "claim_eligibility": "incomplete",
+        "coverage_aware_action_accuracy": 0.7833,
+        "coverage_aware_macro_f1": 0.7692,
+        "coverage_aware_test_split": {
+          "action_accuracy": 0.7889,
+          "macro_f1": 0.7729,
+          "n": 90
+        },
+        "n_gold": 180,
+        "n_missing_aligned_invalid": 6,
+        "n_predictions": 174,
+        "note": "Useful deterministic coverage-aware bound: six missing prediction IDs are aligned to the 180-item gold set and scored INVALID. The run remains incomplete and is not a final-table result.",
+        "path": "artifacts/results/mgp6_few6_report.json",
+        "report_sha256": "eed881c69185902b5c892c8f8c6b4ac3e045d081abfc44f9e9eb8a9649f8aeaa",
+        "run_id": "llm_decision_few6",
+        "source_predictions": "artifacts/mgp6_v2/llm_decision_few6/controller/predictions.jsonl"
+      }
+    ]
+  },
+  "ssp_analysis": {
+    "file": "artifacts/single_session_preference_error_taxonomy.json",
+    "headline": "Contaminated v7: 11/30 and 19 failures, with 0/19 repaired by the selected replay; grounding-supply is primary in 10/19 and present in 15/19. Incomplete Modal top-up: 8/29 observed correct with one unresolved (maximum 9/30), so 11/30 is not unchanged across configurations."
+  }
+}

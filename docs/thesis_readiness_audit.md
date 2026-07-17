@@ -2,8 +2,11 @@
 
 Source plans checked:
 
-- `/Users/ali/Documents/Master/KSA_CODEX_IMPLEMENTATION_PLAN.md`
-- `/Users/ali/.codex/attachments/46b0833b-1a70-4fb7-8379-b1d727397ac8/pasted-text.txt`
+- private implementation plan supplied by the author (not redistributed)
+- private completion brief supplied in the Codex task (not redistributed)
+
+This dated audit is historical context. The current release status is recorded
+in `MASTER_EXECUTION_STATUS.md` and `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 
 ## P0/P1 Status
 

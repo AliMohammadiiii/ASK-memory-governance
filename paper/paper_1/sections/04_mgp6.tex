@@ -1,0 +1,130 @@
+\section{\mgp: A Decision-Level Diagnostic}
+\label{sec:mgp6}
+
+\mgp{} is an author-designed diagnostic slice for write-time memory governance.
+We use the word \emph{diagnostic} deliberately and throughout: it is a pilot
+instrument for probing decision mechanisms, not a community benchmark, an
+independent test collection, or a measure of general QA or retrieval efficiency. All scenarios are synthetic,
+English-only, and low-risk, and contain no real personal data.
+
+\subsection{Conflict taxonomy and distribution}
+
+The pilot contains $180$ scenarios, $30$ for each of six scenario families,
+with an action imbalance of
+$90$ \supersede, $66$ \abstain, and $24$ \keep{} that we handle by reporting
+macro-F1 and per-action results rather than accuracy alone.
+
+\begin{center}
+\small
+\begin{tabular}{@{}llr l@{}}
+\toprule
+Type & Diagnostic condition & Rows & Gold action(s) \\
+\midrule
+T1 & preference drift over time & 30 & 30 \supersede \\
+T2 & episodic factual correction & 30 & 30 \supersede \\
+T3 & stable-preference replacement & 30 & 30 \supersede \\
+T4 & ambiguity / referent uncertainty & 30 & 30 \abstain \\
+T5 & transient capture trap & 30 & 24 \keep, 6 \abstain \\
+T6 & confidence laundering & 30 & 30 \abstain \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+T1--T3 target supersession under different durability regimes; a subset of $10$
+rows per type is \emph{cue-free} (\textsf{implicit\_conflict}), i.e.\ the
+perturbation contains none of the explicit change cues (``now,'' ``instead of,''
+``actually,'' \dots) yet still fixes a mutually exclusive current value. T4/T6
+require \abstain{} because evidence is referentially uncertain or laundered
+through an unreliable source; T5 separates a durable preference (\keep) from a
+temporary override. Some supersession cases also have minimal-pair T4 partners.
+These pairs test a narrow cue change, but they do not remove the global shortcut:
+conflict type still determines the action throughout v2.
+
+\subsection{Query modes}
+
+Every scenario carries one query mode used only at the answer stage:
+\emph{direct recall} ($108$ items), \emph{premise resistance} ($45$; the query
+embeds the stale/unsupported value as a false presupposition that a correct
+answer must reject), and \emph{implicit application} ($27$; a concrete task
+solvable only by using the active value, with neither value named in the query).
+These modes let us measure whether a system that makes the right write decision
+also refuses stale premises and applies the active value in context.
+
+\subsection{Splits}
+
+Splits are $60$ train / $30$ dev / $90$ test, stratified so each type contributes
+$10/5/15$ rows and T5 contributes $8/2$, $4/1$, $12/3$ \keep/\abstain. No
+template-family identifier and no minimal-pair group crosses a split boundary,
+which blocks literal family overlap. It does \emph{not} block construct leakage
+when the same family-to-action rule holds in every split. We therefore treat the
+$90$-item test split as a held-out item split only, never as independent
+validation.
+
+\subsection{Pre-specified validity checks}
+
+Before comparing policies we fit lookup baselines on train+dev and evaluate them
+on test using only (i) the six-way type, (ii) the finer conflict type, and (iii)
+source/reliability/temporal metadata. We also compute macro-accuracy and paired
+bootstrap intervals by \texttt{template\_family\_id}; for
+\texttt{minimal\_pair\_group\_id}, unpaired items are singleton clusters. A
+shortcut baseline that approaches the full policy is a failed construct-validity
+check, not a competitive result.
+
+\subsection{Schema, invariants, and scoring}
+
+Each row provides a dialogue prefix, prior memory state, perturbation event,
+source/temporal metadata, a gold action, an auditable gold memory state, the
+query mode, the expected answer, and a regex judge specification with required
+(\texttt{include}) and forbidden (\texttt{not\_include}) spans. Evaluation is
+two-stage: the write stage sees only the prefix, prior state, and perturbation
+and commits an action and predicted state \emph{before} the query is revealed;
+the answer stage then answers from the predicted state. A validator enforces the
+state-transition invariants of Section~\ref{sec:actionspace} (one active record
+per slot, retained superseded predecessors, single-successor lineage,
+byte-equivalent \abstain{} states, active-only answers), and a released corpus
+prints \texttt{VALIDATION PASSED: 180 examples, 0 errors}.
+
+We score two families of metric (full definitions in Appendix~\ref{app:metrics}):
+\emph{decision-level} --- action accuracy, per-action and macro-F1, and the
+action false-commit rate on gold-\abstain{} items --- and \emph{memory-state}
+--- state invalid-commit on gold-\abstain{} items, five-condition lineage
+integrity on \supersede{} items, and stale-retrieval rate (the fraction of answers surfacing a forbidden
+superseded value). Two shipped forgetting-rate metrics saturate at $1.0$ for every
+system and are excluded from all tables as uninformative.
+
+\subsection{Annotation: one independent annotator plus a model audit panel}
+\label{sec:annotation}
+
+We are precise about the annotation evidence, which has two separate components
+and must never be described as multi-annotator human agreement.
+
+\begin{description}[leftmargin=0em,topsep=2pt,itemsep=2pt]
+\item[One independent human annotator] re-labelled the $90$-item test split
+against the annotation manual. Raw agreement with gold is $0.9889$
+($\text{CI}_{95}\,[0.9667, 1.0]$), Cohen's $\kappa = 0.98146$
+($\text{CI}_{95}\,[0.93997, 1.0]$), with exactly one disagreement
+(\texttt{MGP6V2-T3-TEST-016}, an \textsf{implicit\_conflict} \supersede$\to$\abstain{}
+case). This is $n{=}1$ annotator; the annotator's human status rests on author
+attestation, not on evidence in the released files.
+\item[A four-model audit panel] (four distinct LLMs) independently labelled the
+same $90$ items: Fleiss $\kappa = 0.9815$ across the panel, with the majority
+vote matching gold on all $90$ items ($88$ unanimous). This is a model audit, not
+human inter-annotator agreement.
+\end{description}
+The larger human review sheet ($180$ rows) exists but is unfilled; a genuine
+multi-annotator human release is future work (Section~\ref{sec:limitations}).
+The panel and the single annotator may share the manual's reading because the
+labelling policy is unambiguous by construction --- a construct-validity caveat we
+carry explicitly.
+
+\subsection{Construction grounding}
+
+Scenario \emph{shapes} were informed by inspecting real corpora --- LongMemEval
+knowledge-update items and its false-premise (\texttt{\_abs}) questions, Memora
+operation chains, GateMem's machine-readable judge structure, and named
+confidence-laundering patterns --- but every released row is a newly authored
+synthetic paraphrase; no source content is reused. This grounds the failure modes
+without importing personal data, and it is the reason \mgp{} shares construct
+names (implicit conflict, premise resistance) with concurrent read-side work
+\citep{chao2026stale}, which we cite to disambiguate.

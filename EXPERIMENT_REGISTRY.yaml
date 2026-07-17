@@ -1,17 +1,61 @@
-version: 1
+version: 3
+updated: 2026-07-13
 experiments:
   - id: offline_unit_suite
-    status: prepared
+    status: final_candidate
     command: make test
+    last_known_result: "422 passed, 14 skipped (Python 3.12.12, 2026-07-13)"
   - id: mgp6_schema_validation
-    status: prepared
+    status: final_candidate
     command: make validate-data
-  - id: openrouter_qwen_gemma_mgp6
-    status: blocked_network
-    config: configs/models/openrouter_qwen_gemma.yaml
+    last_known_result: "180 examples, 0 errors"
+  - id: mgp6_ref_5systems
+    status: final_candidate
+    evidence: artifacts/mgp6_v2/ref_5systems
+  - id: mgp6_llm_controller_qwen35_9b
+    status: final_candidate
+    evidence: artifacts/mgp6_v2/llm_qwen35_9b
+  - id: mgp6_llm_decision_zero
+    status: final_candidate
+    evidence: artifacts/mgp6_v2/llm_decision_zero
+  - id: mgp6_llm_decision_few6_metrics
+    status: incomplete
+    evidence: artifacts/results/mgp6_few6_report.json
+    note: coverage-aware 0.7833 accuracy / 0.7692 macro-F1 over 180 gold with six missing IDs aligned as INVALID; original run remains 174/180
+  - id: mgp6_ablations
+    status: final_candidate
+    evidence: artifacts/mgp6_v2/ablations
+  - id: mgp6_external_adapters
+    status: final_candidate
+    evidence: artifacts/mgp6_v2/ext_{mem0,letta_qwen35_9b,graphiti,memos}
+    note: Mem0/Letta/Graphiti require NOOP mapping disclosure; MemOS is separately diagnostic_only
+  - id: longmemeval_v7_5systems
+    status: diagnostic_only
+    evidence: ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
+  - id: longmemeval_v8_failure_replay
+    status: failure_replay_only
+    evidence: "ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink"
+  - id: longmemeval_v8_adjudicated_merge
+    status: failure_replay_only
+    evidence: "ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
+    note: selection-biased carry-forward construction contradicted by the non-empty Modal top-up
+  - id: longmemeval_v8_topup110_modal
+    status: incomplete
+    evidence: "ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
+    note: 84/110 observed; 71 correct and 13 regressions; combined replay raw 96/154; full-180 bounds 53.3%-67.8%
+  - id: longmemeval_homogeneous_final_rerun
+    status: externally_pending
+    blockers: [newly_authorized_openrouter_credential]
+    config: configs/release/final.yaml
     main_model: qwen/qwen3.5-9b
     judge_model: google/gemma-4-31b-it:free
     fallback_judge_model: google/gemma-4-31b-it
-  - id: longmemeval_transfer
-    status: blocked_external_data
-    command: make reproduce-longmemeval
+    protocol: FINAL_EVALUATION_PROTOCOL.md
+    last_attempt: "two-item smoke failed before inference with HTTP 403 Access denied by security policy on 2026-07-13"
+  - id: ssp_correction_ablation_matrix
+    status: incomplete
+    blockers: [correction_code_not_implemented, newly_authorized_openrouter_credential]
+    spec: docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md
+  - id: judge_audit
+    status: externally_pending
+    note: primary vs fallback judge confound test on frozen final run outputs

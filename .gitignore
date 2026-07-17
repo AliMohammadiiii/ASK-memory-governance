@@ -1,33 +1,64 @@
 # Python
 __pycache__/
 *.py[cod]
+*$py.class
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
 .mypy_cache/
+.pyre/
+.pytype/
+.hypothesis/
+.tox/
+.nox/
 .coverage
+.coverage.*
+coverage.xml
 htmlcov/
 .venv/
 venv/
+ENV/
+env/
 dist/
 build/
+pip-wheel-metadata/
+*.whl
+
+# Notebooks and local runtime caches
+.ipynb_checkpoints/
+.cache/
 
 # Secrets and local configuration
 .env
 .env.*
 !.env.example
+.envrc
 *.pem
 *.key
 
 # Local datasets and large run artifacts
 data/external/
+data/longmemeval_m_cleaned.json
+data/slices/longmemeval_m_full.jsonl
 runs/
+runs_local/
+inputs_raw/
+audit_workspace/
+final_release/
+return_package_*.tar.gz
+ksa_memory_governance_final_*.zip
 artifacts/raw/
 artifacts/final/
 *.sqlite
 *.db
 *.qdrant/
 .memos/
+
+# Local experiment tooling and diagnostics
+wandb/
+tensorboard/
+checkpoints/
+*.log
 
 # Editors / OS
 .DS_Store

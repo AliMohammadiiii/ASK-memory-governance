@@ -7,6 +7,7 @@ report from the union of grades. Because each session is graded identically
 regardless of which shard ran it (temperature 0, fixed seed), the merged report
 is the same as a single serial run — only wall-clock changes.
 """
+
 from __future__ import annotations
 
 import dataclasses
@@ -32,9 +33,15 @@ _JSONL_ARTIFACTS = (
 
 
 def grade_from_dict(row: dict[str, Any]) -> GradeResult | None:
-    field_names = {f.name for f in dataclasses.fields(GradeResult)}
+    fields = dataclasses.fields(GradeResult)
+    field_names = {f.name for f in fields}
+    required_names = {
+        f.name
+        for f in fields
+        if f.default is dataclasses.MISSING and f.default_factory is dataclasses.MISSING
+    }
     payload = {k: row[k] for k in field_names if k in row}
-    if field_names - payload.keys():
+    if required_names - payload.keys():
         return None
     try:
         return GradeResult(**payload)

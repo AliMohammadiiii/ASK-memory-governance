@@ -1,0 +1,69 @@
+\section{Discussion, Threats to Validity, and Reproducibility}
+\label{sec:limitations}
+
+\subsection{What the evidence supports}
+
+The evidence supports the usefulness of separating write, state, and answer
+failures and the necessity of testing diagnostic shortcuts before interpreting
+policy scores. It also supports within-pilot mechanism observations, such as
+lineage corruption being invisible to action accuracy. It does not support
+population accuracy, deployment safety, reference-policy superiority,
+non-inferiority, or downstream benefit.
+
+\subsection{Threats to validity}
+
+\paragraph{Internal and construct validity.}
+The same project designed the taxonomy, manual, generator, gold labels, and
+reference policy. Conflict type perfectly predicts test actions, so item holdout
+and high annotation agreement cannot establish construct validity.
+Family-cluster bootstrap corrects one form of dependence but cannot repair the
+deterministic family--label mapping.
+
+\paragraph{External validity.}
+\mgp{} is small, synthetic, English-only, single-step, and single-slot. It lacks
+independent generation, natural dialogue, multi-step trajectories, multiple
+model families, multiple seeds, and native external-system comparisons. None of
+its rates estimates a deployment population.
+
+\paragraph{Annotation.}
+There is one independent human re-annotation of the test split plus a four-model
+audit panel. Agreement may be high because the manual and family-to-label mapping
+are deterministic. The model panel is not human inter-annotator agreement, and
+one human annotator cannot establish multi-annotator reliability or construct
+validity.
+
+\paragraph{Statistical conclusion.}
+There are only 48 test template families, and cluster intervals are
+correspondingly wide. The reference--LLM comparison is a null, not evidence of
+equality. Confidence calibration and cost matrices were not validated on
+independent data, so they expose trade-offs rather than certify risk. The
+one-sided upper bound attached to zero action false commits prevents a sample zero from
+being presented as a safety guarantee.
+
+\subsection{Ethics and scope}
+
+The pilot contains synthetic, low-risk scenarios with no real personal data. Our
+target is epistemic write correctness. Memory poisoning, multi-principal access
+control, privacy, deletion compliance, and security governance are separate
+threat models that we do not test. We make no production-safety claim.
+
+\subsection{Successor-dataset gate}
+
+A successor release must be constructed after the evaluated policies and
+thresholds are frozen; use an independent generator and hidden labels; include
+\keep, \supersede, and \abstain{} within every conflict family; add adversarial
+minimal pairs and 5/10/20-step trajectories; obtain blinded labels from at least
+three humans; and include natural or independently paraphrased dialogue. The
+test set must remain sealed until all development choices are fixed. These are
+requirements for stronger claims, not future-work decorations.
+
+\subsection{Reproducibility statement}
+
+The dataset, schema, validator, reference policies, and per-item predictions are
+released. The construct-validity script regenerates shortcut tables,
+family/minimal-pair cluster intervals, calibration, risk--coverage, and cost
+sensitivity from those artifacts. The incomplete six-shot run and mapped
+external adapters remain explicitly non-primary. Reproduction commands are in
+Appendix~\ref{app:repro}. Independent construction, multi-human annotation, and
+trajectory data are release gates for a successor benchmark rather than boxes
+silently marked complete here.

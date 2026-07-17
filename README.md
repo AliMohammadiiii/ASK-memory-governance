@@ -8,8 +8,9 @@ A Git-ready research repository for interpretable, abstention-aware memory gover
 - No-memory, vector, recency, and naive-overwrite baselines.
 - Extraction, relation classification, memory operations, orchestration, and evaluation code.
 - The frozen 180-item MGP-6 v2 diagnostic package under `benchmarks/mgp6/`.
-- Independent annotation artifacts, separated into human and model/mixed evidence.
-- A verified offline suite with **420 passing tests and 14 documented skips**, plus scorer-regression tests.
+- Annotation audit artifacts separated into independent-human and model-panel evidence;
+  raw human labels are withheld from the public bundle pending redistribution consent.
+- A verified offline test suite plus scorer-regression tests (see the dated validation report for exact counts).
 - Colab/GPU/API run scripts and resumable experiment tooling.
 - OpenRouter model configuration for Qwen 3.5 9B with Gemma 4 31B judge/fallback.
 - Research, thesis, bibliography, figures, and persistent evidence/experiment registries.
@@ -59,7 +60,9 @@ pip install -e '.[ml]'
 
 ## OpenRouter configuration
 
-The repository never embeds credentials. Rotate any key that has previously appeared in chat or logs, then set it only in your shell/secret manager:
+The repository never embeds credentials. Use a newly authorized key and set it
+only in your shell or secret manager. A prior authorization attempt stopped
+before inference and is not a reusable experiment credential:
 
 ```bash
 export OPENROUTER_API_KEY='...'
@@ -74,11 +77,24 @@ Configured models:
 
 ## Scientific status
 
-MGP-6 v2 is a six-category diagnostic slice, not a comprehensive established benchmark. Historical results and fresh confirmation runs must remain distinct. Submission-ready claims require a frozen confirmation split, complete hosted-model runs, and machine-generated tables. See `PROJECT_STATE.md`, `BLOCKERS.md`, and `research/MASTER_EXECUTION_PROMPT.md`.
+MGP-6 v2 is a six-category, author-designed pilot diagnostic, not an independent
+benchmark. Its held-out split is not construct-valid: a conflict-type-only
+lookup fitted on train and development obtains 1.000 test accuracy, while the
+reference rule policy obtains 0.8889 and the structured LLM policy obtains
+0.9000. The released audit therefore treats the policy results as diagnostic,
+reports family-clustered uncertainty and asymmetric error costs, and makes no
+superiority or population-safety claim. LongMemEval has no eligible final result
+and is excluded from the main manuscript. See
+`artifacts/analysis/mgp6_validity_audit.md`,
+`benchmarks/mgp6/MGP6_V3_INDEPENDENT_PROTOCOL.md`, and
+`docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 
 ## Before pushing
 
-Replace `OWNER` in `pyproject.toml` and `CITATION.cff`, confirm the data license, rotate the exposed API key, and run:
+After creating the public host, add its real repository and issue URLs (no
+placeholder URL is shipped). Record human-annotation redistribution consent if
+the raw labels will be published, complete the independent v3 confirmation
+protocol before making generalization claims, and run:
 
 ```bash
 make repo-check
@@ -86,4 +102,5 @@ make test
 make lint
 make typecheck
 make build
+make paper-audit
 ```

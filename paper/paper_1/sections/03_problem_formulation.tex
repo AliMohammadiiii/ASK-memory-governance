@@ -1,0 +1,106 @@
+\section{Problem Formulation}
+\label{sec:formulation}
+
+We formalize write-time memory governance for a single atomic semantic slot,
+which is the unit \mgp{} controls. This scoping is deliberate: it isolates the
+write decision from retrieval and answer generation so that the decision can be
+scored on its own.
+
+\subsection{Memory records, state, and types}
+
+A memory record $m$ is a tuple
+$m = (\mathit{id}, \tau, v, c, \sigma, \pi, t, s)$, where $\mathit{id}$ is a
+unique identifier, $\tau \in \mathcal{T}$ is the memory \emph{type}, $v$ is the
+stored value (written in the auditable form \texttt{slot = value}), $c \in [0,1]$
+is a stored confidence, $\sigma \in \{\textsf{active}, \textsf{superseded}\}$ is
+the record's \emph{status}, $\pi$ is the supersession pointer (\texttt{supersedes\_id},
+possibly null), $t$ is a validity timestamp, and $s$ is the record's
+\emph{provenance} (the source event/turn that established it). We use three
+types, ordered by expected durability:
+\[
+\mathcal{T} = \{\textsf{stable\_pref},\ \textsf{episodic\_fact},\ \textsf{transient\_pref}\}.
+\]
+A \emph{memory state} $M$ is a set of records for the slot. A well-formed state
+has at least one \textsf{active} record and, for a preference slot, exactly one
+active \textsf{stable\_pref} record; every non-null $\pi$ points at a retained
+\textsf{superseded} record.
+
+\subsection{Candidate update and evidence}
+
+At a write step the agent extracts a \emph{candidate update} $u$ (a proposed new
+value with a type guess) from a \emph{perturbation event} against the current
+state $M$. The decision is driven by \emph{evidence} associated with $u$: the
+extraction confidence, the specificity and recency of the supporting span, the
+presence of negation or hedging markers, and the classified logical relation of
+$u$ to the active record (support, contradiction, or independence). These
+evidence signals are the inputs to the policy of Section~\ref{sec:method}; the
+formulation itself is agnostic to how they are computed.
+
+\subsection{Action space and transition function}
+\label{sec:actionspace}
+
+The controller emits one action $a \in \mathcal{A} = \{\keep, \supersede, \abstain\}$,
+which induces a deterministic transition $M' = \delta(M, u, a)$:
+\begin{itemize}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
+\item $\delta(M, u, \keep) = M$ for durable records: the prior active record is
+preserved unchanged. A \emph{clear temporary} override may be added only as a
+separate \textsf{active} \textsf{transient\_pref} record, never by mutating the
+durable one.
+\item $\delta(M, u, \supersede)$ marks the prior active record
+\textsf{superseded} and adds one \textsf{active} successor whose $\pi$ points back
+at it. The prior value is \emph{retained}, not deleted, and no longer active in
+the slot; exactly one active record of the successor's type remains.
+\item $\delta(M, u, \abstain) \equiv M$ at the modeled field level: the state is
+byte-for-byte equivalent. \abstain{} is a decision to \emph{not commit} the
+candidate, distinct from committing a null value.
+\end{itemize}
+A transition is an \emph{invalid commit} if it changes the active state on an item
+whose gold action is \abstain, or otherwise violates a state-transition invariant
+(Section~\ref{sec:mgp6}). This is the failure the abstention and provenance
+machinery is designed to prevent.
+
+\subsection{Four distinctions the formulation makes explicit}
+\label{sec:distinctions}
+
+These distinctions are load-bearing and are frequently conflated in memory
+systems; we make them explicit because \mgp{} scores each.
+
+\begin{description}[leftmargin=0em,topsep=2pt,itemsep=2pt]
+\item[\keep{} vs.\ retrieval absence.] \keep{} is a positive write-time decision
+to retain the current active value in the presence of a candidate update; it is
+not the same as a record simply not being retrieved at answer time. \keep{}
+operates on the state; retrieval absence operates on a later read.
+\item[\abstain{} vs.\ no-op.] A no-op (e.g.\ Mem0's \texttt{NOOP}) fires when the
+candidate carries \emph{nothing new}. \abstain{} fires when the candidate carries
+something potentially relevant but the evidence is \emph{too weak or ambiguous to
+commit} (unreliable source, non-atomic claim, referential uncertainty). Both
+leave the state unchanged, but only \abstain{} is an uncertainty-driven refusal;
+this is why we report an external \texttt{NOOP}$\to$\abstain{} mapping only as an
+upper bound (Section~\ref{sec:results}).
+\item[Write-time vs.\ answer-time abstention.] \abstain{} in our formulation is a
+\emph{write-layer} non-commit: the store is not modified. It is distinct from an
+answer-layer refusal to respond (as scored by end-task benchmarks), which occurs
+downstream and does not change memory. \mgp{} withholds the evaluation query
+until the write is committed precisely so that answer-time behavior cannot leak
+into the write decision.
+\item[Supersession vs.\ deletion.] \supersede{} replaces the active value while
+\emph{preserving} the prior record as \textsf{superseded} with a lineage edge.
+Deletion (and active forgetting) removes information and is explicitly out of
+scope for this work; the reserved \textsf{forgotten} status never occurs in our
+data.
+\end{description}
+
+\subsection{Objective}
+
+Let $y$ be the target action and let $C(a,y)$ be an application-specific cost.
+The policy objective is
+\begin{equation}
+\pi^* = \arg\min_\pi\;\mathbb{E}[C(\pi(M,u),y)],
+\end{equation}
+subject to state and lineage invariants. The cost is intentionally not assumed
+symmetric: committing on ambiguous evidence, missing a valid update, and
+unnecessarily abstaining can have different consequences. We therefore report
+the full action confusion and expected loss under multiple pre-declared cost
+regimes rather than treating accuracy as a universal utility. State validity,
+lineage integrity, stale retrieval, and calibration remain separate outcomes;
+they are not folded into a post-hoc scalar chosen after seeing test results.

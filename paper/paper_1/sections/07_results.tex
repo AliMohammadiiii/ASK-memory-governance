@@ -1,0 +1,60 @@
+\section{Results on \mgp{}}
+\label{sec:results}
+
+All results below are recomputed from released per-item predictions. We lead
+with validity checks because they determine how the policy scores may be
+interpreted.
+
+\subsection{The shortcut check fails}
+
+The conflict-type-only lookup fitted on train+dev reaches $1.0000$ accuracy and
+macro-F1 on test; the coarser six-way type lookup reaches $0.9667$ accuracy and
+$0.9471$ macro-F1. Neither sees the dialogue or memory state. Thus the held-out
+item split does not test whether a system reasons about evidence quality,
+provenance, or temporal scope: scenario recognition is sufficient. This failed
+check dominates every policy comparison below.
+
+\input{tables/shortcut_audit}
+
+\subsection{Held-out policy comparison}
+
+\input{tables/main_results}
+
+On test, the reference policy reaches $0.8889$ accuracy/$0.9145$ macro-F1 and
+the structured LLM reaches $0.9000$/$0.9040$. The reference-minus-LLM risk
+difference is $-0.0111$; the paired template-family cluster interval
+$[-0.094,0.063]$ includes zero (exact item-level McNemar:
+$b=4,c=5,p=1.0$). These data support neither superiority nor non-inferiority.
+The unstructured zero-shot policy reaches $0.6778$/$0.6542$, but that gap is
+itself evaluated on the shortcut-leaking pilot and is not a general
+scaffold-effect estimate.
+
+\subsection{Safety--responsiveness trade-off}
+
+The reference policy makes no action false commits on the 33 test abstention items, but
+the exact one-sided 95\% upper bound is $0.0868$, not zero risk. It misses
+$10/45$ required updates ($0.2222$) and unnecessarily abstains on $10/57$
+non-abstention items ($0.1754$). The structured LLM action false-commit rate is
+$2/33=0.0606$, while its missed-update rate is $7/45=0.1556$. Consequently the
+reference policy has lower expected loss under the commit-averse matrix
+($0.111$ vs.\ $0.189$), but higher loss under the update-responsive matrix
+($0.556$ vs.\ $0.433$). Safety is therefore cost-conditional, not an absolute
+ordering. Top-label ECE is $0.156$ for the reference confidence and $0.302$ for
+the LLM confidence; both are descriptive because neither confidence was
+calibrated on an independent set.
+
+\subsection{State and component diagnostics}
+
+Full-corpus ablations are retained only as within-generator mechanism checks.
+Removing abstention raises invalid-commit from $0.0$ to $1.0$; removing
+provenance yields $0.606$; removing typing drives \keep{} F1 to $0.0$. Removing
+lineage leaves action accuracy unchanged at $0.9222$ but drops lineage integrity
+$0.8556\to0.3689$. The last result demonstrates the central measurement point:
+action accuracy alone cannot reveal a corrupted transition history.
+
+\input{tables/ablation}
+
+The $174/180$ six-shot run remains incomplete and is excluded from all
+comparisons. Mapped external-system action scores and non-homogeneous downstream
+runs remain in the artifact audit only; neither supports a main-paper capability
+claim.

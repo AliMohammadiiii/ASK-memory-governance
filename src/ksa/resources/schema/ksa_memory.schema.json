@@ -1,0 +1,30 @@
+{
+  "$id": "https://thesis.ali-mohammadi.org/schemas/ksa_memory/ActionLogEntry",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ActionLogEntry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "timestamp", "action", "candidate_text", "rationale"],
+  "properties": {
+    "id": {"type": "integer"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "action": {"type": "string", "enum": ["Keep", "Supersede", "Abstain"]},
+    "candidate_text": {"type": "string"},
+    "candidate_type": {"type": ["string", "null"], "enum": ["stable_pref", "transient_pref", "episodic_fact", null]},
+    "candidate_id": {"type": ["integer", "null"]},
+    "session_id": {"type": ["string", "null"]},
+    "baseline": {"type": ["string", "null"], "enum": ["no_memory", "flat_vector", "recency", "naive_overwrite", "controller", null]},
+    "prior_memory_id": {"type": ["integer", "null"]},
+    "resulting_memory_id": {"type": ["integer", "null"]},
+    "feature_c": {"type": ["number", "null"], "minimum": 0.0, "maximum": 1.0},
+    "feature_e": {"type": ["number", "null"], "minimum": 0.0, "maximum": 1.0},
+    "feature_f": {"type": ["number", "null"], "minimum": 0.0, "maximum": 1.0},
+    "feature_r": {"type": ["number", "null"], "minimum": -1.0, "maximum": 1.0},
+    "feature_rho": {"type": ["number", "null"], "minimum": 0.0, "maximum": 1.0},
+    "s_rev": {"type": ["number", "null"]},
+    "s_abs": {"type": ["number", "null"]},
+    "theta_sup": {"type": ["number", "null"]},
+    "theta_abs": {"type": ["number", "null"]},
+    "rationale": {"type": "string"}
+  }
+}

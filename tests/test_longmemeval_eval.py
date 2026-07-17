@@ -144,6 +144,8 @@ def test_grader_caches_and_does_not_recall_judge(tmp_path: Path) -> None:
     g1 = grader.grade(ans, sess)
     g2 = grader.grade(ans, sess)
     assert g1.correct and g2.correct
+    assert g1.judge_cache_hit is False
+    assert g2.judge_cache_hit is True
     assert judge.calls == 1, "second grade must hit the cache, not the judge"
 
     # Cache file persisted.
@@ -165,6 +167,7 @@ def test_grader_rejects_blank_non_abstention_without_calling_judge() -> None:
     assert grade.correct is False
     assert grade.judge_score == 0.0
     assert grade.judge_rationale.startswith("[blank-answer]")
+    assert grade.judge_was_called is False
     assert judge.calls == 0
 
 
@@ -174,7 +177,9 @@ def test_grader_rejects_non_abstention_refusal_without_calling_judge() -> None:
     grader = LongMemEvalGrader(judge_llm=judge)
     sess = _session("s-refusal", competency="single-session-user", gold="Business Administration")
 
-    grade = grader.grade(_answer("s-refusal", "I do not know what degree you graduated with."), sess)
+    grade = grader.grade(
+        _answer("s-refusal", "I do not know what degree you graduated with."), sess
+    )
 
     assert grade.correct is False
     assert grade.judge_rationale.startswith("[refusal-guard]")
@@ -290,6 +295,8 @@ def test_grader_uses_substring_fallback_when_judge_emits_garbage_text() -> None:
     g = grader.grade(_answer("s-x", "the elephants in the savanna"), sess)
     assert g.correct is True
     assert g.used_fallback is True
+    assert g.used_model_fallback is False
+    assert g.used_scoring_fallback is True
     assert "[substring-fallback]" in g.judge_rationale
 
 
@@ -318,6 +325,7 @@ def test_grader_uses_substring_fallback_when_judge_returns_empty() -> None:
     g = grader.grade(_answer("s-1", "The user prefers coffee in the morning."), sess)
     assert g.correct is True
     assert g.used_fallback is True
+    assert g.used_scoring_fallback is True
     assert "[substring-fallback]" in g.judge_rationale
 
     # Prediction misses content tokens → should be incorrect via fallback.
@@ -325,6 +333,7 @@ def test_grader_uses_substring_fallback_when_judge_returns_empty() -> None:
     g2 = grader.grade(_answer("s-2", "coffee today"), sess2)
     assert g2.correct is False
     assert g2.used_fallback is True
+    assert g2.used_scoring_fallback is True
     assert "[substring-fallback]" in g2.judge_rationale
 
 
@@ -386,6 +395,37 @@ def test_grader_does_not_use_fallback_when_judge_returns_valid_json() -> None:
     assert g.correct is True
 
 
+def test_grader_records_actual_judge_model_after_route_fallback() -> None:
+    """A paid fallback verdict must never be mislabeled as the free route."""
+    judge = _ScriptedJudge([])
+    judge.model_id = "google/gemma-4-31b-it:free"
+    judge.fallback_model_ids = ("google/gemma-4-31b-it",)
+
+    def fake_generate(*_args, **_kwargs) -> LLMResponse:  # noqa: ANN002, ANN003
+        return LLMResponse(
+            text=json.dumps({"correct": True, "rationale": "semantic match"}),
+            prompt_tokens=5,
+            completion_tokens=6,
+            latency_ms=7.0,
+            model_id="google/gemma-4-31b-it",
+            metadata={"fallback_used": True, "attempt_index": 1},
+        )
+
+    judge.generate = fake_generate  # type: ignore[method-assign]
+    grade = LongMemEvalGrader(judge_llm=judge).grade(_answer("s-route", "G"), _session("s-route"))
+
+    assert grade.correct is True
+    assert grade.requested_judge_model_id == "google/gemma-4-31b-it:free"
+    assert grade.judge_model_id == "google/gemma-4-31b-it"
+    assert grade.judge_attempt_index == 1
+    assert grade.used_model_fallback is True
+    assert grade.used_scoring_fallback is False
+    assert grade.used_fallback is True
+    assert grade.judge_raw_output is not None
+    assert grade.judge_raw_response_hash is not None
+    assert grade.judge_prompt_hash is not None
+
+
 # --------------------------------------------------------------------- #
 # Bootstrap CI math                                                      #
 # --------------------------------------------------------------------- #
@@ -424,7 +464,7 @@ def test_bootstrap_ci_seeded_is_deterministic() -> None:
     array and assert seed determinism only (which is what the thesis cares
     about — not that any two seeds disagree).
     """
-    arr = ([True] * 30 + [False] * 20)  # 50 elements, finer percentile grid
+    arr = [True] * 30 + [False] * 20  # 50 elements, finer percentile grid
     a = bootstrap_accuracy_ci(arr, n_resamples=500, seed=7)
     b = bootstrap_accuracy_ci(arr, n_resamples=500, seed=7)
     assert a == b
@@ -522,6 +562,7 @@ def test_evaluator_uses_baseline_answer_only_no_class_check() -> None:
 
     A duck-typed object with .answer() and BASELINE_NAME should work.
     """
+
     class Duck:
         BASELINE_NAME = "duck"
 

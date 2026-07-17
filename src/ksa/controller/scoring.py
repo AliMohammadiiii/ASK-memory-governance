@@ -14,7 +14,12 @@ import yaml
 
 from .features import FeatureVector
 
-_DEFAULT_CONFIG = Path(__file__).resolve().parents[3] / "configs" / "controller_legacy_proposal.yaml"
+_DEFAULT_CONFIG = (
+    Path(__file__).resolve().parents[1]
+    / "resources"
+    / "configs"
+    / "controller_legacy_proposal.yaml"
+)
 
 
 @dataclass(frozen=True)

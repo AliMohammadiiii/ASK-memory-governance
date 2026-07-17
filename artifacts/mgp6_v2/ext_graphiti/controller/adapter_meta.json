@@ -1,0 +1,18 @@
+{
+  "system": "graphiti",
+  "answer_model": "qwen/qwen3.5-9b",
+  "answers_natively": false,
+  "mapping": "SUPERSEDE only when replacement/removal is observable; dual-active conflict -> INVALID_COMMIT; NOOP->KEEP default; NOOP->ABSTAIN variant file",
+  "graphiti_version": "0.29.2",
+  "driver": "falkordb-docker",
+  "falkordb_host": "127.0.0.1",
+  "falkordb_port": 6379,
+  "falkordb_database": "mgp6_graphiti_full",
+  "llm_model": "qwen/qwen3.5-9b",
+  "llm_base_url": "https://openrouter.ai/api/v1",
+  "embed_url": "http://127.0.0.1:8100/v1",
+  "embed_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "embed_dim": 384,
+  "max_coroutines": 4,
+  "cross_encoder": "passthrough"
+}

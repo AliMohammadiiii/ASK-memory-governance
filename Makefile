@@ -1,7 +1,7 @@
 PYTHON ?= python
 PYTEST ?= pytest
 
-.PHONY: setup test test-fast lint format typecheck build smoke validate-data reproduce-mgp6 reproduce-longmemeval figures paper thesis clean repo-check
+.PHONY: setup test test-fast lint format typecheck build smoke validate-data reproduce-mgp6 reproduce-longmemeval figures paper paper-audit thesis clean repo-check
 
 setup:
 	$(PYTHON) -m pip install -U pip
@@ -42,6 +42,10 @@ figures:
 
 paper:
 	@echo 'Paper sources are under paper/. Compile after selecting the official venue template.'
+
+paper-audit:
+	$(PYTHON) scripts/analysis/audit_mgp6_validity.py
+	$(PYTHON) scripts/release/audit_bibliography.py
 
 thesis:
 	@echo 'Thesis source is under thesis/. Institutional metadata remains explicit placeholders.'

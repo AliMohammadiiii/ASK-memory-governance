@@ -1,0 +1,125 @@
+\section{Downstream Analysis: \lme{} (Non-Final Evidence)}
+\label{sec:downstream}
+
+To probe whether write-time governance helps a long-horizon task, we used a
+stratified $180$-item slice of \lme{} ($6$ competencies $\times\,30$, seed $0$).
+No run on this track is eligible for a final comparative claim. We therefore use
+the exact ledger labels --- \texttt{diagnostic\_only},
+\texttt{failure\_replay\_only}, \texttt{incomplete}, and
+\texttt{externally\_pending} --- and do not collapse them into a generic result.
+
+\subsection{The contaminated v7 diagnostic}
+
+The v7 controller run is provider-contaminated: it accumulated $316$ HTTP-402
+credit-exhaustion traces, $388$ empty-extraction fallbacks, at least $12$ manual
+relaunches, and a no-op escalation tier (the ``big'' and ``fast'' models were
+identical). It is therefore \texttt{diagnostic\_only}. On this run, naive
+overwrite (B4, $114/180=63.3\%$) outperformed the controller
+($110/180=61.1\%$). This does not establish general superiority for either
+system, but it rules out a claim that the available downstream evidence shows a
+controller advantage.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Non-final \lme{} evidence. Replay and top-up rows are selected subsets,
+not full reruns; canonical statuses come from ledger version 1.1.}
+\label{tab:lme}
+\begin{tabular}{@{}l r r l@{}}
+\toprule
+Run or construction & correct/$n$ & accuracy & ledger status \\
+\midrule
+v7 B1 no-memory        & 9/180   & 0.0500 & \texttt{diagnostic\_only} \\
+v7 B2 flat-vector      & 80/180  & 0.4444 & \texttt{diagnostic\_only} \\
+v7 B3 recency          & 43/180  & 0.2389 & \texttt{diagnostic\_only} \\
+v7 B4 naive-overwrite  & 114/180 & 0.6333 & \texttt{diagnostic\_only} \\
+v7 \ksa{} controller   & 110/180 & 0.6111 & \texttt{diagnostic\_only} \\
+v8 replay of v7 failures & 25/70 & 0.3571 & \texttt{failure\_replay\_only} \\
+v8 carry-forward construction & 139/180 & 0.7722 & \texttt{failure\_replay\_only} \\
+v8 top-up of former successes & 71/84 & 0.8452 & \texttt{incomplete} \\
+replay + top-up, raw observed & 96/154 & 0.6234 & \texttt{incomplete} \\
+homogeneous \texttt{final-1.1} & --/180 & -- & \texttt{externally\_pending} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Why the 77.2\% construction is ineligible}
+
+The v8 replay selected exactly the $70$ v7 controller failures and repaired
+$25/70$. It was not a rerun of the full slice. The reported $139/180=77.2\%$
+then combined $110$ carried-forward v7 successes ($108$ original
+Gemma-judged successes plus two manual v7 adjudications), $25$ Qwen replay
+repairs, and four later Codex/GPT-5 overrides. Before the four overrides, the
+same construction was $135/180=75.0\%$. Judge identity and pipeline version are
+therefore confounded with whether an item had previously failed, and the fixes
+were evaluated on the failures that motivated them. The ledger correctly labels
+both figures \texttt{failure\_replay\_only}, not final or diagnostic full-run
+accuracy.
+
+The top-up is non-empty and directly contradicts the carry-forward assumption.
+It re-executed $84/110$ former v7 successes under the v8 attempt: $71$ remained
+correct and $13$ regressed. Combining those $71$ with the $25$ raw replay
+repairs gives $96/154$ observed. Treating the $26$ unresolved items as all wrong
+or all correct gives full-slice raw bounds of $53.3$--$67.8\%$. Retaining the
+four replay overrides gives bounds of $55.6$--$70.0\%$. Even the optimistic
+bound is below $77.2\%$, so this attempt cannot reproduce the carry-forward
+construction. These are missing-data bounds, not confidence intervals.
+
+\subsection{Single-session preference: carry-forward artifact and taxonomy}
+
+Single-session preference (SSP) was the weakest v7 competency at $11/30$. That
+is a contaminated diagnostic run only, not a clean v8 measurement.
+The replay targeted the $19$ v7 SSP failures and repaired $0/19$; the top-up
+completed $10/11$ former SSP successes and retained only $8/10$. Across the two
+selected subsets, $8/29$ completed SSP items are correct and one is unresolved,
+so the maximum is $9/30$. The earlier statement that SSP stayed ``unchanged at
+$11/30$'' is only a carry-forward artifact.
+
+The replay and v7 prompt contexts differ, so persistence of the $19$ failures
+does \emph{not} isolate the answer model or support a same-context causal claim.
+It does, however, identify a concrete set for descriptive error analysis. By
+inspecting whether each decisive gold fact appeared in the constructed prompt,
+we classified the $19$ v7 failures as shown in Table~\ref{tab:ssp}.
+Grounding-supply failures (retrieval omission plus cross-session contamination)
+are primary in $10/19$ and present in $15/19$; answer-side failures are primary
+in $9/19$. This taxonomy describes the inspected artifacts and does not prove
+that the write policy is causally exonerated.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Primary-category taxonomy of the $19$ v7 SSP failures, from the
+released taxonomy artifact.}
+\label{tab:ssp}
+\begin{tabular}{@{}l r r@{}}
+\toprule
+Primary failure category & Count & Share \\
+\midrule
+retrieval-omission                         & 6 & 31.6\% \\
+cross-session-contamination                & 4 & 21.1\% \\
+target-attribute-extraction-miss           & 3 & 15.8\% \\
+distractor-entity-binding                  & 2 & 10.5\% \\
+polarity-error                             & 2 & 10.5\% \\
+unsupported-answer-specificity             & 1 & 5.3\% \\
+immediate-request-vs-enduring-preference   & 1 & 5.3\% \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Grounding-supply family: primary $10/19$, present $15/19$}} \\
+\multicolumn{3}{@{}l}{\emph{Answer-side family: primary $9/19$}} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Proposed intervention and pending homogeneous run}
+
+The taxonomy motivates a proposed but unexecuted intervention: represent each
+preference as a typed record (holder/target/attribute/polarity/scope/stability/
+source), require retrieval to surface the supporting-session record for the
+query subject, and constrain answers to retrieved, grounded preferences while
+honoring explicit negatives. We make no accuracy claim for this design.
+
+The only route to an eligible downstream result is a homogeneous full-slice run.
+The frozen final protocol (version 1.1) targets all $180$ items with one answer
+model and logged judge routing. Its two-item smoke test stopped before inference:
+the supplied OpenRouter credential returned HTTP 403 even on a minimal Qwen
+request. The ledger therefore marks the run \texttt{externally\_pending}; no
+score is estimated or carried forward.

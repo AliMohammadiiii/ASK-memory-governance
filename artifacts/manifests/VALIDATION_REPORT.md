@@ -1,20 +1,23 @@
 # Validation report
 
-Generated: 2026-07-12
+Generated: 2026-07-15
 
 ## Verified checks
 
-- Offline tests: **420 passed, 14 skipped**.
+- Offline tests: **472 passed, 11 documented optional skips**.
 - MGP-6 v2 strict validation: **180 examples, 0 errors**.
-- Ruff: passed for `src`, `tests`, `scripts`, and `benchmarks`.
-- Mypy: passed for the typed KSA core (controller, memory, MGP-6 evaluator/schema).
+- Ruff: passed for the complete repository.
+- Mypy: passed for **60 source files**.
+- MGP-6 validity audit: regenerated; conflict type alone reaches **1.000 held-out accuracy**, so v2 policy scores are diagnostic.
 - Repository structure and secret scan: passed.
-- Wheel build: `ksa_memory_governance-0.2.0-py3-none-any.whl`.
-- Wheel SHA-256: `37b16685f019b3a03876bd842d9e70abfbcf7fbcba7ba17ca92974fb19634fd5`.
+- Extracted public repository: sdist and universal wheel build passed.
+- Fresh isolated environment: wheel installed with `--no-deps`, `ksa` imported,
+  and all four packaged configuration/schema resources were present.
+- Release archive: internal checksums, outer checksum, nested ZIP integrity, and
+  extracted-copy smoke gates passed.
 
 ## Documented skips
 
-- FAISS-dependent tests require the optional `ml` dependency group.
 - LongMemEval computation-replay fixtures are not redistributed.
 - MiniLM smoke tests are opt-in because of Apple-Silicon runtime risk.
 
@@ -23,3 +26,5 @@ Generated: 2026-07-12
 - Fresh OpenRouter Qwen/Gemma hosted-model experiments.
 - External Letta/Mem0/MemOS/Graphiti service runs.
 - Full LongMemEval transfer runs requiring external data.
+- The proposed seven-arm single-session-preference correction experiment.
+- Role-separated MGP-6 v3 construction, three-human annotation, and hidden confirmation runs.

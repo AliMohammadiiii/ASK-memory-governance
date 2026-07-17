@@ -1,0 +1,53 @@
+\section{Introduction}
+\label{sec:intro}
+
+A language agent that persists across sessions must decide what to do with each
+candidate memory: retain the current record, replace it with a newer one, or
+decline to commit because the evidence is insufficient. Deployed systems often
+make this decision through opaque LLM tool calls
+\citep{packer2023memgpt,chhikara2025mem0} or additive event logs
+\citep{park2023generative}. A wrong write can remain latent until much later: an
+ambiguous statement becomes a durable fact, a stale preference survives, or a
+correction erases its predecessor. End-to-end QA then reveals an error without
+identifying which layer caused it.
+
+We take the write transition itself as the object of evaluation. The action is
+\keep, lineage-preserving \supersede, or write-time \abstain{} over typed,
+provenance-tracked records. This combines established ideas from selective
+prediction \citep{chow1970reject,geifman2017selective}, belief revision
+\citep{alchourron1985agm}, and agent memory operations
+\citep{yan2025memoryr1,chhikara2025mem0,wang2026toki}. We claim neither the
+individual operations nor abstention, typing, provenance, and lineage as new.
+The contribution is a harness that makes their decision-, state-, and
+answer-layer consequences separately observable.
+
+We first exercise the harness on \mgp, a $180$-item, English, synthetic pilot.
+The collection was authored by the same project that implemented the reference
+policy and has only one independent human re-annotation of its test split. It is
+therefore a diagnostic instrument, not an independently established benchmark.
+Rather than treating a held-out item split as sufficient, we explicitly test
+whether scenario metadata predicts the action and whether item-level inference
+understates within-template dependence.
+
+Our contributions and findings are:
+\begin{enumerate}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
+\item We formalize the three write actions and release a layered evaluator for
+action correctness, state invariants, lineage, stale retrieval, selective risk,
+and asymmetric write costs.
+\item We add train/dev-fitted shortcut baselines and template-family/minimal-pair
+cluster bootstrap. Conflict type alone predicts every held-out test action;
+type alone predicts $96.7\%$. This is direct evidence that the current pilot
+does not identify general evidence reasoning.
+\item On the held-out test split, a transparent reference policy reaches
+$0.8889$ accuracy and a structured LLM policy reaches $0.9000$; the paired
+family-cluster interval includes zero. Zero observed reference-policy false
+commits has a non-zero finite-sample upper bound and trades against missed
+updates, so the preferred policy changes with the cost matrix.
+\end{enumerate}
+
+This reframing turns a weakness into a falsifiable result: an item-level test
+split can look clean while a family label still determines the answer. The
+released artifacts make that failure visible and specify the gate for a
+successor collection: independent construction, all three actions within each
+conflict family, blinded multi-human annotation, trajectory-level cases, and a
+hidden test set frozen after policy development.

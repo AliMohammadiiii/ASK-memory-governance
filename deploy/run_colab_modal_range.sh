@@ -23,6 +23,7 @@ fi
 DATASET="${DATASET:-m}"
 SRC="${SRC:-data/longmemeval_${DATASET}_cleaned.json}"
 SLICE="${SLICE:-data/slices/longmemeval_${DATASET}_full.jsonl}"
+RANGE_SLICE_OVERRIDE="${RANGE_SLICE_OVERRIDE:-}"
 OUT="${OUT:-runs/lme_${DATASET}_modal_range_seed${SEED:-0}}"
 SYSTEMS="${SYSTEMS:-controller}"
 SHARDS="${SHARDS:-10}"
@@ -52,6 +53,9 @@ JUDGE_OPENAI_BASE_URL="${JUDGE_OPENAI_BASE_URL:-}"
 JUDGE_OPENAI_API_KEY_ENV="${JUDGE_OPENAI_API_KEY_ENV:-}"
 OPENAI_API_KEY_ENV="${OPENAI_API_KEY_ENV:-OPENROUTER_API_KEY}"
 OPENAI_TIMEOUT_S="${OPENAI_TIMEOUT_S:-300}"
+OPENAI_RETRY_MAX_ATTEMPTS="${OPENAI_RETRY_MAX_ATTEMPTS:-3}"
+OPENAI_RETRY_INITIAL_DELAY_S="${OPENAI_RETRY_INITIAL_DELAY_S:-1}"
+OPENAI_RETRY_MAX_DELAY_S="${OPENAI_RETRY_MAX_DELAY_S:-10}"
 # Output token budgets for the structured-JSON stages. The previous cascade
 # defaults (256/128) truncated ~7% of extraction/relation calls mid-JSON
 # (finish_reason=length -> "Unterminated string"), silently dropping memory
@@ -136,6 +140,7 @@ echo "  bash deploy/run_colab_modal_range.sh"
 echo "[colab-modal] config:"
 echo "  dataset=${DATASET}"
 echo "  slice=${SLICE}"
+echo "  range_slice_override=${RANGE_SLICE_OVERRIDE:-<materialize from slice>}"
 echo "  out=${OUT}"
 echo "  logs=${LOG_DIR}"
 echo "  main_log=${MAIN_LOG}"
@@ -161,6 +166,9 @@ echo "  judge_openai_base_url=${JUDGE_OPENAI_BASE_URL:-<none>}"
 echo "  judge_openai_api_key_env=${JUDGE_OPENAI_API_KEY_ENV:-<none>}"
 echo "  openai_api_key_env=${OPENAI_API_KEY_ENV}"
 echo "  openai_timeout_s=${OPENAI_TIMEOUT_S}"
+echo "  openai_retry_max_attempts=${OPENAI_RETRY_MAX_ATTEMPTS}"
+echo "  openai_retry_initial_delay_s=${OPENAI_RETRY_INITIAL_DELAY_S}"
+echo "  openai_retry_max_delay_s=${OPENAI_RETRY_MAX_DELAY_S}"
 echo "  extraction_max_new_tokens=${EXTRACTION_MAX_NEW_TOKENS}"
 echo "  relation_max_new_tokens=${RELATION_MAX_NEW_TOKENS}"
 echo "  openai_max_model_len=${OPENAI_MAX_MODEL_LEN}"
@@ -269,7 +277,27 @@ echo "[colab-modal] starting cascade:"
 echo "  systems=${SYSTEMS}"
 echo "  sample=${SAMPLE_FROM}-${SAMPLE_TO}"
 RANGE_SLICE="${OUT}/range_${SAMPLE_FROM}_${SAMPLE_TO}.jsonl"
-"${PYTHON}" - <<PY
+if [[ -n "${RANGE_SLICE_OVERRIDE}" ]]; then
+  RANGE_SLICE="${RANGE_SLICE_OVERRIDE}"
+  if [[ ! -f "${RANGE_SLICE}" ]]; then
+    echo "[colab-modal] ERROR: missing RANGE_SLICE_OVERRIDE=${RANGE_SLICE}" >&2
+    exit 2
+  fi
+  "${PYTHON}" - <<PY
+from pathlib import Path
+
+path = Path("${RANGE_SLICE}")
+actual = sum(1 for line in path.open(encoding="utf-8") if line.strip())
+expected = int("${SAMPLE_TO}") - int("${SAMPLE_FROM}") + 1
+if actual != expected:
+    raise SystemExit(
+        f"RANGE_SLICE_OVERRIDE has {actual} rows; expected {expected} "
+        f"for range ${SAMPLE_FROM}-${SAMPLE_TO}"
+    )
+print(f"[colab-modal] reusing pre-sliced input: {path} rows={actual}")
+PY
+else
+  "${PYTHON}" - <<PY
 from pathlib import Path
 
 src = Path("${SLICE}")
@@ -297,6 +325,7 @@ if n == 0:
     raise SystemExit(f"empty range: {start}-{end} from {src}")
 print(f"[colab-modal] wrote range slice: {dst} rows={n}")
 PY
+fi
 echo "  range_slice=${RANGE_SLICE}"
 echo "  shards=${SHARDS}"
 echo "  per-shard logs=${LOG_DIR}/{system}_shard{n}.log"
@@ -311,6 +340,9 @@ cascade_cmd=(
   --shard-retry-backoff-s "${SHARD_RETRY_BACKOFF_S}" \
   --openai-api-key-env "${OPENAI_API_KEY_ENV}" \
   --openai-timeout-s "${OPENAI_TIMEOUT_S}" \
+  --openai-retry-max-attempts "${OPENAI_RETRY_MAX_ATTEMPTS}" \
+  --openai-retry-initial-delay-s "${OPENAI_RETRY_INITIAL_DELAY_S}" \
+  --openai-retry-max-delay-s "${OPENAI_RETRY_MAX_DELAY_S}" \
   --embed-base-url "${EMBED_BASE_URL}" \
   --embed-model "${EMBED_MODEL_NAME}" \
   --embed-batch-size "${EMBED_CLIENT_BATCH_SIZE}" \

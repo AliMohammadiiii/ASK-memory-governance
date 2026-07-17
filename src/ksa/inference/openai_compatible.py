@@ -83,6 +83,7 @@ class LLMCallLogRow(BaseModel):
     validation_errors: list[str] = Field(default_factory=list)
     error: str | None = None
     raw_response: str | None = None
+    provider_preferences: dict[str, Any] | None = None
 
 
 @dataclass
@@ -385,7 +386,9 @@ class OpenAICompatibleLLM:
             return
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         with self.log_path.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(row.model_dump(exclude_none=True), ensure_ascii=False, sort_keys=True))
+            fh.write(
+                json.dumps(row.model_dump(exclude_none=True), ensure_ascii=False, sort_keys=True)
+            )
             fh.write("\n")
 
 

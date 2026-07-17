@@ -1,0 +1,223 @@
+# =====================================================================
+# FINAL RUN MATRIX  (machine-readable list of every pending run)
+# =====================================================================
+# Freeze: final-1.1 (2026-07-13). Governed by configs/release/final.yaml and
+# FINAL_EVALUATION_PROTOCOL.md. Commands are based on entry points that ACTUALLY
+# EXIST in this repo (verified 2026-07-12).
+#
+# Run classifications use the canonical evidence vocabulary from
+# docs/audit/RUN_CLASSIFICATION.csv. Planned-but-unexecuted SSP arms are marked
+# incomplete; a run blocked only by external service access is externally_pending.
+#
+# Two hard prerequisites for every hosted run:
+#   1. A newly authorized OPENROUTER_API_KEY. The supplied credential returned
+#      HTTP 403 before inference on 2026-07-13 and must not be reused.
+#   2. LongMemEval-M data present locally (not redistributable):
+#      data/slices/longmemeval_m_full.jsonl and data/longmemeval_m_cleaned.json .
+
+freeze_version: final-1.1
+
+runs:
+
+  # -------------------------------------------------------------------
+  # 1. The required homogeneous LongMemEval-M rerun (the paper-grade run).
+  # -------------------------------------------------------------------
+  - id: lme_final_5systems_180
+    benchmark: longmemeval_m
+    systems: [controller, b4, b3, b2, b1]
+    n_items: 180
+    slice: ${LONGMEMEVAL_STRATIFIED_SLICE}   # external exact seed-0 stratified input
+    range: range_0_179
+    config:
+      main_model: qwen/qwen3.5-9b
+      judge_primary: google/gemma-4-31b-it:free
+      judge_fallback: google/gemma-4-31b-it
+      embedder: sentence-transformers/all-MiniLM-L6-v2
+      seed: 0
+      shards: 10
+      v7_fixes: true
+      v8_fixes: true
+      enable_thinking: false
+    wrapper: scripts/evaluation/run_longmemeval_final.sh
+    underlying_entry_points:
+      - deploy/run_colab_modal_range.sh
+      - scripts/run_vllm_cascade.py
+      - scripts/serve_embeddings.py   # local MiniLM embed server
+    command: >-
+      OPENROUTER_API_KEY=... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl
+      bash scripts/evaluation/run_longmemeval_final.sh --full
+    resume_command: >-
+      OPENROUTER_API_KEY=... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl
+      bash scripts/evaluation/run_longmemeval_final.sh --resume
+    output_dir: runs_local/lme_final_5systems_180/
+    verify: >-
+      python3 scripts/verify_homogeneous_run.py
+      --run-root runs_local/lme_final_5systems_180
+      --slice ${LONGMEMEVAL_STRATIFIED_SLICE}
+      --sample-from 0 --sample-to 179
+      --systems controller,b4,b3,b2,b1 --expected-n 180
+      --expected-answer-model qwen/qwen3.5-9b
+      --expected-answer-provider venice
+      --expected-judge-primary google/gemma-4-31b-it:free
+      --allowed-judge-fallback google/gemma-4-31b-it
+    status: externally_pending
+    upgrades_claims:
+      - "LongMemEval controller accuracy (currently no final result; v7 is diagnostic_only and 77.2% is failure_replay_only)"
+      - "controller vs b4 on LongMemEval (currently unsupported: b4 leads under contaminated v7)"
+
+  # -------------------------------------------------------------------
+  # 2. SSP correction ablation matrix (7 arms; method doc, PROPOSED).
+  #    Arms A..G from docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md section 4.
+  #    Evaluated on the SSP slice (n=30), paired by item. Arm A's historical
+  #    v7 diagnostic reference is 11/30; the incomplete top-up reaches at most 9/30.
+  # -------------------------------------------------------------------
+  - id: ssp_ablation_A_baseline
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "A. current controller (baseline)"
+    isolates: "contaminated v7 diagnostic reference = 11/30"
+    representation: false
+    provenance_retrieval: false
+    answer_contract: false
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh   # --ssp arm=A
+    evaluator: scripts/evaluation/evaluate_single_session_preferences.py
+    output_dir: runs_local/ssp_ablation/A_baseline/
+    status: externally_pending
+    note: "Arm A targets the same frozen SSP slice but must be rerun; 11/30 is only the contaminated v7 diagnostic reference. The other 6 arms require the PROPOSED correction code, which is NOT implemented."
+
+  - id: ssp_ablation_B_prompt_only
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "B. prompt-only"
+    isolates: "how much is fixable by instruction alone"
+    representation: false
+    provenance_retrieval: false
+    answer_contract: "wording only"
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/B_prompt_only/
+    status: incomplete
+
+  - id: ssp_ablation_C_representation_only
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "C. provenance-representation-only"
+    isolates: "value of typed records with no retrieval change"
+    representation: true
+    provenance_retrieval: false
+    answer_contract: false
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/C_representation_only/
+    status: incomplete
+
+  - id: ssp_ablation_D_retrieval_only
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "D. provenance-constrained-retrieval-only"
+    isolates: "grounding-supply fix in isolation"
+    representation: true
+    provenance_retrieval: true
+    answer_contract: false
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/D_retrieval_only/
+    status: incomplete
+
+  - id: ssp_ablation_E_answer_contract_only
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "E. answer-contract-only"
+    isolates: "answer discipline on current (often wrong) grounding"
+    representation: false
+    provenance_retrieval: false
+    answer_contract: true
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/E_answer_contract_only/
+    status: incomplete
+
+  - id: ssp_ablation_F_combined
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "F. combined"
+    isolates: "full method"
+    representation: true
+    provenance_retrieval: true
+    answer_contract: true
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/F_combined/
+    status: incomplete
+
+  - id: ssp_ablation_G_combined_minus_binding
+    benchmark: longmemeval_m_ssp
+    systems: [controller]
+    n_items: 30
+    arm: "G. combined - preference-binding"
+    isolates: "ablate holder/target binding to size its contribution"
+    representation: true
+    provenance_retrieval: true
+    answer_contract: true
+    binding_ablated: true
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    wrapper: scripts/experiments/run_ablations.sh
+    output_dir: runs_local/ssp_ablation/G_combined_minus_binding/
+    status: incomplete
+
+  # -------------------------------------------------------------------
+  # 3. MGP-6 few-shot decision baseline metric recompute (LOCAL, offline).
+  # -------------------------------------------------------------------
+  - id: mgp6_few6_rescore
+    benchmark: mgp6_v2
+    systems: [llm_decision_few6]
+    n_items: 180        # gold; 174 predictions exist, 6 align as INVALID
+    predictions: ../artifacts/mgp6_v2/llm_decision_few6/controller/predictions.jsonl   # READ-ONLY archive
+    gold: benchmarks/mgp6/data/mgp6_v2.jsonl
+    scorer: benchmarks/mgp6/metrics_mgp6.py
+    config: {bootstrap: 1000, seed: 62026}
+    wrapper: scripts/evaluation/run_mgp6_final.sh   # includes --few6
+    command: >-
+      python3 benchmarks/mgp6/metrics_mgp6.py
+      --gold benchmarks/mgp6/data/mgp6_v2.jsonl
+      --pred ../artifacts/mgp6_v2/llm_decision_few6/controller/predictions.jsonl
+      --bootstrap 1000 > runs_local/mgp6_few6_rescore/few6_report.json
+    output_dir: runs_local/mgp6_few6_rescore/
+    status: incomplete
+    upgrades_claims:
+      - "coverage-aware bound for incomplete 6-shot run: 0.7833 accuracy / 0.7692 macro-F1"
+
+  # -------------------------------------------------------------------
+  # 4. MGP-6 final-table verification rescore (LOCAL, offline; defensive).
+  # -------------------------------------------------------------------
+  - id: mgp6_verify_locked_tables
+    benchmark: mgp6_v2
+    systems: [b1, b2, b3, b4, controller_rule, llm_controller_qwen35_9b, llm_decision_zero_shot, llm_decision_few6]
+    n_items: 180
+    gold: benchmarks/mgp6/data/mgp6_v2.jsonl
+    scorer: benchmarks/mgp6/metrics_mgp6.py
+    wrapper: scripts/evaluation/run_mgp6_final.sh
+    command: bash scripts/evaluation/run_mgp6_final.sh --full
+    output_dir: runs_local/mgp6_verify/
+    status: final_candidate
+    note: "Reproduces the listed core/few-shot values from archived predictions. Ablations and external adapters have separate provenance and are not rerun by this wrapper."
+
+  # -------------------------------------------------------------------
+  # 5. Judge primary/fallback confound audit.
+  # -------------------------------------------------------------------
+  - id: judge_audit
+    benchmark: cross_cutting
+    inputs: "every judgments.jsonl under runs_local/ (and, read-only, ../ksa_controller/runs/)"
+    fields_used: [judge_model_id, used_fallback, correct, competency]
+    wrapper: scripts/evaluation/run_judge_audit.sh
+    command: bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_180
+    output_dir: runs_local/judge_audit/
+    status: externally_pending
+    note: "Runs after lme_final_5systems_180 so the frozen run's judgments exist. Quantifies accuracy split by used_fallback and per-competency fallback rate."

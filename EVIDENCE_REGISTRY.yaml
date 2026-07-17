@@ -1,4 +1,5 @@
-version: 1
+version: 3
+updated: 2026-07-13
 artifacts:
   - id: ksa_source
     role: authoritative_implementation_source
@@ -9,9 +10,48 @@ artifacts:
     path: benchmarks/mgp6/data/mgp6_v2.jsonl
     rows: 180
     sha256: 870705e71170026fc2e75dcc5b275f9a99ca3cc5501f054c2ac0d1a013b4a583
-  - id: mgp6_human_annotations
-    role: independent_human_annotation
+  - id: mgp6_human_annotation
+    role: independent_annotation_single_annotator
     path: benchmarks/mgp6/annotations/human
+    n_annotators: 1
+    cohen_kappa_vs_gold: 0.98146
+    caveat: annotator identity (human) rests on author attestation; n=1
+    public_release: aggregate statistics only; two raw per-item CSVs withheld pending redistribution consent
+  - id: mgp6_llm_annotation_panel
+    role: model_audit_panel_not_human_iaa
+    path: benchmarks/mgp6/annotations/model_or_mixed
+    annotators: [geminiPro, gptSolHigh, kimi, z]
+    fleiss_kappa: 0.9815
   - id: longmemeval
     role: external_dataset_not_redistributed
     path: data/external/longmemeval
+  - id: results_ledger
+    role: canonical_quantitative_evidence
+    path: artifacts/results_ledger.json
+    sha256: fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e
+  - id: controller_run_comparison
+    role: longmemeval_run_classification
+    path: artifacts/controller_run_comparison.json
+  - id: ssp_taxonomy
+    role: failure_taxonomy_19_items
+    path: artifacts/single_session_preference_error_taxonomy.json
+  - id: v7_run_evidence
+    role: diagnostic_only_provider_contaminated
+    location_outside_repo: external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
+  - id: v8_adjudicated_merge
+    role: failure_replay_only_selection_biased_construction
+    location_outside_repo: "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
+    historical_value: 139/180 after four Codex/GPT-5 overrides; 135/180 raw construction
+    known_defect: manifest replay_run path does not resolve; canonical mapping in controller_run_comparison.json
+  - id: v8_modal_topup
+    role: incomplete_but_decisive_contradictory_evidence
+    location_outside_repo: "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
+    observed: 84/110 completed; 71 correct; 13 regressions
+    combined_with_replay: 96/154 raw observed; full-180 bounds 53.3%-67.8%
+  - id: longmemeval_final_1_1
+    role: externally_pending_homogeneous_run
+    path: runs_local/lme_final_5systems_180
+    blocker: supplied OpenRouter credential returned HTTP 403 before inference on 2026-07-13
+  - id: exports_cold_archive
+    role: immutable_source_archives
+    location_outside_repo: external://Master/exports_2026-07-11/
