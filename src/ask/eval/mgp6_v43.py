@@ -43,7 +43,7 @@ SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
 }
 SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
 SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
-ADAPTER_VERSION = "ask.mgp6_v43_adapter.v1"
+ADAPTER_VERSION = "ask.mgp6_v43_adapter.v2"
 PROHIBITED_MODEL_KEYS = frozenset(
     {
         "gold_action",
@@ -67,6 +67,23 @@ _AMBIGUITY_EVIDENCE_RE = re.compile(
     r"\b(?:ambiguous|cannot determine|conflict(?:ing)?|does not identify|uncertain|unclear)\b",
     re.IGNORECASE,
 )
+_ORDINAL_MESSAGE_POSITIONS = {
+    "first": 1,
+    "second": 2,
+    "third": 3,
+    "fourth": 4,
+    "fifth": 5,
+    "sixth": 6,
+}
+_ORDINAL_MESSAGE_RE = re.compile(
+    r"\b(first|second|third|fourth|fifth|sixth)\b", re.IGNORECASE
+)
+_EVIDENCE_MESSAGE_RE = re.compile(
+    r"(?:The|A) (first|second|third|fourth|fifth|sixth) message says:\s*(.*?)"
+    r"(?=(?:\s+(?:The|A) (?:first|second|third|fourth|fifth|sixth) message says:)|$)",
+    re.IGNORECASE,
+)
+_INDEX_CUES = ("index", "indexed under", "export links", "index attaches")
 
 
 class MGP6V43Error(ValueError):
@@ -203,6 +220,65 @@ def _dialogue_without_provenance(dialogue: list[Any]) -> list[dict[str, str]]:
     return output
 
 
+def linked_evidence_view(record: MGP6V43Record) -> dict[str, Any]:
+    """Extract the two publicly indexed messages relevant to the memory slot.
+
+    MGP-6 v4.3 dialogues deliberately include nearby-record distractors.  The
+    public dialogue itself names the two evidence-message positions attached to
+    the queried slot.  Selecting those positions is therefore public evidence
+    routing, not access to a component map, design target, or gold label.
+
+    The release grammar contains six numbered snippets.  Reject malformed
+    records rather than silently falling back to all snippets, which would make
+    an evidence-isolation failure hard to detect.
+    """
+    indexed_positions: set[int] = set()
+    snippets: dict[int, str] = {}
+    for turn in record.dialogue:
+        if not isinstance(turn, Mapping):
+            raise MGP6V43Error("dialogue turn lacks public mapping structure")
+        text = turn.get("text")
+        if not isinstance(text, str):
+            raise MGP6V43Error("dialogue turn lacks public text")
+        normalized = text.casefold()
+        if "message" in normalized and any(cue in normalized for cue in _INDEX_CUES):
+            indexed_positions.update(
+                _ORDINAL_MESSAGE_POSITIONS[match.casefold()]
+                for match in _ORDINAL_MESSAGE_RE.findall(normalized)
+            )
+        for ordinal, snippet in _EVIDENCE_MESSAGE_RE.findall(text):
+            position = _ORDINAL_MESSAGE_POSITIONS[ordinal.casefold()]
+            snippets[position] = " ".join(snippet.split())
+
+    positions = sorted(indexed_positions)
+    if len(positions) != 2:
+        raise MGP6V43Error(
+            "public evidence index must identify exactly two message positions; "
+            f"found {positions}"
+        )
+    missing = [position for position in positions if position not in snippets]
+    if missing:
+        raise MGP6V43Error(f"public evidence index refers to missing snippets: {missing}")
+
+    view = {
+        "public_id": record.public_id,
+        "memory_before": record.memory_before,
+        "requested_value": _requested_value(record),
+        "indexed_evidence": [
+            {"message_position": position, "text": snippets[position]}
+            for position in positions
+        ],
+        "evidence_routing": {
+            "indexed_message_count": len(positions),
+            "available_numbered_message_count": len(snippets),
+            "unindexed_messages_excluded": len(snippets) - len(positions),
+        },
+        "evaluation_query": record.evaluation_query,
+    }
+    assert_model_safe(view)
+    return view
+
+
 def model_input_for_system(
     record: MGP6V43Record,
     system: str,
@@ -237,6 +313,8 @@ def model_input_for_system(
             "recent_dialogue": payload["dialogue"][-recency_turns:],
             "recency_turn_count": recency_turns,
         }
+    elif system == "live_model_controller":
+        view = linked_evidence_view(record)
     elif system == "ablation_no_provenance":
         view = {
             **common,

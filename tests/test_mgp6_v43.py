@@ -20,6 +20,7 @@ from ask.eval.mgp6_v43 import (
     assert_model_safe,
     build_decision_prompt,
     cluster_bootstrap,
+    linked_evidence_view,
     load_predictions,
     load_public_records,
     model_input_for_system,
@@ -100,6 +101,23 @@ def test_system_views_are_distinct_and_label_free(release) -> None:
         assert not (set(_keys(view)) & PROHIBITED_MODEL_KEYS)
     assert system_allowed_actions("b4") == ("KEEP", "SUPERSEDE")
     assert system_allowed_actions("ablation_no_abstain") == ("KEEP", "SUPERSEDE")
+
+
+def test_live_controller_routes_only_publicly_indexed_evidence(release) -> None:
+    train, dev, _ = release
+    for record in [*train, *dev]:
+        view = linked_evidence_view(record)
+        assert view["evidence_routing"] == {
+            "indexed_message_count": 2,
+            "available_numbered_message_count": 6,
+            "unindexed_messages_excluded": 4,
+        }
+        assert len(view["indexed_evidence"]) == 2
+        assert [item["message_position"] for item in view["indexed_evidence"]] == sorted(
+            item["message_position"] for item in view["indexed_evidence"]
+        )
+        assert_model_safe(view)
+        assert not (set(_keys(view)) & PROHIBITED_MODEL_KEYS)
 
 
 def _keys(value: object) -> set[str]:
@@ -207,7 +225,7 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     manifest = json.loads((tmp_path / "smoke/run_manifest.json").read_text(encoding="utf-8"))
     assert manifest["decoding"]["max_new_tokens"] == 128
     assert manifest["retry_policy"] == {"parse_max_attempts": 2, "transport_max_attempts": 3}
-    assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v1"
+    assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v2"
     assert manifest["failure_count"] == 0
     assert manifest["invalid_response_count"] == 0
     raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]

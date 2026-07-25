@@ -9,14 +9,14 @@
     "split_map_sha256": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
   },
   "controls": {
-    "adapter_version": "ask.mgp6_v43_adapter.v1",
+    "adapter_version": "ask.mgp6_v43_adapter.v2",
     "decoding": {"temperature": 0.0, "max_new_tokens": 128, "reasoning_effort": "none"},
     "seed": 4301,
     "retry_policy": {"transport_max_attempts": 3, "parse_max_attempts": 2},
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "c37b8878512cd4125a4beb793dd2a6625c35a9df",
+    "code_commit": "PENDING_EVIDENCE_ROUTING_V2_COMMIT",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "execution_contract": {
@@ -42,7 +42,7 @@
     "b4": {"path": "configs/experiments/mgp6_v43/b4_overwrite_prompt.txt", "sha256": "b45e13578f2bf8589ea8bd036b5a1ea03eac24c86a759c2bc5524bb8d4ef4902"},
     "decision_zero_shot": {"path": "configs/experiments/mgp6_v43/decision_system_prompt.txt", "sha256": "5ce0872a1a7ed5d75dbf5a1c011edbb935b3cc1c4177f8066139889312bc7efa"},
     "rules_controller": {"path": "configs/experiments/mgp6_v43/rules_controller_prompt.txt", "sha256": "7a8c76ea2a1f843809fcd4fa2ffa2d121d231ab9e4b014f660c66da0d9fdf3b9"},
-    "live_model_controller": {"path": "configs/experiments/mgp6_v43/live_model_controller_prompt.txt", "sha256": "19f821e3f11135398d29802bd8d5c0b187b05a9627713f8154c05e8c432d2450"},
+    "live_model_controller": {"path": "configs/experiments/mgp6_v43/live_model_controller_prompt.txt", "sha256": "87375a80a7da5709dcaca863d26d0299141c81d81f06092ca84ecd9339fc5949"},
     "ablation_no_abstain": {"path": "configs/experiments/mgp6_v43/ablation_no_abstain_prompt.txt", "sha256": "ea986b8c99900d85b2a482f4f1cfbd35ea7b4d40fca96a4b42aaf1cf3efcd74a"},
     "ablation_no_provenance": {"path": "configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt", "sha256": "75f1601073750e85e7f4babf340094b08df495849b5ac97d17b0c33f4636c46e"},
     "ablation_no_typing": {"path": "configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt", "sha256": "c957a2b6d55565d86f4a59f6c15e433703c3bf649068cfa162ffcb3382852251"},
