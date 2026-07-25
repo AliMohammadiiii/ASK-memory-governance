@@ -28,6 +28,7 @@ from ask.eval.mgp6_v43 import (
     public_evidence_policy_action,
     rules_controller_action,
     score_actions,
+    sha256_value,
     system_allowed_actions,
     validate_component_splits,
     validate_public_release,
@@ -265,6 +266,7 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     assert manifest["decoding"]["max_new_tokens"] == 128
     assert manifest["retry_policy"] == {"parse_max_attempts": 2, "transport_max_attempts": 3}
     assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v3"
+    assert manifest["run_config_hash"] == sha256_value(manifest["run_config"])
     assert manifest["failure_count"] == 0
     assert manifest["invalid_response_count"] == 0
     raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]
@@ -272,6 +274,18 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     rerun = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--action", "ABSTAIN", "--out", str(tmp_path / "smoke")], cwd=ROOT, capture_output=True, text=True, check=False)
     assert rerun.returncode == 0, rerun.stderr
     assert len((tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()) == 2
+
+
+def test_v43_runner_rejects_unimplemented_in_process_concurrency() -> None:
+    run = subprocess.run(
+        [sys.executable, "scripts/run_mgp6_v43.py", "--concurrency", "2", "--dry-run"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode != 0
+    assert "not implemented" in run.stderr
 
 
 def test_v43_runner_supports_rule_and_registered_model_systems(tmp_path: Path) -> None:

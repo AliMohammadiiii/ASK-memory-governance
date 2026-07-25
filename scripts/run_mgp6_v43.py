@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import time
@@ -75,7 +76,15 @@ def _tracked_worktree_state() -> str:
 
 
 def _write_manifest(path: Path, manifest: dict[str, Any]) -> None:
-    path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    """Durably replace the manifest so an interrupted run remains resumable."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    with temporary.open("w", encoding="utf-8") as handle:
+        handle.write(json.dumps(manifest, indent=2, sort_keys=True))
+        handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
+    temporary.replace(path)
 
 
 def _openrouter_reasoning_body(reasoning_effort: str | None) -> dict[str, Any] | None:
@@ -129,6 +138,10 @@ def main() -> int:
 
     if args.recency_turns < 1:
         raise SystemExit("--recency-turns must be at least 1")
+    if args.concurrency != 1:
+        raise SystemExit(
+            "--concurrency values other than 1 are not implemented; run separate output directories instead"
+        )
     records = load_public_records(args.input)
     if args.limit is not None:
         records = records[: args.limit]
@@ -153,32 +166,64 @@ def main() -> int:
             raise SystemExit(f"cannot resume with invalid manifest: {manifest_path}") from exc
     effective_provider = "local-rule" if args.system == "rules_controller" and args.action is None else args.provider
     effective_model_id = "ask/rules-controller-v43" if args.system == "rules_controller" and args.action is None else args.model_id
-    manifest: dict[str, Any] = {
+    environment_lock = {"python": sys.version, "pyproject_sha256": sha256_file("pyproject.toml")}
+    run_config = {
         "release_version": "4.3.0-human-validated-final",
-        "dataset_path": str(args.input),
         "dataset_sha256": sha256_file(args.input),
         "system": args.system,
-        "adapter_version": ADAPTER_VERSION,
-        "adapter_spec": adapter_spec,
         "adapter_spec_hash": sha256_value(adapter_spec),
         "provider": effective_provider,
         "model_id": effective_model_id,
+        "base_url": args.base_url,
+        "api_key_env": args.api_key_env,
         "prompt_hash": prompt_hash,
-        "system_prompt_path": str(system_prompt_path),
         "system_prompt_hash": sha256_value(system_prompt),
         "seed": args.seed,
-        "decoding": {"temperature": args.temperature, "max_new_tokens": args.max_new_tokens, "reasoning_effort": args.reasoning_effort},
-        "retry_policy": {"transport_max_attempts": args.retry_max_attempts, "parse_max_attempts": args.parse_retry_max_attempts},
+        "decoding": {
+            "temperature": args.temperature,
+            "max_new_tokens": args.max_new_tokens,
+            "reasoning_effort": args.reasoning_effort,
+        },
+        "retry_policy": {
+            "transport_max_attempts": args.retry_max_attempts,
+            "parse_max_attempts": args.parse_retry_max_attempts,
+        },
+        "timeout_s": args.timeout_s,
+        "concurrency": args.concurrency,
+        "recency_turns": args.recency_turns,
+        "fixture_action": args.action,
+        "evaluator_version": "ask.eval.mgp6_v43.v1",
+        "code_commit": _git_commit(),
+        "environment_lock": environment_lock,
+    }
+    manifest: dict[str, Any] = {
+        "release_version": "4.3.0-human-validated-final",
+        "dataset_path": str(args.input),
+        "dataset_sha256": run_config["dataset_sha256"],
+        "system": args.system,
+        "adapter_version": ADAPTER_VERSION,
+        "adapter_spec": adapter_spec,
+        "adapter_spec_hash": run_config["adapter_spec_hash"],
+        "provider": effective_provider,
+        "model_id": effective_model_id,
+        "prompt_hash": run_config["prompt_hash"],
+        "system_prompt_path": str(system_prompt_path),
+        "system_prompt_hash": run_config["system_prompt_hash"],
+        "seed": args.seed,
+        "decoding": run_config["decoding"],
+        "retry_policy": run_config["retry_policy"],
         "timeout_s": args.timeout_s,
         "concurrency": args.concurrency,
         "evaluator_version": "ask.eval.mgp6_v43.v1",
-        "code_commit": _git_commit(),
+        "code_commit": run_config["code_commit"],
         "tracked_worktree_state": _tracked_worktree_state(),
         "runtime_hashes": {
             "runner": sha256_file(Path(__file__)),
             "evaluator_and_adapters": sha256_file("src/ask/eval/mgp6_v43.py"),
         },
-        "environment_lock": {"python": sys.version, "pyproject_sha256": sha256_file("pyproject.toml")},
+        "environment_lock": environment_lock,
+        "run_config": run_config,
+        "run_config_hash": sha256_value(run_config),
         "n_selected": len(records),
         "complete": False,
         "hidden_gold_accessed": False,
@@ -204,6 +249,7 @@ def main() -> int:
         "model_id",
         "prompt_hash",
         "seed",
+        "run_config_hash",
     )
     for key in immutable_resume_keys:
         if previous_manifest and previous_manifest.get(key) != manifest[key]:

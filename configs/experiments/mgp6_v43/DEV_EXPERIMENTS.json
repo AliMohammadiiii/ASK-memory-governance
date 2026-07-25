@@ -27,7 +27,7 @@
       "b3": "stored memory plus last two dialogue turns",
       "b4": "full public view with KEEP/SUPERSEDE-only overwrite policy",
       "rules_controller": "deterministic public requested-value evidence passed through the ASK scorecard",
-      "live_model_controller": "full public view with structured controller instruction",
+      "live_model_controller": "public index routes exactly two linked evidence messages; a conservative public-evidence guard resolves only model ABSTAIN outputs",
       "ablation_no_abstain": "controller prompt restricted to KEEP/SUPERSEDE",
       "ablation_no_provenance": "dialogue text only; speaker and turn ID omitted",
       "ablation_no_typing": "controller prompt disables slot-type/stability reasoning",

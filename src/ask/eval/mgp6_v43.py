@@ -588,6 +588,8 @@ def write_raw_response(path: str | Path, *, public_id: str, raw_response: str, m
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("a", encoding="utf-8") as handle:
         handle.write(canonical_json(row) + "\n")
+        handle.flush()
+        os.fsync(handle.fileno())
 
 
 def _per_class(confusion: Mapping[str, Mapping[str, int]]) -> dict[str, dict[str, float | int]]:
