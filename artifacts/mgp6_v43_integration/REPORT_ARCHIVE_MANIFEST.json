@@ -1,7 +1,7 @@
 {
   "schema_version": "mgp6-v4.3-report-archive-1.0",
   "archive": "MGP6_v43_INTEGRATION_AUDIT_REPORTS.zip",
-  "sha256": "fc9d352462024935e078849e6a09085c7f798f419bd4caad94fb34f9960fd687",
+  "sha256": "5c5df4f202411b7c8dc2d9aea32c8fe0c9202922a074b032b8d487c08802d028",
   "integration_base_commit": "41f7ceeb38c971874b52578c4b622a704b992715",
   "runner_hardening_commit": "86e3674",
   "contents": [

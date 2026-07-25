@@ -20,6 +20,7 @@
 | `latexmk -pdf -outdir=<temporary directory> main.tex` | PASS — paper compiled without replacing tracked build outputs. |
 | `python3 scripts/run_mgp6_v43.py ... --limit 3 --action ABSTAIN` twice | PASS — deterministic train engineering fixture exercised serialization, parsing, persistence, resume behavior, and metric calculation; no provider call and no scientific result. |
 | `.venv/bin/python scripts/run_mgp6_v43.py --limit 2 --action ABSTAIN --out /tmp/mgp6_v43_runner_smoke` | PASS — runner hardening smoke verified manifest, raw-response, and prediction writing without any provider call. |
+| `python3 scripts/run_mgp6_v43.py ... --provider openrouter --model-id qwen/qwen3.5-9b --limit 3 --reasoning-effort none --parse-retry-max-attempts 2` | PASS — public train live-provider smoke wrote 3 predictions; 0 failures, 0 parse retries, 0 invalid responses, 1557 prompt tokens, 24 completion tokens, hidden gold not accessed. |
 
 ## CI status
 
@@ -27,8 +28,9 @@ The GitHub Actions workflow now includes the v4.3 evaluator in its Mypy scope.
 The complete local command sequence mirrors that workflow and passed. No remote
 GitHub Actions run is claimed because this integration has not been pushed.
 
-No live-provider, development-selection, hidden-prediction, or private-scoring
-experiment has run.
+No development-selection, hidden-prediction, or private-scoring experiment has run.
+The live-provider smoke above used public train records only and is not reported
+as system performance.
 
 ## Integration commit and worktree state
 

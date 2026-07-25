@@ -52,3 +52,6 @@ changed.
 - Re-ran full local verification: `git diff --check`, Ruff, scoped Mypy,
   repository validation, full pytest, package build, and a deterministic runner
   smoke all passed.
+- Confirmed a three-item public train OpenRouter/Qwen smoke with
+  `--reasoning-effort none`: 3 predictions, 0 failures, 0 parse retries, 0
+  invalid responses, and no hidden-gold access.

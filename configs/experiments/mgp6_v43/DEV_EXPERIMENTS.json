@@ -20,8 +20,8 @@
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "ca0febc",
-    "environment_lock": {"pyproject": "pyproject.toml", "sha256": "04744531c4261c9e137f96d177565d8355ca4bf567629d572f0a90d338a577ae"}
+    "code_commit": "4fcb9a8",
+    "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "systems": [
     {"id": "b1", "logical_role": "B1 no-memory", "historical_name": "no_memory", "provider": "fixture", "model_id": "fixture/deterministic-action"},

@@ -16,7 +16,7 @@
   "mypy": "PASS: no issues found in 17-source CI scope including mgp6_v43.py and run_mgp6_v43.py",
   "package_build": "PASS",
   "train_engineering_fixture": "PASS: deterministic fixture smoke; no provider call and no scientific result",
-  "live_provider_smoke_precondition": "Runner supports --reasoning-effort none and parse-level retry accounting; no live provider success is claimed.",
+  "live_provider_smoke": "PASS: public train 3-item OpenRouter/Qwen smoke; 3 predictions, 0 failures, 0 retries, 0 invalid responses, hidden_gold_accessed=false; no scientific result claimed.",
   "development_experiment_completed": false,
   "hidden_run_authorized": false,
   "hidden_run_completed": false,
