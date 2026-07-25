@@ -1,12 +1,15 @@
 # MGP-6 v4.3 integration: repository discovery
 
-**Status:** integration proceeded after preservation on
-`preserve-pre-mgp6-v43-integration`.
+**Status:** public integration and the private-data boundary were committed as
+`41f7ceeb38c971874b52578c4b622a704b992715`; follow-on development work is on
+`mgp6-v43-experiments`.
 
 ## Repository identity
 
 - Root: `/Users/ali/Documents/20_Academics/Master/Master/ksa-memory-governance`
-- Branch: `preserve-pre-mgp6-v43-integration`
+- Discovery branch: `preserve-pre-mgp6-v43-integration`
+- Integration base commit: `41f7ceeb38c971874b52578c4b622a704b992715`
+- Follow-on branch: `mgp6-v43-experiments`
 - Preservation commits: `a4fe760`, `ca0febc`
 - Python: `3.14.6`
 - Serena project: `ask-memory-governance` (activated before discovery)
@@ -25,6 +28,11 @@ preserved them in the commits above and declared the ASK migration authoritative
 The old KSA package was not restored or recreated. Historical v3.3.1 paths were
 classified and left untouched. The integration changes are recorded in
 `INTEGRATION_CHANGELOG.md`.
+
+Immediately after the integration base commit, there were no tracked-file
+changes. The working tree retained only the explicitly classified historical
+untracked paths (v3.3.1 archives, prior analysis reports, deliverables, and
+LongMemEval reporting material); they were not staged or modified.
 
 ## Existing repository conventions
 

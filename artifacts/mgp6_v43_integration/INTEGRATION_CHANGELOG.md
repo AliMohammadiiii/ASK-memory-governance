@@ -27,3 +27,14 @@ changed.
   registry, development-only freeze index, documentation, and privacy tests.
 - Updated the paper and authoritative ASK thesis with release facts and explicit
   pending-result placeholders; historical v2 results remain historical.
+
+## 2026-07-25 — integration commit and CI confirmation
+
+- Committed the selected public integration as
+  `41f7ceeb38c971874b52578c4b622a704b992715`
+  (`Integrate MGP-6 v4.3 final release`).
+- Ran the complete local GitHub Actions-equivalent sequence after development
+  dependencies were installed: repository validation, pytest, Ruff, Mypy, and
+  package build all passed.
+- Created `mgp6-v43-experiments` from that integration commit. Existing
+  historical untracked material remains intentionally unmodified and untracked.

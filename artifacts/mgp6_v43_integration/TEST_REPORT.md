@@ -28,3 +28,11 @@ GitHub Actions run is claimed because this integration has not been pushed.
 
 No live-provider, development-selection, hidden-prediction, or private-scoring
 experiment has run.
+
+## Integration commit and worktree state
+
+- Integration base commit: `41f7ceeb38c971874b52578c4b622a704b992715`
+  (`Integrate MGP-6 v4.3 final release`).
+- Immediately after that commit, the tracked worktree was clean. The only
+  remaining `git status --short` entries were the deliberately preserved,
+  classified historical untracked paths; no private v4.3 path was visible.

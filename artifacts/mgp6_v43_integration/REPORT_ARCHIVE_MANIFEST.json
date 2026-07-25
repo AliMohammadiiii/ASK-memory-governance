@@ -1,0 +1,21 @@
+{
+  "schema_version": "mgp6-v4.3-report-archive-1.0",
+  "archive": "MGP6_v43_INTEGRATION_AUDIT_REPORTS.zip",
+  "sha256": "71d516088c30a63db34f9acbb7fdd53456a5103272a850ee26700f4a54524d33",
+  "integration_base_commit": "41f7ceeb38c971874b52578c4b622a704b992715",
+  "contents": [
+    "EXPERIMENT_READINESS_REPORT.md",
+    "FINAL_STATUS.json",
+    "INPUT_VERIFICATION.md",
+    "INTEGRATION_CHANGELOG.md",
+    "PAPER_UPDATE_REPORT.md",
+    "PATH_MAPPING.json",
+    "PRIVATE_DATA_AUDIT.md",
+    "REPOSITORY_DISCOVERY.md",
+    "TEST_REPORT.md",
+    "THESIS_UPDATE_REPORT.md",
+    "UNTRACKED_PATH_CLASSIFICATION.md"
+  ],
+  "private_data_included": false,
+  "regeneration": "Create from the listed reports only; do not include .private or the archive itself."
+}

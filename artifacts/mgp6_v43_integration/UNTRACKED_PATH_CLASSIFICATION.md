@@ -9,7 +9,7 @@ future deliberate staging decision, never an instruction to run `git add .`.
 | `Ali_Mohammadi_MGP6_v3_3_1_Final/` | historical archive to preserve but not modify | Leave untouched and untracked; it may contain historical source and audit material. |
 | `artifacts/analysis/controller_v10_preflight_diagnostic.json` | generated report to track | Preserve for the existing research audit; not changed by this integration. |
 | `artifacts/analysis/controller_v9_diagnostic_summary.json` | generated report to track | Preserve for the existing research audit; not changed by this integration. |
-| `artifacts/mgp6_v43_integration/` | temporary integration output | Required integration evidence; review and stage deliberately with the v4.3 change set. |
+| `artifacts/mgp6_v43_integration/` | generated report to track | Required integration evidence; it was reviewed and staged deliberately in the v4.3 integration commit, never via `git add .`. |
 | `deliverables/` | historical archive to preserve but not modify | Leave untouched; it contains older v3.3.1 delivery bundles and generated evidence. |
 | `releases/MGP6_v3.3.1/` | historical archive to preserve but not modify | Leave untouched; do not revise or repackage it. |
 | `releases/MGP6_v4.3.0/` | public release material | New safe release location; it contains only the verified public train/dev and source/builder archives, not the master or private archives. |
