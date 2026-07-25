@@ -12,7 +12,10 @@ Ready for configuration freeze preparation. The public-only v4.3 loader,
 prediction validator, evaluator, private ignore protection, regression tests,
 development configuration registry, and development-only freeze index are in
 place. The train engineering fixture passed; it is not a system-performance
-experiment or a live provider smoke test.
+experiment or a live provider smoke test. The public runner now records invalid
+model responses before failing, retries parse-level format failures separately
+from HTTP retries, and can pass OpenRouter `reasoning.effort=none` for
+development smoke runs.
 
 ## Hidden-run authorization
 

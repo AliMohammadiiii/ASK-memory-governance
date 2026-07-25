@@ -38,3 +38,17 @@ changed.
   package build all passed.
 - Created `mgp6-v43-experiments` from that integration commit. Existing
   historical untracked material remains intentionally unmodified and untracked.
+
+## 2026-07-25 — OpenRouter smoke-run hardening
+
+- Committed `86e3674` (`Harden MGP-6 v4.3 OpenRouter smoke runner`) on
+  `mgp6-v43-experiments`.
+- Added runner support for OpenRouter reasoning control via
+  `--reasoning-effort none`, raised the development default generation budget
+  to 128 tokens, and separated transport retries from parse-format retries.
+- Persisted raw invalid model responses and manifest counters before surfacing a
+  parse failure, preserving public-only auditability without exposing private
+  labels.
+- Re-ran full local verification: `git diff --check`, Ruff, scoped Mypy,
+  repository validation, full pytest, package build, and a deterministic runner
+  smoke all passed.
