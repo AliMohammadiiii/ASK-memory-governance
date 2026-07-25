@@ -16,13 +16,13 @@ action-set constraint.
 | `b4` | overwrite | full public view, restricted to KEEP/SUPERSEDE | model-backed |
 | `decision_zero_shot` | decision zero-shot | original full public decision view | model-backed |
 | `rules_controller` | rules controller | public requested-value evidence through the ASK scorecard | local deterministic |
-| `live_model_controller` | live controller | full public view plus controller policy instruction | model-backed |
+| `live_model_controller` | live controller | two public index-linked evidence messages plus a conservative ABSTAIN-only public-evidence guard | model-backed |
 | `ablation_no_abstain` | ablation | controller view restricted to KEEP/SUPERSEDE | model-backed |
 | `ablation_no_provenance` | ablation | omits speaker and turn IDs | model-backed |
 | `ablation_no_typing` | ablation | disables type/stability instruction | model-backed |
 | `ablation_no_lineage` | ablation | disables lineage instruction | model-backed |
 
-The adapter version is `ask.mgp6_v43_adapter.v1`. Each view runs
+The current adapter version is `ask.mgp6_v43_adapter.v3`. Each view runs
 `assert_model_safe` before rendering; labels, component IDs, private IDs,
 annotation fields, and hidden gold cannot enter model prompts or raw logs.
 
@@ -69,7 +69,15 @@ selected for hidden evaluation.
 
 ## Remaining development work
 
-Run the four model-backed ablations on public dev; score them with
-`scripts/score_mgp6_v43.py`, document every selection decision, and only then
-freeze the selected configurations. No hidden prediction or private scoring is
-authorized.
+All four model-backed ablations have completed public dev with Macro-F1 between
+0.1905 and 0.2398. The public-indexed-evidence live controller produced
+public-dev accuracy 0.8556 and Macro-F1 0.8566, versus 0.1771 for the former
+unfiltered live-controller adapter. Its guard uses only a two-of-six public
+evidence route and changes only model `ABSTAIN` actions. The exact artifacts,
+hashes, and comparison table are in `DEV_EXPERIMENT_REPORT.md`.
+
+The public-indexed-evidence controller is selected only as a development
+candidate. Freeze the selected configuration and record the exact accessible
+provider model revision, final code commit, clean-worktree state, prompts, and
+environment before generating any hidden prediction. No hidden prediction or
+private scoring is authorized.

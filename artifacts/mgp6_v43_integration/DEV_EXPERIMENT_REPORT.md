@@ -199,12 +199,11 @@ values are `5f2dde4e824aef39f7ed5dee000e7aab8a1994154a4b104d527f39b765fa1f76`,
 
 ## Development decision
 
-The zero-shot, B1--B4, live-model-controller, and rules-controller
-configurations are valid development runs but are **not selected** for final
-hidden evaluation. Their distributions and metrics require comparison with the
-remaining pre-registered ablations before model, prompt, and system choices are
-frozen. No prompt, model, split, or release record was changed as a result of
-these runs.
+The earlier zero-shot, B1--B4, unfiltered live-model-controller, and
+rules-controller configurations remain valid development runs but are **not
+selected** for final hidden evaluation. Their distributions and metrics
+motivated the required ablation comparison recorded below. No split or release
+record was changed as a result of these runs.
 
 ## Rules-controller development result
 
@@ -222,3 +221,109 @@ both controller modes have completed; the four model-backed ablations remain
 pending. See `ADAPTER_IMPLEMENTATION_REPORT.md`.
 
 The hidden-run authorization remains absent and false.
+
+## Public-indexed-evidence ASK controller refinement
+
+The original full-public-view live controller was not a useful controller: it
+reached public-dev Macro-F1 0.1771 and predicted `SUPERSEDE` for 176 of 180
+items. The v4.3 public record itself includes an index that links exactly two
+of six numbered public messages to the evaluated memory slot. The improved ASK
+adapter therefore routes only those two indexed public messages to the model;
+the remaining four public-but-unlinked messages are excluded. A conservative,
+auditable postprocessor can replace a model `ABSTAIN` only when routed public
+evidence directly supports `KEEP` or `SUPERSEDE`. It never changes a
+non-abstaining model action and has no access to a label, component, private
+mapping, or hidden record.
+
+This behavior is release-specific public evidence routing, not a claim of
+real-world generalization. Tests validate the two-of-six routing for all 360
+public train/dev records and reject prohibited keys in the routed view and guard
+trace.
+
+### Selected public-dev candidate
+
+```text
+.venv/bin/python scripts/run_mgp6_v43.py \
+  --input benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl \
+  --out runs/mgp6_v43/dev/live_model_controller_hybrid_v3_qwen35_9b \
+  --system live_model_controller \
+  --provider openrouter \
+  --base-url https://openrouter.ai/api/v1 \
+  --api-key-env OPENROUTER_API_KEY \
+  --model-id qwen/qwen3.5-9b \
+  --seed 4301 \
+  --max-new-tokens 128 \
+  --reasoning-effort none \
+  --parse-retry-max-attempts 2
+```
+
+This command used only the 180-record public development split. Its ignored
+output directory contains public IDs, raw model responses, a manifest, and
+public metrics; it contains no hidden input or gold.
+
+- Run commit: `54c8c728a1b6bdc7fc7c39a3e23267dfd8d492e5`; the manifest records
+  a clean tracked worktree and `hidden_gold_accessed=false`.
+- Adapter: `ask.mgp6_v43_adapter.v3`.
+- Requested provider/model: OpenRouter / `qwen/qwen3.5-9b`. The provider did
+  not report a routed model revision or price, so neither is claimed.
+- Prompt/system-prompt hashes: `3ffa2ae8df004a4b04c03eaf17ca39d1a57060da718d4a42ec6f67e1a3158619`
+  / `f802dc83acf2524908ab32c557146aa6bd7cf1c95e5355d3a50a81d177308572`.
+- Decoding: temperature 0.0, maximum 128 new tokens, `reasoning.effort=none`;
+  seed 4301; retry policy 3 transport / 2 parse attempts; timeout 120 seconds;
+  concurrency 1.
+- Artifact SHA-256 (prediction / raw / manifest / public metrics):
+  `bdbcc8dad031e079bce2aa89928d71fd3a1345ba71cf84f8df676221c179894e` /
+  `6495d0ddcf2655d89b58ba49c5b51a1a0f16ad5002b8e28cb4eca39833b18a53` /
+  `3b646483761f306426aac06c88e8f1a19361b7b00486d6058ee6ded839ca7ffb` /
+  `10a0529111caf31ab8f0892c2da93c7e7408140dee430f33d0ef76a8466199ed`.
+
+Strict validation passed: 180 expected public IDs, 180 predictions, no
+duplicates, no unknown IDs, and no omissions. Accuracy was 0.8556 and Macro-F1
+was 0.8566. Coverage was 1.0000; selective accuracy was 0.8231; abstention
+precision/recall was 0.9400/0.7833. Per-class precision / recall / F1 was
+ABSTAIN: 0.9400 / 0.7833 / 0.8545; KEEP: 0.7606 / 0.9000 / 0.8244; and
+SUPERSEDE: 0.8983 / 0.8833 / 0.8908. Final prediction counts were ABSTAIN 50,
+KEEP 71, and SUPERSEDE 59. The confusion matrix (gold rows, prediction columns)
+was:
+
+| Gold \\ Predicted | KEEP | SUPERSEDE | ABSTAIN |
+| --- | ---: | ---: | ---: |
+| KEEP | 54 | 3 | 3 |
+| SUPERSEDE | 7 | 53 | 0 |
+| ABSTAIN | 10 | 3 | 47 |
+
+The model initially emitted KEEP 47, SUPERSEDE 57, and ABSTAIN 76. The
+public-evidence guard changed 26 of those ABSTAIN outputs; its final action
+counts are the validated prediction counts above. The run had zero invalid
+responses, failures, and retries; 71,302 prompt and 1,346 completion tokens;
+and 261.925 seconds wall time. Mean / median / p95 latency was 1,436.359 /
+1,125.981 / 2,967.760 ms. The public scorer deliberately did not read the
+private component map, so component-cluster intervals are not reported here.
+
+### Required public-dev ablations
+
+All four required model-backed ablations ran once in separate ignored output
+directories on the same public dev split. Each used commit
+`b978976f5bc2b25f22dc08d7c27113c8d820431f`, a clean tracked worktree, the
+requested OpenRouter/Qwen model, seed 4301, temperature 0.0, 128 maximum new
+tokens, `reasoning.effort=none`, 3/2 transport/parse retry policy, timeout 120
+seconds, concurrency 1, and `hidden_gold_accessed=false`. All had 180/180
+strictly validated predictions and zero invalid responses, failures, or retries.
+
+| Ablation | Accuracy | Macro-F1 | Prediction counts (K / S / A) | Prediction SHA-256 | Run-config SHA-256 |
+| --- | ---: | ---: | --- | --- | --- |
+| no abstain | 0.3278 | 0.2398 | 45 / 135 / 0 | `3a2b3bbbfecccc35f7c0923a25a8814a75ceed4bbe7c19bed3cd773b0238dfc9` | `1c0561578e71e8934d60811c48cd573d62b850c930e4b7bc01d575a58fbf02be` |
+| no provenance | 0.3444 | 0.2002 | 4 / 173 / 3 | `481c0b65ea29ac593a5b19c12f9301491e0fd4075e3275897f1f718e4140a366` | `42bfac55f8e37fd7f85df84d27943429200c8f8361ae6d0d166e5caff130ecf0` |
+| no typing | 0.3444 | 0.1905 | 1 / 177 / 2 | `a36b4634ac2898510d5cb6dda2580d5aea6df8edabd3c43713bbb4484c3b3dc1` | `e5a8a56ca01eb58242d505dfc6d8ba0872e5a1f718a312ae200b882418c9cd5b` |
+| no lineage | 0.3444 | 0.1995 | 5 / 174 / 1 | `76bf33f0870e69670b8ac15b20802f33ce6c03465a230524f20f94a921a7f19a` | `7ef810165d8a5d3a2029b41c1cfed03111d91636f425a9c7bc4cd89558c40027` |
+
+The raw-response / manifest / metric SHA-256 values are recorded in the
+ignored run directories. No private component map was read by public scoring.
+
+### Development selection
+
+The public-indexed-evidence ASK live controller is the selected **development
+candidate**: Macro-F1 0.8566 is higher than every completed baseline and
+required ablation. This selection uses public dev only. It is not frozen, it is
+not authorized for hidden generation, and it must not be described in the paper
+or thesis as a final v4.3 result. The next gate is configuration freeze.

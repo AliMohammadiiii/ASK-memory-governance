@@ -18,6 +18,13 @@
 | `.venv/bin/mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py` | PASS — exact GitHub Actions command; no issues found in 16 source files. |
 | `.venv/bin/mypy src/ask scripts/run_mgp6_v43.py scripts/score_mgp6_v43.py` | PASS — extended local static check; no issues found in 63 source files. |
 | `.venv/bin/python -m build` | PASS — source distribution and wheel built. |
+| `git diff --check` | PASS — no whitespace errors before the current development-selection report update. |
+| `.venv/bin/ruff check .` | PASS — current public-evidence controller and manifest hardening included. |
+| `.venv/bin/pytest` | PASS — 542 passed, 0 failed, 11 skipped; 16 MGP-6 v4.3 tests included. |
+| `.venv/bin/mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py` | PASS — no issues in 16 source files. |
+| `.venv/bin/mypy src/ask scripts/run_mgp6_v43.py scripts/score_mgp6_v43.py` | PASS — no issues in 63 source files. |
+| `python3 scripts/validate_repository.py` | PASS — repository structure and secret scan OK. |
+| `.venv/bin/python -m build` | PASS — current sdist and wheel built. |
 | `latexmk -pdf -outdir=<temporary directory> main.tex` | PASS — paper compiled without replacing tracked build outputs. |
 | `python3 scripts/run_mgp6_v43.py ... --limit 3 --action ABSTAIN` twice | PASS — deterministic train engineering fixture exercised serialization, parsing, persistence, resume behavior, and metric calculation; no provider call and no scientific result. |
 | `.venv/bin/python scripts/run_mgp6_v43.py --limit 2 --action ABSTAIN --out /tmp/mgp6_v43_runner_smoke` | PASS — runner hardening smoke verified manifest, raw-response, and prediction writing without any provider call. |
@@ -43,16 +50,22 @@ evaluation. No hidden-prediction or private-scoring experiment has run. The
 live-provider smoke above used public train records only and is not reported as
 system performance.
 
-The full repository suite was re-run after adapter implementation and passed:
-539 passed, 11 skipped. The remaining model-backed configurations are now
-executable public-dev comparisons, but have not been run in this integration
-turn.
+The full repository suite was re-run after public-evidence controller and
+manifest hardening: 542 passed, 11 skipped. The v4.3-focused file has 16
+passing tests, including public-index routing, public-only guard behavior,
+configuration hashing, durable/resume-safe writes, and explicit rejection of
+unsupported in-process concurrency. All required model-backed ablations have
+now completed and been public-scored; they are documented in
+`DEV_EXPERIMENT_REPORT.md`.
 
 ## Integration commit and worktree state
 
 - Integration base commit: `41f7ceeb38c971874b52578c4b622a704b992715`
   (`Integrate MGP-6 v4.3 final release`).
 - Runner hardening commit: `86e3674` (`Harden MGP-6 v4.3 OpenRouter smoke runner`).
+- Current manifest-hardening commit:
+  `b978976f5bc2b25f22dc08d7c27113c8d820431f`
+  (`Harden MGP-6 v4.3 run manifests`).
 - Immediately after that commit, the tracked worktree was clean. The only
   remaining `git status --short` entries were the deliberately preserved,
   classified historical untracked paths; no private v4.3 path was visible.

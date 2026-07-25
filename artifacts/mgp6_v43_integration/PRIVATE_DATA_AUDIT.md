@@ -27,6 +27,13 @@
 - The ASK live-model-controller public-dev run likewise used only that public
   development file. Its ignored prediction, raw-response, manifest, and public
   metric files record `hidden_gold_accessed=false`.
+- The improved public-indexed-evidence controller and all four required
+  ablations likewise used only `public/dev.jsonl`. The controller extracts two
+  publicly indexed messages from the public record and excludes four public
+  unlinked messages; its guard trace contains only public positions, an
+  evidence-text hash, and actions. No label or private field enters that view,
+  model prompt, raw-response record, or guard trace. Every new ignored manifest
+  records `hidden_gold_accessed=false`.
 - The tracked public prompt template and loader contain no prohibited private
   keys; ignored fixture and provider-run logs contain public IDs and model
   responses only, with no private fields.

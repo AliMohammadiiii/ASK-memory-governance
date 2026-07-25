@@ -134,3 +134,21 @@ changed.
 - The manifest records commit `b5a6c602492c2bbcc8dd688371bd4f8d08556e03`, a
   clean tracked worktree, and `hidden_gold_accessed=false`. No hidden input,
   gold, final human gold, or private audit asset was accessed.
+
+## 2026-07-26 — public-evidence controller selection and ablations
+
+- Implemented public-only index-linked evidence routing for the ASK live
+  controller and an auditable conservative guard that can change only a model
+  `ABSTAIN` with decisive routed public evidence. The adapter and regression
+  tests reject private/label fields in all resulting model-facing objects and
+  traces.
+- Completed and public-scored the improved controller over all 180 public-dev
+  records: accuracy 0.8556 and Macro-F1 0.8566, with 180/180 strict coverage,
+  zero invalid responses/failures/retries, and `hidden_gold_accessed=false`.
+- Hardened the runner in commit `b978976f5bc2b25f22dc08d7c27113c8d820431f`
+  with atomic manifests, a complete run-configuration hash, durable raw logs,
+  and rejection of unsupported in-process concurrency.
+- Completed and public-scored every required model-backed ablation once. Their
+  Macro-F1 values were no-abstain 0.2398, no-provenance 0.2002, no-typing
+  0.1905, and no-lineage 0.1995. The public-evidence controller is selected as
+  a development candidate only; configuration freeze is the next gate.

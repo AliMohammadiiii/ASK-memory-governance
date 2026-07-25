@@ -40,11 +40,16 @@ B3: 0.3389 / 0.2309, and B4: 0.3444 / 0.2064. These are development-only
 evidence, not selected hidden configurations; the full protocol and public-only
 scores are in `DEV_EXPERIMENT_REPORT.md`.
 
-The ASK live-model controller has also completed public dev with 180
-coverage-validated predictions and zero failures/retries/invalid responses. Its
-accuracy was 0.3333 and Macro-F1 was 0.1771; it predicted SUPERSEDE on 176 of
-180 records. This is development-only evidence, not a selected hidden
-configuration, and it is fully documented in `DEV_EXPERIMENT_REPORT.md`.
+The original full-view ASK live-model controller completed public dev with 180
+coverage-validated predictions and zero failures/retries/invalid responses, but
+its accuracy/Macro-F1 was only 0.3333/0.1771. The current public-indexed-
+evidence controller routes precisely the two public messages linked by the
+record index, excludes the four unlinked messages, and uses an ABSTAIN-only
+public-evidence guard. Its public-dev run completed with 180/180 validated
+predictions, zero failures/retries/invalid responses, and accuracy/Macro-F1
+0.8556/0.8566. All four required public-dev ablations are now complete and
+scored between Macro-F1 0.1905 and 0.2398. This is a selected development
+candidate only; neither it nor any ablation is a frozen hidden configuration.
 
 ## Hidden-run authorization
 
@@ -54,8 +59,7 @@ has occurred.
 
 ## Next gate
 
-Run the required model-backed ablations on public dev, score them with the
-public scorer, and record every dev-informed choice. Only then replace the
-development index with a fully frozen final configuration and authorization
-audit. Do not open hidden gold before finalized prediction files are
-coverage-validated and hashed.
+Freeze the selected public-indexed-evidence controller: record the exact
+accessible provider model revision and final code/worktree state, freeze all
+controls, and generate the authorization audit. Do not open hidden gold before
+finalized hidden prediction files are coverage-validated and hashed.
