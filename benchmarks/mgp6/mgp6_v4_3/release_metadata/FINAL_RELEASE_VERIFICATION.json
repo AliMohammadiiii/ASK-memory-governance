@@ -1,0 +1,91 @@
+{
+  "annotation_merkle_root": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6",
+  "archives": {
+    "private_audit_package": {
+      "crc_pass": true,
+      "manifest": {
+        "actual_count": 17,
+        "declared_count": 17,
+        "errors": [],
+        "passed": true
+      },
+      "passed": true,
+      "sha256": "e4728f3bf77f2b9a757b9721ee3e9e767ee94b7873aed1899961f55c0d842c94"
+    },
+    "private_hidden_gold": {
+      "crc_pass": true,
+      "manifest": {
+        "actual_count": 4,
+        "declared_count": 4,
+        "errors": [],
+        "passed": true
+      },
+      "passed": true,
+      "sha256": "adc14fdc0dbc7cd6f996d9c6dd377638071b4c335ef58ff575190059e9fb0a13"
+    },
+    "private_hidden_inputs": {
+      "crc_pass": true,
+      "manifest": {
+        "actual_count": 4,
+        "declared_count": 4,
+        "errors": [],
+        "passed": true
+      },
+      "passed": true,
+      "sha256": "81a117a3f09546d93d8b642e37da0355351aca0888232bcd9dec2c9ff86dd9c0"
+    },
+    "public_train_dev": {
+      "crc_pass": true,
+      "manifest": {
+        "actual_count": 7,
+        "declared_count": 7,
+        "errors": [],
+        "passed": true
+      },
+      "passed": true,
+      "sha256": "fb588629ccf93a434798f5e104bc2a3a8e2cb2e2bdc5b438b3b1fddb78732d96"
+    },
+    "source_and_builder": {
+      "crc_pass": true,
+      "manifest": {
+        "actual_count": 5,
+        "declared_count": 5,
+        "errors": [],
+        "passed": true
+      },
+      "passed": true,
+      "sha256": "1a7dd34954c85b847d893e4500146221a4f3c407e537a11579916df7cff7e434"
+    }
+  },
+  "failed_gates": [],
+  "final_gold_merkle_root": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe",
+  "gates": {
+    "all_items_final_human_gold": true,
+    "archive_manifests_passed": true,
+    "class_balance_exact": true,
+    "components_not_cut": true,
+    "data_owner_human_completion_attestation_recorded": true,
+    "deterministic_build_passed": true,
+    "domain_component_balance_exact": true,
+    "dual_human_annotation_coverage_complete": true,
+    "duplicate_audit_passed": true,
+    "evidence_difference_non_substantive": true,
+    "human_exclusions_zero": true,
+    "human_label_agreement_complete": true,
+    "model_field_allowlist_passed": true,
+    "shortcut_audit_passed": true,
+    "split_counts_exact": true
+  },
+  "human_gold_count": 900,
+  "master_bundle": {
+    "crc_pass": true,
+    "filename": "MGP-6-v4.3.0-human-validated-final-BUNDLE.zip",
+    "sha256": "9321c4980e01f55bdd4fd5b99a4a12a9268bc5a510480afdf97beac6b7a87bd8",
+    "size_bytes": 2576629
+  },
+  "passed": true,
+  "release_timestamp": "2026-07-25T13:42:05+00:00",
+  "release_version": "4.3.0-human-validated-final",
+  "schema_version": "mgp6-v4.3-final-release-verification-1.0",
+  "standalone_final_gold_sha256": "52783506c8ed2619c9c6a1ef727e00b9e9184f38dfe3137ad473d8ef608dd2fe"
+}

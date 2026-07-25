@@ -7,6 +7,36 @@ instrument for probing decision mechanisms, not a community benchmark, an
 independent test collection, or a measure of general QA or retrieval efficiency. All scenarios are synthetic,
 English-only, and low-risk, and contain no real personal data.
 
+\subsection{v4.3 final release and leakage controls}
+
+The historical v2 pilot remains in the artifact as a record of the earlier
+instrument and its limitations. The successor release, \mgp{} v4.3.0, is a
+human-authored, template-guided, controlled synthetic diagnostic for the three
+decision actions \keep{}, \supersede{}, and \abstain{}. It contains 900 items
+in 100 semantic components across 20 domains. Components, rather than
+individual items, are assigned intact to train (180 items; 20 components),
+development (180; 20), and hidden (540; 60) partitions. Each split is exactly
+balanced across the three actions, and each domain contributes one component to
+train, one to development, and three to hidden.
+
+This redesign follows the v2 shortcut diagnosis: earlier rewrite-oriented
+versions retained label-correlated lexical and structural cues, so held-out item
+performance could reflect scenario recognition rather than the intended
+reasoning about authority, scope, time, identity, and prior memory. The v4.3
+content architecture uses balanced factual evidence and controlled distractors.
+It passed duplicate, near-duplicate, model-field allowlist, and shortcut-audit
+gates; the detailed restricted-view and shallow-feature audits remain private.
+Public model-facing records exclude gold labels, design targets, private IDs,
+component metadata, and annotator metadata.
+
+Two completed human annotation packets cover all 900 items. They agree on all
+actions (raw agreement $=1.0$, Cohen's $\kappa=1.0$), with no exclusions or
+label adjudications. The 300 \abstain{} items are intentionally ambiguous
+scenarios, not gold-label disagreements. Completion is accepted through the
+dataset-owner attestation: the release builder verifies records, coverage,
+hashes, and agreement, but does not independently authenticate reviewer identity
+or annotation duration.
+
 \subsection{Conflict taxonomy and distribution}
 
 The pilot contains $180$ scenarios, $30$ for each of six scenario families,
@@ -70,6 +100,18 @@ bootstrap intervals by \texttt{template\_family\_id}; for
 \texttt{minimal\_pair\_group\_id}, unpaired items are singleton clusters. A
 shortcut baseline that approaches the full policy is a failed construct-validity
 check, not a competitive result.
+
+\subsection{v4.3 evaluation contract}
+
+For v4.3, systems submit exactly one action for every public identifier using
+the two fields \texttt{public\_id} and \texttt{action}; the exact JSON form is
+part of the released evaluation protocol. The evaluator rejects missing,
+duplicate, unknown, and extra identifiers. It reports
+accuracy, macro-F1, per-class precision/recall/F1, a confusion matrix, coverage,
+and component-cluster bootstrap intervals. Items within a semantic component are
+not treated as independent; paired comparisons use component-aware resampling
+or component-level analysis. LongMemEval is reported separately as external
+memory evaluation, not as a substitute for this controlled diagnostic.
 
 \subsection{Schema, invariants, and scoring}
 

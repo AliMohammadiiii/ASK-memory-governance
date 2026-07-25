@@ -1,0 +1,29 @@
+{
+  "schema_version": "mgp6-v4.3-frozen-config-index-1.0",
+  "release_version": "4.3.0-human-validated-final",
+  "status": "DEV_PREPARATION_ONLY_NOT_FROZEN",
+  "authorized_for_hidden_run": false,
+  "configuration": {
+    "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
+    "sha256": "73431cf9e40ac801a06f61b386e8b819269aaea815823f3d528c04972f8932ef",
+    "dataset_hashes": {
+      "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
+      "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
+      "split_map": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
+    },
+    "prompt_hash": "5ce0872a1a7ed5d75dbf5a1c011edbb935b3cc1c4177f8066139889312bc7efa",
+    "system_prompt_hash": "f04ed7648898e5331f1095422b030f2a0ed95660a85576af6e0f460e6f2a56ef",
+    "evaluator_version": "ask.eval.mgp6_v43.v1",
+    "code_commit": "ca0febc",
+    "environment_lock_sha256": "04744531c4261c9e137f96d177565d8355ca4bf567629d572f0a90d338a577ae"
+  },
+  "freeze_requirements_remaining": [
+    "Record the selected provider endpoint and exact accessible live model revision.",
+    "Run and document development-only experiments before choosing final configurations.",
+    "Record the post-development code commit and clean-worktree state.",
+    "Freeze prediction schema, evaluator code, prompts, seeds, decoding, retry policy, timeout, and concurrency after dev selection.",
+    "Generate FINAL_HIDDEN_RUN_AUTHORIZATION.json only after all acceptance gates pass."
+  ],
+  "hidden_gold_accessed": false,
+  "hidden_predictions_generated": false
+}

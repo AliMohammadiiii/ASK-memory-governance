@@ -1,0 +1,64 @@
+{
+  "release_version": "4.3.0-human-validated-final",
+  "dataset_identity": "human-authored, template-guided, controlled synthetic benchmark",
+  "master_release_bundle": "MGP-6-v4.3.0-human-validated-final-BUNDLE.zip",
+  "master_release_bundle_sha256": "a4d54c2d1b59730cc13f0e1c6835d9d59795f33f368f2287af9dedf8706903bc",
+  "item_count": 900,
+  "component_count": 100,
+  "split_counts": {
+    "train": 180,
+    "dev": 180,
+    "hidden": 540
+  },
+  "split_component_counts": {
+    "train": 20,
+    "dev": 20,
+    "hidden": 60
+  },
+  "class_distribution": {
+    "train": {
+      "KEEP": 60,
+      "SUPERSEDE": 60,
+      "ABSTAIN": 60
+    },
+    "dev": {
+      "KEEP": 60,
+      "SUPERSEDE": 60,
+      "ABSTAIN": 60
+    },
+    "hidden": {
+      "KEEP": 180,
+      "SUPERSEDE": 180,
+      "ABSTAIN": 180
+    }
+  },
+  "domain_count": 20,
+  "human_validation": {
+    "annotator_a_count": 900,
+    "annotator_b_count": 900,
+    "label_agreement_count": 900,
+    "label_agreement_rate": 1.0,
+    "cohen_kappa": 1.0,
+    "exclusion_count": 0,
+    "label_adjudication_count": 0,
+    "intended_scenario_ambiguity_count": 300,
+    "provenance_limit": "The release builder validates records, hashes, and the owner's attestation, but does not independently authenticate reviewer identities or annotation duration."
+  },
+  "quality_gates": {
+    "class_balance_exact": true,
+    "components_not_cut": true,
+    "domain_component_balance_exact": true,
+    "duplicate_audit_passed": true,
+    "shortcut_audit_passed": true,
+    "model_field_allowlist_passed": true,
+    "deterministic_build_passed": true,
+    "archive_manifests_passed": true,
+    "failed_gates": []
+  },
+  "merkle_roots": {
+    "annotations": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6",
+    "final_gold": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe"
+  },
+  "public_redistribution_license_selected": false,
+  "experiment_readiness": "READY_FOR_FINAL_PAPER_EXPERIMENTS"
+}

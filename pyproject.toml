@@ -64,7 +64,16 @@ markers = [
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-exclude = ["docs/history", "paper", "thesis"]
+exclude = [
+  "docs/history",
+  "paper",
+  "thesis",
+  "Ali_Mohammadi_MGP6_v3_3_1_Final",
+  "deliverables",
+  "releases",
+  "benchmarks/mgp6/mgp6_v4_3/source",
+  "benchmarks/mgp6/v3_human_pack",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

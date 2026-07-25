@@ -1,0 +1,230 @@
+{
+  "annotation_merkle_root": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6",
+  "dataset_identity": "human_authored_template_guided_controlled_synthetic_benchmark",
+  "failed_gates": [],
+  "final_gold_merkle_root": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe",
+  "gates": {
+    "all_items_final_human_gold": true,
+    "archive_manifests_passed": true,
+    "class_balance_exact": true,
+    "components_not_cut": true,
+    "data_owner_human_completion_attestation_recorded": true,
+    "deterministic_build_passed": true,
+    "domain_component_balance_exact": true,
+    "dual_human_annotation_coverage_complete": true,
+    "duplicate_audit_passed": true,
+    "evidence_difference_non_substantive": true,
+    "human_exclusions_zero": true,
+    "human_label_agreement_complete": true,
+    "model_field_allowlist_passed": true,
+    "shortcut_audit_passed": true,
+    "split_counts_exact": true
+  },
+  "human_review": {
+    "action_distribution_a": {
+      "ABSTAIN": 300,
+      "KEEP": 300,
+      "SUPERSEDE": 300
+    },
+    "action_distribution_b": {
+      "ABSTAIN": 300,
+      "KEEP": 300,
+      "SUPERSEDE": 300
+    },
+    "ambiguity_flag_count_a": 300,
+    "ambiguity_flag_count_b": 300,
+    "ambiguity_normalization": "All 300 dual ambiguity flags coincide with agreed ABSTAIN labels and are represented as intended scenario ambiguity, not gold-label conflict.",
+    "annotator_a_count": 900,
+    "annotator_a_id": "ALI",
+    "annotator_b_count": 900,
+    "annotator_b_id": "MOHAMMAD",
+    "attestation_verification_limit": "The build system validates records and hashes but does not independently authenticate human identity or annotation duration.",
+    "cohen_kappa": 1.0,
+    "completion_attestation": "Dataset owner explicitly attested that both packets were completed by humans and then copied into the final files.",
+    "evidence_selection_exact_match_count": 0,
+    "evidence_selection_relation": "Annotator B includes baseline context T01 in addition to Annotator A evidence for all items.",
+    "evidence_selection_relation_count": 900,
+    "exclusion_count": 0,
+    "label_adjudication_required_count": 0,
+    "label_agreement_count": 900,
+    "label_agreement_rate": 1.0,
+    "mean_confidence_a": 0.96,
+    "mean_confidence_b": 0.9666666666666667,
+    "passed": true,
+    "release_version": "4.3.0-human-validated-final",
+    "schema_version": "mgp6-v4.3-human-review-report-1.0"
+  },
+  "output_archives": {
+    "private_audit_package": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-audit-package.zip",
+      "sha256": "e4728f3bf77f2b9a757b9721ee3e9e767ee94b7873aed1899961f55c0d842c94",
+      "size_bytes": 2180967
+    },
+    "private_hidden_gold": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-hidden-gold.zip",
+      "sha256": "adc14fdc0dbc7cd6f996d9c6dd377638071b4c335ef58ff575190059e9fb0a13",
+      "size_bytes": 67377
+    },
+    "private_hidden_inputs": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-hidden-inputs.zip",
+      "sha256": "81a117a3f09546d93d8b642e37da0355351aca0888232bcd9dec2c9ff86dd9c0",
+      "size_bytes": 131817
+    },
+    "public_train_dev": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-public-train-dev.zip",
+      "sha256": "fb588629ccf93a434798f5e104bc2a3a8e2cb2e2bdc5b438b3b1fddb78732d96",
+      "size_bytes": 76813
+    },
+    "source_and_builder": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-source-and-builder.zip",
+      "sha256": "1a7dd34954c85b847d893e4500146221a4f3c407e537a11579916df7cff7e434",
+      "size_bytes": 18947
+    }
+  },
+  "public_redistribution_license_selected": false,
+  "public_redistribution_note": "Select a license before public hosting; this does not block internal paper experiments.",
+  "publication_experiment_eligible": true,
+  "release_timestamp": "2026-07-25T13:42:05+00:00",
+  "release_version": "4.3.0-human-validated-final",
+  "schema_version": "mgp6-v4.3-final-release-readiness-1.0",
+  "split_summary": {
+    "annotation_merkle_root": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6",
+    "class_distribution": {
+      "dev": {
+        "ABSTAIN": 60,
+        "KEEP": 60,
+        "SUPERSEDE": 60
+      },
+      "hidden": {
+        "ABSTAIN": 180,
+        "KEEP": 180,
+        "SUPERSEDE": 180
+      },
+      "train": {
+        "ABSTAIN": 60,
+        "KEEP": 60,
+        "SUPERSEDE": 60
+      }
+    },
+    "component_count": 100,
+    "dataset_identity": "human_authored_template_guided_controlled_synthetic_benchmark",
+    "difficulty_component_distribution": {
+      "dev": {
+        "EASY": 1,
+        "EXPERT": 7,
+        "HARD": 8,
+        "MEDIUM": 4
+      },
+      "hidden": {
+        "EASY": 5,
+        "EXPERT": 21,
+        "HARD": 21,
+        "MEDIUM": 13
+      },
+      "train": {
+        "EASY": 1,
+        "EXPERT": 8,
+        "HARD": 7,
+        "MEDIUM": 4
+      }
+    },
+    "domain_component_distribution": {
+      "dev": {
+        "accessibility": 1,
+        "communication_preferences": 1,
+        "daily_routines": 1,
+        "devices_and_software": 1,
+        "education": 1,
+        "employment": 1,
+        "family_and_relationships": 1,
+        "finance_and_budgeting": 1,
+        "food_and_diet": 1,
+        "health_related_preferences": 1,
+        "identity_and_relationships": 1,
+        "location_and_relocation": 1,
+        "multi_session_temporal": 1,
+        "personal_preferences": 1,
+        "privacy_preferences": 1,
+        "professional_projects": 1,
+        "research_activities": 1,
+        "safety_constraints": 1,
+        "scheduling": 1,
+        "travel": 1
+      },
+      "hidden": {
+        "accessibility": 3,
+        "communication_preferences": 3,
+        "daily_routines": 3,
+        "devices_and_software": 3,
+        "education": 3,
+        "employment": 3,
+        "family_and_relationships": 3,
+        "finance_and_budgeting": 3,
+        "food_and_diet": 3,
+        "health_related_preferences": 3,
+        "identity_and_relationships": 3,
+        "location_and_relocation": 3,
+        "multi_session_temporal": 3,
+        "personal_preferences": 3,
+        "privacy_preferences": 3,
+        "professional_projects": 3,
+        "research_activities": 3,
+        "safety_constraints": 3,
+        "scheduling": 3,
+        "travel": 3
+      },
+      "train": {
+        "accessibility": 1,
+        "communication_preferences": 1,
+        "daily_routines": 1,
+        "devices_and_software": 1,
+        "education": 1,
+        "employment": 1,
+        "family_and_relationships": 1,
+        "finance_and_budgeting": 1,
+        "food_and_diet": 1,
+        "health_related_preferences": 1,
+        "identity_and_relationships": 1,
+        "location_and_relocation": 1,
+        "multi_session_temporal": 1,
+        "personal_preferences": 1,
+        "privacy_preferences": 1,
+        "professional_projects": 1,
+        "research_activities": 1,
+        "safety_constraints": 1,
+        "scheduling": 1,
+        "travel": 1
+      }
+    },
+    "duplicate_audit_passed": true,
+    "final_gold_merkle_root": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe",
+    "human_agreement": {
+      "cohen_kappa": 1.0,
+      "count": 900,
+      "rate": 1.0
+    },
+    "item_count": 900,
+    "release_timestamp": "2026-07-25T13:42:05+00:00",
+    "release_version": "4.3.0-human-validated-final",
+    "schema_version": "mgp6-v4.3-release-summary-1.0",
+    "shortcut_audit_passed": true,
+    "source_hashes": {
+      "annotator_a_uploaded_zip_sha256": "ee57f3683244565d440ff90a3c63c9d340801b55dbf648f7f77b288819e61d5f",
+      "annotator_b_uploaded_zip_sha256": "a51e4ea423d88d3e1bca5f812e448205d2b001db087b10bc5703e6824f938e22",
+      "builder_sha256": "44846d0e5c127c7c187a44031106ecdd67e7dc0092a6a7b9b084dc673d4fb627",
+      "content_freeze_canonical_items_sha256": "966e6704e3c39726aaeedaf358fd0e644825ea6ce55fadb546476edd025d3c3a",
+      "coordinator_private_binding_sha256": "3b706baeb9c6f082f35f487b31cede00061afa3ce2406498dbb1d21c1ce55b48"
+    },
+    "split_component_counts": {
+      "dev": 20,
+      "hidden": 60,
+      "train": 20
+    },
+    "split_counts": {
+      "dev": 180,
+      "hidden": 540,
+      "train": 180
+    }
+  },
+  "verdict": "READY_FOR_FINAL_PAPER_EXPERIMENTS"
+}

@@ -56,3 +56,15 @@ Annotation agreement is reported as Cohen's $\kappa$ for one independent human
 annotator against the author gold and, separately, Fleiss $\kappa$ for a
 four-model audit panel. The latter is never described as human
 inter-annotator agreement.
+
+\subsection{v4.3 staged execution and reproducibility}
+
+The v4.3 release is evaluated in stages. Train is reserved for engineering
+checks, and development data are used for prompt, configuration, ablation, cost,
+and latency selection. Before hidden prediction, the selected provider and exact
+model identifier, prompt and system-prompt hashes, decoding, seed, retry policy,
+timeout, concurrency, evaluator, split and data hashes, code commit, and
+environment lock are frozen. Hidden inputs are then predicted once per
+pre-registered final configuration; prediction files are validated and hashed
+before hidden gold is opened locally for scoring. At the time of writing, this
+procedure has not been completed and no v4.3 hidden result is reported.

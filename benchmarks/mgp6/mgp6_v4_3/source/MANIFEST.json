@@ -1,0 +1,33 @@
+{
+  "file_count_excluding_manifest": 5,
+  "files": [
+    {
+      "relative_path": "FROZEN_BUILD_CONFIG.json",
+      "sha256": "d5607616262148601127bc0217b278cda7c403ec862d2164e9af29ae42f94716",
+      "size_bytes": 275
+    },
+    {
+      "relative_path": "README.md",
+      "sha256": "9b1928cbd597460666075318ab02230dd609eaf293a21c4f80fc457881211439",
+      "size_bytes": 260
+    },
+    {
+      "relative_path": "build_mgp6_v43_final.py",
+      "sha256": "44846d0e5c127c7c187a44031106ecdd67e7dc0092a6a7b9b084dc673d4fb627",
+      "size_bytes": 59906
+    },
+    {
+      "relative_path": "evaluate_predictions.py",
+      "sha256": "42c18ad1181f32e667f0ff1ea9989ae02dc25632d3e61cc4ceadedb5e5653976",
+      "size_bytes": 2312
+    },
+    {
+      "relative_path": "verify_release.py",
+      "sha256": "b8771c82838b7093c22faed486528ee18ec54d1911add15eb2dc3e3d26eaf198",
+      "size_bytes": 1516
+    }
+  ],
+  "package_kind": "SOURCE_AND_BUILDER",
+  "release_version": "4.3.0-human-validated-final",
+  "schema_version": "mgp6-v4.3-manifest-1.0"
+}

@@ -19,6 +19,12 @@ This directory contains an **English review draft**, not an institution-ready su
 
 MGP-6 v2 policy results are diagnostic: conflict type alone reaches 1.000 held-out accuracy, so the pilot does not isolate evidence reasoning. The reference policy obtains 0.8889 test accuracy versus 0.9000 for the structured LLM, with a family-clustered paired interval containing zero. The few-shot result is incomplete; mapped external-system rankings and all LongMemEval evidence are non-primary.
 
+MGP-6 v4.3 is integrated as a controlled synthetic successor release with 900
+items, component-held-out train/dev/hidden splits, public/private separation,
+and owner-attested dual-human completion. Its final hidden experiment is not yet
+authorized or reported; no v4.3 performance number belongs in the thesis until
+that frozen procedure completes.
+
 ## External completion requirements
 
 The repository does not contain the official University of Tehran thesis template or verified administrative metadata. Before institutional submission, a human must:

@@ -1,6 +1,18 @@
 \section{Dataset Schema}
 \label{app:schema}
 
+\subsection{MGP-6 v4.3 release and execution materials}
+
+The v4.3 release stores public train/development records, schema, dataset card,
+evaluation protocol, split summary, release facts, and checksum references in
+the repository. Hidden inputs, hidden gold, final human gold, completed human
+annotations, private mappings, consensus records, and private audit material are
+stored locally in a gitignored boundary. The release supplies a locked split
+map, archive manifests, SHA-256 hashes, and annotation and final-gold Merkle
+roots. The v4.3 experiment index records configurations as development-only
+until all final controls are frozen; it must not be read as hidden-run
+authorization.
+
 Each \mgp{} row is a JSON object. Exact field names are grouped below; the
 machine-readable schema remains authoritative.
 \begin{verbatim}

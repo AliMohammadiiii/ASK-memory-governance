@@ -359,6 +359,48 @@ As shipped, `over_forgetting_rate` and `under_forgetting_rate` saturate at 1.0 f
 
 # 6. Experimental Methodology
 
+## 5.9 MGP-6 v4.3 final release: remediation, validation, and boundaries
+
+The v4.3 release is a successor diagnostic, not a relabeling of v2 or a basis
+for rewriting the historical v2 results above. A v4.1 shortcut review found that
+surface lexical and structural features could recover the intended action without
+the required reasoning over authority, scope, time, identity, and prior memory.
+Mechanical fixes to schemas, identifiers, hashes, and manifests were therefore
+kept separate from a substantive v4.2 content redesign. Review then proceeded at
+the semantic-component level: KEEP, SUPERSEDE, and ABSTAIN variants were jointly
+inspected, label-specific explanations were removed, and balanced factual
+evidence plus controlled distractors replaced surface rewriting.
+
+The final v4.3.0-human-validated-final release contains 900 human-authored,
+template-guided, controlled synthetic items in 100 semantic components and 20
+domains. Components are the locked split unit: train has 180 items from 20
+components, development has 180 from 20, and hidden has 540 from 60. Each split
+is exactly action-balanced, and each domain contributes one component to train,
+one to development, and three to hidden. The release passed duplicate,
+near-duplicate, model-field allowlist, shortcut-audit, deterministic-build, and
+archive-manifest gates. These facts establish release construction controls; they
+do not establish real-world generalization.
+
+Two human annotation packets cover all 900 final items and agree on every action
+(raw agreement 1.0; Cohen's kappa 1.0). No item was excluded and no action-label
+adjudication was required. Both reviewers marked all 300 ABSTAIN items as
+intentionally ambiguous scenarios; that flag records designed ambiguity rather
+than uncertainty about the gold action. The dataset-owner attests to human
+completion. The builder validates schemas, coverage, content hashes, agreement,
+and the attestation, but does not independently authenticate reviewer identity
+or annotation duration; this is a provenance limitation, not evidence of an
+independent audit.
+
+The release has a strict public/private architecture. Public train and
+development records expose only the evidence required to make a decision;
+model-facing objects remove gold labels, design targets, component information,
+private IDs, and annotator metadata. Hidden inputs, hidden gold, final human
+gold, completed annotations, private mappings, source-aligned consensus, and
+private audits are stored only in a gitignored local boundary. No v4.3 hidden
+result is reported in this thesis: hidden prediction remains prohibited until
+configuration freeze and prediction-file hashing are complete.
+
+
 ## 6.1 Evidence policy: the ledger and claim eligibility
 
 Run provenance comes from `artifacts/results_ledger.json` v1.1; scientific interpretation is superseded by `artifacts/analysis/mgp6_validity_audit.json`. The failed shortcut gate makes MGP-6 v2 policy rows diagnostic regardless of their older ledger label. Mapping-dependent adapters, incomplete runs, and every LongMemEval row remain non-primary. Annotation is described as one independent annotator plus a separate model panel, never human IAA.
@@ -398,6 +440,32 @@ The primary analysis uses the held-out 90-item test split and 10,000-replicate p
 ## 6.7 Leakage and researcher-degrees-of-freedom controls
 
 Train+development lookup probes over type, conflict type, and public metadata precede policy interpretation. Conflict type reaches 1.000 test accuracy and therefore fails the construct-validity gate: test-first split hygiene alone is insufficient. The v7→v8 fix loop had no confirmation set, so its output is `failure_replay_only`; overrides remain separate from raw results; and invalid, incomplete, mapped, and superseded runs are excluded from primary claims.
+
+## 6.8 MGP-6 v4.3 experimental protocol (prepared; hidden run not authorized)
+
+MGP-6 v4.3 uses train for loader and engineering checks, and development for
+prompt, model, configuration, ablation, cost, and latency selection. Each system
+submits one strict record, `{"public_id":"MGP43-...","action":"KEEP"}`;
+the validator rejects missing, duplicate, unknown, extra, and invalid-action
+records. Public loading and prompt construction are deterministic, prediction
+writing is resume-safe, and raw-response logs record latency, token, retry, and
+failure accounting without private fields.
+
+Before hidden prediction, the release and split hashes, provider and exact model
+ID, prompt and system-prompt hashes, decoding, seed, retry policy, timeout,
+concurrency, evaluator version, code commit, environment lock, and prediction
+schema must be frozen and recorded. Hidden inputs are predicted once per
+pre-registered final configuration; prediction coverage is validated and the
+prediction files are hashed before hidden gold is opened locally. The evaluator
+then reports accuracy, macro-F1, per-class precision/recall/F1, confusion matrix,
+coverage, selective and abstention metrics where applicable, cost, latency,
+failures, component-cluster bootstrap intervals, and component-aware paired
+comparisons. LongMemEval remains a separate external evaluation, not a substitute
+for this controlled diagnostic.
+
+**Results placeholder.** Final v4.3 system comparison, ablations, confidence
+intervals, confusion matrices, cost/latency analysis, and error taxonomy remain
+explicitly pending until the hidden procedure is genuinely completed.
 
 
 # 7. Results

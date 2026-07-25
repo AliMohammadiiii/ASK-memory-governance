@@ -37,6 +37,7 @@ pip-wheel-metadata/
 *.key
 
 # Local datasets and large run artifacts
+.private/benchmarks/mgp6/v4.3/
 data/external/
 data/longmemeval_m_cleaned.json
 data/slices/longmemeval_m_full.jsonl
@@ -68,3 +69,6 @@ checkpoints/
 # Generated publication outputs
 paper/**/compiled/
 thesis/compiled/
+
+# Preserved local manuscript backup (not an active paper source)
+paper/paper_1/sections/08_downstream_analysis.tex.bak_v11

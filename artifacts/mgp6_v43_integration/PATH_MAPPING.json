@@ -1,0 +1,88 @@
+{
+  "schema_version": "mgp6-v4.3-integration-path-map-1.0",
+  "status": "IMPLEMENTED_PUBLIC_AND_PRIVATE_BOUNDARY",
+  "repository_root": "/Users/ali/Documents/20_Academics/Master/Master/ksa-memory-governance",
+  "release_identity": "MGP-6 v4.3.0-human-validated-final",
+  "mappings": {
+    "public_train_dev": {
+      "logical_path": "data/benchmarks/mgp6/v4.3/public/",
+      "selected_path": "benchmarks/mgp6/mgp6_v4_3/public/",
+      "reason": "Existing MGP-6 versions colocate benchmark data and harness assets under benchmarks/mgp6."
+    },
+    "release_metadata": {
+      "logical_path": "data/benchmarks/mgp6/v4.3/release_metadata/",
+      "selected_path": "benchmarks/mgp6/mgp6_v4_3/release_metadata/",
+      "reason": "Keep release facts, public manifests, and checksums adjacent to the public benchmark version."
+    },
+    "private_hidden_inputs": {
+      "logical_path": ".private/benchmarks/mgp6/v4.3/hidden_inputs/",
+      "selected_path": ".private/benchmarks/mgp6/v4.3/hidden_inputs/",
+      "reason": "No existing private-data root is present; retain the handoff's narrow, unambiguous private path."
+    },
+    "private_hidden_gold": {
+      "logical_path": ".private/benchmarks/mgp6/v4.3/hidden_gold/",
+      "selected_path": ".private/benchmarks/mgp6/v4.3/hidden_gold/",
+      "reason": "Must be protected by a narrow ignore rule before extraction."
+    },
+    "private_final_human_gold": {
+      "logical_path": ".private/benchmarks/mgp6/v4.3/final_human_gold/",
+      "selected_path": ".private/benchmarks/mgp6/v4.3/final_human_gold/",
+      "reason": "Keeps final human gold separate from hidden-scoring assets."
+    },
+    "private_audit": {
+      "logical_path": ".private/benchmarks/mgp6/v4.3/audit/",
+      "selected_path": ".private/benchmarks/mgp6/v4.3/audit/",
+      "reason": "The private audit includes prohibited mappings and completed annotation records."
+    },
+    "release_bundle": {
+      "logical_path": "releases/mgp6/v4.3/",
+      "selected_path": "releases/MGP6_v4.3.0/",
+      "reason": "Matches the existing release naming convention releases/MGP6_v3.3.1/."
+    },
+    "evaluator": {
+      "logical_path": "src/evaluation/",
+      "selected_path": "src/ask/eval/mgp6_v43.py",
+      "reason": "Extends the current MGP-6 evaluator package without changing historical v2 semantics."
+    },
+    "runner": {
+      "logical_path": "src/runners/",
+      "selected_path": "scripts/run_mgp6_v43.py",
+      "reason": "Matches the repository's top-level MGP-6 command convention."
+    },
+    "experiment_configs": {
+      "logical_path": "experiments/mgp6_v43/configs/",
+      "selected_path": "configs/experiments/mgp6_v43/",
+      "reason": "The repository centralizes versioned experiment configuration under configs/, not an experiments/ root."
+    },
+    "experiment_outputs": {
+      "logical_path": "experiments/mgp6_v43/{predictions,raw_responses,reports,logs}/",
+      "selected_path": "runs/mgp6_v43/",
+      "reason": "Existing runners write resumable outputs to runs/, which is already locally ignored."
+    },
+    "tests": {
+      "logical_path": "tests/mgp6_v43/",
+      "selected_path": "tests/test_mgp6_v43.py",
+      "reason": "Existing tests use a flat pytest layout."
+    },
+    "benchmark_docs": {
+      "logical_path": "docs/benchmarks/mgp6/v4.3/",
+      "selected_path": "docs/benchmarks/mgp6/v4.3/",
+      "reason": "No equivalent versioned benchmark documentation subtree currently exists."
+    },
+    "paper": {
+      "logical_path": "paper/sections and appendix/",
+      "selected_path": "paper/paper_1/sections/{04_mgp6,06_experimental_setup,07_results,09_discussion_limitations}.tex and appendix.tex",
+      "reason": "These are the manuscript's existing benchmark, methods, results, limitations, and supplementary sources."
+    },
+    "thesis": {
+      "logical_path": "thesis/chapters or manuscript source",
+      "selected_path": "thesis/MASTERS_THESIS_ASK_MGP6.md",
+      "reason": "The preserved ASK migration is authoritative; the old KSA thesis package must not be restored."
+    },
+    "integration_reports": {
+      "logical_path": "artifacts/mgp6_v43_integration/",
+      "selected_path": "artifacts/mgp6_v43_integration/",
+      "reason": "Required handoff-report location."
+    }
+  }
+}

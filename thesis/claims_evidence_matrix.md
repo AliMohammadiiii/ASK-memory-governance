@@ -17,6 +17,9 @@ ledger interpretation of MGP-6 v2 policy rows as `final_candidate`.
 | C10 | One human re-annotation plus a separate four-model panel | annotation audit | describe separately | multi-human IAA |
 | C11 | Six-shot, mapped external, and all LongMemEval evidence are non-primary | run ledger/audits | incomplete/mapped/diagnostic/failure analysis | capability ranking or downstream improvement |
 | C12 | V3 protocol is prospective and unexecuted | `benchmarks/mgp6/MGP6_V3_INDEPENDENT_PROTOCOL.md` | required confirmation design | claim that independent data or three-human annotation exist |
+| C13 | MGP-6 v4.3 is a 900-item, 100-component controlled synthetic release with 180/180/540 component-held-out splits and exact train/dev class balance | `benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_FACTS.json` | release construction fact; no deployment inference | real-world generalization or final system performance |
+| C14 | Two owner-attested human packets agree on all v4.3 labels; builder verification does not authenticate identity or duration | v4.3 release facts and readiness metadata | owner-attested completion with stated verification limit | independent identity verification or broader construct validity |
+| C15 | v4.3 final hidden results are pending | `experiments/mgp6_v43/FROZEN_CONFIG_INDEX.json` | explicitly pending until frozen prediction and private scoring | any v4.3 performance ranking or hidden-run completion |
 
 ## Novelty boundary
 

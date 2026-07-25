@@ -1,0 +1,43 @@
+{
+  "file_count_excluding_manifest": 7,
+  "files": [
+    {
+      "relative_path": "DATASET_CARD.md",
+      "sha256": "09ba8131a2021a41a36b9d8df8728c4c5203e615d94b1ad8da310d28a66c9e31",
+      "size_bytes": 1834
+    },
+    {
+      "relative_path": "EVALUATION_PROTOCOL.md",
+      "sha256": "6846384ef82103628a1390f1ff2cae2f48d70a60d9dc5a9d682195c0177a81a7",
+      "size_bytes": 405
+    },
+    {
+      "relative_path": "LICENSE_STATUS.md",
+      "sha256": "fcd2123b106fb13a93973f3fed4ea49db1982dba794fffc88cf9c59aa4533af3",
+      "size_bytes": 183
+    },
+    {
+      "relative_path": "SPLIT_SUMMARY.json",
+      "sha256": "ac7bae8244470a34b611a909e7cfe31741771e70010eaf0e358cf7e5bcfa4f9b",
+      "size_bytes": 3919
+    },
+    {
+      "relative_path": "dev.jsonl",
+      "sha256": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
+      "size_bytes": 372246
+    },
+    {
+      "relative_path": "record_schema.json",
+      "sha256": "b6aaa0ba97568ede3339f5115b1f0fb95fe3ec80419c5ece1f05eae8898bbe37",
+      "size_bytes": 609
+    },
+    {
+      "relative_path": "train.jsonl",
+      "sha256": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
+      "size_bytes": 367239
+    }
+  ],
+  "package_kind": "PUBLIC_TRAIN_DEV",
+  "release_version": "4.3.0-human-validated-final",
+  "schema_version": "mgp6-v4.3-manifest-1.0"
+}

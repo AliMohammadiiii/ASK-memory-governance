@@ -1,0 +1,34 @@
+{
+  "annotation_merkle_root": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6",
+  "archives": {
+    "private_audit_package": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-audit-package.zip",
+      "sha256": "e4728f3bf77f2b9a757b9721ee3e9e767ee94b7873aed1899961f55c0d842c94",
+      "size_bytes": 2180967
+    },
+    "private_hidden_gold": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-hidden-gold.zip",
+      "sha256": "adc14fdc0dbc7cd6f996d9c6dd377638071b4c335ef58ff575190059e9fb0a13",
+      "size_bytes": 67377
+    },
+    "private_hidden_inputs": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-private-hidden-inputs.zip",
+      "sha256": "81a117a3f09546d93d8b642e37da0355351aca0888232bcd9dec2c9ff86dd9c0",
+      "size_bytes": 131817
+    },
+    "public_train_dev": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-public-train-dev.zip",
+      "sha256": "fb588629ccf93a434798f5e104bc2a3a8e2cb2e2bdc5b438b3b1fddb78732d96",
+      "size_bytes": 76813
+    },
+    "source_and_builder": {
+      "filename": "MGP-6-v4.3.0-human-validated-final-source-and-builder.zip",
+      "sha256": "1a7dd34954c85b847d893e4500146221a4f3c407e537a11579916df7cff7e434",
+      "size_bytes": 18947
+    }
+  },
+  "final_gold_merkle_root": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe",
+  "readiness_verdict": "READY_FOR_FINAL_PAPER_EXPERIMENTS",
+  "release_timestamp": "2026-07-25T13:42:05+00:00",
+  "release_version": "4.3.0-human-validated-final"
+}
