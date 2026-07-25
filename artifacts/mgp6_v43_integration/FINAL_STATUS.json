@@ -17,14 +17,15 @@
   "package_build": "PASS",
   "train_engineering_fixture": "PASS: deterministic fixture smoke; no provider call and no scientific result",
   "live_provider_smoke": "PASS: public train 3-item OpenRouter/Qwen smoke; 3 predictions, 0 failures, 0 retries, 0 invalid responses, hidden_gold_accessed=false; no scientific result claimed.",
-  "development_experiment_completed": false,
+  "development_experiment_completed": true,
+  "development_experiment": "PASS: completed public-dev decision_zero_shot OpenRouter/Qwen run; 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false. Development result recorded; configuration is not selected for hidden evaluation.",
   "hidden_run_authorized": false,
   "hidden_run_completed": false,
   "remaining_before_hidden": [
-    "Run and record development-only configurations; document every dev-informed choice.",
+    "Run and record the remaining pre-registered development-only systems and ablations; document every dev-informed choice.",
     "Select final systems and exact accessible provider model revisions.",
     "Record the post-development code commit and clean-worktree state.",
     "Freeze all controls and generate a valid FINAL_HIDDEN_RUN_AUTHORIZATION.json before any hidden prediction."
   ],
-  "next_required_action": "Run the selected development-only configuration using public dev records; do not access hidden gold."
+  "next_required_action": "Run the remaining pre-registered development configurations on public dev and select final systems; do not access hidden gold."
 }

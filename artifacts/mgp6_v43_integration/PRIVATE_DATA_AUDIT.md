@@ -10,9 +10,12 @@
 - No private record content was printed, committed, indexed, or passed to a
   model. A local split-map SHA-256 was recorded for future freeze control; the
   split map itself was not exposed.
-- No model call was made.
+- The subsequently completed provider smoke and public-dev run used only public
+  train/dev records. Their ignored logs and manifests record
+  `hidden_gold_accessed=false`; neither run opened private inputs or gold.
 - The tracked public prompt template and loader contain no prohibited private
-  keys; ignored fixture-run logs contain public IDs and fixture actions only.
+  keys; ignored fixture and provider-run logs contain public IDs and model
+  responses only, with no private fields.
 
 ## Blocking protection gap
 

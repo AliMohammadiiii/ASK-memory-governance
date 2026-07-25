@@ -55,3 +55,16 @@ changed.
 - Confirmed a three-item public train OpenRouter/Qwen smoke with
   `--reasoning-effort none`: 3 predictions, 0 failures, 0 parse retries, 0
   invalid responses, and no hidden-gold access.
+
+## 2026-07-25 — public development execution recorded
+
+- Completed the `decision_zero_shot` OpenRouter/Qwen configuration over all 180
+  public development records using the recorded non-reasoning decoding controls.
+- Validated strict prediction coverage and scored only public dev labels. The
+  run had zero invalid responses, failures, and retries; the resulting action
+  distribution was strongly skewed to `SUPERSEDE`, so the configuration is not
+  selected for final hidden evaluation.
+- Recorded run, prompt, artifact hashes, aggregate metrics, operational totals,
+  and the explicit private-boundary statement in `DEV_EXPERIMENT_REPORT.md`.
+- No hidden input, hidden gold, final human gold, or private audit record was
+  accessed.

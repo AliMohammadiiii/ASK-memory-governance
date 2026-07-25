@@ -8,7 +8,7 @@ hidden run.
 
 ## Repository readiness
 
-Ready for configuration freeze preparation. The public-only v4.3 loader,
+Ready for continued development selection before configuration freeze. The public-only v4.3 loader,
 prediction validator, evaluator, private ignore protection, regression tests,
 development configuration registry, and development-only freeze index are in
 place. The train engineering fixture passed; it is not a system-performance
@@ -17,7 +17,11 @@ also passed after disabling reasoning (`reasoning.effort=none`): 3 predictions,
 0 failures, 0 parse retries, and 0 invalid responses. The public runner records invalid
 model responses before failing, retries parse-level format failures separately
 from HTTP retries, and can pass OpenRouter `reasoning.effort=none` for
-development smoke runs.
+development smoke runs. A complete public-dev `decision_zero_shot` run with
+OpenRouter/Qwen is now recorded in `DEV_EXPERIMENT_REPORT.md`: it produced 180
+coverage-validated predictions with zero API/parse failures, but its action
+distribution was heavily skewed to `SUPERSEDE` (177 of 180). It is development
+evidence only and is not selected for final hidden evaluation.
 
 ## Hidden-run authorization
 
@@ -27,7 +31,7 @@ occurred.
 
 ## Next gate
 
-Run the selected systems on development only, record every dev-informed choice,
-then replace the development index with a fully frozen final configuration and
-authorization audit. Do not open hidden gold before finalized prediction files
-are coverage-validated and hashed.
+Run the remaining pre-registered development systems and ablations on public dev,
+record every dev-informed choice, then replace the development index with a
+fully frozen final configuration and authorization audit. Do not open hidden
+gold before finalized prediction files are coverage-validated and hashed.
