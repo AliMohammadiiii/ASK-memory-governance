@@ -16,6 +16,10 @@
 - The committed deterministic rules-controller dev run likewise used only the
   public dev split; its ignored prediction, raw-response, manifest, and public
   metric files are covered by the existing `runs/` ignore rule.
+- The subsequent model-backed B1 public-dev run used only
+  `benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl`; its ignored prediction,
+  raw-response, manifest, and public metric files record
+  `hidden_gold_accessed=false`.
 - The tracked public prompt template and loader contain no prohibited private
   keys; ignored fixture and provider-run logs contain public IDs and model
   responses only, with no private fields.

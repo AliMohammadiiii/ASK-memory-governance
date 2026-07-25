@@ -2,11 +2,12 @@
 
 ## Scope and boundary
 
-This is a completed development-only evaluation of the `decision_zero_shot`
-configuration. It used the public 180-record development split and its public
-development labels. It did not read hidden inputs, hidden gold, final human
-gold, private mappings, or audit records. It is not a final hidden result and
-must not be reported as real-world generalization.
+This records completed development-only evaluations of `decision_zero_shot`,
+`b1` (no-memory), and the deterministic `rules_controller`. Each used only the
+public 180-record development split and public development labels. None read
+hidden inputs, hidden gold, final human gold, private mappings, or audit
+records. These are not final hidden results and must not be reported as
+real-world generalization.
 
 ## Executed configuration
 
@@ -86,14 +87,63 @@ component map is a private scoring/audit structure and is not needed for public
 development selection. It must be used only by the private final scorer after
 fully generated and hashed hidden predictions exist.
 
+## B1 no-memory development result
+
+The first model-backed baseline adapter, `b1`, completed against the same public
+development split after the adapter implementation was committed:
+
+```text
+.venv/bin/python scripts/run_mgp6_v43.py \
+  --input benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl \
+  --out runs/mgp6_v43/dev/b1_qwen35_9b \
+  --system b1 \
+  --provider openrouter \
+  --base-url https://openrouter.ai/api/v1 \
+  --api-key-env OPENROUTER_API_KEY \
+  --model-id qwen/qwen3.5-9b \
+  --seed 4301 \
+  --max-new-tokens 128 \
+  --reasoning-effort none \
+  --parse-retry-max-attempts 2
+```
+
+- Run commit: `e309893a7e643baa1d5a409d665c49656ceb977e`; the manifest records
+  a clean tracked worktree.
+- Adapter: `ask.mgp6_v43_adapter.v1`; dialogue/query only, with
+  `memory_before` omitted.
+- Prompt hash: `28bfbff2decc989b60ef7c84dc959bfc1fbda92426e1754a374f22755cc847fb`.
+- System-prompt hash:
+  `13c6841f8e380358a3054e6f243bcdfa718fce744d587c294275266952f286e0`.
+- Prediction SHA-256:
+  `1e2212cf6a8b6e1919222e39a16d88aa1ddbcf9b17b7471dbfcb94dd4a50de2e`.
+- Raw-response SHA-256:
+  `1dbd379607d2d7ef2d262eb2637f97d967f0d023df2b3c001a4e9cf53ed08cf2`.
+- Manifest SHA-256:
+  `508eb339117bfdc68e7745a7f3557f56cf1d75350ad15b81260be9e0d6bb5ee0`.
+
+Strict validation passed: 180 expected public IDs, 180 predictions, and no
+duplicates, unknown IDs, or omissions. Public-dev metrics were accuracy 0.3667,
+Macro-F1 0.3150, coverage 1.0000, selective accuracy 0.3630, and abstention
+precision/recall 0.3824/0.2167. Prediction counts were KEEP 13, SUPERSEDE 133,
+and ABSTAIN 34. Per-class precision / recall / F1 were KEEP: 0.5385 / 0.1167 /
+0.1918; SUPERSEDE: 0.3459 / 0.7667 / 0.4767; and ABSTAIN: 0.3824 / 0.2167 /
+0.2766.
+
+The run returned 180 valid JSON actions with zero invalid responses, failures,
+or retries, using 102,091 prompt tokens and 1,414 completion tokens. Wall-clock
+time was 449.747 seconds; mean/median/p95 request latency was 2,493.892 /
+1,938.197 / 5,908.991 ms. Provider routing and price were not returned, so no
+cost or routed-provider claim is made. `hidden_gold_accessed=false`; the public
+scorer did not read the private component map and did not compute component
+intervals.
+
 ## Development decision
 
-This single zero-shot configuration is recorded as a valid development run but
-is **not selected** for final hidden evaluation. Its highly skewed action
-distribution requires comparison with the pre-registered controller and
-ablation configurations before final model, prompt, and system choices are
-frozen. No prompt, model, split, or release record was changed as a result of
-this run.
+The zero-shot, B1, and rules-controller configurations are valid development
+runs but are **not selected** for final hidden evaluation. Their distributions
+and metrics require comparison with the remaining pre-registered systems before
+model, prompt, and system choices are frozen. No prompt, model, split, or
+release record was changed as a result of these runs.
 
 ## Rules-controller development result
 
@@ -106,7 +156,8 @@ hidden-gold access; its manifest records a clean tracked worktree. Accuracy was
 KEEP 0, SUPERSEDE 39, ABSTAIN 141. It is not selected for hidden evaluation.
 
 The generic-label ambiguity is resolved: B1--B4, both controller modes, and
-the required ablations now have explicit v4.3 adapter contracts. Their
-model-backed dev runs remain pending; see `ADAPTER_IMPLEMENTATION_REPORT.md`.
+the required ablations now have explicit v4.3 adapter contracts. B1 has now
+completed; B2--B4, the live-model controller, and the four model-backed
+ablations remain pending. See `ADAPTER_IMPLEMENTATION_REPORT.md`.
 
 The hidden-run authorization remains absent and false.

@@ -96,3 +96,16 @@ changed.
   calls, accuracy 0.3333, Macro-F1 0.2434, and no hidden-gold access.
 - Re-ran full repository validation: 539 passed, 11 skipped; Ruff, Mypy,
   repository validation, and package build all passed.
+
+## 2026-07-25 — B1 public development execution recorded
+
+- Completed and public-scored the B1 no-memory OpenRouter/Qwen configuration
+  over all 180 public development records after the adapter implementation.
+- Strict coverage validation passed with 180 valid JSON predictions and zero
+  failures, retries, or invalid responses. Public-dev accuracy was 0.3667 and
+  Macro-F1 was 0.3150; this is development evidence only and B1 is not selected
+  for hidden evaluation.
+- The run manifest records the then-current commit
+  `e309893a7e643baa1d5a409d665c49656ceb977e`, a clean tracked worktree, and
+  `hidden_gold_accessed=false`. No hidden input, gold, final human gold, or
+  private audit asset was accessed.

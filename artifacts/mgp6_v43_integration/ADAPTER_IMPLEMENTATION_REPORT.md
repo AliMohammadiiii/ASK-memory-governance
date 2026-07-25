@@ -44,7 +44,11 @@ after the implementation commit:
   it does not compute component-cluster intervals.
 
 This is development evidence only. The rules controller is not selected for a
-hidden run. No model-backed adapter has been executed in this integration turn.
+hidden run. The model-backed B1 adapter subsequently completed a public-dev
+run: 180/180 validated predictions, zero failures/retries/invalid responses,
+accuracy 0.3667, and Macro-F1 0.3150. Its manifest records
+`hidden_gold_accessed=false` and a clean tracked worktree. It is not selected
+for hidden evaluation; see `DEV_EXPERIMENT_REPORT.md`.
 
 ## Verification
 
@@ -57,7 +61,7 @@ hidden run. No model-backed adapter has been executed in this integration turn.
 
 ## Remaining development work
 
-Run the model-backed systems on public dev, score them with
-`scripts/score_mgp6_v43.py`, document every selection decision, and only then
-freeze the selected configurations. No hidden prediction or private scoring is
-authorized.
+Run B2--B4, the live-model controller, and the four model-backed ablations on
+public dev; score them with `scripts/score_mgp6_v43.py`, document every
+selection decision, and only then freeze the selected configurations. No hidden
+prediction or private scoring is authorized.
