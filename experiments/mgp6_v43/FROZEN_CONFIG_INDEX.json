@@ -5,7 +5,7 @@
   "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
-    "sha256": "73431cf9e40ac801a06f61b386e8b819269aaea815823f3d528c04972f8932ef",
+    "sha256": "7d2224443a547d6627c7620398c8965aae1dd9e8348de66773942e210c8547be",
     "dataset_hashes": {
       "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
       "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",

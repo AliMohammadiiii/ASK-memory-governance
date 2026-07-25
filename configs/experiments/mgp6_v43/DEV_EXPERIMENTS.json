@@ -14,9 +14,9 @@
     "system_prompt_sha256": "f04ed7648898e5331f1095422b030f2a0ed95660a85576af6e0f460e6f2a56ef"
   },
   "controls": {
-    "decoding": {"temperature": 0.0, "max_new_tokens": 32},
+    "decoding": {"temperature": 0.0, "max_new_tokens": 128, "reasoning_effort": "none"},
     "seed": 4301,
-    "retry_policy": {"max_attempts": 3},
+    "retry_policy": {"transport_max_attempts": 3, "parse_max_attempts": 2},
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
@@ -28,9 +28,9 @@
     {"id": "b2", "logical_role": "B2 flat retrieval", "historical_name": "flat_vector", "provider": "fixture", "model_id": "fixture/deterministic-action"},
     {"id": "b3", "logical_role": "B3 recency", "historical_name": "recency", "provider": "fixture", "model_id": "fixture/deterministic-action"},
     {"id": "b4", "logical_role": "B4 overwrite", "historical_name": "naive_overwrite", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "decision_zero_shot", "logical_role": "decision zero-shot", "historical_name": "unstructured_zero_shot", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b"},
+    {"id": "decision_zero_shot", "logical_role": "decision zero-shot", "historical_name": "unstructured_zero_shot", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
     {"id": "rules_controller", "logical_role": "rules-based controller", "historical_name": "controller", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "live_model_controller", "logical_role": "live model controller", "historical_name": "controller", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b"},
+    {"id": "live_model_controller", "logical_role": "live model controller", "historical_name": "controller", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
     {"id": "ablation_no_abstain", "logical_role": "required feature ablation", "historical_name": "no_abstain", "provider": "fixture", "model_id": "fixture/deterministic-action"},
     {"id": "ablation_no_provenance", "logical_role": "required feature ablation", "historical_name": "no_provenance", "provider": "fixture", "model_id": "fixture/deterministic-action"},
     {"id": "ablation_no_typing", "logical_role": "required feature ablation", "historical_name": "no_typing", "provider": "fixture", "model_id": "fixture/deterministic-action"},

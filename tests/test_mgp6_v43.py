@@ -24,6 +24,7 @@ from ask.eval.mgp6_v43 import (
     validate_public_release,
     write_prediction_resume_safe,
 )
+from scripts import run_mgp6_v43
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "benchmarks/mgp6/mgp6_v4_3/public"
@@ -105,3 +106,15 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     run = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--action", "ABSTAIN", "--out", str(tmp_path / "smoke")], cwd=ROOT, capture_output=True, text=True, check=False)
     assert run.returncode == 0, run.stderr
     assert len((tmp_path / "smoke/predictions.jsonl").read_text(encoding="utf-8").splitlines()) == 2
+    manifest = json.loads((tmp_path / "smoke/run_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["decoding"]["max_new_tokens"] == 128
+    assert manifest["retry_policy"] == {"parse_max_attempts": 2, "transport_max_attempts": 3}
+    assert manifest["failure_count"] == 0
+    assert manifest["invalid_response_count"] == 0
+    raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]
+    assert {row["valid_action"] for row in raw_rows} == {True}
+
+
+def test_v43_runner_openrouter_reasoning_extra_body() -> None:
+    assert run_mgp6_v43._openrouter_reasoning_body(None) is None
+    assert run_mgp6_v43._openrouter_reasoning_body("none") == {"reasoning": {"effort": "none"}}
