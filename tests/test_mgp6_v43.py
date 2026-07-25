@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -11,24 +12,31 @@ from pathlib import Path
 import pytest
 
 from ask.eval.mgp6_v43 import (
+    MGP6V43_SYSTEMS,
     PROHIBITED_MODEL_KEYS,
     MGP6V43Error,
     MGP6V43Prediction,
+    MGP6V43Record,
     assert_model_safe,
     build_decision_prompt,
     cluster_bootstrap,
     load_predictions,
     load_public_records,
+    model_input_for_system,
+    rules_controller_action,
     score_actions,
+    system_allowed_actions,
     validate_component_splits,
     validate_public_release,
     write_prediction_resume_safe,
 )
 from scripts import run_mgp6_v43
+from scripts.score_mgp6_v43 import score_public_run
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "benchmarks/mgp6/mgp6_v4_3/public"
 FACTS = ROOT / "benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_FACTS.json"
+DEV_CONFIG = ROOT / "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json"
 
 
 @pytest.fixture(scope="module")
@@ -51,6 +59,15 @@ def test_release_counts_balance_uniqueness_and_determinism(release) -> None:
     assert [row.public_id for row in train] == [row.public_id for row in load_public_records(PUBLIC / "train.jsonl")]
 
 
+def test_development_registry_covers_implemented_systems_and_prompt_hashes() -> None:
+    config = json.loads(DEV_CONFIG.read_text(encoding="utf-8"))
+    assert {entry["id"] for entry in config["systems"]} == set(MGP6V43_SYSTEMS)
+    assert set(config["execution_contract"]["implemented_by_scripts_run_mgp6_v43"]) == set(MGP6V43_SYSTEMS)
+    for entry in config["prompt_templates"].values():
+        path = ROOT / entry["path"]
+        assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"]
+
+
 def test_component_isolation_contract() -> None:
     component_to_split = {**{f"t{i}": "train" for i in range(20)}, **{f"d{i}": "dev" for i in range(20)}, **{f"h{i}": "hidden" for i in range(60)}}
     validate_component_splits(component_to_split)
@@ -67,6 +84,71 @@ def test_model_input_prompt_and_logs_are_label_free(release) -> None:
     for key in ("gold_action", "design_target", "source_item_id", "component_id", "private_item_id", "annotator_id", "final_consensus", "human_gold", "hidden_gold"):
         with pytest.raises(MGP6V43Error):
             assert_model_safe({key: "forbidden"})
+
+
+def test_system_views_are_distinct_and_label_free(release) -> None:
+    record = release[0][0]
+    views = {
+        system: model_input_for_system(record, system, recency_turns=2)
+        for system in MGP6V43_SYSTEMS
+    }
+    assert "memory_before" not in views["b1"]
+    assert "flat_retrieved_memory" in views["b2"]
+    assert len(views["b3"]["recent_dialogue"]) == 2
+    for view in views.values():
+        assert_model_safe(view)
+        assert not (set(_keys(view)) & PROHIBITED_MODEL_KEYS)
+    assert system_allowed_actions("b4") == ("KEEP", "SUPERSEDE")
+    assert system_allowed_actions("ablation_no_abstain") == ("KEEP", "SUPERSEDE")
+
+
+def _keys(value: object) -> set[str]:
+    if isinstance(value, dict):
+        return {str(key) for key, child in value.items()} | set().union(
+            *(_keys(child) for child in value.values())
+        )
+    if isinstance(value, list):
+        return set().union(*(_keys(child) for child in value)) if value else set()
+    return set()
+
+
+def test_rules_controller_uses_only_public_evidence() -> None:
+    def record(*, standing: str, dialogue: list[dict[str, str]]) -> MGP6V43Record:
+        return MGP6V43Record(
+            public_id="MGP43-00000000000000000000",
+            memory_before={"standing_value": standing},
+            dialogue=dialogue,
+            evaluation_query="Choose KEEP, SUPERSEDE, or ABSTAIN.",
+        )
+
+    supersede, supersede_trace = rules_controller_action(
+        record(
+            standing="declined",
+            dialogue=[
+                {"text": "The signed form records approved."},
+                {"text": "The requested value is approved."},
+            ],
+        )
+    )
+    keep, keep_trace = rules_controller_action(
+        record(
+            standing="declined",
+            dialogue=[{"text": "The requested value is declined."}],
+        )
+    )
+    abstain, abstain_trace = rules_controller_action(
+        record(
+            standing="declined",
+            dialogue=[
+                {"text": "The note does not identify the relevant setting."},
+                {"text": "The requested value is approved."},
+            ],
+        )
+    )
+    assert (supersede, keep, abstain) == ("SUPERSEDE", "KEEP", "ABSTAIN")
+    for trace in (supersede_trace, keep_trace, abstain_trace):
+        assert_model_safe(trace)
+        assert not (set(_keys(trace)) & PROHIBITED_MODEL_KEYS)
 
 
 def test_prediction_validation_and_resume_safety(tmp_path: Path, release) -> None:
@@ -94,6 +176,22 @@ def test_metric_correctness_and_cluster_bootstrap_reproducibility() -> None:
     assert cluster_bootstrap(gold, predictions, component_map, seed=7, replicates=100) == cluster_bootstrap(gold, predictions, component_map, seed=7, replicates=100)
 
 
+def test_public_scorer_reports_public_metrics_without_component_map(tmp_path: Path, release) -> None:
+    dev = release[1]
+    prediction_path = tmp_path / "predictions.jsonl"
+    prediction_path.write_text(
+        "".join(
+            json.dumps({"public_id": record.public_id, "action": "KEEP"}) + "\n"
+            for record in dev
+        ),
+        encoding="utf-8",
+    )
+    result = score_public_run(dataset_path=PUBLIC / "dev.jsonl", prediction_path=prediction_path)
+    assert result["n_items"] == 180
+    assert result["coverage"] == 1.0
+    assert result["component_cluster_bootstrap"]["available"] is False
+
+
 def test_private_boundary_is_ignored() -> None:
     candidate = ".private/benchmarks/mgp6/v4.3/hidden_gold/hidden_gold.jsonl"
     result = subprocess.run(["git", "check-ignore", "-q", candidate], cwd=ROOT, check=False)
@@ -109,22 +207,46 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     manifest = json.loads((tmp_path / "smoke/run_manifest.json").read_text(encoding="utf-8"))
     assert manifest["decoding"]["max_new_tokens"] == 128
     assert manifest["retry_policy"] == {"parse_max_attempts": 2, "transport_max_attempts": 3}
+    assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v1"
     assert manifest["failure_count"] == 0
     assert manifest["invalid_response_count"] == 0
     raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]
     assert {row["valid_action"] for row in raw_rows} == {True}
+    rerun = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--action", "ABSTAIN", "--out", str(tmp_path / "smoke")], cwd=ROOT, capture_output=True, text=True, check=False)
+    assert rerun.returncode == 0, rerun.stderr
+    assert len((tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()) == 2
 
 
-def test_v43_runner_rejects_unimplemented_historical_system_labels() -> None:
+def test_v43_runner_supports_rule_and_registered_model_systems(tmp_path: Path) -> None:
     run = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_mgp6_v43.py",
+            "--system",
+            "rules_controller",
+            "--input",
+            "benchmarks/mgp6/mgp6_v4_3/public/train.jsonl",
+            "--limit",
+            "2",
+            "--out",
+            str(tmp_path / "rules"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 0, run.stderr
+    manifest = json.loads((tmp_path / "rules/run_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["provider"] == "local-rule"
+    b1 = subprocess.run(
         [sys.executable, "scripts/run_mgp6_v43.py", "--system", "b1", "--dry-run"],
         cwd=ROOT,
         capture_output=True,
         text=True,
         check=False,
     )
-    assert run.returncode != 0
-    assert "invalid choice" in run.stderr
+    assert b1.returncode == 0, b1.stderr
 
 
 def test_v43_runner_openrouter_reasoning_extra_body() -> None:

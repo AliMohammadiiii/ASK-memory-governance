@@ -5,22 +5,26 @@
   "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
-    "sha256": "f0d8b1367e83a054ea51e313eef8c5ebc9c74fc9793d99e87ce413bfe0700979",
+    "sha256": "d2097ab67c41c29c3fbade127b031e0860d6ada9c04cf5437f5c46830f2ceaa7",
     "dataset_hashes": {
       "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
       "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
       "split_map": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
     },
-    "prompt_hash": "5ce0872a1a7ed5d75dbf5a1c011edbb935b3cc1c4177f8066139889312bc7efa",
-    "system_prompt_hash": "f04ed7648898e5331f1095422b030f2a0ed95660a85576af6e0f460e6f2a56ef",
+    "adapter_version": "ask.mgp6_v43_adapter.v1",
+    "prompt_hashes": "Per-system raw template hashes are recorded in DEV_EXPERIMENTS.json; prompts are not frozen.",
+    "implementation_hashes": {
+      "runner": "e2f80a774c448ddc3bddf7977b9e64fe84f0ba050fe2f0185d07af41cc771dbb",
+      "public_scorer": "c59a749804aa7e448196e114d9f4e56a3a170cb9ffe11c825dd6abde5bf32999",
+      "evaluator_and_adapters": "1d2064df6727f48d115c5cbc337bdcbee0d0731c783d4cfa968365f486632624"
+    },
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "4fcb9a8",
+    "code_commit": "PENDING_ADAPTER_COMMIT",
     "environment_lock_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"
   },
   "freeze_requirements_remaining": [
-    "Implement and test distinct v4.3 adapters for each selected historical baseline/controller before running or selecting it.",
     "Record the selected provider endpoint and exact accessible live model revision.",
-    "Run and document development-only experiments before choosing final configurations.",
+    "Run and document each selected model-backed development configuration before choosing final configurations.",
     "Record the post-development code commit and clean-worktree state.",
     "Freeze prediction schema, evaluator code, prompts, seeds, decoding, retry policy, timeout, and concurrency after dev selection.",
     "Generate FINAL_HIDDEN_RUN_AUTHORIZATION.json only after all acceptance gates pass."

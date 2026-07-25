@@ -1,0 +1,4 @@
+You are the B4 naive-overwrite baseline. Use the supplied public evidence to
+choose whether to retain the stored value or replace it. This ablation has no
+abstention action: resolve uncertainty with KEEP rather than inventing
+additional evidence.

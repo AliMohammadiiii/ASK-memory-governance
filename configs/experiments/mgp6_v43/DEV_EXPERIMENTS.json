@@ -1,5 +1,5 @@
 {
-  "schema_version": "mgp6-v4.3-experiment-config-1.0",
+  "schema_version": "mgp6-v4.3-experiment-config-1.1",
   "release_version": "4.3.0-human-validated-final",
   "dataset": {
     "train": "benchmarks/mgp6/mgp6_v4_3/public/train.jsonl",
@@ -8,38 +8,58 @@
     "dev_sha256": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
     "split_map_sha256": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
   },
-  "prompt": {
-    "template": "configs/experiments/mgp6_v43/decision_system_prompt.txt",
-    "template_sha256": "5ce0872a1a7ed5d75dbf5a1c011edbb935b3cc1c4177f8066139889312bc7efa",
-    "system_prompt_sha256": "f04ed7648898e5331f1095422b030f2a0ed95660a85576af6e0f460e6f2a56ef"
-  },
   "controls": {
+    "adapter_version": "ask.mgp6_v43_adapter.v1",
     "decoding": {"temperature": 0.0, "max_new_tokens": 128, "reasoning_effort": "none"},
     "seed": 4301,
     "retry_policy": {"transport_max_attempts": 3, "parse_max_attempts": 2},
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "4fcb9a8",
+    "code_commit": "DEVELOPMENT_BRANCH_UNFROZEN",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "execution_contract": {
-    "implemented_by_scripts_run_mgp6_v43": ["decision_zero_shot"],
-    "requires_v43_adapter": ["b1", "b2", "b3", "b4", "rules_controller", "live_model_controller", "ablation_no_abstain", "ablation_no_provenance", "ablation_no_typing", "ablation_no_lineage"],
-    "policy": "Do not run or report a historical system label through the generic public decision runner until its distinct v4.3 adapter and tests exist."
+    "implemented_by_scripts_run_mgp6_v43": ["b1", "b2", "b3", "b4", "decision_zero_shot", "rules_controller", "live_model_controller", "ablation_no_abstain", "ablation_no_provenance", "ablation_no_typing", "ablation_no_lineage"],
+    "adapter_behavior": {
+      "b1": "dialogue-only public view; stored memory omitted",
+      "b2": "flat public memory rows; no lineage assumptions",
+      "b3": "stored memory plus last two dialogue turns",
+      "b4": "full public view with KEEP/SUPERSEDE-only overwrite policy",
+      "rules_controller": "deterministic public requested-value evidence passed through the ASK scorecard",
+      "live_model_controller": "full public view with structured controller instruction",
+      "ablation_no_abstain": "controller prompt restricted to KEEP/SUPERSEDE",
+      "ablation_no_provenance": "dialogue text only; speaker and turn ID omitted",
+      "ablation_no_typing": "controller prompt disables slot-type/stability reasoning",
+      "ablation_no_lineage": "controller prompt disables lineage reasoning"
+    },
+    "policy": "Every adapter is public-only, passes assert_model_safe before prompt construction, and must be selected on train/dev only before freeze."
+  },
+  "prompt_templates": {
+    "b1": {"path": "configs/experiments/mgp6_v43/b1_no_memory_prompt.txt", "sha256": "b9fa93e0f0eaf5d80c48e0b0b95d01d4cf759811c9a975e2c4162d2cc49bb754"},
+    "b2": {"path": "configs/experiments/mgp6_v43/b2_flat_retrieval_prompt.txt", "sha256": "d60a5668e5e4ad6f1b4b45fcf3235c6b1a8aad1a19c6e6cdeb9f2dbc1d478383"},
+    "b3": {"path": "configs/experiments/mgp6_v43/b3_recency_prompt.txt", "sha256": "942d84939c5033a2cca1ed84ac3197ea92a3c05d25aa1ee8e9d171a9bcd7fb4a"},
+    "b4": {"path": "configs/experiments/mgp6_v43/b4_overwrite_prompt.txt", "sha256": "b45e13578f2bf8589ea8bd036b5a1ea03eac24c86a759c2bc5524bb8d4ef4902"},
+    "decision_zero_shot": {"path": "configs/experiments/mgp6_v43/decision_system_prompt.txt", "sha256": "5ce0872a1a7ed5d75dbf5a1c011edbb935b3cc1c4177f8066139889312bc7efa"},
+    "rules_controller": {"path": "configs/experiments/mgp6_v43/rules_controller_prompt.txt", "sha256": "7a8c76ea2a1f843809fcd4fa2ffa2d121d231ab9e4b014f660c66da0d9fdf3b9"},
+    "live_model_controller": {"path": "configs/experiments/mgp6_v43/live_model_controller_prompt.txt", "sha256": "19f821e3f11135398d29802bd8d5c0b187b05a9627713f8154c05e8c432d2450"},
+    "ablation_no_abstain": {"path": "configs/experiments/mgp6_v43/ablation_no_abstain_prompt.txt", "sha256": "ea986b8c99900d85b2a482f4f1cfbd35ea7b4d40fca96a4b42aaf1cf3efcd74a"},
+    "ablation_no_provenance": {"path": "configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt", "sha256": "75f1601073750e85e7f4babf340094b08df495849b5ac97d17b0c33f4636c46e"},
+    "ablation_no_typing": {"path": "configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt", "sha256": "c957a2b6d55565d86f4a59f6c15e433703c3bf649068cfa162ffcb3382852251"},
+    "ablation_no_lineage": {"path": "configs/experiments/mgp6_v43/ablation_no_lineage_prompt.txt", "sha256": "c2153e8eabd317d06a2f9425e28503216e18f22c6872d28faedf75e5f61892e8"}
   },
   "systems": [
-    {"id": "b1", "logical_role": "B1 no-memory", "historical_name": "no_memory", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "b2", "logical_role": "B2 flat retrieval", "historical_name": "flat_vector", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "b3", "logical_role": "B3 recency", "historical_name": "recency", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "b4", "logical_role": "B4 overwrite", "historical_name": "naive_overwrite", "provider": "fixture", "model_id": "fixture/deterministic-action"},
+    {"id": "b1", "logical_role": "B1 no-memory", "historical_name": "no_memory", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "b2", "logical_role": "B2 flat retrieval", "historical_name": "flat_vector", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "b3", "logical_role": "B3 recency", "historical_name": "recency", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "recency_turns": 2, "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "b4", "logical_role": "B4 overwrite", "historical_name": "naive_overwrite", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "allowed_actions": ["KEEP", "SUPERSEDE"], "extra_body": {"reasoning": {"effort": "none"}}},
     {"id": "decision_zero_shot", "logical_role": "decision zero-shot", "historical_name": "unstructured_zero_shot", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
-    {"id": "rules_controller", "logical_role": "rules-based controller", "historical_name": "controller", "provider": "fixture", "model_id": "fixture/deterministic-action"},
+    {"id": "rules_controller", "logical_role": "rules-based controller", "historical_name": "controller", "provider": "local-rule", "model_id": "ask/rules-controller-v43"},
     {"id": "live_model_controller", "logical_role": "live model controller", "historical_name": "controller", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
-    {"id": "ablation_no_abstain", "logical_role": "required feature ablation", "historical_name": "no_abstain", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "ablation_no_provenance", "logical_role": "required feature ablation", "historical_name": "no_provenance", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "ablation_no_typing", "logical_role": "required feature ablation", "historical_name": "no_typing", "provider": "fixture", "model_id": "fixture/deterministic-action"},
-    {"id": "ablation_no_lineage", "logical_role": "required feature ablation", "historical_name": "no_lineage", "provider": "fixture", "model_id": "fixture/deterministic-action"}
+    {"id": "ablation_no_abstain", "logical_role": "required feature ablation", "historical_name": "no_abstain", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "allowed_actions": ["KEEP", "SUPERSEDE"], "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "ablation_no_provenance", "logical_role": "required feature ablation", "historical_name": "no_provenance", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "ablation_no_typing", "logical_role": "required feature ablation", "historical_name": "no_typing", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}},
+    {"id": "ablation_no_lineage", "logical_role": "required feature ablation", "historical_name": "no_lineage", "provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY", "model_id": "qwen/qwen3.5-9b", "extra_body": {"reasoning": {"effort": "none"}}}
   ],
   "status": "DEV_PREPARATION_ONLY"
 }

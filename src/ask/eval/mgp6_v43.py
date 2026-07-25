@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import random
+import re
 from collections import Counter, defaultdict
 from collections.abc import Iterable, Mapping
 from pathlib import Path
@@ -18,7 +19,31 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ask.controller.active import FeatureSnapshot, decide, rho
+
 VALID_ACTIONS = ("KEEP", "SUPERSEDE", "ABSTAIN")
+MGP6V43_SYSTEMS = (
+    "b1",
+    "b2",
+    "b3",
+    "b4",
+    "decision_zero_shot",
+    "rules_controller",
+    "live_model_controller",
+    "ablation_no_abstain",
+    "ablation_no_provenance",
+    "ablation_no_typing",
+    "ablation_no_lineage",
+)
+MODEL_BACKED_SYSTEMS = frozenset(
+    system for system in MGP6V43_SYSTEMS if system != "rules_controller"
+)
+SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
+    system: VALID_ACTIONS for system in MGP6V43_SYSTEMS
+}
+SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
+SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
+ADAPTER_VERSION = "ask.mgp6_v43_adapter.v1"
 PROHIBITED_MODEL_KEYS = frozenset(
     {
         "gold_action",
@@ -33,6 +58,15 @@ PROHIBITED_MODEL_KEYS = frozenset(
     }
 )
 MODEL_INPUT_KEYS = ("public_id", "memory_before", "dialogue", "evaluation_query")
+_REQUESTED_VALUE_RE = re.compile(r"\brequested value is\s+(.+?)[.?!]?\s*$", re.IGNORECASE)
+_AUTHORITATIVE_EVIDENCE_RE = re.compile(
+    r"\b(?:approved|authori[sz]ed|certificate|confirmed|contract|final|form|official|record|registrar|signed|submitted)\b",
+    re.IGNORECASE,
+)
+_AMBIGUITY_EVIDENCE_RE = re.compile(
+    r"\b(?:ambiguous|cannot determine|conflict(?:ing)?|does not identify|uncertain|unclear)\b",
+    re.IGNORECASE,
+)
 
 
 class MGP6V43Error(ValueError):
@@ -145,15 +179,184 @@ def validate_component_splits(component_to_split: Mapping[str, str]) -> None:
         raise MGP6V43Error("component split counts must be 20/20/60")
 
 
-def build_decision_prompt(record: MGP6V43Record, system_prompt: str) -> str:
-    """Build a deterministic, label-free action prompt."""
+def _validate_system(system: str) -> str:
+    if system not in MGP6V43_SYSTEMS:
+        raise MGP6V43Error(f"unknown MGP-6 v4.3 system: {system}")
+    return system
+
+
+def system_allowed_actions(system: str) -> tuple[str, ...]:
+    """Return the action set exposed by a pre-registered system or ablation."""
+    return SYSTEM_ALLOWED_ACTIONS[_validate_system(system)]
+
+
+def _flat_memory(memory_before: Mapping[str, Any]) -> list[str]:
+    return [f"{key}: {memory_before[key]}" for key in sorted(memory_before)]
+
+
+def _dialogue_without_provenance(dialogue: list[Any]) -> list[dict[str, str]]:
+    output: list[dict[str, str]] = []
+    for turn in dialogue:
+        if not isinstance(turn, Mapping) or not isinstance(turn.get("text"), str):
+            raise MGP6V43Error("dialogue turn lacks public text")
+        output.append({"text": str(turn["text"])})
+    return output
+
+
+def model_input_for_system(
+    record: MGP6V43Record,
+    system: str,
+    *,
+    recency_turns: int = 2,
+) -> dict[str, Any]:
+    """Build a deterministic, label-free public view for one registered system.
+
+    The views are deliberately explicit so B1--B4 and the controller ablations
+    cannot silently collapse into the same model-facing representation.
+    """
+    system = _validate_system(system)
+    if recency_turns < 1:
+        raise MGP6V43Error("recency_turns must be at least 1")
     payload = record.model_input()
+    common = {
+        "public_id": payload["public_id"],
+        "evaluation_query": payload["evaluation_query"],
+    }
+    if system == "b1":
+        view = {**common, "dialogue": payload["dialogue"]}
+    elif system == "b2":
+        view = {
+            **common,
+            "flat_retrieved_memory": _flat_memory(payload["memory_before"]),
+            "dialogue": payload["dialogue"],
+        }
+    elif system == "b3":
+        view = {
+            **common,
+            "memory_before": payload["memory_before"],
+            "recent_dialogue": payload["dialogue"][-recency_turns:],
+            "recency_turn_count": recency_turns,
+        }
+    elif system == "ablation_no_provenance":
+        view = {
+            **common,
+            "memory_before": payload["memory_before"],
+            "dialogue": _dialogue_without_provenance(payload["dialogue"]),
+        }
+    else:
+        view = payload
+    assert_model_safe(view)
+    return view
+
+
+def build_system_prompt(
+    record: MGP6V43Record,
+    system: str,
+    system_prompt: str,
+    *,
+    recency_turns: int = 2,
+) -> str:
+    """Build a deterministic public-only decision prompt for one system."""
+    system = _validate_system(system)
+    allowed_actions = system_allowed_actions(system)
+    payload = model_input_for_system(record, system, recency_turns=recency_turns)
+    allowed = ", ".join(allowed_actions)
+    example = allowed_actions[0]
     return (
         f"{system_prompt.strip()}\n\n"
-        "Decide exactly one action from KEEP, SUPERSEDE, ABSTAIN. "
-        "Return JSON only: {\"action\":\"KEEP\"}.\n\n"
+        f"SYSTEM={system}\n"
+        f"Decide exactly one action from {allowed}. "
+        f"Return JSON only: {{\"action\":\"{example}\"}}.\n\n"
         f"INPUT={canonical_json(payload)}"
     )
+
+
+def build_decision_prompt(record: MGP6V43Record, system_prompt: str) -> str:
+    """Backward-compatible zero-shot public decision prompt."""
+    return build_system_prompt(record, "decision_zero_shot", system_prompt)
+
+
+def validate_system_action(system: str, action: str) -> str:
+    """Reject a syntactically valid action excluded by a system ablation."""
+    if action not in system_allowed_actions(system):
+        raise MGP6V43Error(
+            f"{system} may emit only {system_allowed_actions(system)}; got {action}"
+        )
+    return action
+
+
+def _normalise_value(value: str) -> str:
+    return " ".join(value.casefold().strip(" .,:;!?\"'").split())
+
+
+def _requested_value(record: MGP6V43Record) -> str | None:
+    for turn in reversed(record.dialogue):
+        if not isinstance(turn, Mapping):
+            continue
+        text = turn.get("text")
+        if not isinstance(text, str):
+            continue
+        match = _REQUESTED_VALUE_RE.search(text)
+        if match:
+            return match.group(1).strip(" .,:;!?\"'")
+    return None
+
+
+def rules_controller_action(record: MGP6V43Record) -> tuple[str, dict[str, Any]]:
+    """Apply the existing ASK scorecard to transparent public evidence rules.
+
+    This is a deterministic development baseline, not a hidden-gold-derived
+    policy. It extracts only the requested public value, counts generic
+    authoritative and ambiguity signals, and delegates the final action to the
+    existing three-action scorecard policy.
+    """
+    target = _requested_value(record)
+    standing = str(record.memory_before.get("standing_value", ""))
+    all_text = "\n".join(
+        str(turn.get("text", "")) for turn in record.dialogue if isinstance(turn, Mapping)
+    )
+    target_norm = _normalise_value(target) if target else ""
+    standing_norm = _normalise_value(standing)
+    target_mentions = sum(
+        target_norm in _normalise_value(str(turn.get("text", "")))
+        for turn in record.dialogue
+        if isinstance(turn, Mapping) and target_norm
+    )
+    authoritative_mentions = sum(
+        bool(_AUTHORITATIVE_EVIDENCE_RE.search(str(turn.get("text", ""))))
+        and bool(target_norm)
+        and target_norm in _normalise_value(str(turn.get("text", "")))
+        and _REQUESTED_VALUE_RE.search(str(turn.get("text", ""))) is None
+        for turn in record.dialogue
+        if isinstance(turn, Mapping)
+    )
+    ambiguity_mentions = len(_AMBIGUITY_EVIDENCE_RE.findall(all_text))
+    if not target:
+        features = FeatureSnapshot(c=0.0, e=0.0, f=1.0, r=0.0, rho=rho("episodic_fact"))
+        evidence_state = "missing_requested_value"
+    elif target_norm == standing_norm:
+        features = FeatureSnapshot(c=1.0, e=1.0, f=0.0, r=1.0, rho=rho("episodic_fact"))
+        evidence_state = "matches_standing_value"
+    elif authoritative_mentions:
+        features = FeatureSnapshot(c=1.0, e=1.0, f=0.0, r=-1.0, rho=rho("episodic_fact"))
+        evidence_state = "authoritative_conflicting_value"
+    else:
+        features = FeatureSnapshot(c=0.5, e=0.4, f=1.0, r=0.0, rho=rho("episodic_fact"))
+        evidence_state = "insufficient_conflicting_evidence"
+    decision = decide(features, "episodic_fact")
+    trace = {
+        "adapter_version": ADAPTER_VERSION,
+        "rule": "public_requested_value_scorecard",
+        "evidence_state": evidence_state,
+        "target_present": target is not None,
+        "target_mentions": target_mentions,
+        "authoritative_target_mentions": authoritative_mentions,
+        "ambiguity_mentions": ambiguity_mentions,
+        "s_sup": round(decision.s_rev, 6),
+        "s_abs": round(decision.s_abs, 6),
+    }
+    assert_model_safe(trace)
+    return decision.action.name, trace
 
 
 def parse_action_response(raw_response: str) -> str:

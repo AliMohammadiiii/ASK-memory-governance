@@ -17,35 +17,60 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ask.eval.mgp6_v43 import (  # noqa: E402
+    ADAPTER_VERSION,
+    MGP6V43_SYSTEMS,
+    MODEL_BACKED_SYSTEMS,
     MGP6V43Error,
     MGP6V43Prediction,
-    build_decision_prompt,
+    build_system_prompt,
     load_predictions,
     load_predictions_allow_partial,
     load_public_records,
     parse_action_response,
+    rules_controller_action,
     sha256_file,
     sha256_value,
+    system_allowed_actions,
+    validate_system_action,
     write_prediction_resume_safe,
     write_raw_response,
 )
 from ask.inference.llm import LLMResponse  # noqa: E402
 from ask.inference.openai_compatible import OpenAICompatibleLLM  # noqa: E402
 
-# This runner renders a single public-only decision prompt.  Historical ASK
-# baselines/controllers need v4.3-specific adapters before they can be claimed
-# as distinct systems, so do not accept their labels here as aliases.
-SYSTEMS = ("decision_zero_shot",)
-DEFAULT_SYSTEM_PROMPT = Path("configs/experiments/mgp6_v43/decision_system_prompt.txt")
-REPAIR_INSTRUCTION = (
-    "The previous response was rejected because it was not exactly one valid "
-    "MGP-6 v4.3 action. Return JSON only, with no prose: {\"action\":\"KEEP\"}. "
-    "The action must be one of KEEP, SUPERSEDE, ABSTAIN."
-)
+SYSTEMS = MGP6V43_SYSTEMS
+DEFAULT_SYSTEM_PROMPTS = {
+    "b1": Path("configs/experiments/mgp6_v43/b1_no_memory_prompt.txt"),
+    "b2": Path("configs/experiments/mgp6_v43/b2_flat_retrieval_prompt.txt"),
+    "b3": Path("configs/experiments/mgp6_v43/b3_recency_prompt.txt"),
+    "b4": Path("configs/experiments/mgp6_v43/b4_overwrite_prompt.txt"),
+    "decision_zero_shot": Path("configs/experiments/mgp6_v43/decision_system_prompt.txt"),
+    "rules_controller": Path("configs/experiments/mgp6_v43/rules_controller_prompt.txt"),
+    "live_model_controller": Path("configs/experiments/mgp6_v43/live_model_controller_prompt.txt"),
+    "ablation_no_abstain": Path("configs/experiments/mgp6_v43/ablation_no_abstain_prompt.txt"),
+    "ablation_no_provenance": Path("configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt"),
+    "ablation_no_typing": Path("configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt"),
+    "ablation_no_lineage": Path("configs/experiments/mgp6_v43/ablation_no_lineage_prompt.txt"),
+}
+
+
+def _repair_instruction(allowed_actions: tuple[str, ...]) -> str:
+    example = allowed_actions[0]
+    return (
+        "The previous response was rejected because it was not exactly one valid "
+        f"MGP-6 v4.3 action. Return JSON only, with no prose: {{\"action\":\"{example}\"}}. "
+        f"The action must be one of {', '.join(allowed_actions)}."
+    )
 
 
 def _git_commit() -> str:
     return subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+
+
+def _tracked_worktree_state() -> str:
+    unstaged_dirty = subprocess.run(["git", "diff", "--quiet"], check=False).returncode != 0
+    staged_dirty = subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
+    return "dirty" if unstaged_dirty or staged_dirty else "clean"
 
 
 def _write_manifest(path: Path, manifest: dict[str, Any]) -> None:
@@ -93,31 +118,52 @@ def main() -> int:
     parser.add_argument("--retry-max-attempts", type=int, default=3)
     parser.add_argument("--parse-retry-max-attempts", type=int, default=2)
     parser.add_argument("--reasoning-effort", choices=("none", "minimal", "low", "medium", "high"), default=None)
-    parser.add_argument("--system-prompt", type=Path, default=DEFAULT_SYSTEM_PROMPT)
+    parser.add_argument("--system-prompt", type=Path)
+    parser.add_argument("--recency-turns", type=int, default=2)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-new-tokens", type=int, default=128)
     parser.add_argument("--action", choices=("KEEP", "SUPERSEDE", "ABSTAIN"), help="Deterministic engineering fixture only.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
+    if args.recency_turns < 1:
+        raise SystemExit("--recency-turns must be at least 1")
     records = load_public_records(args.input)
     if args.limit is not None:
         records = records[: args.limit]
     if not records:
         raise SystemExit("no public records selected")
-    args.out.mkdir(parents=True, exist_ok=True)
-    system_prompt = args.system_prompt.read_text(encoding="utf-8")
-    prompt_hash = sha256_value({"system": system_prompt, "format": "v1"})
+    system_prompt_path = args.system_prompt or DEFAULT_SYSTEM_PROMPTS[args.system]
+    system_prompt = system_prompt_path.read_text(encoding="utf-8")
+    allowed_actions = system_allowed_actions(args.system)
+    adapter_spec = {
+        "adapter_version": ADAPTER_VERSION,
+        "system": args.system,
+        "allowed_actions": allowed_actions,
+        "recency_turns": args.recency_turns,
+    }
+    prompt_hash = sha256_value({"system_prompt": system_prompt, "adapter": adapter_spec})
     manifest_path = args.out / "run_manifest.json"
+    previous_manifest: dict[str, Any] = {}
+    if manifest_path.exists():
+        try:
+            previous_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise SystemExit(f"cannot resume with invalid manifest: {manifest_path}") from exc
+    effective_provider = "local-rule" if args.system == "rules_controller" and args.action is None else args.provider
+    effective_model_id = "ask/rules-controller-v43" if args.system == "rules_controller" and args.action is None else args.model_id
     manifest: dict[str, Any] = {
         "release_version": "4.3.0-human-validated-final",
         "dataset_path": str(args.input),
         "dataset_sha256": sha256_file(args.input),
         "system": args.system,
-        "provider": args.provider,
-        "model_id": args.model_id,
+        "adapter_version": ADAPTER_VERSION,
+        "adapter_spec": adapter_spec,
+        "adapter_spec_hash": sha256_value(adapter_spec),
+        "provider": effective_provider,
+        "model_id": effective_model_id,
         "prompt_hash": prompt_hash,
-        "system_prompt_path": str(args.system_prompt),
+        "system_prompt_path": str(system_prompt_path),
         "system_prompt_hash": sha256_value(system_prompt),
         "seed": args.seed,
         "decoding": {"temperature": args.temperature, "max_new_tokens": args.max_new_tokens, "reasoning_effort": args.reasoning_effort},
@@ -126,6 +172,11 @@ def main() -> int:
         "concurrency": args.concurrency,
         "evaluator_version": "ask.eval.mgp6_v43.v1",
         "code_commit": _git_commit(),
+        "tracked_worktree_state": _tracked_worktree_state(),
+        "runtime_hashes": {
+            "runner": sha256_file(Path(__file__)),
+            "evaluator_and_adapters": sha256_file("src/ask/eval/mgp6_v43.py"),
+        },
         "environment_lock": {"python": sys.version, "pyproject_sha256": sha256_file("pyproject.toml")},
         "n_selected": len(records),
         "complete": False,
@@ -137,14 +188,36 @@ def main() -> int:
         "completion_tokens": 0,
         "prediction_count": 0,
     }
-    _write_manifest(manifest_path, manifest)
     if args.dry_run:
-        print(f"[mgp6-v43] public input={args.input} n={len(records)} prompt_hash={prompt_hash}")
+        print(
+            f"[mgp6-v43] public input={args.input} n={len(records)} "
+            f"system={args.system} adapter={ADAPTER_VERSION} prompt_hash={prompt_hash}"
+        )
         return 0
-
+    immutable_resume_keys = (
+        "release_version",
+        "dataset_sha256",
+        "system",
+        "adapter_spec_hash",
+        "provider",
+        "model_id",
+        "prompt_hash",
+        "seed",
+    )
+    for key in immutable_resume_keys:
+        if previous_manifest and previous_manifest.get(key) != manifest[key]:
+            raise SystemExit(f"cannot resume: manifest {key} does not match current run")
+    predictions_path, raw_path = args.out / "predictions.jsonl", args.out / "raw_responses.jsonl"
+    args.out.mkdir(parents=True, exist_ok=True)
+    existing_predictions = {
+        prediction.public_id: prediction
+        for prediction in (load_predictions_allow_partial(predictions_path) if predictions_path.exists() else [])
+    }
+    if args.action is not None:
+        validate_system_action(args.system, args.action)
     static_action = args.action
     llm = None
-    if static_action is None:
+    if static_action is None and args.system in MODEL_BACKED_SYSTEMS:
         if args.provider == "fixture":
             raise SystemExit("a real system requires a non-fixture provider, or --action for an engineering fixture")
         llm = OpenAICompatibleLLM(
@@ -158,17 +231,27 @@ def main() -> int:
             include_raw_response=True,
             extra_body=_openrouter_reasoning_body(args.reasoning_effort),
         )
-    predictions_path, raw_path = args.out / "predictions.jsonl", args.out / "raw_responses.jsonl"
     started = time.perf_counter()
-    failures = retries = prompt_tokens = completion_tokens = invalid_responses = 0
+    failures = int(previous_manifest.get("failure_count", 0))
+    retries = int(previous_manifest.get("retry_count", 0))
+    prompt_tokens = int(previous_manifest.get("prompt_tokens", 0))
+    completion_tokens = int(previous_manifest.get("completion_tokens", 0))
+    invalid_responses = int(previous_manifest.get("invalid_response_count", 0))
     for record in records:
-        prompt = build_decision_prompt(record, system_prompt)
+        if record.public_id in existing_predictions:
+            continue
+        prompt = build_system_prompt(
+            record,
+            args.system,
+            system_prompt,
+            recency_turns=args.recency_turns,
+        )
         call_started = time.perf_counter()
         try:
             action: str | None = None
             if static_action:
                 raw = static_action
-                action = parse_action_response(raw)
+                action = validate_system_action(args.system, parse_action_response(raw))
                 write_raw_response(
                     raw_path,
                     public_id=record.public_id,
@@ -180,12 +263,38 @@ def main() -> int:
                         "retry_count": 0,
                         "prompt_tokens": 0,
                         "completion_tokens": 0,
+                        "adapter_version": ADAPTER_VERSION,
+                        "system": args.system,
+                    },
+                )
+            elif args.system == "rules_controller":
+                action, rule_trace = rules_controller_action(record)
+                action = validate_system_action(args.system, action)
+                raw = json.dumps({"action": action}, separators=(",", ":"))
+                write_raw_response(
+                    raw_path,
+                    public_id=record.public_id,
+                    raw_response=raw,
+                    metadata={
+                        "latency_ms": round((time.perf_counter() - call_started) * 1000, 3),
+                        "parse_attempt": 0,
+                        "valid_action": True,
+                        "retry_count": 0,
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "adapter_version": ADAPTER_VERSION,
+                        "system": args.system,
+                        "rule_trace": rule_trace,
                     },
                 )
             else:
                 last_error: MGP6V43Error | None = None
                 for parse_attempt in range(max(1, args.parse_retry_max_attempts)):
-                    attempt_prompt = prompt if parse_attempt == 0 else f"{prompt}\n\n{REPAIR_INSTRUCTION}"
+                    attempt_prompt = (
+                        prompt
+                        if parse_attempt == 0
+                        else f"{prompt}\n\n{_repair_instruction(allowed_actions)}"
+                    )
                     response = llm.generate(  # type: ignore[union-attr]
                         attempt_prompt,
                         max_new_tokens=args.max_new_tokens,
@@ -196,7 +305,7 @@ def main() -> int:
                     completion_tokens += int(response.completion_tokens)
                     raw = response.text
                     try:
-                        action = parse_action_response(raw)
+                        action = validate_system_action(args.system, parse_action_response(raw))
                     except MGP6V43Error as exc:
                         last_error = exc
                         invalid_responses += 1
@@ -204,7 +313,11 @@ def main() -> int:
                             raw_path,
                             public_id=record.public_id,
                             raw_response=raw,
-                            metadata=_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=False, error=str(exc)),
+                            metadata={
+                                **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=False, error=str(exc)),
+                                "adapter_version": ADAPTER_VERSION,
+                                "system": args.system,
+                            },
                         )
                         if parse_attempt + 1 >= max(1, args.parse_retry_max_attempts):
                             raise
@@ -214,7 +327,11 @@ def main() -> int:
                         raw_path,
                         public_id=record.public_id,
                         raw_response=raw,
-                        metadata=_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=True),
+                        metadata={
+                            **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=True),
+                            "adapter_version": ADAPTER_VERSION,
+                            "system": args.system,
+                        },
                     )
                     break
                 if action is None:
