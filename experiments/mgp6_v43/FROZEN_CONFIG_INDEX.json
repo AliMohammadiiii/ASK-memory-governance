@@ -5,7 +5,7 @@
   "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
-    "sha256": "2aa2c386a6fdfd689f10255e52a61388dc556fc04ea4d00334ea54ef426a0a89",
+    "sha256": "f0d8b1367e83a054ea51e313eef8c5ebc9c74fc9793d99e87ce413bfe0700979",
     "dataset_hashes": {
       "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
       "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
@@ -18,6 +18,7 @@
     "environment_lock_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"
   },
   "freeze_requirements_remaining": [
+    "Implement and test distinct v4.3 adapters for each selected historical baseline/controller before running or selecting it.",
     "Record the selected provider endpoint and exact accessible live model revision.",
     "Run and document development-only experiments before choosing final configurations.",
     "Record the post-development code commit and clean-worktree state.",

@@ -95,4 +95,10 @@ ablation configurations before final model, prompt, and system choices are
 frozen. No prompt, model, split, or release record was changed as a result of
 this run.
 
+The generic v4.3 decision runner now accepts only `decision_zero_shot`. Its
+former historical-system labels did not select distinct baseline/controller
+implementations, so accepting them would have made a false comparison. The
+configuration registry records those systems as requiring explicit, tested v4.3
+adapters before they may be run or selected.
+
 The hidden-run authorization remains absent and false.

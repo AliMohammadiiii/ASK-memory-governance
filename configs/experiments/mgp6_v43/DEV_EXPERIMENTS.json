@@ -23,6 +23,11 @@
     "code_commit": "4fcb9a8",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
+  "execution_contract": {
+    "implemented_by_scripts_run_mgp6_v43": ["decision_zero_shot"],
+    "requires_v43_adapter": ["b1", "b2", "b3", "b4", "rules_controller", "live_model_controller", "ablation_no_abstain", "ablation_no_provenance", "ablation_no_typing", "ablation_no_lineage"],
+    "policy": "Do not run or report a historical system label through the generic public decision runner until its distinct v4.3 adapter and tests exist."
+  },
   "systems": [
     {"id": "b1", "logical_role": "B1 no-memory", "historical_name": "no_memory", "provider": "fixture", "model_id": "fixture/deterministic-action"},
     {"id": "b2", "logical_role": "B2 flat retrieval", "historical_name": "flat_vector", "provider": "fixture", "model_id": "fixture/deterministic-action"},

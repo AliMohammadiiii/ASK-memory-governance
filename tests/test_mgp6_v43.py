@@ -115,6 +115,18 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     assert {row["valid_action"] for row in raw_rows} == {True}
 
 
+def test_v43_runner_rejects_unimplemented_historical_system_labels() -> None:
+    run = subprocess.run(
+        [sys.executable, "scripts/run_mgp6_v43.py", "--system", "b1", "--dry-run"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode != 0
+    assert "invalid choice" in run.stderr
+
+
 def test_v43_runner_openrouter_reasoning_extra_body() -> None:
     assert run_mgp6_v43._openrouter_reasoning_body(None) is None
     assert run_mgp6_v43._openrouter_reasoning_body("none") == {"reasoning": {"effort": "none"}}

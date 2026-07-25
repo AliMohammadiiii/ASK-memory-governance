@@ -32,7 +32,10 @@ from ask.eval.mgp6_v43 import (  # noqa: E402
 from ask.inference.llm import LLMResponse  # noqa: E402
 from ask.inference.openai_compatible import OpenAICompatibleLLM  # noqa: E402
 
-SYSTEMS = ("b1", "b2", "b3", "b4", "decision_zero_shot", "rules_controller", "live_model_controller")
+# This runner renders a single public-only decision prompt.  Historical ASK
+# baselines/controllers need v4.3-specific adapters before they can be claimed
+# as distinct systems, so do not accept their labels here as aliases.
+SYSTEMS = ("decision_zero_shot",)
 DEFAULT_SYSTEM_PROMPT = Path("configs/experiments/mgp6_v43/decision_system_prompt.txt")
 REPAIR_INSTRUCTION = (
     "The previous response was rejected because it was not exactly one valid "
@@ -78,7 +81,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, default=Path("benchmarks/mgp6/mgp6_v4_3/public/train.jsonl"))
     parser.add_argument("--out", type=Path, default=Path("runs/mgp6_v43/smoke"))
-    parser.add_argument("--system", choices=SYSTEMS, default="rules_controller")
+    parser.add_argument("--system", choices=SYSTEMS, default="decision_zero_shot")
     parser.add_argument("--limit", type=int)
     parser.add_argument("--seed", type=int, default=4301)
     parser.add_argument("--provider", default="fixture")

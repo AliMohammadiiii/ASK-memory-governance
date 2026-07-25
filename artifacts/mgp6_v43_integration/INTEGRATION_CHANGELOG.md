@@ -68,3 +68,15 @@ changed.
   and the explicit private-boundary statement in `DEV_EXPERIMENT_REPORT.md`.
 - No hidden input, hidden gold, final human gold, or private audit record was
   accessed.
+
+## 2026-07-25 — historical-system label guard
+
+- Found that `scripts/run_mgp6_v43.py` rendered the same generic public
+  decision prompt for every accepted `--system` label. This was not a valid
+  implementation of the historical baselines or controllers.
+- Restricted the runner to the one actually implemented method,
+  `decision_zero_shot`, and added a regression test that rejects `b1`.
+- Marked B1--B4, the rules and live controllers, and feature ablations as
+  requiring distinct v4.3 adapters in the development configuration index.
+- The gate returns to development preparation until those adapters are tested;
+  no provider call, hidden input, or private scoring occurred for this guard.
