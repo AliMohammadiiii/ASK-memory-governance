@@ -5,21 +5,21 @@
   "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
-    "sha256": "bcef089043acbd205902b767ef0a8352deb5317ad9bcc2cad718e4b806bbb9b0",
+    "sha256": "1011ad622f4bf157f991341ba8a445f14504d719b75beeec7407a7ad9c3875fa",
     "dataset_hashes": {
       "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
       "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
       "split_map": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
     },
-    "adapter_version": "ask.mgp6_v43_adapter.v2",
+    "adapter_version": "ask.mgp6_v43_adapter.v3",
     "prompt_hashes": "Per-system raw template hashes are recorded in DEV_EXPERIMENTS.json; prompts are not frozen.",
     "implementation_hashes": {
-      "runner": "dc95a3714ec8f0550e663e17f609dd5c94d8a4f497872f0384d585256b8dca16",
+      "runner": "35a9d9492f95411cef5834b9b81a38b753469c7cfba343a90f53f34d56768edd",
       "public_scorer": "c59a749804aa7e448196e114d9f4e56a3a170cb9ffe11c825dd6abde5bf32999",
-      "evaluator_and_adapters": "a638b75358dcfc2efe0be124ca8789ae33215f6cad52a98f999092b14b743800"
+      "evaluator_and_adapters": "04f272664dfe9310e6928a9671dfa967499772201641a2643d8009301b66464b"
     },
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "932459ade6468a40126b06a2376e0e4cd43761dd",
+    "code_commit": "a731a52a2f0ff38503ac648914e8d306a0ef62a9",
     "environment_lock_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"
   },
   "freeze_requirements_remaining": [

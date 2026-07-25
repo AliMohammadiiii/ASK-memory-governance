@@ -16,7 +16,7 @@
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "PENDING_HYBRID_GUARD_V3_COMMIT",
+    "code_commit": "a731a52a2f0ff38503ac648914e8d306a0ef62a9",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "execution_contract": {
