@@ -40,8 +40,13 @@
 
 The GitHub Actions workflow includes the v4.3 evaluator in its Mypy scope. Its
 complete command sequence was re-run locally under Python 3.12.12 and passed
-(539 passed, 11 skipped; Ruff; and Mypy). No remote GitHub Actions run is
-claimed because this branch has not been pushed.
+(542 passed, 11 skipped; Ruff; both Mypy scopes; repository validation; and
+package build). The most recent remote workflow observed is CI run
+`30169334394`, a successful push run for
+`d3d5af0eb7170301e35ef00c369d27efb56e804d` on this branch. The current branch
+is ahead of its remote by 16 commits, including the public-evidence controller
+and development-selection commits, so no remote CI result is claimed for those
+unpushed commits.
 
 Seven development candidates have run and are documented separately:
 `decision_zero_shot`, B1--B4, and `live_model_controller` (model-backed), plus
