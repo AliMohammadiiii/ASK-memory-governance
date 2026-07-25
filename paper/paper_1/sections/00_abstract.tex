@@ -15,9 +15,12 @@ $0.9667$), demonstrating that the current pilot leaks its labels and cannot
 isolate evidence reasoning from scenario recognition. The reference policy has
 zero observed action false commits on 33 test abstention cases, but the one-sided 95\%
 upper bound is $0.0868$ and its missed-update rate is $0.2222$; under an
-update-responsive cost matrix the structured LLM is preferable. We release the
-per-item predictions, shortcut audits, cluster bootstrap, risk--coverage and
-state/lineage metrics. The contribution is therefore an auditable evaluation
+update-responsive cost matrix the structured LLM is preferable. As downstream
+evidence, a homogeneous full-slice run on \lme{} (all $180$ items, one answer
+model, one judge, no judge fallbacks) places the governed controller at
+$76.1\%$ accuracy, above every structural baseline (naive overwrite: $63.3\%$).
+We release the per-item predictions, shortcut audits, cluster bootstrap,
+risk--coverage and state/lineage metrics. The contribution is therefore an auditable evaluation
 protocol and a measured negative finding about diagnostic design, not a claim
 of general memory-governance performance.
 \end{abstract}

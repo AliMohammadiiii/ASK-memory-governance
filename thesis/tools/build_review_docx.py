@@ -18,7 +18,7 @@ from docx.shared import Inches, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[2]
 THESIS_DIR = ROOT / "thesis"
-SOURCE = THESIS_DIR / "MASTERS_THESIS_KSA_MGP6.md"
+SOURCE = THESIS_DIR / "MASTERS_THESIS_ASK_MGP6.md"
 BIB = THESIS_DIR / "references.bib"
 
 PAGE_WIDTH_DXA = 12240
@@ -239,11 +239,11 @@ def configure_styles(doc: Document) -> None:
     caption.paragraph_format.space_after = Pt(10)
     caption.paragraph_format.keep_with_next = False
 
-    for name in ("KSA Code", "KSA Quote", "KSA Bibliography"):
+    for name in ("ASK Code", "ASK Quote", "ASK Bibliography"):
         if name not in styles:
             styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
 
-    code = styles["KSA Code"]
+    code = styles["ASK Code"]
     code.font.name = "Consolas"
     code._element.rPr.rFonts.set(qn("w:ascii"), "Consolas")
     code._element.rPr.rFonts.set(qn("w:hAnsi"), "Consolas")
@@ -255,7 +255,7 @@ def configure_styles(doc: Document) -> None:
     code.paragraph_format.line_spacing = 1.05
     code.paragraph_format.keep_together = True
 
-    quote = styles["KSA Quote"]
+    quote = styles["ASK Quote"]
     quote.font.name = "Calibri"
     quote._element.rPr.rFonts.set(qn("w:ascii"), "Calibri")
     quote._element.rPr.rFonts.set(qn("w:hAnsi"), "Calibri")
@@ -267,7 +267,7 @@ def configure_styles(doc: Document) -> None:
     quote.paragraph_format.space_after = Pt(8)
     quote.paragraph_format.line_spacing = 1.2
 
-    bibliography = styles["KSA Bibliography"]
+    bibliography = styles["ASK Bibliography"]
     bibliography.font.name = "Calibri"
     bibliography._element.rPr.rFonts.set(qn("w:ascii"), "Calibri")
     bibliography._element.rPr.rFonts.set(qn("w:hAnsi"), "Calibri")
@@ -293,7 +293,7 @@ def configure_section(section) -> None:
     p = header.paragraphs[0]
     p.paragraph_format.space_after = Pt(3)
     p.paragraph_format.tab_stops.add_tab_stop(Inches(6.5), WD_TAB_ALIGNMENT.RIGHT)
-    left = p.add_run("KSA Memory Governance")
+    left = p.add_run("ASK Memory Governance")
     set_run_font(left, "Calibri", 8.5, MUTED)
     right = p.add_run("\tEnglish Review Draft")
     set_run_font(right, "Calibri", 8.5, MUTED)
@@ -326,7 +326,7 @@ def add_cover(doc: Document) -> None:
     p.paragraph_format.keep_with_next = True
 
     p = doc.add_paragraph(
-        "The KSA Controller (Keep-Supersede-Abstain), the MGP-6 v2 Diagnostic, and Evidence-Bounded Evaluation",
+        "The ASK Controller (Keep-Supersede-Abstain), the MGP-6 v2 Diagnostic, and Evidence-Bounded Evaluation",
         style="Subtitle",
     )
     p.paragraph_format.space_after = Pt(34)
@@ -345,7 +345,7 @@ def add_cover(doc: Document) -> None:
     )
     set_run_font(r, "Calibri", 11, MUTED)
 
-    note = doc.add_paragraph(style="KSA Quote")
+    note = doc.add_paragraph(style="ASK Quote")
     note.alignment = WD_ALIGN_PARAGRAPH.CENTER
     note.paragraph_format.left_indent = Inches(0.55)
     note.paragraph_format.right_indent = Inches(0.55)
@@ -602,7 +602,7 @@ def add_markdown_table(doc: Document, rows: list[list[str]]) -> None:
 def add_picture(doc: Document, alt: str, path_text: str) -> None:
     path = (THESIS_DIR / path_text).resolve()
     if not path.exists():
-        p = doc.add_paragraph(style="KSA Quote")
+        p = doc.add_paragraph(style="ASK Quote")
         add_inline(p, f"Figure unavailable in review build: {alt} ({path_text})")
         shade_paragraph(p, LIGHT)
         set_paragraph_border(p, left=BLUE)
@@ -637,7 +637,7 @@ def parse_table(lines: list[str], start: int) -> tuple[list[list[str]], int]:
 
 def add_code_block(doc: Document, code_lines: Iterable[str]) -> None:
     text = "\n".join(code_lines).rstrip()
-    p = doc.add_paragraph(style="KSA Code")
+    p = doc.add_paragraph(style="ASK Code")
     r = p.add_run(text)
     set_run_font(r, "Consolas", 8.5, NAVY)
     shade_paragraph(p, LIGHT)
@@ -759,7 +759,7 @@ def add_markdown(doc: Document, source: str, bullet_num_id: int, decimal_num_id:
             continue
 
         if stripped.startswith(">"):
-            p = doc.add_paragraph(style="KSA Quote")
+            p = doc.add_paragraph(style="ASK Quote")
             add_inline(p, stripped.lstrip("> "))
             shade_paragraph(p, LIGHT)
             set_paragraph_border(p, left=BLUE)
@@ -887,7 +887,7 @@ def add_bibliography(doc: Document, citations: set[str]) -> None:
             parts.append(venue + ".")
         if doi:
             parts.append("DOI: " + doi + ".")
-        p = doc.add_paragraph(style="KSA Bibliography")
+        p = doc.add_paragraph(style="ASK Bibliography")
         add_inline(p, " ".join(parts))
 
 
@@ -895,7 +895,7 @@ def set_core_properties(doc: Document) -> None:
     props = doc.core_properties
     props.title = "Auditable Governance of Long-Term Memory in Language Agents"
     props.subject = "Master's thesis English review draft"
-    props.keywords = "memory governance; KSA; MGP-6; long-term memory; language agents"
+    props.keywords = "memory governance; ASK; MGP-6; long-term memory; language agents"
     props.comments = "Review draft. Official University of Tehran template and administrative fields remain external."
     props.author = ""
     props.last_modified_by = ""
@@ -924,7 +924,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=THESIS_DIR / "compiled" / "KSA_Masters_Thesis_English_Review_Draft.docx",
+        default=THESIS_DIR / "compiled" / "ASK_Masters_Thesis_English_Review_Draft.docx",
     )
     args = parser.parse_args()
     build(args.output.resolve())

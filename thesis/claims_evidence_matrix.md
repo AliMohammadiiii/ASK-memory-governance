@@ -5,7 +5,7 @@ ledger interpretation of MGP-6 v2 policy rows as `final_candidate`.
 
 | ID | Claim | Evidence | Allowed status/wording | Prohibited wording |
 | --- | --- | --- | --- | --- |
-| C01 | KSA implements a three-action governed write path | `src/ksa/`, tests | implementation fact | invented updating, abstention, provenance, or lineage |
+| C01 | ASK implements a three-action governed write path | `src/ask/`, tests | implementation fact | invented updating, abstention, provenance, or lineage |
 | C02 | Evaluation separates action, state/lineage, and answer | evaluation code and schema | methodological contribution | first operation-level evaluation |
 | C03 | MGP-6 v2 is an author-designed 180-item pilot | gold JSONL | dataset context | independent, representative, or community benchmark |
 | C04 | Conflict-type-only lookup reaches 1.000 test accuracy; type-only reaches 0.9667 | validity audit | failed construct-validity gate | held-out split isolates evidence reasoning |

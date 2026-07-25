@@ -18,7 +18,7 @@ through adapters we wrote. Because these systems do not emit
 favourable \texttt{NOOP}$\to$\abstain{} number as an \emph{upper bound} with the
 \texttt{NOOP}$\to$\keep{} number alongside. MemOS is \emph{diagnostic-only}: its
 adapter cannot express supersession, so $0.144$ is a floor imposed by that
-limitation, not a capability measurement. The rule \ksa{} controller is shown for
+limitation, not a capability measurement. The rule \ask{} controller is shown for
 context only. Values transcribed from
 \texttt{artifacts/results\_ledger.json} version 1.1.}
 \label{tab:external}
@@ -34,7 +34,7 @@ Graphiti (0.29.2)    & \texttt{NOOP}$\to$\abstain{} (upper bound) & 0.383 & 0.21
                      & \texttt{NOOP}$\to$\keep{} (lower)          & 0.139 & 0.104 \\
 MemOS                & diagnostic (supersession inexpressible)   & 0.144 & 0.164 \\
 \midrule
-Rule \ksa{} controller (context) & native \keep/\supersede/\abstain{}    & 0.9222 & 0.9399 \\
+Rule \ask{} controller (context) & native \keep/\supersede/\abstain{}    & 0.9222 & 0.9399 \\
 \bottomrule
 \end{tabular}
 \end{table}

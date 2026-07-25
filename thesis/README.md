@@ -4,7 +4,7 @@ This directory contains an **English review draft**, not an institution-ready su
 
 ## Deliverables
 
-- `MASTERS_THESIS_KSA_MGP6.md` — complete English master draft.
+- `MASTERS_THESIS_ASK_MGP6.md` — complete English master draft.
 - `two_page_summary.md` — compact research summary.
 - `contribution_summary.md` — defensible contribution and non-claim boundary.
 - `defense_questions.md` — oral-defense preparation.
@@ -12,8 +12,8 @@ This directory contains an **English review draft**, not an institution-ready su
 - `THESIS_NUMBER_AUDIT.md` — ledger v1.1 number audit.
 - `frontmatter/` — Persian abstract/summary/terminology and administrative placeholders.
 - `references.bib` and `references/README.md` — consolidated bibliography and audit notes.
-- `compiled/KSA_Masters_Thesis_English_Review_Draft.docx` — editable review copy.
-- `compiled/KSA_Masters_Thesis_English_Review_Draft.pdf` — rendered review copy.
+- `compiled/ASK_Masters_Thesis_English_Review_Draft.docx` — editable review copy.
+- `compiled/ASK_Masters_Thesis_English_Review_Draft.pdf` — rendered review copy.
 
 ## Evidence status
 

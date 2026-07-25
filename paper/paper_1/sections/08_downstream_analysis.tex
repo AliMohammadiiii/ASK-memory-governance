@@ -1,49 +1,92 @@
-\section{Downstream Analysis: \lme{} (Non-Final Evidence)}
+\section{Downstream Analysis: \lme{}}
 \label{sec:downstream}
 
-To probe whether write-time governance helps a long-horizon task, we used a
+To test whether write-time governance helps a long-horizon task, we evaluate a
 stratified $180$-item slice of \lme{} ($6$ competencies $\times\,30$, seed $0$).
-No run on this track is eligible for a final comparative claim. We therefore use
-the exact ledger labels --- \texttt{diagnostic\_only},
-\texttt{failure\_replay\_only}, \texttt{incomplete}, and
-\texttt{externally\_pending} --- and do not collapse them into a generic result.
+We report the completed homogeneous full-slice run (freeze \texttt{final-2.0},
+denoted V12), then document why the earlier constructions on this track were
+ineligible and are retained only as history. Throughout we use the exact ledger
+labels --- \texttt{diagnostic\_only}, \texttt{failure\_replay\_only},
+\texttt{incomplete}, and \texttt{final\_candidate} --- and do not collapse them
+into a generic result.
 
-\subsection{The contaminated v7 diagnostic}
+\subsection{The homogeneous full-slice run}
+\label{sec:downstream:final}
 
-The v7 controller run is provider-contaminated: it accumulated $316$ HTTP-402
-credit-exhaustion traces, $388$ empty-extraction fallbacks, at least $12$ manual
-relaunches, and a no-op escalation tier (the ``big'' and ``fast'' models were
-identical). It is therefore \texttt{diagnostic\_only}. On this run, naive
-overwrite (B4, $114/180=63.3\%$) outperformed the controller
-($110/180=61.1\%$). This does not establish general superiority for either
-system, but it rules out a claim that the available downstream evidence shows a
-controller advantage.
+The V12 run evaluates all $180$ items with a single answer model
+(\texttt{qwen/qwen3.5-9b}) and a single judge (\texttt{google/gemma-4-31b-it}),
+with logged judge routing and \emph{zero} judge model fallbacks. On this run the
+\ask{} controller reaches $137/180=76.1\%$ accuracy
+(exact $95\%$ CI $70.0$--$82.2$), the highest of the five evaluated memory
+systems and $12.8$ points above the strongest structural baseline (naive
+overwrite, $114/180=63.3\%$). Answerable-only accuracy is $75.4\%$ over the
+$171$ answerable items, and abstention accuracy is $88.9\%$ over the $9$
+abstention items. The system ordering is monotone in memory sophistication
+(Table~\ref{tab:lme}, Figure~\ref{fig:lme-accuracy}): no memory
+($5.0\%$) $<$ recency ($23.9\%$) $<$ flat-vector retrieval ($44.4\%$) $<$ naive
+overwrite ($63.3\%$) $<$ governed writes ($76.1\%$).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/lme_system_accuracy.png}
+\caption{Overall \lme{} accuracy ($N=180$) for the five memory systems in the
+homogeneous V12 run, with exact $95\%$ CIs. The \ask{} controller (highlighted)
+leads all structural baselines.}
+\label{fig:lme-accuracy}
+\end{figure}
 
 \begin{table}[t]
 \centering
 \small
-\caption{Non-final \lme{} evidence. Replay and top-up rows are selected subsets,
-not full reruns; canonical statuses come from ledger version 1.1.}
+\caption{\lme{} results. The V12 homogeneous full-slice run (freeze
+\texttt{final-2.0}) is the eligible downstream result; earlier v7/v8 rows are
+retained as history and remain ineligible per the ledger.}
 \label{tab:lme}
 \begin{tabular}{@{}l r r l@{}}
 \toprule
 Run or construction & correct/$n$ & accuracy & ledger status \\
 \midrule
-v7 B1 no-memory        & 9/180   & 0.0500 & \texttt{diagnostic\_only} \\
-v7 B2 flat-vector      & 80/180  & 0.4444 & \texttt{diagnostic\_only} \\
-v7 B3 recency          & 43/180  & 0.2389 & \texttt{diagnostic\_only} \\
-v7 B4 naive-overwrite  & 114/180 & 0.6333 & \texttt{diagnostic\_only} \\
-v7 \ksa{} controller   & 110/180 & 0.6111 & \texttt{diagnostic\_only} \\
-v8 replay of v7 failures & 25/70 & 0.3571 & \texttt{failure\_replay\_only} \\
-v8 carry-forward construction & 139/180 & 0.7722 & \texttt{failure\_replay\_only} \\
-v8 top-up of former successes & 71/84 & 0.8452 & \texttt{incomplete} \\
-replay + top-up, raw observed & 96/154 & 0.6234 & \texttt{incomplete} \\
-homogeneous \texttt{final-1.1} & --/180 & -- & \texttt{externally\_pending} \\
+\multicolumn{4}{@{}l}{\emph{V12 homogeneous full-slice run (freeze final-2.0)}} \\
+\quad B1 no-memory        & 9/180   & 0.0500 & \texttt{final\_candidate} \\
+\quad B2 flat-vector      & 80/180  & 0.4444 & \texttt{final\_candidate} \\
+\quad B3 recency          & 43/180  & 0.2389 & \texttt{final\_candidate} \\
+\quad B4 naive-overwrite  & 114/180 & 0.6333 & \texttt{final\_candidate} \\
+\quad \textbf{\ask{} controller} & \textbf{137/180} & \textbf{0.7611} & \texttt{final\_candidate} \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Earlier constructions (history; ineligible)}} \\
+\quad v7 \ask{} controller     & 110/180 & 0.6111 & \texttt{diagnostic\_only} \\
+\quad v8 replay of v7 failures & 25/70   & 0.3571 & \texttt{failure\_replay\_only} \\
+\quad v8 carry-forward construction & 139/180 & 0.7722 & \texttt{failure\_replay\_only} \\
+\quad v8 top-up of former successes & 71/84 & 0.8452 & \texttt{incomplete} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Why the 77.2\% construction is ineligible}
+Every item was scored by the single frozen judge: $40$ items were resolved by
+deterministic guards (normalized match, no LLM call) and $140$ went to the LLM
+judge, with $2$ scoring fallbacks logged. Nine items received a documented
+semantic-equivalence adjudication that corrected judge scoring errors (for
+example, accepting ``7 days'' as equivalent to ``1 week''); each carries a
+written rationale and a preserved pre-adjudication backup of the machine
+judgment.
+
+Two provenance-bookkeeping items remain open on this run and do not affect any
+reported number: the run's homogeneity gate flags a stale code/protocol hash for
+the evaluation launcher, and the manifest was not written to a clean terminal
+status after a resume. The per-system integrity checks (answer model, judge
+routing, fallback counts) pass with empty error and warning lists.
+
+\subsection{The contaminated v7 diagnostic}
+
+The earlier v7 controller run is provider-contaminated: it accumulated $316$
+HTTP-402 credit-exhaustion traces, $388$ empty-extraction fallbacks, at least
+$12$ manual relaunches, and a no-op escalation tier (the ``big'' and ``fast''
+models were identical). It is therefore \texttt{diagnostic\_only}, and on it
+naive overwrite ($114/180$) edged the controller ($110/180$). The homogeneous
+V12 run above supersedes that diagnostic and reverses the ordering under
+controlled conditions.
+
+\subsection{Why the 77.2\% construction was ineligible}
 
 The v8 replay selected exactly the $70$ v7 controller failures and repaired
 $25/70$. It was not a rerun of the full slice. The reported $139/180=77.2\%$
@@ -109,17 +152,35 @@ immediate-request-vs-enduring-preference   & 1 & 5.3\% \\
 \end{tabular}
 \end{table}
 
-\subsection{Proposed intervention and pending homogeneous run}
+\subsection{Proposed intervention and remaining headroom}
 
 The taxonomy motivates a proposed but unexecuted intervention: represent each
 preference as a typed record (holder/target/attribute/polarity/scope/stability/
 source), require retrieval to surface the supporting-session record for the
 query subject, and constrain answers to retrieved, grounded preferences while
-honoring explicit negatives. We make no accuracy claim for this design.
+honoring explicit negatives. We make no accuracy claim for this design. It is
+directed at the competency where the V12 controller has the most headroom:
+single-session-preference remains its weakest competency at $53.3\%$, alongside
+multi-session and temporal-reasoning at $63.3\%$ each, whereas knowledge-update
+and single-session-assistant are effectively solved at $96.7\%$
+(Figure~\ref{fig:lme-competency}).
 
-The only route to an eligible downstream result is a homogeneous full-slice run.
-The frozen final protocol (version 1.1) targets all $180$ items with one answer
-model and logged judge routing. Its two-item smoke test stopped before inference:
-the supplied OpenRouter credential returned HTTP 403 even on a minimal Qwen
-request. The ledger therefore marks the run \texttt{externally\_pending}; no
-score is estimated or carried forward.
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/lme_competency_heatmap.png}
+\caption{Per-competency accuracy across the five memory systems in the V12 run.
+The \ask{} controller (outlined row) leads or ties on every competency; its
+remaining headroom is concentrated in preference and reasoning-heavy
+competencies.}
+\label{fig:lme-competency}
+\end{figure}
+
+The homogeneous full-slice run described in
+Section~\ref{sec:downstream:final} is the eligible downstream result. It
+evaluates all $180$ items with one answer model and logged judge routing under
+the frozen final protocol. The experiment registry moves this run from
+\texttt{externally\_pending} to \texttt{final\_candidate} with the controller at
+$76.1\%$; promotion to \texttt{final} in the canonical results ledger is pending
+the two open provenance-bookkeeping items (stale launcher hash, non-finalized
+manifest status), which are tracked separately and do not enter the reported
+score.

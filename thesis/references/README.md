@@ -1,6 +1,6 @@
 # Bibliography audit notes
 
-The consolidated bibliography is `../references.bib`. It supports the Markdown citation keys used by `../MASTERS_THESIS_KSA_MGP6.md`.
+The consolidated bibliography is `../references.bib`. It supports the Markdown citation keys used by `../MASTERS_THESIS_ASK_MGP6.md`.
 
 ## Current checks
 
@@ -20,4 +20,4 @@ Before institutional submission, verify each cited work against its primary publ
 5. preprint-to-published-version replacement where applicable; and
 6. consistency with the University's required bibliography style.
 
-The thesis's novelty boundary does not depend on a primacy claim. The related-work section positions KSA as operationalizing and evaluating a combined write-policy and layered-measurement design.
+The thesis's novelty boundary does not depend on a primacy claim. The related-work section positions ASK as operationalizing and evaluating a combined write-policy and layered-measurement design.

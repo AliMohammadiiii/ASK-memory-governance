@@ -9,9 +9,9 @@ this paper. The authoritative manifests are
 
 | Artifact | Path | Released? |
 |---|---|---|
-| Controller + baselines + pipeline | `src/ksa/` | Yes |
+| Controller + baselines + pipeline | `src/ask/` | Yes |
 | MGP-6 scorer | `benchmarks/mgp6/metrics_mgp6.py` | Yes |
-| LongMemEval scorer | `src/ksa/eval/longmemeval.py` | Yes |
+| LongMemEval scorer | `src/ask/eval/longmemeval.py` | Yes |
 | Analysis scripts | `scripts/analysis/{audit_mgp6_validity,mcnemar_mgp6,build_final_results}.py` | Yes |
 | MGP-6 v2 dataset (180 items) | `benchmarks/mgp6/data/mgp6_v2.jsonl` | Yes (checksummed) |
 | MGP-6 per-item predictions | `artifacts/mgp6_v2/*/predictions.jsonl` | Yes, with coverage disclosed |

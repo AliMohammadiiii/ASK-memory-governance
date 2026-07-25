@@ -1,6 +1,6 @@
 # Auditable Governance of Long-Term Memory in Language Agents
 
-## The KSA Controller (Keep–Supersede–Abstain), the MGP-6 v2 Diagnostic, and Evidence-Bounded Evaluation
+## The ASK Controller (Keep–Supersede–Abstain), the MGP-6 v2 Diagnostic, and Evidence-Bounded Evaluation
 
 **Master's Thesis — English Review Draft**
 Administrative fields (candidate, supervisor, advisor, faculty, dates, signatures) are intentionally left as placeholders and are consolidated in `frontmatter/ADMINISTRATIVE_PLACEHOLDERS.md`. They must never be filled in by tooling.
@@ -25,7 +25,7 @@ On the 90-item test split, the transparent lexical reference policy reaches 0.88
 
 One independent human re-annotation and a separate four-model panel are reported without describing them as multi-human agreement. Mapped external-system rankings, the incomplete six-shot run, and all existing LongMemEval results are excluded from primary capability claims. The thesis contributes an auditable evaluation decomposition, released per-item predictions and cluster-aware analysis, and a prospective independently generated, multi-human, trajectory-level confirmation protocol. It does not establish controller superiority, population safety, calibrated confidence, or long-lived deployment performance.
 
-**Keywords:** long-term memory, language agents, memory governance, supersession, abstention, provenance, lineage, auditability, diagnostic evaluation, selective prediction, MGP-6, KSA Controller, LongMemEval.
+**Keywords:** long-term memory, language agents, memory governance, supersession, abstention, provenance, lineage, auditability, diagnostic evaluation, selective prediction, MGP-6, ASK Controller, LongMemEval.
 
 ## Acknowledgements
 
@@ -33,13 +33,13 @@ Institutional and personal acknowledgements are administrative front matter and 
 
 ## Reader's guide
 
-Chapter 1 frames the research problem and questions. Chapter 2 situates the work in agent memory systems, memory lifecycle research, benchmarks, belief revision, and selective prediction, including the 2026 near neighbors. Chapter 3 formalizes the problem and threat model. Chapter 4 specifies the KSA Controller as implemented. Chapter 5 documents MGP-6 v2 and its annotation evidence. Chapter 6 defines the experimental methodology and the claim-eligibility policy. Chapter 7 reports results. Chapter 8 gives the error analysis and discussion. Chapter 9 addresses validity, ethics, and limitations. Chapter 10 concludes. Appendices A–F provide schemas, prompt pointers, metric definitions, the annotation-manual pointer, reproducibility commands, and the artifact manifest.
+Chapter 1 frames the research problem and questions. Chapter 2 situates the work in agent memory systems, memory lifecycle research, benchmarks, belief revision, and selective prediction, including the 2026 near neighbors. Chapter 3 formalizes the problem and threat model. Chapter 4 specifies the ASK Controller as implemented. Chapter 5 documents MGP-6 v2 and its annotation evidence. Chapter 6 defines the experimental methodology and the claim-eligibility policy. Chapter 7 reports results. Chapter 8 gives the error analysis and discussion. Chapter 9 addresses validity, ethics, and limitations. Chapter 10 concludes. Appendices A–F provide schemas, prompt pointers, metric definitions, the annotation-manual pointer, reproducibility commands, and the artifact manifest.
 
 ## Abbreviations
 
 | Term | Meaning |
 |---|---|
-| KSA | Keep–Supersede–Abstain: the three-action memory-governance controller of this thesis |
+| ASK | Keep–Supersede–Abstain: the three-action memory-governance controller of this thesis |
 | MGP-6 v2 | Author-designed six-type memory-governance diagnostic slice (180 scenarios) |
 | LME-M | Stratified 180-item LongMemEval-M evaluation slice (6 competencies × 30, seed 0) |
 | SSP | Single-session preference (LongMemEval competency) |
@@ -99,13 +99,13 @@ The original directional comparisons are not confirmatory because the pilot fail
 
 ## 1.6 Scope
 
-The thesis evaluates the KSA formulation on an author-designed diagnostic slice and one stratified LongMemEval-M slice with a single base model family and single seed. It does not claim community-benchmark status for MGP-6 v2, does not claim end-task superiority on LongMemEval, does not claim human multi-annotator agreement, and does not claim that governance on these slices generalizes to open-domain deployments. These boundaries are stated because they are what the evidence supports; Chapter 9 enumerates them systematically.
+The thesis evaluates the ASK formulation on an author-designed diagnostic slice and one stratified LongMemEval-M slice with a single base model family and single seed. It does not claim community-benchmark status for MGP-6 v2, does not claim end-task superiority on LongMemEval, does not claim human multi-annotator agreement, and does not claim that governance on these slices generalizes to open-domain deployments. These boundaries are stated because they are what the evidence supports; Chapter 9 enumerates them systematically.
 
 ## 1.7 Thesis structure and contribution map
 
 | Research question | Main chapter(s) | Primary artifact |
 |---|---|---|
-| RQ1 | Chapter 4 | `src/ksa/` (policy, memory operations, orchestrator) |
+| RQ1 | Chapter 4 | `src/ask/` (policy, memory operations, orchestrator) |
 | RQ2 | Chapters 5, 7 | `benchmarks/mgp6/` (data, manual, metrics), ablation runs |
 | RQ3 | Chapters 6, 7 | `metrics_mgp6.py`, ledger `known_metric_issues` |
 | RQ4 | Chapters 7, 8, 9 | `reports/STATISTICAL_ANALYSIS.md`, `reports/ERROR_TAXONOMY.md`, `reports/THREATS_TO_VALIDITY.md` |
@@ -114,15 +114,15 @@ The thesis evaluates the KSA formulation on an author-designed diagnostic slice 
 
 # 2. Background and Related Work
 
-This chapter follows the verified related-work audit, with submission citations rechecked against primary metadata sources on 2026-07-15. The most important change relative to earlier drafts is a cluster of near neighbors — STALE, TOKI, Supersede, MemGuard, and HaluMem — that are conceptually closer to KSA than the production systems archived in Chapter 7 and constrain which novelty claims remain defensible (§2.8).
+This chapter follows the verified related-work audit, with submission citations rechecked against primary metadata sources on 2026-07-15. The most important change relative to earlier drafts is a cluster of near neighbors — STALE, TOKI, Supersede, MemGuard, and HaluMem — that are conceptually closer to ASK than the production systems archived in Chapter 7 and constrain which novelty claims remain defensible (§2.8).
 
 ## 2.1 Memory in language-agent systems
 
 *Memory* covers several mechanisms with different mutability and deletion semantics: context-window memory, retrieval memory, summary memory, structured records, and model parameters. Long context does not remove governance obligations — long-context models use evidence unevenly by position [@liu2024lost] — and retrieval-augmented generation separates storage from generation without providing a write policy [@lewis2020retrieval; @borgeaud2022improving].
 
-The systems line most relevant to KSA treats memory as an agent-managed store. MemGPT frames the LLM as an operating system that self-edits tiered memory [@packer2023memgpt]; its open-source successor Letta is evaluated in Chapter 7 (0.678 action accuracy under the favourable NOOP→ABSTAIN mapping). MemGPT's memory edits are opaque function calls: there are no write-time decision criteria, no abstention, no lineage. Mem0 productionizes an extract–consolidate–retrieve pipeline whose LLM chooses ADD/UPDATE/DELETE/NOOP per item [@chhikara2025mem0]; its NOOP means "nothing new", not "too ambiguous to commit", and it exposes no supersession lineage (Chapter 7: 0.622 upper bound, invalid-commit rate 1.0). Zep/Graphiti stores a bi-temporal knowledge graph in which contradicted edges receive invalidation timestamps instead of deletion [@rasmussen2025zep] — the strongest shipped precedent for supersession-with-history — but invalidation is a side effect of LLM extraction, not a governed decision with an abstain option, and Zep never scores whether an invalidation was correct. MemOS proposes MemCube versioning/provenance and uses the word "governance" [@li2025memos], but publishes no decision rule for supersede-vs-keep-vs-refuse; through its adapter, supersession is not even observable (Chapter 7: bound-only). A-MEM evolves Zettelkasten-style notes but always integrates new information [@xu2025amem]; MemoryBank forgets on an Ebbinghaus schedule — time-driven, not evidence-driven [@zhong2024memorybank]; Generative Agents accumulate an append-only stream with reflection [@park2023generative].
+The systems line most relevant to ASK treats memory as an agent-managed store. MemGPT frames the LLM as an operating system that self-edits tiered memory [@packer2023memgpt]; its open-source successor Letta is evaluated in Chapter 7 (0.678 action accuracy under the favourable NOOP→ABSTAIN mapping). MemGPT's memory edits are opaque function calls: there are no write-time decision criteria, no abstention, no lineage. Mem0 productionizes an extract–consolidate–retrieve pipeline whose LLM chooses ADD/UPDATE/DELETE/NOOP per item [@chhikara2025mem0]; its NOOP means "nothing new", not "too ambiguous to commit", and it exposes no supersession lineage (Chapter 7: 0.622 upper bound, invalid-commit rate 1.0). Zep/Graphiti stores a bi-temporal knowledge graph in which contradicted edges receive invalidation timestamps instead of deletion [@rasmussen2025zep] — the strongest shipped precedent for supersession-with-history — but invalidation is a side effect of LLM extraction, not a governed decision with an abstain option, and Zep never scores whether an invalidation was correct. MemOS proposes MemCube versioning/provenance and uses the word "governance" [@li2025memos], but publishes no decision rule for supersede-vs-keep-vs-refuse; through its adapter, supersession is not even observable (Chapter 7: bound-only). A-MEM evolves Zettelkasten-style notes but always integrates new information [@xu2025amem]; MemoryBank forgets on an Ebbinghaus schedule — time-driven, not evidence-driven [@zhong2024memorybank]; Generative Agents accumulate an append-only stream with reflection [@park2023generative].
 
-Two recent lines are closer to KSA's decision framing. Memory-R1 trains an RL memory manager over a discrete ADD/UPDATE/DELETE/NOOP action space [@yan2025memoryr1] — the clearest prior formalization of writes as actions — but the policy is opaque (PPO/GRPO), the reward is answer-level, and NOOP is not uncertainty-driven abstention. RMM performs prospective merge-or-add at session end with retrospective RL-refined retrieval [@tan2025rmm]; its merge-vs-add echoes supersede-vs-keep but uses similarity thresholds without contradiction semantics or abstention. MemGuard assigns each memory an explicit functional role (type) at write time to prevent cross-type contamination [@ha2026memguard]; KSA's no-typing ablation (macro-F1 0.9399→0.5680, KEEP F1→0.0) makes the same argument experimentally.
+Two recent lines are closer to ASK's decision framing. Memory-R1 trains an RL memory manager over a discrete ADD/UPDATE/DELETE/NOOP action space [@yan2025memoryr1] — the clearest prior formalization of writes as actions — but the policy is opaque (PPO/GRPO), the reward is answer-level, and NOOP is not uncertainty-driven abstention. RMM performs prospective merge-or-add at session end with retrospective RL-refined retrieval [@tan2025rmm]; its merge-vs-add echoes supersede-vs-keep but uses similarity thresholds without contradiction semantics or abstention. MemGuard assigns each memory an explicit functional role (type) at write time to prevent cross-type contamination [@ha2026memguard]; ASK's no-typing ablation (macro-F1 0.9399→0.5680, KEEP F1→0.0) makes the same argument experimentally.
 
 ## 2.2 Memory lifecycle, revision, and conflict
 
@@ -138,11 +138,11 @@ Benchmark and dataset documentation follows the spirit of datasheets and model c
 
 ## 2.4 Belief revision and knowledge editing
 
-The AGM theory of belief change — expansion, revision, contraction under minimal-change postulates — is the formal ancestor of KEEP/SUPERSEDE [@alchourron1985theory]; classical AGM has no native abstain (non-prioritized revision covers declining input). KSA is best read as an operational, resource-bounded approximation of non-prioritized revision for LLM memory; no formal AGM compliance is claimed or proven. Parametric knowledge editing (ROME, MEMIT) evaluates edits in weight space with efficacy/generalization/specificity [@meng2022rome; @meng2023memit] — the decision-level-evaluation analogue for parameters; editing assumes the edit should happen, whereas KSA governs *whether* to commit at all.
+The AGM theory of belief change — expansion, revision, contraction under minimal-change postulates — is the formal ancestor of KEEP/SUPERSEDE [@alchourron1985theory]; classical AGM has no native abstain (non-prioritized revision covers declining input). ASK is best read as an operational, resource-bounded approximation of non-prioritized revision for LLM memory; no formal AGM compliance is claimed or proven. Parametric knowledge editing (ROME, MEMIT) evaluates edits in weight space with efficacy/generalization/specificity [@meng2022rome; @meng2023memit] — the decision-level-evaluation analogue for parameters; editing assumes the edit should happen, whereas ASK governs *whether* to commit at all.
 
 ## 2.5 Selective prediction and abstention
 
-Abstention descends from the reject option [@chow1970reject], selective classification [@elyaniv2010selective; @geifman2017selective], and learning to defer [@madras2018predict; @mozannar2020consistent]. KSA applies that established idea at memory-write time. TOKI's await-confirmation and RSCB-MC's retrieval-time abstention further narrow the contribution. The defensible result is a within-generator mechanism signature plus explicit false-commit/missed-update trade-off, not a general safety effect.
+Abstention descends from the reject option [@chow1970reject], selective classification [@elyaniv2010selective; @geifman2017selective], and learning to defer [@madras2018predict; @mozannar2020consistent]. ASK applies that established idea at memory-write time. TOKI's await-confirmation and RSCB-MC's retrieval-time abstention further narrow the contribution. The defensible result is a within-generator mechanism signature plus explicit false-commit/missed-update trade-off, not a general safety effect.
 
 ## 2.6 Personalization and preference modeling
 
@@ -150,7 +150,7 @@ PrefEval shows preference following collapses within about ten turns zero-shot [
 
 ## 2.7 Provenance and auditability
 
-Provenance *storage* is well-precedented: Zep's bi-temporal validity intervals and episodes [@rasmussen2025zep], TOKI's audit rows [@wang2026toki], MemOS's MemCube metadata [@li2025memos], and HaluMem's evaluation-side error tracing [@halumem2025]. Auditability as a governance requirement also appears in alignment and risk frameworks [@ouyang2022training; @bai2022constitutional; @nist2023airmf]. KSA scores provenance and lineage ablations inside its pilot; the no-lineage result demonstrates that action accuracy can miss lineage degradation, but author alignment prevents a general causal claim.
+Provenance *storage* is well-precedented: Zep's bi-temporal validity intervals and episodes [@rasmussen2025zep], TOKI's audit rows [@wang2026toki], MemOS's MemCube metadata [@li2025memos], and HaluMem's evaluation-side error tracing [@halumem2025]. Auditability as a governance requirement also appears in alignment and risk frameworks [@ouyang2022training; @bai2022constitutional; @nist2023airmf]. ASK scores provenance and lineage ablations inside its pilot; the no-lineage result demonstrates that action accuracy can miss lineage degradation, but author alignment prevents a general causal claim.
 
 ## 2.8 Positioning and allowed novelty claims
 
@@ -222,15 +222,15 @@ Accidental and adversarial sources considered: ambiguous or contradictory user s
 | Judge | correct answer graded wrong | adjudication ledger; κ between judges |
 
 
-# 4. KSA Architecture and Implementation
+# 4. ASK Architecture and Implementation
 
-All code anchors below refer to the canonical repository (`src/ksa/…`) and were verified in the pipeline reconstruction audit (`docs/audit/CONTROLLERRUN_RECONSTRUCTION.md`).
+All code anchors below refer to the canonical repository (`src/ask/…`) and were verified in the pipeline reconstruction audit (`docs/audit/CONTROLLERRUN_RECONSTRUCTION.md`).
 
 ## 4.1 Architectural overview
 
-The controller surrounds a SQLite-backed memory store with a governed write path: per-turn extraction of typed candidates, relation classification against retrieved priors, a scored three-action policy, transition execution with lineage, and retrieval/answer stages that consume only governed state. The per-session flow is driven by `ControllerOrchestrator.answer()` (`src/ksa/pipeline/orchestrator.py`).
+The controller surrounds a SQLite-backed memory store with a governed write path: per-turn extraction of typed candidates, relation classification against retrieved priors, a scored three-action policy, transition execution with lineage, and retrieval/answer stages that consume only governed state. The per-session flow is driven by `ControllerOrchestrator.answer()` (`src/ask/pipeline/orchestrator.py`).
 
-![KSA Controller architecture.](../docs/figures/figure_07_ksa_controller_architecture.png)
+![ASK Controller architecture.](../docs/figures/figure_07_ask_controller_architecture.png)
 
 ```text
 User turns
@@ -278,7 +278,7 @@ elif S_revise > θ_sup and relation_update > 0:  SUPERSEDE
 else:                                           KEEP
 ```
 
-with feature scoring in `src/ksa/controller/scoring.py`. The features are deliberately few and human-legible (a five-feature scorecard over relation evidence, type compatibility, provenance agreement, and conflict signals), so a runtime decision can be explained by inspection of its feature values.
+with feature scoring in `src/ask/controller/scoring.py`. The features are deliberately few and human-legible (a five-feature scorecard over relation evidence, type compatibility, provenance agreement, and conflict signals), so a runtime decision can be explained by inspection of its feature values.
 
 This runtime scorecard did **not** generate the released MGP-6 reference predictions. Those predictions came from the deterministic lexical predicate policy in `benchmarks/mgp6/systems/policies.py`. Chapter 7 therefore evaluates that artifact as a *reference policy*, not as evidence for the five-feature scorecard or its thresholds. The scorecard remains an implemented architectural option whose independent tuning and evaluation are open work.
 
@@ -288,7 +288,7 @@ The LLM-backed controller replaces the scorecard with a model decision (qwen/qwe
 
 ## 4.6 Memory operations and lineage
 
-`src/ksa/memory/operations.py` implements `insert_active`, `supersede` (links lineage, marks the prior inactive), `supersede_evict`, `retrieve_active` (excludes superseded records), and `get_lineage`. Lineage is what makes supersession auditable: the losing record remains queryable with its link to the superseding record, rather than being deleted or silently overwritten — the same auditability argument made formally by TOKI's audit rows [@wang2026toki] and operationally by Zep's invalidation timestamps [@rasmussen2025zep], here scored directly via the lineage-integrity metric.
+`src/ask/memory/operations.py` implements `insert_active`, `supersede` (links lineage, marks the prior inactive), `supersede_evict`, `retrieve_active` (excludes superseded records), and `get_lineage`. Lineage is what makes supersession auditable: the losing record remains queryable with its link to the superseding record, rather than being deleted or silently overwritten — the same auditability argument made formally by TOKI's audit rows [@wang2026toki] and operationally by Zep's invalidation timestamps [@rasmussen2025zep], here scored directly via the lineage-integrity metric.
 
 ## 4.7 Retrieval and answer-context compilation
 
@@ -372,7 +372,7 @@ Run provenance comes from `artifacts/results_ledger.json` v1.1; scientific inter
 | B3 recency | prefers most recent record; no abstention |
 | B4 naive overwrite | new information always replaces old; no abstention |
 | Reference policy | deterministic lexical predicate policy used by the released MGP-6 prediction artifact; not the prototype five-feature scorecard |
-| LLM controller | full KSA with qwen/qwen3.5-9b as the decision policy |
+| LLM controller | full ASK with qwen/qwen3.5-9b as the decision policy |
 | Zero-shot LLM decision | same model asked for the action without the governance scaffold |
 | Few-shot (6-shot) LLM decision | 174/180 predictions; six missing IDs scored INVALID for a coverage-aware bound (0.7833 / 0.7692); `incomplete` |
 | External adapters | Mem0 2.0.11, Letta (MemGPT), Graphiti 0.29.2, MemOS via adapter harnesses |
@@ -489,7 +489,7 @@ v7 stratified run (n = 180 each; judge google/gemma-4-31b-it):
 | System | Correct | Accuracy | SSP |
 |---|---|---|---|
 | B4 naive overwrite | 114 | **0.6333** | 11/30 |
-| KSA controller | 110 | **0.6111** | 11/30 |
+| ASK controller | 110 | **0.6111** | 11/30 |
 | B2 flat vector | 80 | 0.4444 | 6/30 |
 | B3 recency | 43 | 0.2389 | 0/30 |
 | B1 no-memory | 9 | 0.05 | — |
@@ -684,13 +684,13 @@ Fields (abridged): `scenario_id` (stable ID, e.g. `MGP6V2-T3-TEST-016`), `type` 
 
 This is an abridgement of the restored released artifact, not a synthetic scorecard trace. Gold labels are joined from the dataset during evaluation, and system/run identity is encoded by the artifact path (for example, `artifacts/mgp6_v2/ref_5systems/controller/predictions.jsonl`).
 
-## A.3 Memory record and lineage (store: `src/ksa/memory/operations.py`)
+## A.3 Memory record and lineage (store: `src/ask/memory/operations.py`)
 
 Records carry: id, type (e.g. stable_pref / transient_pref / episodic_fact), content, holder, provenance (source turn/session), status (active/superseded), `superseded_by` lineage link, timestamps. `retrieve_active` excludes superseded records; `get_lineage` walks the chain.
 
 # Appendix B. Prompt Contracts (pointer)
 
-All prompt templates are versioned under `prompts/` (`extraction_v0…v_final3.j2`, `relation_stage1_v0.j2`, `relation_stage2_v0.j2`) and referenced by the run configs. Contract requirements: strict JSON output schemas; retrieved memory delimited as untrusted data; the action vocabulary enumerated; unparsable output resolves to no mutation. Judge prompts and guard order are documented in `src/ksa/eval/longmemeval.py` (§4.8). Prompts are not duplicated here to keep a single source of truth.
+All prompt templates are versioned under `prompts/` (`extraction_v0…v_final3.j2`, `relation_stage1_v0.j2`, `relation_stage2_v0.j2`) and referenced by the run configs. Contract requirements: strict JSON output schemas; retrieved memory delimited as untrusted data; the action vocabulary enumerated; unparsable output resolves to no mutation. Judge prompts and guard order are documented in `src/ask/eval/longmemeval.py` (§4.8). Prompts are not duplicated here to keep a single source of truth.
 
 # Appendix C. Metric Definitions
 

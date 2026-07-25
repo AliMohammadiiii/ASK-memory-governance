@@ -46,7 +46,7 @@ inputs_raw/
 audit_workspace/
 final_release/
 return_package_*.tar.gz
-ksa_memory_governance_final_*.zip
+ask_memory_governance_final_*.zip
 artifacts/raw/
 artifacts/final/
 *.sqlite
