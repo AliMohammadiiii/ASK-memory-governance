@@ -16,7 +16,7 @@
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "PENDING_EVIDENCE_ROUTING_V2_COMMIT",
+    "code_commit": "932459ade6468a40126b06a2376e0e4cd43761dd",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "execution_contract": {
