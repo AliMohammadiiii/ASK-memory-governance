@@ -109,3 +109,15 @@ changed.
   `e309893a7e643baa1d5a409d665c49656ceb977e`, a clean tracked worktree, and
   `hidden_gold_accessed=false`. No hidden input, gold, final human gold, or
   private audit asset was accessed.
+
+## 2026-07-25 — B2--B4 public development executions recorded
+
+- Completed and public-scored B2 flat retrieval, B3 recency, and B4 overwrite
+  over all 180 public development records, using separate ignored output paths
+  and the same pre-registered model, seed, and decoding controls.
+- Each run passed strict coverage with 180 valid JSON predictions and zero
+  failures, retries, or invalid responses. Public-dev accuracy / Macro-F1 was
+  B2: 0.3556 / 0.2380, B3: 0.3389 / 0.2309, and B4: 0.3444 / 0.2064.
+- All three manifests record commit `ff33594e73f46e1b9d6281ea7ec5b90ee2960d17`,
+  a clean tracked worktree, and `hidden_gold_accessed=false`. None is selected
+  for hidden evaluation; no private asset was accessed.

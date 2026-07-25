@@ -31,13 +31,14 @@ provider or hidden-gold access. Its development accuracy was 0.3333 and
 Macro-F1 was 0.2434, so it is not selected for hidden evaluation. See
 `ADAPTER_IMPLEMENTATION_REPORT.md` for the adapter contract and evidence.
 
-The B1 no-memory model-backed adapter has also completed public dev with the
-same provider/model, frozen development decoding controls, and a clean tracked
-worktree recorded in its manifest. It produced 180 coverage-validated
-predictions, zero failures/retries/invalid responses, accuracy 0.3667, and
-Macro-F1 0.3150. This is development-only evidence, not a selected hidden
-configuration; its full protocol and public-only score are in
-`DEV_EXPERIMENT_REPORT.md`.
+The B1--B4 model-backed baseline adapters have also completed public dev with
+the same provider/model, frozen development decoding controls, and a clean
+tracked worktree recorded in each manifest. All produced 180
+coverage-validated predictions with zero failures/retries/invalid responses.
+Their accuracy / Macro-F1 values were B1: 0.3667 / 0.3150, B2: 0.3556 / 0.2380,
+B3: 0.3389 / 0.2309, and B4: 0.3444 / 0.2064. These are development-only
+evidence, not selected hidden configurations; the full protocol and public-only
+scores are in `DEV_EXPERIMENT_REPORT.md`.
 
 ## Hidden-run authorization
 
@@ -47,8 +48,8 @@ has occurred.
 
 ## Next gate
 
-Run B2--B4, the live-model controller, and required model-backed ablations on
-public dev, score them with the public scorer, and record every dev-informed
-choice. Only then replace the development index with a fully frozen final
-configuration and authorization audit. Do not open hidden gold before finalized
-prediction files are coverage-validated and hashed.
+Run the live-model controller and required model-backed ablations on public dev,
+score them with the public scorer, and record every dev-informed choice. Only
+then replace the development index with a fully frozen final configuration and
+authorization audit. Do not open hidden gold before finalized prediction files
+are coverage-validated and hashed.

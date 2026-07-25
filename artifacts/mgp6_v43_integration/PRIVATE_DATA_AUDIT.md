@@ -20,6 +20,10 @@
   `benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl`; its ignored prediction,
   raw-response, manifest, and public metric files record
   `hidden_gold_accessed=false`.
+- The subsequent model-backed B2--B4 public-dev runs likewise used only that
+  public development file. Their ignored artifacts record
+  `hidden_gold_accessed=false`; no private component map was read by their
+  public scoring.
 - The tracked public prompt template and loader contain no prohibited private
   keys; ignored fixture and provider-run logs contain public IDs and model
   responses only, with no private fields.

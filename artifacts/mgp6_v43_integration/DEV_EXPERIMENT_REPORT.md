@@ -3,11 +3,11 @@
 ## Scope and boundary
 
 This records completed development-only evaluations of `decision_zero_shot`,
-`b1` (no-memory), and the deterministic `rules_controller`. Each used only the
-public 180-record development split and public development labels. None read
-hidden inputs, hidden gold, final human gold, private mappings, or audit
-records. These are not final hidden results and must not be reported as
-real-world generalization.
+B1--B4, and the deterministic `rules_controller`. Each used only the public
+180-record development split and public development labels. None read hidden
+inputs, hidden gold, final human gold, private mappings, or audit records.
+These are not final hidden results and must not be reported as real-world
+generalization.
 
 ## Executed configuration
 
@@ -137,9 +137,43 @@ cost or routed-provider claim is made. `hidden_gold_accessed=false`; the public
 scorer did not read the private component map and did not compute component
 intervals.
 
+## B2--B4 model-backed baseline results
+
+B2 (flat retrieval), B3 (recency), and B4 (overwrite) completed on the public
+dev split. Their manifests each record commit
+`ff33594e73f46e1b9d6281ea7ec5b90ee2960d17`, a clean tracked worktree, the
+same public dataset hash, the Qwen/OpenRouter model ID, seed 4301, temperature
+0.0, 128 maximum new tokens, `reasoning.effort=none`, and
+`hidden_gold_accessed=false`. All three passed strict coverage validation with
+180 valid JSON predictions and zero failures, retries, or invalid responses.
+
+| System | Accuracy | Macro-F1 | KEEP / SUPERSEDE / ABSTAIN | Prompt / completion tokens | Mean / p95 latency (ms) | Wall time (s) |
+| --- | ---: | ---: | --- | ---: | ---: | ---: |
+| B2 flat retrieval | 0.3556 | 0.2380 | 7 / 165 / 8 | 107,374 / 1,426 | 2,685.372 / 6,272.670 | 484.539 |
+| B3 recency | 0.3389 | 0.2309 | 9 / 157 / 14 | 41,863 / 1,422 | 2,796.578 / 8,643.082 | 504.038 |
+| B4 overwrite | 0.3444 | 0.2064 | 11 / 169 / 0 | 104,107 / 1,418 | 3,009.834 / 10,459.101 | 542.411 |
+
+Per-class F1 (KEEP / SUPERSEDE / ABSTAIN) was 0.0896 / 0.5067 / 0.1176 for B2,
+0.0870 / 0.4977 / 0.1081 for B3, and 0.1127 / 0.5066 / 0.0000 for B4. B4's
+zero ABSTAIN predictions are consistent with its pre-registered two-action
+constraint. The public scorer did not read the private component map, so no
+component-cluster intervals are presented. Provider routing and price were not
+reported; no cost claim is made.
+
+The ignored artifact hashes are recorded for replay: B2 prediction/raw/manifest
+SHA-256 values are `7bdbdecead66a15638c7b299df5163217035ceea73df2e877c0995528e362a78`,
+`3fc8873750f9b623f5fa45ed353c1a547d7835aeab974097d0f4fce468a68c52`, and
+`3e549e632cf9c1568214970f4a73b6dbd0356610959348d40d2416c13a625a90`;
+B3's are `eac02f8aa27abefc91886c32ee86b1050335757586aaab4b358e1af17bffe2f6`,
+`453f2b3b347d948ea2b38be0c69272110f484fafec0c7cd0969c26c02edd435e`, and
+`f97a10ce94ecef09886ebc5e99c151cc853ea348cb49c471dc8efd2ea3850419`;
+B4's are `f296cb1ce580feccfff4124c4b607aa893583094dd24ae0ed12cce9dd8fe8950`,
+`687ecabcd98017a7ae5f9d6e77c56d7a5af4126385773afe10d476251f74ba5b`, and
+`551c29dc050bf3bee51cbe616fe6d411e7992079a7d5408b137ada2f02a354bd`.
+
 ## Development decision
 
-The zero-shot, B1, and rules-controller configurations are valid development
+The zero-shot, B1--B4, and rules-controller configurations are valid development
 runs but are **not selected** for final hidden evaluation. Their distributions
 and metrics require comparison with the remaining pre-registered systems before
 model, prompt, and system choices are frozen. No prompt, model, split, or
@@ -156,8 +190,8 @@ hidden-gold access; its manifest records a clean tracked worktree. Accuracy was
 KEEP 0, SUPERSEDE 39, ABSTAIN 141. It is not selected for hidden evaluation.
 
 The generic-label ambiguity is resolved: B1--B4, both controller modes, and
-the required ablations now have explicit v4.3 adapter contracts. B1 has now
-completed; B2--B4, the live-model controller, and the four model-backed
-ablations remain pending. See `ADAPTER_IMPLEMENTATION_REPORT.md`.
+the required ablations now have explicit v4.3 adapter contracts. B1--B4 have
+completed; the live-model controller and the four model-backed ablations remain
+pending. See `ADAPTER_IMPLEMENTATION_REPORT.md`.
 
 The hidden-run authorization remains absent and false.
