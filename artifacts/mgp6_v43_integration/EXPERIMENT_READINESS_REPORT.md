@@ -40,6 +40,12 @@ B3: 0.3389 / 0.2309, and B4: 0.3444 / 0.2064. These are development-only
 evidence, not selected hidden configurations; the full protocol and public-only
 scores are in `DEV_EXPERIMENT_REPORT.md`.
 
+The ASK live-model controller has also completed public dev with 180
+coverage-validated predictions and zero failures/retries/invalid responses. Its
+accuracy was 0.3333 and Macro-F1 was 0.1771; it predicted SUPERSEDE on 176 of
+180 records. This is development-only evidence, not a selected hidden
+configuration, and it is fully documented in `DEV_EXPERIMENT_REPORT.md`.
+
 ## Hidden-run authorization
 
 Not generated. `authorized` is not true. Hidden inputs and hidden gold are held
@@ -48,8 +54,8 @@ has occurred.
 
 ## Next gate
 
-Run the live-model controller and required model-backed ablations on public dev,
-score them with the public scorer, and record every dev-informed choice. Only
-then replace the development index with a fully frozen final configuration and
-authorization audit. Do not open hidden gold before finalized prediction files
-are coverage-validated and hashed.
+Run the required model-backed ablations on public dev, score them with the
+public scorer, and record every dev-informed choice. Only then replace the
+development index with a fully frozen final configuration and authorization
+audit. Do not open hidden gold before finalized prediction files are
+coverage-validated and hashed.

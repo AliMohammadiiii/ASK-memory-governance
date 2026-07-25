@@ -22,15 +22,16 @@
   "development_experiment": "PASS: completed public-dev decision_zero_shot OpenRouter/Qwen run; 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false. Development result recorded; configuration is not selected for hidden evaluation.",
   "b1_development_experiment": "PASS: completed public-dev B1 no-memory OpenRouter/Qwen run; 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false; accuracy=0.3667, macro_f1=0.3150. Development result recorded; configuration is not selected for hidden evaluation.",
   "b2_b4_development_experiments": "PASS: completed public-dev B2 flat-retrieval, B3 recency, and B4 overwrite OpenRouter/Qwen runs; each had 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false. Accuracy/macro_f1: B2=0.3556/0.2380, B3=0.3389/0.2309, B4=0.3444/0.2064. Development results recorded; none is selected for hidden evaluation.",
+  "live_model_controller_development_experiment": "PASS: completed public-dev ASK live-model-controller OpenRouter/Qwen run; 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false; accuracy=0.3333, macro_f1=0.1771. Development result recorded; configuration is not selected for hidden evaluation.",
   "rules_controller_development_experiment": "PASS: committed local rules controller ran all 180 public-dev records with 0 failures/retries/invalid responses/provider calls and hidden_gold_accessed=false; accuracy=0.3333, macro_f1=0.2434, not selected for hidden evaluation.",
-  "development_runner_contract": "B1-B4, decision zero-shot, rules/live controllers, and required ablations have explicit public-only v4.3 adapters and per-system prompt/action contracts. B1-B4 and decision zero-shot model-backed dev executions are complete; the live-model controller and model-backed ablations remain pending.",
+  "development_runner_contract": "B1-B4, decision zero-shot, rules/live controllers, and required ablations have explicit public-only v4.3 adapters and per-system prompt/action contracts. B1-B4, decision zero-shot, and the live-model controller have completed model-backed dev executions; only the model-backed ablations remain pending.",
   "hidden_run_authorized": false,
   "hidden_run_completed": false,
   "remaining_before_hidden": [
-    "Run and record the live-model controller and the required model-backed ablations on public dev; document every dev-informed choice.",
+    "Run and record the required model-backed ablations on public dev; document every dev-informed choice.",
     "Select final systems and exact accessible provider model revisions.",
     "Record the post-development code commit and clean-worktree state.",
     "Freeze all controls and generate a valid FINAL_HIDDEN_RUN_AUTHORIZATION.json before any hidden prediction."
   ],
-  "next_required_action": "Run and score the live-model controller and model-backed ablations on public dev, then select final systems; do not access hidden gold."
+  "next_required_action": "Run and score the model-backed ablations on public dev, then select final systems; do not access hidden gold."
 }

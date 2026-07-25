@@ -52,6 +52,12 @@ failures/retries/invalid responses. Their accuracy / Macro-F1 values were B1:
 worktree. None is selected for hidden evaluation; see
 `DEV_EXPERIMENT_REPORT.md`.
 
+The live-model controller has also completed public dev: 180/180 validated
+predictions, zero failures/retries/invalid responses, accuracy 0.3333, and
+Macro-F1 0.1771. Its manifest records a clean tracked worktree and
+`hidden_gold_accessed=false`. It is development-only evidence and is not
+selected for hidden evaluation.
+
 ## Verification
 
 - Full repository tests: 539 passed, 11 skipped.
@@ -63,7 +69,7 @@ worktree. None is selected for hidden evaluation; see
 
 ## Remaining development work
 
-Run the live-model controller and the four model-backed ablations on public dev;
-score them with `scripts/score_mgp6_v43.py`, document every selection decision,
-and only then freeze the selected configurations. No hidden prediction or
-private scoring is authorized.
+Run the four model-backed ablations on public dev; score them with
+`scripts/score_mgp6_v43.py`, document every selection decision, and only then
+freeze the selected configurations. No hidden prediction or private scoring is
+authorized.

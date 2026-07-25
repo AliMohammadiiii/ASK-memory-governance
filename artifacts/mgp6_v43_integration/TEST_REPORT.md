@@ -25,6 +25,7 @@
 | `python3 scripts/run_mgp6_v43.py ... --input benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl --provider openrouter --model-id qwen/qwen3.5-9b --reasoning-effort none --parse-retry-max-attempts 2` | PASS — completed public-dev `decision_zero_shot` execution: 180 strict-coverage predictions, 180 valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. Aggregate development metrics are in `DEV_EXPERIMENT_REPORT.md`. |
 | `.venv/bin/python scripts/run_mgp6_v43.py --system b1 ...public/dev.jsonl` and `scripts/score_mgp6_v43.py` | PASS — completed and public-scored B1 no-memory dev execution: 180 strict-coverage predictions, 180 valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. |
 | `.venv/bin/python scripts/run_mgp6_v43.py --system b2`, `b3`, and `b4` on public dev, followed by `scripts/score_mgp6_v43.py` | PASS — completed and public-scored B2--B4 executions: each produced 180 strict-coverage predictions and valid JSON responses with 0 failures, retries, or hidden-gold access. |
+| `.venv/bin/python scripts/run_mgp6_v43.py --system live_model_controller ...public/dev.jsonl` and `scripts/score_mgp6_v43.py` | PASS — completed and public-scored the ASK live-model-controller dev execution: 180 strict-coverage predictions, valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. |
 | `.venv/bin/pytest tests/test_mgp6_v43.py` after adapter implementation | PASS — 13 passed. It covers distinct public views, action-set constraints, the deterministic rules controller, prompt hashes, scoring, resume safety, and leakage protection. |
 | `.venv/bin/python scripts/run_mgp6_v43.py --system rules_controller ...dev.jsonl` | PASS — 180 committed public-dev predictions; 0 failures/retries/invalid responses/provider calls; hidden gold not accessed. |
 
@@ -35,12 +36,12 @@ complete command sequence was re-run locally under Python 3.12.12 and passed
 (539 passed, 11 skipped; Ruff; and Mypy). No remote GitHub Actions run is
 claimed because this branch has not been pushed.
 
-Six development candidates have run and are documented separately:
-`decision_zero_shot` and B1--B4 (model-backed), plus `rules_controller` (local
-deterministic). None is selected for final hidden evaluation. No
-hidden-prediction or private-scoring experiment has run. The live-provider
-smoke above used public train records only and is not reported as system
-performance.
+Seven development candidates have run and are documented separately:
+`decision_zero_shot`, B1--B4, and `live_model_controller` (model-backed), plus
+`rules_controller` (local deterministic). None is selected for final hidden
+evaluation. No hidden-prediction or private-scoring experiment has run. The
+live-provider smoke above used public train records only and is not reported as
+system performance.
 
 The full repository suite was re-run after adapter implementation and passed:
 539 passed, 11 skipped. The remaining model-backed configurations are now

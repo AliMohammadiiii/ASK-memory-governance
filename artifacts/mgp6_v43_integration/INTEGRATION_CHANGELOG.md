@@ -121,3 +121,16 @@ changed.
 - All three manifests record commit `ff33594e73f46e1b9d6281ea7ec5b90ee2960d17`,
   a clean tracked worktree, and `hidden_gold_accessed=false`. None is selected
   for hidden evaluation; no private asset was accessed.
+
+## 2026-07-26 — live-model-controller development execution recorded
+
+- Completed and public-scored the ASK `live_model_controller` over all 180
+  public development records using its controller-policy prompt and the same
+  pre-registered provider, model, seed, and decoding controls.
+- Strict coverage validation passed with 180 valid JSON predictions and zero
+  failures, retries, or invalid responses. Public-dev accuracy was 0.3333 and
+  Macro-F1 was 0.1771; 176 predictions were SUPERSEDE. This is development
+  evidence only and the configuration is not selected for hidden evaluation.
+- The manifest records commit `b5a6c602492c2bbcc8dd688371bd4f8d08556e03`, a
+  clean tracked worktree, and `hidden_gold_accessed=false`. No hidden input,
+  gold, final human gold, or private audit asset was accessed.

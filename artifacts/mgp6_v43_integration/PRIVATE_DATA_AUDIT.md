@@ -24,6 +24,9 @@
   public development file. Their ignored artifacts record
   `hidden_gold_accessed=false`; no private component map was read by their
   public scoring.
+- The ASK live-model-controller public-dev run likewise used only that public
+  development file. Its ignored prediction, raw-response, manifest, and public
+  metric files record `hidden_gold_accessed=false`.
 - The tracked public prompt template and loader contain no prohibited private
   keys; ignored fixture and provider-run logs contain public IDs and model
   responses only, with no private fields.

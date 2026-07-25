@@ -3,11 +3,11 @@
 ## Scope and boundary
 
 This records completed development-only evaluations of `decision_zero_shot`,
-B1--B4, and the deterministic `rules_controller`. Each used only the public
-180-record development split and public development labels. None read hidden
-inputs, hidden gold, final human gold, private mappings, or audit records.
-These are not final hidden results and must not be reported as real-world
-generalization.
+B1--B4, `live_model_controller`, and the deterministic `rules_controller`.
+Each used only the public 180-record development split and public development
+labels. None read hidden inputs, hidden gold, final human gold, private
+mappings, or audit records. These are not final hidden results and must not be
+reported as real-world generalization.
 
 ## Executed configuration
 
@@ -171,13 +171,40 @@ B4's are `f296cb1ce580feccfff4124c4b607aa893583094dd24ae0ed12cce9dd8fe8950`,
 `687ecabcd98017a7ae5f9d6e77c56d7a5af4126385773afe10d476251f74ba5b`, and
 `551c29dc050bf3bee51cbe616fe6d411e7992079a7d5408b137ada2f02a354bd`.
 
+## Live-model controller development result
+
+The ASK `live_model_controller` completed public development using the
+controller-policy prompt and full public model view. Its manifest records commit
+`b5a6c602492c2bbcc8dd688371bd4f8d08556e03`, a clean tracked worktree, seed
+4301, temperature 0.0, 128 maximum new tokens, `reasoning.effort=none`, and
+`hidden_gold_accessed=false`. The prompt and system-prompt hashes are
+`51ba5ad47be71d5b6c2cf007e5eac1e119d3796f0a7dd0e393cce454af83bb72` and
+`7d13392e9e4a0acba3ef2611872834df64d87fc7823cf8dfa12357df1969852d`.
+
+Strict validation passed: 180 expected IDs, 180 predictions, no duplicate,
+unknown, or missing public IDs, and zero invalid responses, failures, or
+retries. Accuracy was 0.3333, Macro-F1 0.1771, coverage 1.0000, selective
+accuracy 0.3333, and abstention precision/recall 0.0000/0.0000. It predicted
+KEEP 4, SUPERSEDE 176, and ABSTAIN 0. Per-class F1 (KEEP / SUPERSEDE / ABSTAIN)
+was 0.0313 / 0.5000 / 0.0000.
+
+The run used 109,147 prompt tokens and 1,432 completion tokens. Wall-clock time
+was 527.952 seconds; mean/median/p95 request latency was 2,929.495 / 1,856.621
+/ 8,537.174 ms. No provider routing or price was returned, and no cost claim is
+made. The public scorer did not read the private component map, so it did not
+compute component-cluster intervals. Ignored prediction/raw/manifest SHA-256
+values are `5f2dde4e824aef39f7ed5dee000e7aab8a1994154a4b104d527f39b765fa1f76`,
+`63a0c48138773d308a200b20041c620336385df979d526e7efd8abfda2033b39`, and
+`45790c3f1c705c061e4adb811bb67343a34a5b6ea3442b1a4e3f7b2dd6709ced`.
+
 ## Development decision
 
-The zero-shot, B1--B4, and rules-controller configurations are valid development
-runs but are **not selected** for final hidden evaluation. Their distributions
-and metrics require comparison with the remaining pre-registered systems before
-model, prompt, and system choices are frozen. No prompt, model, split, or
-release record was changed as a result of these runs.
+The zero-shot, B1--B4, live-model-controller, and rules-controller
+configurations are valid development runs but are **not selected** for final
+hidden evaluation. Their distributions and metrics require comparison with the
+remaining pre-registered ablations before model, prompt, and system choices are
+frozen. No prompt, model, split, or release record was changed as a result of
+these runs.
 
 ## Rules-controller development result
 
@@ -190,8 +217,8 @@ hidden-gold access; its manifest records a clean tracked worktree. Accuracy was
 KEEP 0, SUPERSEDE 39, ABSTAIN 141. It is not selected for hidden evaluation.
 
 The generic-label ambiguity is resolved: B1--B4, both controller modes, and
-the required ablations now have explicit v4.3 adapter contracts. B1--B4 have
-completed; the live-model controller and the four model-backed ablations remain
+the required ablations now have explicit v4.3 adapter contracts. B1--B4 and
+both controller modes have completed; the four model-backed ablations remain
 pending. See `ADAPTER_IMPLEMENTATION_REPORT.md`.
 
 The hidden-run authorization remains absent and false.
