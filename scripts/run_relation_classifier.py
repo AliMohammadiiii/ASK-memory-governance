@@ -12,15 +12,15 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.classifier import CandidateMemory, PriorMemory, RelationClassifier  # noqa: E402
-from ksa.classifier.metrics import (  # noqa: E402
+from ask.classifier import CandidateMemory, PriorMemory, RelationClassifier  # noqa: E402
+from ask.classifier.metrics import (  # noqa: E402
     LABELS,
     add_bootstrap_f1_cis,
     confusion_counts,
     per_label_metrics,
 )
-from ksa.inference.llm import StructuredLLM  # noqa: E402
-from ksa.inference.ollama import OllamaLLM  # noqa: E402
+from ask.inference.llm import StructuredLLM  # noqa: E402
+from ask.inference.ollama import OllamaLLM  # noqa: E402
 
 
 def _read_jsonl(path: Path) -> list[dict]:

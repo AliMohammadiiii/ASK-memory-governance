@@ -20,7 +20,7 @@ State the narrow gap. Avoid primacy claims: related systems contain update actio
 
 Define each action precisely. Stress that ABSTAIN is a no-mutation safety action, not an answer-level refusal, and that SUPERSEDE preserves the old record for audit.
 
-## 6. KSA places model proposals inside a deterministic governance boundary
+## 6. ASK places model proposals inside a deterministic governance boundary
 
 Walk left to right. Extraction and relation classification can be model-assisted; the action vocabulary, no-mutation behavior, lineage update, and active-only retrieval remain deterministic invariants.
 
@@ -122,4 +122,4 @@ The six-shot row is coverage-aware: six missing predictions are aligned as INVAL
 
 ## 31. Backup — architecture and code ownership follow the evaluation layers
 
-Point to the repository structure if implementation questions arise: src/ksa contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs.
+Point to the repository structure if implementation questions arise: src/ask contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs.

@@ -29,7 +29,7 @@
   "runs": [
     {
       "run_id": "v3_10_19",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_10_19_seed0_v3/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_10_19_seed0_v3/controller",
       "status": "complete",
       "n_items": 10,
       "n_correct": 5,
@@ -69,7 +69,7 @@
     },
     {
       "run_id": "v3_20_29",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_20_29_seed0_v3/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_20_29_seed0_v3/controller",
       "status": "complete",
       "n_items": 10,
       "n_correct": 4,
@@ -104,7 +104,7 @@
     },
     {
       "run_id": "v4_100_129",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v4/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v4/controller",
       "status": "complete",
       "n_items": 30,
       "n_correct": 17,
@@ -149,7 +149,7 @@
     },
     {
       "run_id": "v5_misnamed_aborted",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v5/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v5/controller",
       "status": "aborted",
       "n_items": null,
       "n_correct": null,
@@ -161,7 +161,7 @@
     },
     {
       "run_id": "v6_200_239",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_200_239_seed0_v6/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_200_239_seed0_v6/controller",
       "status": "complete",
       "n_items": 40,
       "n_correct": 29,
@@ -206,7 +206,7 @@
     },
     {
       "run_id": "v7_strat30_controller",
-      "dir": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller",
       "status": "complete",
       "n_items": 180,
       "n_correct": 110,
@@ -257,7 +257,7 @@
     },
     {
       "run_id": "v8_replay_nothink",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller",
       "status": "complete",
       "n_items": 70,
       "n_correct": 25,
@@ -306,7 +306,7 @@
     },
     {
       "run_id": "v8_replay_invalid",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures",
       "status": "invalid",
       "n_items": 0,
       "n_correct": 0,
@@ -318,7 +318,7 @@
     },
     {
       "run_id": "v8_topup110_modal",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
       "status": "incomplete",
       "n_items": 110,
       "n_predictions_written": 84,
@@ -344,7 +344,7 @@
     },
     {
       "run_id": "v8_topup110_openrouter",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller",
       "status": "incomplete",
       "n_items": 110,
       "n_predictions_written": 3,
@@ -357,7 +357,7 @@
     },
     {
       "run_id": "v8_adjudicated_raw",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw",
       "status": "complete",
       "n_items": 180,
       "n_correct": 135,
@@ -408,7 +408,7 @@
     },
     {
       "run_id": "v8_adjudicated_final",
-      "dir": "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller",
+      "dir": "external://Master/ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller",
       "status": "complete",
       "n_items": 180,
       "n_correct": 139,

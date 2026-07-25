@@ -8,12 +8,12 @@ decision: first the baselines, then the controller.
 In Colab or a GPU shell:
 
 ```bash
-unzip ksa_controller_final_test_20260612.zip
-cd ksa_controller_final_test
-KSA_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
+unzip ask_controller_final_test_20260612.zip
+cd ask_controller_final_test
+ASK_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
 ```
 
-`KSA_SETUP_OLLAMA=0` keeps setup focused on the HuggingFace runner. The script
+`ASK_SETUP_OLLAMA=0` keeps setup focused on the HuggingFace runner. The script
 creates `.venv`, installs the package, installs dependencies, and runs tests.
 
 ## 2. Run the ordered test

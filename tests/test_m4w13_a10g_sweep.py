@@ -64,7 +64,7 @@ def test_pilot_configs_are_exact_fixed_grid() -> None:
 
 
 def test_pilot_dry_run_builds_six_controller_commands(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("KSA_PYTHON", "/tmp/ksa-python")
+    monkeypatch.setenv("ASK_PYTHON", "/tmp/ask-python")
 
     runs = build_stage_runs(_args(tmp_path))
 
@@ -79,7 +79,7 @@ def test_pilot_dry_run_builds_six_controller_commands(tmp_path: Path, monkeypatc
     assert len(runs) == 6
     for run in runs:
         cmd = run.command
-        assert cmd[0] == "/tmp/ksa-python"
+        assert cmd[0] == "/tmp/ask-python"
         assert cmd[cmd.index("--systems") + 1] == "controller"
         assert cmd[cmd.index("--limit") + 1] == "12"
         assert cmd[cmd.index("--max-workers") + 1] == "1"
@@ -88,7 +88,7 @@ def test_pilot_dry_run_builds_six_controller_commands(tmp_path: Path, monkeypatc
 
 
 def test_max_a10g_quality_preset_builds_single_locked_command(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.setenv("KSA_PYTHON", "/tmp/ksa-python")
+    monkeypatch.setenv("ASK_PYTHON", "/tmp/ask-python")
 
     runs = build_stage_runs(
         _args(

@@ -13,11 +13,11 @@ from pathlib import Path
 
 import numpy as np
 
-from ksa.classifier.schema import RelationOutput
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
-from ksa.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
-from ksa.inference.fake import FakeLLM
-from ksa.pipeline.orchestrator import ControllerOrchestrator
+from ask.classifier.schema import RelationOutput
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
+from ask.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.inference.fake import FakeLLM
+from ask.pipeline.orchestrator import ControllerOrchestrator
 
 
 class _SlowEchoExtractor:

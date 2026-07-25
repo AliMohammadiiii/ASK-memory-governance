@@ -3,8 +3,9 @@
 # competency-stratified
 # LongMemEval-M slice of 30 questions per competency (6 x 30 = 180 questions),
 # 10 shards, capturing full per-question data (answers, tokens, latency,
-# judge verdicts, action logs, LLM-call traces) with the v7 fixes plus the v8
-# publication-readiness overlay applied.
+# judge verdicts, action logs, LLM-call traces) with the V12 Qwen3.5-9B
+# controller settings. The canonical release entry point remains
+# scripts/evaluation/run_longmemeval_final.sh.
 #
 # Prereq: export OPENROUTER_API_KEY=... before running.
 #   export OPENROUTER_API_KEY=sk-or-v1-...
@@ -38,7 +39,10 @@ PY
 SAMPLE_TO=$(( ROWS - 1 ))
 echo "[strat30] slice rows=${ROWS} -> range 0..${SAMPLE_TO}"
 
-OUT="${OUT:-runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed${SEED}_v8}"
+# Keep the grounded-preference run separate from v7/v8 artifacts. Reusing an
+# older output directory would make the cascade resume already-completed answers
+# that were generated with the superseded preference prompt.
+OUT="${OUT:-runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed${SEED}_v12_qwen9b}"
 
 # 2) Run only the contribution (controller) with full data capture.
 JUDGE_OPENAI_EXTRA_BODY_JSON='{"provider":{"order":["wandb","venice"],"only":["wandb","venice"],"allow_fallbacks":true},"reasoning":{"enabled":false}}' \
@@ -47,20 +51,30 @@ OPENAI_API_KEY_ENV=OPENROUTER_API_KEY \
 OPENAI_EXTRA_BODY_JSON='{"provider":{"order":["venice","deepinfra","siliconflow"],"only":["venice","deepinfra","siliconflow"],"allow_fallbacks":true},"reasoning":{"enabled":false}}' \
 FAST_MODEL=qwen/qwen3.5-9b \
 BIG_MODEL=qwen/qwen3.5-9b \
+ANSWER_MODEL=qwen/qwen3.5-9b \
+ANSWER_MAX_NEW_TOKENS=4096 \
 ANSWER_ESCALATION_BASE_URL=https://openrouter.ai/api/v1 \
-ANSWER_ESCALATION_MODEL=qwen/qwen3.5-35b-a3b \
+ANSWER_ESCALATION_MODEL=qwen/qwen3.5-9b \
 JUDGE_MODEL=google/gemma-4-31b-it \
 EXTRACTION_MAX_NEW_TOKENS=512 \
 RELATION_MAX_NEW_TOKENS=256 \
-OPENAI_MAX_MODEL_LEN=32768 \
+OPENAI_MAX_MODEL_LEN=65536 \
+OPENAI_RETRY_MAX_ATTEMPTS=5 \
+OPENAI_RETRY_INITIAL_DELAY_S=2 \
+OPENAI_RETRY_MAX_DELAY_S=60 \
 RETRIEVAL_K=16 \
 CONTROLLER_MEMORY_TOP_K=64 \
-EXTRACTION_CONCURRENCY=8 \
-ANSWER_CONTEXT_MAX_TOKENS=12000 \
+EXTRACTION_CONCURRENCY=4 \
+ANSWER_CONTEXT_MAX_TOKENS=40000 \
 V7_FIXES=1 \
 V8_FIXES=1 \
+V9_FIXES=1 \
 HISTORY_RETRIEVAL_K=4 \
 ANSWER_CONTEXT_SESSION_CAP=4 \
+COMPETENCY_USER_CANDIDATE_K=120 \
+COMPETENCY_ASSISTANT_CANDIDATE_K=60 \
+COMPETENCY_SESSION_TOP_K=12 \
+COMPETENCY_PREFERENCE_SESSION_TOP_K=18 \
 SHARD_RETRIES=2 \
 SHARD_RETRY_BACKOFF_S=5 \
 SHARED_EXTRACTION_CACHE="${OUT}/_shared_extraction_cache.jsonl" \
@@ -68,7 +82,7 @@ OUT="${OUT}" \
 SLICE="${STRAT_SLICE}" \
 SAMPLE_FROM=0 SAMPLE_TO="${SAMPLE_TO}" \
 SYSTEMS=controller \
-SHARDS=10 \
+SHARDS="${SHARDS:-8}" \
 EMBED_MODEL_PATH=sentence-transformers/all-MiniLM-L6-v2 \
 EMBED_MODEL_NAME=minilm \
 EMBED_DEVICE=cpu \
@@ -78,3 +92,11 @@ bash deploy/run_colab_modal_range.sh
 
 echo "[strat30] controller done -> ${OUT}"
 echo "[strat30] report: ${OUT}/controller/report.json"
+
+# Fail the wrapper if any of the 180 selected session IDs is missing, duplicated,
+# or replaced by an out-of-slice answer/judgment.
+"${PYTHON}" scripts/verify_homogeneous_run.py \
+  --run-root "${OUT}" \
+  --slice "${STRAT_SLICE}" \
+  --systems controller \
+  --expected-n "${ROWS}"

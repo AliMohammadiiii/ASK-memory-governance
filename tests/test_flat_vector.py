@@ -21,15 +21,15 @@ from __future__ import annotations
 
 import pytest
 
-from ksa.baselines.embeddings import FakeEmbedder, role_tag
-from ksa.baselines.flat_vector import (
+from ask.baselines.embeddings import FakeEmbedder, role_tag
+from ask.baselines.flat_vector import (
     DEFAULT_SYSTEM_PROMPT,
     FlatVectorBaseline,
     build_session_corpus,
 )
-from ksa.baselines.flat_vector_store import FlatVectorStore
-from ksa.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
-from ksa.inference.llm import LLMResponse
+from ask.baselines.flat_vector_store import FlatVectorStore
+from ask.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
+from ask.inference.llm import LLMResponse
 
 # faiss is required for the underlying store; skip if missing.
 faiss = pytest.importorskip("faiss")
@@ -128,7 +128,7 @@ def test_render_prompt_includes_required_slots() -> None:
 
 def test_default_system_prompt_matches_no_memory_for_cross_baseline_consistency() -> None:
     """Cross-baseline numbers must not drift on system-prompt wording."""
-    from ksa.baselines.no_memory import DEFAULT_SYSTEM_PROMPT as NO_MEM_SYS
+    from ask.baselines.no_memory import DEFAULT_SYSTEM_PROMPT as NO_MEM_SYS
 
     assert DEFAULT_SYSTEM_PROMPT == NO_MEM_SYS
 

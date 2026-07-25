@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from ksa.extraction.coverage import CoverageMonitor
+from ask.extraction.coverage import CoverageMonitor
 
 
 def test_current_rate_uses_recent_window() -> None:

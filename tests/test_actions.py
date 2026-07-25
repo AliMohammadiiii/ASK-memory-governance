@@ -10,10 +10,10 @@ from __future__ import annotations
 
 import math
 
-from ksa.controller.actions import decide
-from ksa.controller.features import FeatureVector
-from ksa.controller.scoring import load_config
-from ksa.memory.models import ControllerAction, MemoryType
+from ask.controller.actions import decide
+from ask.controller.features import FeatureVector
+from ask.controller.scoring import load_config
+from ask.memory.models import ControllerAction, MemoryType
 
 
 def _fv(c: float, e: float, f: float, r: float, rho: float) -> FeatureVector:

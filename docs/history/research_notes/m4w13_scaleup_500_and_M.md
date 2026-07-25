@@ -7,7 +7,7 @@ benchmark analysis (`Memory_Systems_Benchmark_Analysis`).
 
 The harness in scope is the eval triple: the runner
 (`scripts/run_m4w13_ollama.py` → `scripts/run_baseline.py`), the loader
-(`src/ksa/data/longmemeval.py`), and the grader (`src/ksa/eval/longmemeval.py`).
+(`src/ask/data/longmemeval.py`), and the grader (`src/ask/eval/longmemeval.py`).
 
 ## 0. What changed (and why it matters at 500-Q / M)
 

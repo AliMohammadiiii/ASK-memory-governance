@@ -31,7 +31,7 @@ This note audits only the completed baseline directories:
 comes from `runs(3).zip`, which contains only B3. Neither zip should be treated
 as a complete all-system M4-W13 result.
 
-The pasted terminal log starts with a failed `cd ksa_gpu_run_package/ksa_controller`
+The pasted terminal log starts with a failed `cd ask_gpu_run_package/ask_controller`
 line for the B1/B2 run. This audit is based on the produced zip artifacts and
 their internal reports/JSONL files; the failed pre-run `cd` line does not
 invalidate the completed outputs.

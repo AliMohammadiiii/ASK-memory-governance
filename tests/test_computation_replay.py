@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from ksa.controller.computation import RetrievedEvidence, compute_answer
-from ksa.eval.computation_replay import (
+from ask.controller.computation import RetrievedEvidence, compute_answer
+from ask.eval.computation_replay import (
     retrieved_from_prompt,
     simulate_computation_on_slice,
 )

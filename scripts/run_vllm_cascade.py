@@ -29,6 +29,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -50,11 +51,12 @@ def _repo_root() -> Path:
 
 
 def _python() -> str:
-    return os.environ.get("KSA_PYTHON") or sys.executable
+    return os.environ.get("ASK_PYTHON") or sys.executable
 
 
 def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace) -> list[str]:
     """run_baseline command for one system, role-routed to the vLLM servers."""
+    answer_model = getattr(args, "answer_model", None) or args.big_model
     cmd = [
         _python(),
         "scripts/run_baseline.py",
@@ -73,7 +75,7 @@ def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace
         "--openai-base-url",
         args.big_base_url,
         "--openai-model",
-        args.big_model,
+        answer_model,
         "--openai-api-key-env",
         args.openai_api_key_env,
         "--openai-timeout-s",
@@ -89,6 +91,8 @@ def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace
         # before the model saw them, causing false "Unknown" answers.
         "--openai-max-model-len",
         str(args.openai_max_model_len),
+        "--answer-max-new-tokens",
+        str(getattr(args, "answer_max_new_tokens", 768)),
         "--resume",
     ]
     if args.enable_thinking:
@@ -97,6 +101,11 @@ def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace
         cmd += ["--openai-chat-template-kwargs-json", args.openai_chat_template_kwargs_json]
     if args.openai_extra_body_json:
         cmd += ["--openai-extra-body-json", args.openai_extra_body_json]
+    if getattr(args, "answer_openai_extra_body_json", None):
+        cmd += [
+            "--answer-openai-extra-body-json",
+            args.answer_openai_extra_body_json,
+        ]
     if args.openmodel_primary:
         cmd += [
             "--openmodel-primary",
@@ -256,6 +265,19 @@ def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace
                 "--answer-context-session-cap",
                 str(getattr(args, "answer_context_session_cap", 4)),
             ]
+        if baseline == "controller" and getattr(args, "v9_fixes", False):
+            cmd += [
+                "--controller-competency-aware-retrieval",
+                "--controller-competency-user-candidate-k",
+                str(getattr(args, "competency_user_candidate_k", 120)),
+                "--controller-competency-assistant-candidate-k",
+                str(getattr(args, "competency_assistant_candidate_k", 60)),
+                "--controller-competency-session-top-k",
+                str(getattr(args, "competency_session_top_k", 12)),
+                "--controller-competency-preference-session-top-k",
+                str(getattr(args, "competency_preference_session_top_k", 18)),
+                "--controller-prefer-unambiguous-computation",
+            ]
     if baseline == "controller" and args.escalation and args.big_model != args.fast_model:
         cmd += [
             "--classifier-escalation-openai-model",
@@ -329,6 +351,23 @@ def _run_logged(cmd: list[str], log_path: Path) -> None:
         )
 
 
+_NON_RETRYABLE_SHARD_FAILURE_RE = re.compile(
+    r"(?:OpenAICompatibleFatalError|(?:embedded\s+)?HTTP\s+402\b|insufficient\s+credits?)",
+    re.IGNORECASE,
+)
+
+
+def _attempt_has_non_retryable_failure(log_path: Path, start_offset: int) -> bool:
+    """Inspect only the failed attempt, ignoring fatal markers from older resumes."""
+
+    if not log_path.exists():
+        return False
+    with log_path.open("r", encoding="utf-8", errors="replace") as fh:
+        fh.seek(max(0, start_offset))
+        attempt_log = fh.read()
+    return bool(_NON_RETRYABLE_SHARD_FAILURE_RE.search(attempt_log))
+
+
 def _run_logged_with_retries(
     cmd: list[str],
     log_path: Path,
@@ -339,10 +378,18 @@ def _run_logged_with_retries(
     """Run one resumable shard, preserving every attempt in an append-only log."""
     retries = max(0, int(retries))
     for attempt in range(retries + 1):
+        attempt_log_start = log_path.stat().st_size if log_path.exists() else 0
         try:
             _run_logged(cmd, log_path)
             return
         except subprocess.CalledProcessError as exc:
+            if _attempt_has_non_retryable_failure(log_path, attempt_log_start):
+                with log_path.open("a", encoding="utf-8") as fh:
+                    fh.write(
+                        "\n[vllm-cascade] non-retryable account/credit failure "
+                        "detected; suppressing shard restart\n"
+                    )
+                raise
             if attempt >= retries:
                 raise
             delay = max(0.0, float(backoff_s)) * (2**attempt)
@@ -413,7 +460,7 @@ def _run_system(alias: str, baseline: str, out_dir: Path, args: argparse.Namespa
         raise RuntimeError(f"{alias}: {len(failures)} shard(s) failed: {failures}")
     if "src" not in sys.path:
         sys.path.insert(0, "src")
-    from ksa.eval.merge import merge_run_shards
+    from ask.eval.merge import merge_run_shards
 
     meta = json.loads((shard_dirs[0] / "report.json").read_text(encoding="utf-8"))
     report = merge_run_shards(
@@ -555,6 +602,18 @@ def main() -> int:
     )
     p.add_argument("--big-model", default="qwen/qwen3.5-9b")
     p.add_argument(
+        "--answer-model",
+        default=None,
+        help="Optional answer-only model; extraction/relation continue to use "
+        "--fast-model/--big-model.",
+    )
+    p.add_argument("--answer-max-new-tokens", type=int, default=768)
+    p.add_argument(
+        "--answer-openai-extra-body-json",
+        default=None,
+        help="OpenRouter/OpenAI-compatible body applied only to final answers and retries.",
+    )
+    p.add_argument(
         "--answer-escalation-base-url",
         default=None,
         help="Endpoint for the stronger Unknown-answer retry. Defaults to --big-base-url.",
@@ -635,8 +694,19 @@ def main() -> int:
         "prompt trimming, and disable the unvalidated v7 aggregate "
         "enumerator. Use --no-v8-fixes to reproduce v7.",
     )
+    p.add_argument(
+        "--v9-fixes",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Overlay competency-aware whole-turn retrieval and conservative "
+        "deterministic/LLM reconciliation. Use --no-v9-fixes to reproduce v8.",
+    )
     p.add_argument("--history-retrieval-k", type=int, default=4)
     p.add_argument("--answer-context-session-cap", type=int, default=4)
+    p.add_argument("--competency-user-candidate-k", type=int, default=120)
+    p.add_argument("--competency-assistant-candidate-k", type=int, default=60)
+    p.add_argument("--competency-session-top-k", type=int, default=12)
+    p.add_argument("--competency-preference-session-top-k", type=int, default=18)
     p.add_argument(
         "--extraction-concurrency",
         type=int,

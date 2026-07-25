@@ -1,5 +1,5 @@
 # =====================================================================
-# FROZEN FINAL EVALUATION CONFIG  (KSA memory-governance, release freeze)
+# FROZEN FINAL EVALUATION CONFIG  (ASK memory-governance, release freeze)
 # =====================================================================
 # This file is the machine-readable freeze of the evaluation protocol
 # (FINAL_EVALUATION_PROTOCOL.md). It is IMMUTABLE for the release: any change
@@ -13,14 +13,22 @@
 #   * The self-hash of this file, plus the input hashes below, are recorded in
 #     artifacts/manifests/freeze_hashes.json.
 #
-# Re-frozen after provenance hardening on 2026-07-13:
+# Re-frozen as final-2.0 on 2026-07-18 after the partial V11 run exposed
+# excessive provider pressure (20 shards x 8 extraction workers), numeric
+# aggregation gaps, and preference-ranking/polarity errors. V12 uses 8 shards x
+# 4 extraction workers and the guarded controller fixes; model, judge, slice,
+# seed, and provider policies remain unchanged. Every controller LLM role
+# remains unified on Qwen3.5-9B. It retains
+# the final-1.3 provenance hardening, grounded SSP prompting,
+# canonical controller-only execution, slice validation, resume-integrity, and
+# three-provider load-balancing hardening:
 #   deploy/run_lme_v8_full_5systems.sh -> deploy/run_colab_modal_range.sh
 #   -> scripts/run_vllm_cascade.py ; benchmarks/mgp6/metrics_mgp6.py ;
 #   scripts/evaluation/evaluate_single_session_preferences.py .
 
 freeze:
-  version: "final-1.1"
-  frozen_on: "2026-07-13"
+  version: "final-2.0"
+  frozen_on: "2026-07-18"
   protocol_doc: FINAL_EVALUATION_PROTOCOL.md
   run_matrix: FINAL_RUN_MATRIX.yaml
   self_hash: "sha256 recorded in artifacts/manifests/freeze_hashes.json"
@@ -32,31 +40,40 @@ models:
   provider: openrouter
   base_url: https://openrouter.ai/api/v1
   api_key_env: OPENROUTER_API_KEY          # value NEVER stored in this repo
-  # Main model fills answerer + extractor + relation-classifier roles.
+  # The evaluated controller is homogeneous: Qwen handles extraction, relation,
+  # final-answer, and answer-contract retry roles. No hidden model substitution.
   main_model: qwen/qwen3.5-9b
   fast_model: qwen/qwen3.5-9b              # FAST_MODEL
   big_model: qwen/qwen3.5-9b              # BIG_MODEL (== fast: no real escalation tier)
-  # Unknown-retry uses the same model so answer-side calls stay homogeneous.
+  answer_model: qwen/qwen3.5-9b
   answer_escalation_model: qwen/qwen3.5-9b
   answer_escalation_base_url: https://openrouter.ai/api/v1
   request:
     temperature: 0.0
     reasoning_enabled: false               # required for qwen3.5 via OpenRouter
     timeout_seconds: 300
-    provider_order: [venice]
-    provider_only: [venice]
-    provider_fallbacks: false
+    # Do not set provider.order: OpenRouter load-balances only when it can
+    # choose among providers. Restrict the pool to the three audited routes.
+    provider_order: []
+    provider_only: [venice, deepinfra, siliconflow]
+    provider_fallbacks: true
+  answer_request:
+    max_new_tokens: 4096
+    reasoning_enabled: false
+    provider_order: []
+    provider_only: [venice, deepinfra, siliconflow]
+    provider_fallbacks: true
 
 # ---------------------------------------------------------------------
-# Judge policy: primary is the :free route; the non-free route is the
-# fallback and fires ONLY on operational failure of the primary
-# (HTTP error / empty content / timeout after retries), never as a
-# silent A/B. Every judgment logs which judge actually graded it.
+# Judge policy: one paid route for every item. There is deliberately no model
+# fallback; transport/format failures retry the same route and then fail the
+# shard. This prevents the free-primary rate limits seen in V9 from producing
+# a mixed-judge result.
 # ---------------------------------------------------------------------
 judge:
-  primary_model: google/gemma-4-31b-it:free
-  fallback_model: google/gemma-4-31b-it
-  fallback_trigger: operational_failure_only   # not quality, not sampling
+  primary_model: google/gemma-4-31b-it
+  fallback_model: null
+  fallback_trigger: disabled_fail_shard_after_primary_retries
   response_format: json
   per_item_logging:
     requested_judge: true
@@ -67,10 +84,8 @@ judge:
     attempts: true
     raw_output: true            # judge_rationale + raw verdict retained
     prompt_hash: true
-  # NOTE: the legacy deploy scripts hardcode JUDGE_MODEL=google/gemma-4-31b-it
-  # (non-free) with NO fallback. The final wrapper
-  # scripts/evaluation/run_longmemeval_final.sh overrides this to the
-  # primary(:free)+fallback policy above. See protocol doc section "Judge policy".
+  # The final wrapper explicitly passes this exact no-fallback policy through
+  # deploy/run_colab_modal_range.sh. See the protocol doc's judge section.
 
 # ---------------------------------------------------------------------
 # Embedder (retrieval) — pinned, CPU, deterministic.
@@ -83,6 +98,7 @@ embedder:
   max_seq_length: 256
   batch_size: 128
   client_batch_size: 128
+  loopback_proxy_bypass: true
 
 # ---------------------------------------------------------------------
 # Determinism.
@@ -111,23 +127,43 @@ slice:
     - temporal-reasoning
 
 # ---------------------------------------------------------------------
-# Cascade run parameters (pinned to the v7+v8 frozen path).
+# Cascade run parameters (V12 freeze over the compatible v7/v8/v9 flags).
 # ---------------------------------------------------------------------
 run:
   systems: [controller, b4, b3, b2, b1]
-  shards: 10
-  extraction_concurrency: 8
+  allowed_system_sets:
+    all-systems: [controller, b4, b3, b2, b1]
+    controller-only: [controller]
+  shards: 8
+  smoke_shards: 2
+  extraction_concurrency: 4
   retrieval_k: 16
   controller_memory_top_k: 64
-  answer_context_max_tokens: 12000
+  answer_context_max_tokens: 40000
   answer_context_session_cap: 4
   history_retrieval_k: 4
   extraction_max_new_tokens: 512
   relation_max_new_tokens: 256
-  openai_max_model_len: 32768
+  openai_max_model_len: 65536
   v7_fixes: true
   v8_fixes: true
+  v9_fixes: true
+  competency_user_candidate_k: 120
+  competency_assistant_candidate_k: 60
+  competency_session_top_k: 12
+  competency_preference_session_top_k: 18
   enable_thinking: false
+
+# ---------------------------------------------------------------------
+# Controller acceptance rule. The full wrapper exits non-zero unless the
+# homogeneous 180-item controller result reaches this pre-specified target.
+# ---------------------------------------------------------------------
+acceptance:
+  controller_accuracy_threshold: 0.85
+  controller_required_correct: 153
+  expected_n: 180
+  gate: scripts/analysis/check_controller_accuracy_gate.py
+  full_run_only: true
 
 # ---------------------------------------------------------------------
 # Retry / resume / atomicity.
@@ -145,7 +181,7 @@ retry:
 
 resume:
   mode: shard_union
-  # Per-shard resume + append-only logs; merged via src/ksa/eval/merge.py
+  # Per-shard resume + append-only logs; merged via src/ask/eval/merge.py
   # (dedup by session_id, report rebuilt from the union of grades).
   atomic_writes: true            # summaries written .tmp then renamed
   shared_extraction_cache: "<OUT>/_shared_extraction_cache.jsonl"
@@ -170,6 +206,7 @@ output_layout:
   logs: runs_local/<run_id>/logs/
   manifest: runs_local/<run_id>/manifest.json
   summary: runs_local/<run_id>/final_summary.json
+  controller_accuracy_gate: runs_local/<run_id>/controller_accuracy_gate.json
 
 # ---------------------------------------------------------------------
 # Frozen input hashes (actual values recorded in the manifest).
@@ -181,3 +218,6 @@ freeze_inputs:
     - prompts/            # combined hash over sorted prompt files
     - configs/models/openrouter_qwen_gemma.yaml
     - configs/release/final.yaml   # self-hash
+    - scripts/analysis/check_controller_accuracy_gate.py  # >=85% acceptance gate
+    - src/ask/controller/computation.py  # deterministic temporal/numeric reconstruction
+    - src/ask/pipeline/orchestrator.py  # answer contracts, including SSP

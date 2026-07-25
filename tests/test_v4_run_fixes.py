@@ -16,9 +16,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from ksa.controller.computation import ComputeIntent, classify_compute_intent
-from ksa.eval.longmemeval import LongMemEvalGrader, LongMemEvalSession
-from ksa.pipeline.orchestrator import (
+from ask.controller.computation import (
+    ComputeIntent,
+    RetrievedEvidence,
+    classify_compute_intent,
+    compute_answer,
+)
+from ask.eval.longmemeval import LongMemEvalGrader, LongMemEvalSession
+from ask.pipeline.orchestrator import (
     _conflict_block,
     _extract_final_answer,
 )
@@ -176,8 +181,7 @@ def test_extract_final_answer_variants() -> None:
     assert _extract_final_answer("final: Unknown") == "Unknown"
     # Last FINAL wins if the scaffold is echoed mid-reasoning.
     assert (
-        _extract_final_answer("FINAL: <short answer>\nWORK: recheck\nFINAL: 24 days")
-        == "24 days"
+        _extract_final_answer("FINAL: <short answer>\nWORK: recheck\nFINAL: 24 days") == "24 days"
     )
 
 
@@ -219,6 +223,201 @@ def test_between_date_diff_unchanged() -> None:
         classify_compute_intent("How many days between my trip to Paris and my trip to Rome?")
         is ComputeIntent.DATE_DIFF
     )
+
+
+def test_date_diff_distinguishes_start_from_finish_for_same_title() -> None:
+    question = (
+        "How many days passed between the day I finished reading 'The Nightingale' "
+        "and the day I started reading 'The Hitchhiker's Guide to the Galaxy'?"
+    )
+    evidence = [
+        RetrievedEvidence(
+            "nightingale-finish",
+            0,
+            "user",
+            "I just finished reading The Nightingale today.",
+            "2022/01/15 (Sat) 23:51",
+        ),
+        RetrievedEvidence(
+            "hitchhiker-finish",
+            0,
+            "user",
+            "I finished reading The Hitchhiker's Guide to the Galaxy today.",
+            "2021/12/16 (Thu) 05:53",
+        ),
+        RetrievedEvidence(
+            "hitchhiker-start",
+            0,
+            "user",
+            "I started reading The Hitchhiker's Guide to the Galaxy today.",
+            "2022/01/14 (Fri) 08:00",
+        ),
+    ]
+
+    computed = compute_answer(question, evidence)
+
+    assert computed is not None
+    assert computed.answer == "1 day"
+    assert [item.session_id for item in computed.evidence] == [
+        "nightingale-finish",
+        "hitchhiker-start",
+    ]
+
+
+def test_singular_week_ago_is_relative_and_prefers_matching_action() -> None:
+    question = "Which book did I finish a week ago?"
+    evidence = [
+        RetrievedEvidence(
+            "started-book",
+            0,
+            "user",
+            "I started reading The Silent Patient today.",
+            "2023/05/23 (Tue) 10:00",
+            score=0.9,
+        ),
+        RetrievedEvidence(
+            "finished-book",
+            0,
+            "user",
+            "I finished reading The Nightingale today.",
+            "2023/05/22 (Mon) 10:00",
+            score=0.8,
+        ),
+    ]
+
+    assert classify_compute_intent(question) is ComputeIntent.RELATIVE_TIME
+    computed = compute_answer(question, evidence, question_date="2023/05/30 (Tue) 10:00")
+
+    assert computed is not None
+    assert computed.intent is ComputeIntent.RELATIVE_TIME
+    assert computed.evidence[0].session_id == "finished-book"
+
+
+def test_relative_purchase_treats_got_my_own_as_buy_action() -> None:
+    question = "What did I buy four weeks ago?"
+    evidence = [
+        RetrievedEvidence(
+            "competition-chat",
+            0,
+            "user",
+            "I discussed ideas for the sculpture competition today.",
+            "2023/03/04 (Sat) 10:00",
+            score=0.95,
+        ),
+        RetrievedEvidence(
+            "tool-purchase",
+            2,
+            "user",
+            "I got my own set of sculpting tools today.",
+            "2023/03/04 (Sat) 16:28",
+            score=0.8,
+        ),
+    ]
+
+    computed = compute_answer(question, evidence, question_date="2023/04/01 (Sat) 06:39")
+
+    assert computed is not None
+    assert computed.intent is ComputeIntent.RELATIVE_TIME
+    assert computed.evidence[0].session_id == "tool-purchase"
+
+
+def test_total_of_two_labeled_statistics_is_summed_exactly() -> None:
+    question = "What was the total number of goals and assists I had during the tournament?"
+    evidence = [
+        RetrievedEvidence(
+            "match-summary",
+            0,
+            "user",
+            "Across the tournament I scored 3 goals and recorded 2 assists.",
+            "2023/05/22 (Mon) 10:00",
+            score=0.9,
+        )
+    ]
+
+    computed = compute_answer(question, evidence)
+
+    assert computed is not None
+    assert computed.intent is ComputeIntent.NUMERIC_SUM
+    assert computed.answer == "5"
+    assert computed.safe_to_bypass_llm is True
+    assert {item.event_label for item in computed.evidence} == {"goals", "assists"}
+
+
+def test_total_of_two_labeled_statistics_accepts_spelled_number() -> None:
+    question = "What was the total number of goals and assists I had during the tournament?"
+    evidence = [
+        RetrievedEvidence(
+            "match-summary",
+            0,
+            "user",
+            "Across the tournament I scored 3 goals and recorded two assists.",
+            "2023/05/22 (Mon) 10:00",
+            score=0.9,
+        )
+    ]
+
+    computed = compute_answer(question, evidence)
+
+    assert computed is not None
+    assert computed.intent is ComputeIntent.NUMERIC_SUM
+    assert computed.answer == "5"
+    assert computed.safe_to_bypass_llm is True
+
+
+def test_years_older_uses_two_explicit_relational_ages() -> None:
+    question = "How many years older is my grandma than me?"
+    evidence = [
+        RetrievedEvidence(
+            "self-age",
+            2,
+            "user",
+            "Do you think 32 is considered young or old in the grand scheme of things?",
+            "2024/02/05 (Mon) 08:13",
+            score=0.9,
+        ),
+        RetrievedEvidence(
+            "grandma-age",
+            0,
+            "user",
+            "My grandma's 75th birthday celebration was really inspiring.",
+            "2024/02/05 (Mon) 09:14",
+            score=0.9,
+        ),
+    ]
+
+    assert classify_compute_intent(question) is ComputeIntent.NUMERIC_DIFF
+    computed = compute_answer(question, evidence)
+
+    assert computed is not None
+    assert computed.intent is ComputeIntent.NUMERIC_DIFF
+    assert computed.answer == "43"
+    assert computed.confidence >= 0.9
+    assert computed.safe_to_bypass_llm is True
+    assert {item.event_label for item in computed.evidence} == {"self age", "grandma age"}
+
+
+def test_years_older_does_not_subtract_unrelated_numbers() -> None:
+    question = "How many years older is my grandma than me?"
+    evidence = [
+        RetrievedEvidence(
+            "grandma-age",
+            0,
+            "user",
+            "My grandma is 75 years old and owns 12 antique brooches.",
+            "2024/02/05 (Mon) 09:14",
+            score=0.9,
+        ),
+        RetrievedEvidence(
+            "distractor",
+            0,
+            "user",
+            "I bought 32 candles for the party.",
+            "2024/02/05 (Mon) 09:14",
+            score=0.9,
+        ),
+    ]
+
+    assert compute_answer(question, evidence) is None
 
 
 # --------------------------------------------------------------------- #

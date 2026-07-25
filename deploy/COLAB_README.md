@@ -6,8 +6,8 @@ This package is intentionally small. It does not include
 ## Setup
 
 ```bash
-unzip ksa_controller_colab_kit.zip
-cd ksa_controller_colab_kit
+unzip ask_controller_colab_kit.zip
+cd ask_controller_colab_kit
 bash deploy/colab_prepare.sh
 ```
 
@@ -33,7 +33,7 @@ The setup script:
 For HF-only iteration, you can skip the Ollama install and model pulls:
 
 ```bash
-KSA_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
+ASK_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
 ```
 
 ## Final Ordered Test Bundle
@@ -178,7 +178,7 @@ python scripts/run_m4w13_hf.py \
 On an A100 runtime, run all five systems concurrently with 50 sessions each:
 
 ```bash
-KSA_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
+ASK_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
 bash deploy/run_colab_m4w13_hf_a100_parallel.sh
 ```
 
@@ -187,7 +187,7 @@ The A100 runner starts one subprocess per system (`b1`, `b2`, `b3`, `b4`,
 `scripts/summarize_m4w13.py --require-complete` and zips the result directory.
 It streams each subprocess line to notebook output with a system prefix, emits
 row-count heartbeats every 30 seconds, and keeps the full prepare log under
-`/content/ksa_logs`. It checks that CUDA is available and that the visible GPU
+`/content/ask_logs`. It checks that CUDA is available and that the visible GPU
 is an A100. The default is `MAX_WORKERS=2`, which is the conservative A100 40GB
 setting for 7B fp16 model copies. Raise it only after checking free VRAM, for
 example:

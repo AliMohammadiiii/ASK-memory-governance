@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from ksa.controller.scoring import ControllerConfig, load_config
-from ksa.memory import connect, init_schema
+from ask.controller.scoring import ControllerConfig, load_config
+from ask.memory import connect, init_schema
 
 
 @pytest.fixture()

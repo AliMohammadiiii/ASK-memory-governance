@@ -12,8 +12,8 @@ uploaded = files.upload()
 ```
 
 ```bash
-!unzip -q ksa_controller_mgp6_t4_colab_*.zip
-%cd ksa_controller_mgp6_t4_colab
+!unzip -q ask_controller_mgp6_t4_colab_*.zip
+%cd ask_controller_mgp6_t4_colab
 ```
 
 ## 2. Run (final — controller, full 50, A10/L4 optimized)
@@ -76,7 +76,7 @@ If you prefer to pre-install once and skip the script's install step:
 !rm -rf .venv
 !python -m pip install --upgrade pip wheel "setuptools<82"
 !python -m pip install -e '.[dev,ml]'
-!KSA_INSTALL_DEPS=0 PROFILE=t4 QUALITY=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh
+!ASK_INSTALL_DEPS=0 PROFILE=t4 QUALITY=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh
 ```
 
 ## 4. Resuming after a disconnect
@@ -100,7 +100,7 @@ stopped. Default `OUT=runs/m4w13_50_t4_quality`.
 !LIMIT=10 PROFILE=t4 QUALITY=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh
 
 # Skip only the local preflight if you are resuming and already ran it:
-!KSA_RUN_PREFLIGHT=0 PROFILE=t4 QUALITY=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh
+!ASK_RUN_PREFLIGHT=0 PROFILE=t4 QUALITY=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh
 
 # Old baseline (no quality knobs), for an A/B against the fixes:
 !QUALITY=none PROFILE=t4 SYSTEMS=controller bash deploy/run_colab_m4w13_t4_ollama.sh

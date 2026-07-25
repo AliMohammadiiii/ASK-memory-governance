@@ -11,7 +11,7 @@ python -m pip install -e '.[dev]'
 ```
 
 If a wheel installation cannot find a default config, schema, or prompt, confirm
-that the wheel contains `ksa/resources/` and `ksa/baselines/prompts/`:
+that the wheel contains `ask/resources/` and `ask/baselines/prompts/`:
 
 ```bash
 python -m build
@@ -19,7 +19,7 @@ python -m zipfile -l dist/*.whl
 ```
 
 Do not work around a missing resource with an absolute path. Installed defaults
-must resolve through the packaged `ksa` resources.
+must resolve through the packaged `ask` resources.
 
 ## OpenRouter returns HTTP 401 or 403
 
@@ -40,17 +40,28 @@ bash scripts/evaluation/run_longmemeval_final.sh --smoke
 Never paste a real key into a config, command history committed to Git, issue,
 paper artifact, or review archive. The run wrapper records only key presence.
 
-## OpenRouter returns HTTP 402 or a free judge is unavailable
+## OpenRouter returns HTTP 402
 
-The frozen policy first requests `google/gemma-4-31b-it:free` and may fall back
-to `google/gemma-4-31b-it`. Ensure the account can pay for the fallback before a
-full run. The evaluator records the actual judge, fallback use, attempt count,
-and raw-response hash. `scripts/verify_homogeneous_run.py` rejects missing or
-inconsistent provenance.
+HTTP 402 is an account-wide insufficient-credit failure. The client stops
+request and shard retries immediately after detecting it; repeated retries
+cannot repair the balance. Fund the account, then resume the same immutable run
+directory. The frozen V12 policy uses only `google/gemma-4-31b-it` as judge and
+has no model fallback. The evaluator records the requested/actual judge,
+attempt count, and raw-response hash; the homogeneity verifier rejects any
+model substitution or missing provenance.
 
 Do not silently substitute a deterministic score for a failed judge. Such a row
 must be marked as a scoring fallback and is ineligible for the homogeneous final
 result unless the frozen protocol explicitly permits it.
+
+## Local embedding health returns `Internal Privoxy Error`
+
+This is a loopback-routing problem, not a MiniLM or Qwen failure. On macOS,
+Python may inherit the system proxy configuration even when no `HTTP_PROXY`
+variable is exported. Final-2.0/V12 explicitly adds loopback hosts to
+`NO_PROXY` and uses a proxy-free opener for local health and embedding calls.
+Do not resume a final-1.8/V10 directory with the changed frozen code; start the
+V12 output directory so the manifest matches the executed implementation.
 
 ## LongMemEval data is missing
 

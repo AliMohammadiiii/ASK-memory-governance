@@ -1,4 +1,4 @@
-# Master Execution Prompt — KSA Controller, MGP-6, Final Experiments, Top-Tier Papers, and Master’s Thesis
+# Master Execution Prompt — ASK Controller, MGP-6, Final Experiments, Top-Tier Papers, and Master’s Thesis
 
 ## Role
 
@@ -26,7 +26,7 @@ Do not merely review, advise, or produce a plan. **Inspect, modify, implement, t
 
 # 1. Primary Mission
 
-Transform the supplied KSA/MGP-6 project into a publication-quality research package centered on:
+Transform the supplied ASK/MGP-6 project into a publication-quality research package centered on:
 
 > **Interpretable, abstention-aware memory governance for long-lived LLM agents through explicit KEEP, SUPERSEDE, and ABSTAIN decisions.**
 
@@ -54,7 +54,7 @@ Inspect every supplied file rather than relying only on filenames or summaries.
 
 The current package includes at least:
 
-* `KSACodes(1).zip`
+* `ASKCodes(1).zip`
 * `ControllerRun(1).zip`
 * `baseline(1).zip`
 * `mgp6_v2_COMPLETE_2026-07-11(1).zip`
@@ -82,9 +82,9 @@ Do not assume that the newest filename or modification timestamp represents the 
 
 The following statements are preliminary clues, not automatically trusted facts. Verify all of them from raw data, source code, run manifests, configs, prediction files, and scoring scripts before using them in a paper or thesis.
 
-## 3.1 KSA
+## 3.1 ASK
 
-KSA means:
+ASK means:
 
 > **KEEP / SUPERSEDE / ABSTAIN**
 
@@ -360,7 +360,7 @@ Explain the classification.
 
 Resolve contradictions among:
 
-* old KSA README files;
+* old ASK README files;
 * final reports;
 * `ARTIFACT_MANIFEST.md`;
 * run configs;
@@ -413,9 +413,9 @@ Create one canonical repository representing the final research artifact.
 Choose the cleanest architecture after inspection. A reasonable structure may resemble:
 
 ```text
-ksa-memory-governance/
+ask-memory-governance/
 ├── src/
-│   └── ksa_controller/
+│   └── ask_controller/
 ├── benchmarks/
 │   └── mgp6/
 ├── adapters/
@@ -884,7 +884,7 @@ Specific concerns to investigate include:
 * MemOS running in a general-text configuration rather than preference memory;
 * Graphiti evaluation using retrieved edges instead of full graph state;
 * semantic duplicates under non-identical strings;
-* external systems that do not expose the same action abstraction as KSA.
+* external systems that do not expose the same action abstraction as ASK.
 
 When a direct action comparison is not semantically fair, report:
 
@@ -970,8 +970,8 @@ Evaluate, when technically and semantically feasible:
 * flat-vector retrieval;
 * recency policy;
 * naive overwrite;
-* rule-based KSA controller;
-* LLM-backed KSA controller;
+* rule-based ASK controller;
+* LLM-backed ASK controller;
 * zero-shot LLM decision baseline;
 * few-shot LLM decision baseline;
 * relevant learned baseline;
@@ -1240,7 +1240,7 @@ A scientifically plausible split is:
 Potential focus:
 
 * formal KEEP/SUPERSEDE/ABSTAIN problem;
-* KSA controller;
+* ASK controller;
 * typed and versioned memory;
 * explicit lineage and provenance;
 * MGP-6 diagnostic;
@@ -1507,7 +1507,7 @@ Define:
 * evaluation layers;
 * research questions.
 
-### Chapter 4 — KSA Architecture and Implementation
+### Chapter 4 — ASK Architecture and Implementation
 
 Describe:
 

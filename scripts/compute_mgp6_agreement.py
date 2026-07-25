@@ -11,7 +11,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.mgp6_agreement import compute_agreement_csv  # noqa: E402
+from ask.eval.mgp6_agreement import compute_agreement_csv  # noqa: E402
 
 ADVISOR_TEMPLATE = Path("runs/m3w12/advisor_annotation_template_v1.jsonl")
 

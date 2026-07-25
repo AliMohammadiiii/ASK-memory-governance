@@ -35,13 +35,13 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from ksa.baselines import build_session_corpus  # noqa: E402
-from ksa.baselines.embeddings import TurnEmbedder  # noqa: E402
-from ksa.data.longmemeval import load_longmemeval_s  # noqa: E402
-from ksa.eval.longmemeval import normalized_substring_grade  # noqa: E402
-from ksa.extraction import ExtractionOutput  # noqa: E402
-from ksa.inference.llm import LLMResponse  # noqa: E402
-from ksa.pipeline import ControllerOrchestrator  # noqa: E402
+from ask.baselines import build_session_corpus  # noqa: E402
+from ask.baselines.embeddings import TurnEmbedder  # noqa: E402
+from ask.data.longmemeval import load_longmemeval_s  # noqa: E402
+from ask.eval.longmemeval import normalized_substring_grade  # noqa: E402
+from ask.extraction import ExtractionOutput  # noqa: E402
+from ask.inference.llm import LLMResponse  # noqa: E402
+from ask.pipeline import ControllerOrchestrator  # noqa: E402
 
 # Gold-evidence key strings per question, from the 2026-06-10 failure audit.
 # A question's evidence "reaches the prompt" when each any-of group matches.
@@ -101,7 +101,7 @@ class ReplayClassifier:
         self.misses = 0
 
     def classify(self, candidate, prior, *, max_new_tokens=128, temperature=0.0, seed=0):
-        from ksa.classifier import RelationOutput
+        from ask.classifier import RelationOutput
 
         self.misses += 1
         return RelationOutput(

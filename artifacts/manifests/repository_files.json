@@ -800,12 +800,12 @@
     "sha256": "77f0692d173e4d0d0e933e7e4402d38c566b5a416305c850208888381ae04c0c"
   },
   {
-    "path": "docs/figures/figure_07_ksa_controller_architecture.png",
+    "path": "docs/figures/figure_07_ask_controller_architecture.png",
     "size_bytes": 104158,
     "sha256": "3802769205fd29ea64ee96af717b3e2a8693c256f7dc8e1b9f199dbcb2da8690"
   },
   {
-    "path": "docs/figures/figure_07_ksa_controller_architecture.svg",
+    "path": "docs/figures/figure_07_ask_controller_architecture.svg",
     "size_bytes": 37013,
     "sha256": "b5461c3914e2484b2d4f953af7ff1dd17dd9045f9e1e1accea5fc0965a24da63"
   },
@@ -1145,7 +1145,7 @@
     "sha256": "dde3d880172c81d4e3b31b1e73ffdf107b78008c7e673c66fe421ce787670670"
   },
   {
-    "path": "schema/generated/ksa_memory.schema.json",
+    "path": "schema/generated/ask_memory.schema.json",
     "size_bytes": 2158,
     "sha256": "d58f68c9ccf8efd29a6d289673dd5c8899780f4ad2feb56c7c7b8fda4d2b523e"
   },
@@ -1155,7 +1155,7 @@
     "sha256": "c5d6a20f5d8dd48ab283069e333f86e7dc4440072b673c82950de67c4d2918ed"
   },
   {
-    "path": "schema/ksa_memory.yaml",
+    "path": "schema/ask_memory.yaml",
     "size_bytes": 6532,
     "sha256": "3664aacfebd5648e6552ac2ed99e6c0024385339d08a6641c025d6f5c08b510c"
   },
@@ -1485,347 +1485,347 @@
     "sha256": "d469c17871f87e70dd576584cdbbe01dcd14dc414f928a5de8bcdaf17a88cf3f"
   },
   {
-    "path": "src/ksa/__init__.py",
+    "path": "src/ask/__init__.py",
     "size_bytes": 111,
     "sha256": "8dad8698514774d2a50a9328975b895da96f97c033a5149e05d70fbde4ad93a7"
   },
   {
-    "path": "src/ksa/audit/__init__.py",
+    "path": "src/ask/audit/__init__.py",
     "size_bytes": 173,
     "sha256": "33d89d32da03d6c9fe6c84737f3c375ab878ad65ded8c59abcb34a0ff8b5a36a"
   },
   {
-    "path": "src/ksa/audit/action_log.py",
+    "path": "src/ask/audit/action_log.py",
     "size_bytes": 8565,
     "sha256": "da30407e3dcbf677594ce6e38fbaf0bf0baec44aca55c459166c9af1f662ff59"
   },
   {
-    "path": "src/ksa/baselines/__init__.py",
+    "path": "src/ask/baselines/__init__.py",
     "size_bytes": 1612,
     "sha256": "9fa0f16c99ced11d77dcd4572b46575efbde30529d4390ca83a3c75189bf845d"
   },
   {
-    "path": "src/ksa/baselines/base.py",
+    "path": "src/ask/baselines/base.py",
     "size_bytes": 1378,
     "sha256": "7ecba361c967ca6213c5a6d4bd25867fe8c59a0f7e741a169ce35358bfc18d03"
   },
   {
-    "path": "src/ksa/baselines/embeddings.py",
+    "path": "src/ask/baselines/embeddings.py",
     "size_bytes": 31539,
     "sha256": "4053d3ba1983a60312921db718f1e78beae3ddc97d6585f7e5cd4d116cb049db"
   },
   {
-    "path": "src/ksa/baselines/flat_vector.py",
+    "path": "src/ask/baselines/flat_vector.py",
     "size_bytes": 11838,
     "sha256": "3a3c93b517ab256c659cb9b770694577de9d4d939cd4967e9cfcba1fb4db1c32"
   },
   {
-    "path": "src/ksa/baselines/flat_vector_store.py",
+    "path": "src/ask/baselines/flat_vector_store.py",
     "size_bytes": 13214,
     "sha256": "6aba87227ea77d9332b361d2827ad0cf0d201ada6eab9ab7613b62b01f5c7d6b"
   },
   {
-    "path": "src/ksa/baselines/naive_overwrite.py",
+    "path": "src/ask/baselines/naive_overwrite.py",
     "size_bytes": 4880,
     "sha256": "a0e4d69ab5d065a7de47040b23e272cfa53d73435f81b0899484ceaad0e67dc1"
   },
   {
-    "path": "src/ksa/baselines/no_memory.py",
+    "path": "src/ask/baselines/no_memory.py",
     "size_bytes": 5389,
     "sha256": "0a0891c9eb1bc25229272eabe470cb0b9fc0d462c968998a65e85dcd470025f0"
   },
   {
-    "path": "src/ksa/baselines/prompts/__init__.py",
+    "path": "src/ask/baselines/prompts/__init__.py",
     "size_bytes": 66,
     "sha256": "15e95525a4320d260aaab51d0c367bd75701fab4f8c2841ef557de046f099717"
   },
   {
-    "path": "src/ksa/baselines/prompts/controller_cot.j2",
+    "path": "src/ask/baselines/prompts/controller_cot.j2",
     "size_bytes": 1183,
     "sha256": "74d9df639a515d1abd9ae7fcbd79a7b2d1e03c9254dec47c591ca7c391042b17"
   },
   {
-    "path": "src/ksa/baselines/prompts/flat_vector.j2",
+    "path": "src/ask/baselines/prompts/flat_vector.j2",
     "size_bytes": 658,
     "sha256": "ae123af657472a5d71c4cc416c3f40a24874b83c3e2401798e555c77c1872be8"
   },
   {
-    "path": "src/ksa/baselines/prompts/no_memory.j2",
+    "path": "src/ask/baselines/prompts/no_memory.j2",
     "size_bytes": 198,
     "sha256": "e1a82ff598a2cb433bb18e274fb64a6e08ef933c5947b4b8df3a4f72176347eb"
   },
   {
-    "path": "src/ksa/baselines/prompts/recency_pruning.j2",
+    "path": "src/ask/baselines/prompts/recency_pruning.j2",
     "size_bytes": 1031,
     "sha256": "753e0ea7b8e9376c4ae934820df716d552787468d4d1f18ef8fb7a7b7e2db226"
   },
   {
-    "path": "src/ksa/baselines/recency_pruning.py",
+    "path": "src/ask/baselines/recency_pruning.py",
     "size_bytes": 30335,
     "sha256": "b15bffd26a325b6f26e8076dc3049484f668e4e004138925a75c16b311a1ef32"
   },
   {
-    "path": "src/ksa/classifier/__init__.py",
+    "path": "src/ask/classifier/__init__.py",
     "size_bytes": 366,
     "sha256": "2753b57488ddb4ebf9b109e2b154db61a815d085d4b3d47da734a2bb9ad80df8"
   },
   {
-    "path": "src/ksa/classifier/metrics.py",
+    "path": "src/ask/classifier/metrics.py",
     "size_bytes": 3353,
     "sha256": "7ecfa9b4b57520584a77fb8097e07f9c8ca03fbcb047958c42de9ab2472853c1"
   },
   {
-    "path": "src/ksa/classifier/relation.py",
+    "path": "src/ask/classifier/relation.py",
     "size_bytes": 14076,
     "sha256": "8c8dc0dcc27db22cb928322fb018b7f15a1104ac470765b1a2b308dedd765722"
   },
   {
-    "path": "src/ksa/classifier/schema.py",
+    "path": "src/ask/classifier/schema.py",
     "size_bytes": 3355,
     "sha256": "5f470bbc3c023ae9892cfb3ce5600dac7ec06c5990ea526dffe0c1c3c92bcb42"
   },
   {
-    "path": "src/ksa/controller/__init__.py",
+    "path": "src/ask/controller/__init__.py",
     "size_bytes": 1141,
     "sha256": "ee04c33a5d7dd7297e1baab88f73a95ee7a9d48c26961d21d787e0fc3b0806bb"
   },
   {
-    "path": "src/ksa/controller/actions.py",
+    "path": "src/ask/controller/actions.py",
     "size_bytes": 1893,
     "sha256": "2f80b62bcd2d7137af7d7ca60cdae580dc891876513732c316986884a212f3f2"
   },
   {
-    "path": "src/ksa/controller/active.py",
+    "path": "src/ask/controller/active.py",
     "size_bytes": 1095,
     "sha256": "2fcde2c77710712c605611c8b09a8da8aed8fefc844b13ac53069b9b152f24d1"
   },
   {
-    "path": "src/ksa/controller/computation.py",
+    "path": "src/ask/controller/computation.py",
     "size_bytes": 62942,
     "sha256": "9305ee034146f23dcbd86d3d11d8c43f79d1d052ba0c9701e8b48e7f2eceba11"
   },
   {
-    "path": "src/ksa/controller/features.py",
+    "path": "src/ask/controller/features.py",
     "size_bytes": 12095,
     "sha256": "1f2ee7daea8694818f958da8a75250de0fe1563baaa4fcf595f727c6904cc298"
   },
   {
-    "path": "src/ksa/controller/policy.py",
+    "path": "src/ask/controller/policy.py",
     "size_bytes": 3382,
     "sha256": "e8e4a13130afc16f217360d90af61dc63ad8959ea7edaeb0c5914fcfe3045c22"
   },
   {
-    "path": "src/ksa/controller/score.py",
+    "path": "src/ask/controller/score.py",
     "size_bytes": 4948,
     "sha256": "5f106f27682369a5d2410085fdab235357d631e5ac8488ec824600c629a3aa68"
   },
   {
-    "path": "src/ksa/controller/scoring.py",
+    "path": "src/ask/controller/scoring.py",
     "size_bytes": 2389,
     "sha256": "f66e55a5a2c92383e0a733451038c661946d6b8747d5d4901f18081be994cf65"
   },
   {
-    "path": "src/ksa/controller/temporal.py",
+    "path": "src/ask/controller/temporal.py",
     "size_bytes": 9625,
     "sha256": "ab614c1aa4b631ee99d245ca3925e0100e22c9f7d185dd2c24bd81e8cefb559f"
   },
   {
-    "path": "src/ksa/data/__init__.py",
+    "path": "src/ask/data/__init__.py",
     "size_bytes": 453,
     "sha256": "a103333077b84ea6ea42d8cffa9b162ea9135387e9c03f5b8e79170a43f4f1d6"
   },
   {
-    "path": "src/ksa/data/longmemeval.py",
+    "path": "src/ask/data/longmemeval.py",
     "size_bytes": 23209,
     "sha256": "fc7da97cd2a5173a78abc4479c5e5de0cc1110265dd3a32538c727f00ba43a5a"
   },
   {
-    "path": "src/ksa/eval/__init__.py",
+    "path": "src/ask/eval/__init__.py",
     "size_bytes": 1563,
     "sha256": "72bcc25b79b417ab313f67656dc7ead750e4b273e4b85dc8d94d918245bed0f6"
   },
   {
-    "path": "src/ksa/eval/computation_replay.py",
+    "path": "src/ask/eval/computation_replay.py",
     "size_bytes": 6646,
     "sha256": "23df30f1f0cc4c0d573a2cd245c40b57eb5a6b0f71f9357a66bb782a85e8dccd"
   },
   {
-    "path": "src/ksa/eval/judge.py",
+    "path": "src/ask/eval/judge.py",
     "size_bytes": 5650,
     "sha256": "21b0ab4b327afa4fb0315bc911b873ab4573f4525fb08f2d8f58a24b9a2b5a1b"
   },
   {
-    "path": "src/ksa/eval/longmemeval.py",
+    "path": "src/ask/eval/longmemeval.py",
     "size_bytes": 46253,
     "sha256": "1ea891f39d08a570de63cc3a55da23c63184545b1c222dc5590bfc94b7182e3e"
   },
   {
-    "path": "src/ksa/eval/m4w15.py",
+    "path": "src/ask/eval/m4w15.py",
     "size_bytes": 15624,
     "sha256": "5817306770d4067225b5141fd5ce244fa57a5fcf28b3231c9520301263340140"
   },
   {
-    "path": "src/ksa/eval/m4w16.py",
+    "path": "src/ask/eval/m4w16.py",
     "size_bytes": 29371,
     "sha256": "6b5ae1ffef704aba91d46fc29a909f525d325fad1c8ef0c733afc1d5cc15b731"
   },
   {
-    "path": "src/ksa/eval/merge.py",
+    "path": "src/ask/eval/merge.py",
     "size_bytes": 3738,
     "sha256": "636dd64d0cbe2baf753e6e84ffc88fc8dfd2d8e79ccce13dd81b6bad3e2b11b9"
   },
   {
-    "path": "src/ksa/eval/mgp6.py",
+    "path": "src/ask/eval/mgp6.py",
     "size_bytes": 12161,
     "sha256": "9deb24cc4cc10938af836add124225442a6effc859620d9e0d1ae3121118e74b"
   },
   {
-    "path": "src/ksa/eval/mgp6_agreement.py",
+    "path": "src/ask/eval/mgp6_agreement.py",
     "size_bytes": 6730,
     "sha256": "eeb2c778c854cf31d3b1823ba92e349bc4b4a8195acba314f04054d3a4d6d178"
   },
   {
-    "path": "src/ksa/eval/mgp6_schema.py",
+    "path": "src/ask/eval/mgp6_schema.py",
     "size_bytes": 4736,
     "sha256": "2757cb42166b9e1de19b187e889bd9938d4a3caa70ed36c410a56fb3ca33abf4"
   },
   {
-    "path": "src/ksa/eval/recoverability.py",
+    "path": "src/ask/eval/recoverability.py",
     "size_bytes": 3352,
     "sha256": "f778ee6942ea8146da46eba02676eb3b71f40eb7ebf91ac27afad5b8c1693e39"
   },
   {
-    "path": "src/ksa/eval/sanity.py",
+    "path": "src/ask/eval/sanity.py",
     "size_bytes": 6629,
     "sha256": "79e76ae686954973ab2bf4dd310c9985ac7eb27c6a3a5b837e732bacaeecc4c5"
   },
   {
-    "path": "src/ksa/eval/smrr.py",
+    "path": "src/ask/eval/smrr.py",
     "size_bytes": 2966,
     "sha256": "fdf74825aaf098e3e2b2e5216cae4c2a4c3f38699834d05c806612619e1a8be7"
   },
   {
-    "path": "src/ksa/extraction/__init__.py",
+    "path": "src/ask/extraction/__init__.py",
     "size_bytes": 357,
     "sha256": "7c42d1502cc915649c18cdf270037558ea633f79dbe98f0144de2615942ac5d6"
   },
   {
-    "path": "src/ksa/extraction/coverage.py",
+    "path": "src/ask/extraction/coverage.py",
     "size_bytes": 2811,
     "sha256": "1e117b0e5ce8bb0dab646f2117f83299f697631364cec001e2a17faded0842d0"
   },
   {
-    "path": "src/ksa/extraction/extractor.py",
+    "path": "src/ask/extraction/extractor.py",
     "size_bytes": 17817,
     "sha256": "2fdc1b2b93f8a4ee645a092cf94d85755e689c04fbd0cf524883d29d1ece3c00"
   },
   {
-    "path": "src/ksa/extraction/schema.py",
+    "path": "src/ask/extraction/schema.py",
     "size_bytes": 3828,
     "sha256": "182533fba15c6d7023b08c5cb9d3b06482cf35f70cd7d4f3c3bc04f3684fa7fd"
   },
   {
-    "path": "src/ksa/inference/__init__.py",
+    "path": "src/ask/inference/__init__.py",
     "size_bytes": 549,
     "sha256": "e1686633fb15dec175d03f2a5893a43307c4b169278abf6cafd91c42f0ace5a8"
   },
   {
-    "path": "src/ksa/inference/fake.py",
+    "path": "src/ask/inference/fake.py",
     "size_bytes": 2590,
     "sha256": "a6b5d0d421cf4c9189b02a83dadb83c2a3b4783c41859d1ca48ddbdee240fbd9"
   },
   {
-    "path": "src/ksa/inference/fallback.py",
+    "path": "src/ask/inference/fallback.py",
     "size_bytes": 2270,
     "sha256": "4cf6288a2dc85ec79f8d99a91f0ffb4dc635ad73245f89e194b8ee9b72210e3f"
   },
   {
-    "path": "src/ksa/inference/llm.py",
+    "path": "src/ask/inference/llm.py",
     "size_bytes": 26920,
     "sha256": "44a7f258dbd40e03b51a191725912be169afdbac9fd3319a40aa50078ba2e9b1"
   },
   {
-    "path": "src/ksa/inference/ollama.py",
+    "path": "src/ask/inference/ollama.py",
     "size_bytes": 12112,
     "sha256": "b8ba60c2ac4c88573441c6910d5405980aa8f012d8f0e6f75feb81b470190c17"
   },
   {
-    "path": "src/ksa/inference/openai_compatible.py",
+    "path": "src/ask/inference/openai_compatible.py",
     "size_bytes": 16561,
     "sha256": "95de279da6b7459e3a2d69b674a0d532564ca4511274278f88439da3b3701b40"
   },
   {
-    "path": "src/ksa/inference/openai_headers.py",
+    "path": "src/ask/inference/openai_headers.py",
     "size_bytes": 1877,
     "sha256": "c983c0bea2648545e60e49fe08e26730e90d35e130e763b162e0760d59341723"
   },
   {
-    "path": "src/ksa/inference/openmodel_messages.py",
+    "path": "src/ask/inference/openmodel_messages.py",
     "size_bytes": 7327,
     "sha256": "0c7544df85dadec5dfdee8bc28dfcbadc2519406fcf594035a2c1dd1a62c5897"
   },
   {
-    "path": "src/ksa/inference/structured_pai.py",
+    "path": "src/ask/inference/structured_pai.py",
     "size_bytes": 2976,
     "sha256": "18140d7a96604eb2bebce7af82b8d34c38d9f9604514f412488c02365a74758c"
   },
   {
-    "path": "src/ksa/memory/__init__.py",
+    "path": "src/ask/memory/__init__.py",
     "size_bytes": 734,
     "sha256": "25822c20a362e73c1dfc06f999e0114287f55852d15afcebbe655598fa44a7d4"
   },
   {
-    "path": "src/ksa/memory/db.py",
+    "path": "src/ask/memory/db.py",
     "size_bytes": 1230,
     "sha256": "c4d178b3fd9a424e430cb848e940c05b1aba9d70691d14ce134f63d1d1e61eab"
   },
   {
-    "path": "src/ksa/memory/models.py",
+    "path": "src/ask/memory/models.py",
     "size_bytes": 4020,
     "sha256": "6afa3e4d8f184b567f0ea1a1bc3fa72832e50fb2a3fc738e1c9473be3b5928ad"
   },
   {
-    "path": "src/ksa/memory/operations.py",
+    "path": "src/ask/memory/operations.py",
     "size_bytes": 11373,
     "sha256": "6861a4d60efe253ad9fdc41ab885f41aa4d270204948388fba9bffcc5a52f086"
   },
   {
-    "path": "src/ksa/pipeline/__init__.py",
+    "path": "src/ask/pipeline/__init__.py",
     "size_bytes": 213,
     "sha256": "2b7585fc4a23217dede884c3b40f1739f8098f7e9378c28f9fdacc01a9e284fc"
   },
   {
-    "path": "src/ksa/pipeline/orchestrator.py",
+    "path": "src/ask/pipeline/orchestrator.py",
     "size_bytes": 141886,
     "sha256": "ae05316cd5b471e1684e35fdb28fbd8d605f11b83273372e30eb1f80aed23db8"
   },
   {
-    "path": "src/ksa/py.typed",
+    "path": "src/ask/py.typed",
     "size_bytes": 0,
     "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
   {
-    "path": "src/ksa/resources/__init__.py",
+    "path": "src/ask/resources/__init__.py",
     "size_bytes": 72,
     "sha256": "ad09ee7ebe346d8dff52a16c24217e0053b0a24466c72c2841986f0b581e8d69"
   },
   {
-    "path": "src/ksa/resources/configs/controller_legacy_proposal.yaml",
+    "path": "src/ask/resources/configs/controller_legacy_proposal.yaml",
     "size_bytes": 447,
     "sha256": "48353f5de910362d3241c2eac6f45ca41da79e6a02c65812c387a56113879a71"
   },
   {
-    "path": "src/ksa/resources/configs/inference.yaml",
+    "path": "src/ask/resources/configs/inference.yaml",
     "size_bytes": 218,
     "sha256": "71bf06b08183e463c673912ed64bb92afaa45269cc41fd0e3243396b2eab67e2"
   },
   {
-    "path": "src/ksa/resources/schema/ksa_memory.schema.json",
+    "path": "src/ask/resources/schema/ask_memory.schema.json",
     "size_bytes": 1610,
     "sha256": "ef406c513898d0f4f097cd3d6f16c8e89b21a5fd8897f1ffa1f65ef03a4ab7d4"
   },
   {
-    "path": "src/ksa/resources/schema/schema.sql",
+    "path": "src/ask/resources/schema/schema.sql",
     "size_bytes": 3048,
     "sha256": "374012710e112ac889ce60e302687d2a112f18dac80dc862d680cdd9166a6b28"
   },
@@ -2175,7 +2175,7 @@
     "sha256": "e9af94f3271d076f0c0129a8df7f3544fc1185c8ac44afb150eded31f4c95c7f"
   },
   {
-    "path": "thesis/MASTERS_THESIS_KSA_MGP6.md",
+    "path": "thesis/MASTERS_THESIS_ASK_MGP6.md",
     "size_bytes": 87317,
     "sha256": "45f3e8814f7a5fa04babc16d89487664d4333a70b54af7287ca884af378cb9b0"
   },

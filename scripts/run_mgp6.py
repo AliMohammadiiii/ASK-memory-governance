@@ -22,14 +22,14 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.audit import ActionLogWriter  # noqa: E402
-from ksa.classifier import (  # noqa: E402
+from ask.audit import ActionLogWriter  # noqa: E402
+from ask.classifier import (  # noqa: E402
     CandidateMemory,
     PriorMemory,
     RelationClassifier,
     RelationOutput,
 )
-from ksa.controller.active import (  # noqa: E402
+from ask.controller.active import (  # noqa: E402
     FeatureSnapshot,
     ScorecardConfig,
     c,
@@ -40,22 +40,22 @@ from ksa.controller.active import (  # noqa: E402
     r,
     rho,
 )
-from ksa.eval.mgp6 import build_prediction, compute_report, consolidate_actions  # noqa: E402
-from ksa.eval.mgp6_schema import (  # noqa: E402
+from ask.eval.mgp6 import build_prediction, compute_report, consolidate_actions  # noqa: E402
+from ask.eval.mgp6_schema import (  # noqa: E402
     MGP6MemoryItem,
     MGP6Scenario,
     load_mgp6_jsonl,
     validate_mgp6_coverage,
 )
-from ksa.eval.recoverability import (  # noqa: E402
+from ask.eval.recoverability import (  # noqa: E402
     aggregate_recoverability,
     recoverability_for_scenario,
 )
-from ksa.eval.sanity import build_sanity_report  # noqa: E402
-from ksa.extraction import ExtractedItem, Extractor  # noqa: E402
-from ksa.inference.llm import StructuredLLM  # noqa: E402
-from ksa.inference.ollama import OllamaLLM  # noqa: E402
-from ksa.memory import ActionLogEntry, ControllerAction, MemoryType  # noqa: E402
+from ask.eval.sanity import build_sanity_report  # noqa: E402
+from ask.extraction import ExtractedItem, Extractor  # noqa: E402
+from ask.inference.llm import StructuredLLM  # noqa: E402
+from ask.inference.ollama import OllamaLLM  # noqa: E402
+from ask.memory import ActionLogEntry, ControllerAction, MemoryType  # noqa: E402
 
 SYSTEMS: tuple[tuple[str, str], ...] = (
     ("b1", "no_memory"),

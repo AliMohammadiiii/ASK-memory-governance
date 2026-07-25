@@ -30,10 +30,10 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.audit import ActionLogWriter  # noqa: E402
-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
-from ksa.inference.llm import LLM  # noqa: E402
-from ksa.memory import (  # noqa: E402
+from ask.audit import ActionLogWriter  # noqa: E402
+from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
+from ask.inference.llm import LLM  # noqa: E402
+from ask.memory import (  # noqa: E402
     ActionLogEntry,
     ControllerAction,
     MemoryItem,
@@ -158,13 +158,13 @@ def main() -> int:
     args = p.parse_args()
 
     if args.fake:
-        from ksa.inference.fake import FakeLLM
+        from ask.inference.fake import FakeLLM
         llm: LLM = FakeLLM()
     elif args.ollama:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
         llm = OllamaLLM(model_id=args.ollama_model, host=args.ollama_host)
     else:
-        from ksa.inference.llm import build_llm
+        from ask.inference.llm import build_llm
         llm = build_llm()
 
     log_path = args.log or args.db.with_suffix(".action_log.jsonl")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluate single-session-preference (SSP) accuracy for a KSA controller run.
+"""Evaluate single-session-preference (SSP) accuracy for a ASK controller run.
 
 Selects the ``single-session-preference`` items from a LongMemEval-format slice
 (and/or a run's ``judgments.jsonl``) and reports SSP accuracy with a stratified

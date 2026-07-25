@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from ksa.extraction.schema import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.extraction.schema import EvidenceSpan, ExtractedItem, ExtractionOutput
 
 
 def test_extraction_output_round_trips() -> None:

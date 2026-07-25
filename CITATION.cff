@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this software or MGP-6, cite the associated paper/thesis."
-title: "KSA Memory Governance"
+title: "ASK Memory Governance"
 type: software
 authors:
   - family-names: Mohammadi

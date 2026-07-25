@@ -4,11 +4,11 @@
 Reuses the SAME slice, judge, and report machinery as the internal systems so
 the numbers land in the same table:
 
-  - sessions:  ksa.data.longmemeval.load_longmemeval_s (same slice file)
-  - judge:     ksa.eval.judge.build_judge_backend (openai_compatible ->
+  - sessions:  ask.data.longmemeval.load_longmemeval_s (same slice file)
+  - judge:     ask.eval.judge.build_judge_backend (openai_compatible ->
                OpenRouter google/gemma-4-31b-it, same as v7/v8)
-  - grading:   ksa.eval.longmemeval.LongMemEvalGrader (same guards/cache)
-  - report:    ksa.eval.longmemeval.build_eval_report (same bootstrap CI)
+  - grading:   ask.eval.longmemeval.LongMemEvalGrader (same guards/cache)
+  - report:    ask.eval.longmemeval.build_eval_report (same bootstrap CI)
   - outputs:   answers.jsonl / judgments.jsonl / report.json — compatible
                with scripts/win_loss.py, print_report.py and
                verify_homogeneous_run.py (--systems ext_mem0 etc.)
@@ -48,10 +48,10 @@ from typing import Any
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from ksa.baselines.base import BaselineAnswer  # noqa: E402
-from ksa.data.longmemeval import load_longmemeval_s  # noqa: E402
-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
-from ksa.eval.longmemeval import (  # noqa: E402
+from ask.baselines.base import BaselineAnswer  # noqa: E402
+from ask.data.longmemeval import load_longmemeval_s  # noqa: E402
+from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
+from ask.eval.longmemeval import (  # noqa: E402
     GradeResult,
     JudgmentCache,
     LongMemEvalGrader,

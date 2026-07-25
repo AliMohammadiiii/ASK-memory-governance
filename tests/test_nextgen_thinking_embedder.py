@@ -6,8 +6,8 @@ embedder field plumbing without loading any model weights.
 
 from __future__ import annotations
 
-from ksa.baselines.embeddings import Embedder, FakeEmbedder, TurnEmbedder
-from ksa.inference.llm import InferenceConfig, _strip_think_blocks
+from ask.baselines.embeddings import Embedder, FakeEmbedder, TurnEmbedder
+from ask.inference.llm import InferenceConfig, _strip_think_blocks
 
 
 def test_strip_think_block_removes_reasoning_keeps_answer() -> None:

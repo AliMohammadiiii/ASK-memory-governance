@@ -17,9 +17,9 @@ import json
 import math
 from pathlib import Path
 
-from ksa.baselines.base import BaselineAnswer
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
-from ksa.eval.longmemeval import (
+from ask.baselines.base import BaselineAnswer
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
+from ask.eval.longmemeval import (
     JudgmentCache,
     LongMemEvalGrader,
     _wilson_interval,
@@ -27,7 +27,7 @@ from ksa.eval.longmemeval import (
     evaluate_baseline,
     normalized_substring_grade,
 )
-from ksa.inference.llm import LLMResponse
+from ask.inference.llm import LLMResponse
 
 # --------------------------------------------------------------------- #
 # Fixtures and helpers                                                   #
@@ -186,6 +186,82 @@ def test_grader_rejects_non_abstention_refusal_without_calling_judge() -> None:
     assert judge.calls == 0
 
 
+def test_grader_does_not_treat_cannot_inside_preference_as_refusal() -> None:
+    judge = _ScriptedJudge([{"correct": True, "rationale": "grounded preference"}])
+    grader = LongMemEvalGrader(judge_llm=judge)
+    sess = _session(
+        "s-preference-cannot",
+        competency="single-session-preference",
+        gold="The user may not prefer low-quality accessories.",
+    )
+
+    grade = grader.grade(
+        _answer(
+            "s-preference-cannot",
+            "The user may not prefer equipment that cannot support a heavy lens.",
+        ),
+        sess,
+    )
+
+    assert judge.calls == 1
+    assert grade.correct is True
+
+
+def test_grader_does_not_treat_missing_ingredient_constraint_as_refusal() -> None:
+    judge = _ScriptedJudge([{"correct": True, "rationale": "grounded garden preference"}])
+    grader = LongMemEvalGrader(judge_llm=judge)
+    sess = _session(
+        "s-preference-ingredients",
+        competency="single-session-preference",
+        gold="The user prefers recipes using homegrown tomatoes and herbs.",
+    )
+
+    grade = grader.grade(
+        _answer(
+            "s-preference-ingredients",
+            "The user would prefer recipes using homegrown tomatoes and herbs. "
+            "They may not prefer recipes requiring ingredients they do not have.",
+        ),
+        sess,
+    )
+
+    assert judge.calls == 1
+    assert grade.correct is True
+
+
+def test_grader_still_rejects_explicit_insufficient_evidence_refusal() -> None:
+    judge = _ScriptedJudge([{"correct": True, "rationale": "bad judge"}])
+    grader = LongMemEvalGrader(judge_llm=judge)
+    sess = _session("s-insufficient-evidence", gold="Business Administration")
+
+    grade = grader.grade(
+        _answer(
+            "s-insufficient-evidence",
+            "I do not have enough information to determine the answer.",
+        ),
+        sess,
+    )
+
+    assert judge.calls == 0
+    assert grade.correct is False
+    assert grade.judge_rationale.startswith("[refusal-guard]")
+
+
+def test_grader_still_rejects_explicit_cannot_answer_refusal() -> None:
+    judge = _ScriptedJudge([{"correct": True, "rationale": "bad judge"}])
+    grader = LongMemEvalGrader(judge_llm=judge)
+    sess = _session("s-cannot-answer", gold="Business Administration")
+
+    grade = grader.grade(
+        _answer("s-cannot-answer", "I cannot determine the answer from the memory."),
+        sess,
+    )
+
+    assert judge.calls == 0
+    assert grade.correct is False
+    assert grade.judge_rationale.startswith("[refusal-guard]")
+
+
 def test_grader_defers_lexical_value_mismatch_to_judge() -> None:
     """Non-numeric surface mismatches require semantic adjudication."""
     judge = _ScriptedJudge([{"correct": False, "rationale": "wrong rice type"}])
@@ -259,6 +335,27 @@ def test_verbose_gold_concise_answer_reaches_judge_not_autorejected() -> None:
 
     assert judge.calls == 1  # reached the judge instead of [gold-token-guard]
     assert grade.correct is True
+
+
+def test_numeric_alternative_gold_reaches_judge_when_one_value_matches() -> None:
+    """A gold can list an accepted inclusive-count alternative.
+
+    The guard may reject disjoint values cheaply, but it must not reject a
+    prediction that matches any numeric alternative in the reference answer.
+    """
+    judge = _ScriptedJudge([{"correct": True, "rationale": "7 is an explicitly accepted answer"}])
+    grader = LongMemEvalGrader(judge_llm=judge)
+    sess = _session(
+        "s-numeric-alternative",
+        competency="temporal-reasoning",
+        gold="7 days. 8 days (including the last day) is also acceptable.",
+    )
+
+    grade = grader.grade(_answer("s-numeric-alternative", "7"), sess)
+
+    assert judge.calls == 1
+    assert grade.correct is True
+    assert "gold-token-guard" not in grade.judge_rationale
 
 
 def test_short_lexical_gold_also_defers_to_judge() -> None:

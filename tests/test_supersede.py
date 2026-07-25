@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from ksa.memory import (
+from ask.memory import (
     MemoryItem,
     MemoryType,
     insert_active,

@@ -9,7 +9,7 @@
 #   2. Activates it.
 #   3. Upgrades pip.
 #   4. Installs the locked core deps (requirements-lock.txt).
-#   5. Installs the package in editable mode (so `import ksa.data...` works
+#   5. Installs the package in editable mode (so `import ask.data...` works
 #      without `PYTHONPATH=src`).
 #   6. Installs the optional `pai` extra (pydantic-ai), which is small.
 #   7. Runs pytest as a smoke check.
@@ -69,7 +69,7 @@ echo "[setup] installing locked core deps ..."
 python -m pip install -r requirements-lock.txt
 
 # --- 6. Editable package + optional pydantic-ai ------------------------ #
-echo "[setup] installing ksa-controller (editable) + pai extra ..."
+echo "[setup] installing ask-controller (editable) + pai extra ..."
 python -m pip install -e '.[pai,dev]'
 
 # --- 7. Sanity check --------------------------------------------------- #

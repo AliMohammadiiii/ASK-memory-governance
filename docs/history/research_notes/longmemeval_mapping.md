@@ -1,4 +1,4 @@
-# LongMemEval-S competency → KSA action mapping
+# LongMemEval-S competency → ASK action mapping
 
 **Source:** Wu et al. (2025), *LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory*, §3 (task taxonomy).
 **Purpose:** establishes which of the three controller actions {Keep, Supersede, Abstain} each LongMemEval competency primarily exercises. This is a **dominant-action** mapping — many sessions exercise more than one action; the table records the action whose correctness is decisive for the gold answer being scored correctly.
@@ -11,7 +11,7 @@
 
 ## 2. Mapping
 
-| LongMemEval competency | Dominant KSA action | Rationale | Secondary actions exercised |
+| LongMemEval competency | Dominant ASK action | Rationale | Secondary actions exercised |
 |---|---|---|---|
 | **single-session-user** (a single fact stated by the user, recalled within the same session) | **Keep** | Candidate is a fresh user-stated fact with no prior to contradict. The controller's job is to commit the extraction and not let noise overwrite it. | Abstain (when extractor confidence is low) |
 | **single-session-assistant** (a fact previously *output by the assistant* must be recalled later in the same session) | **Keep** | Same shape as single-session-user but the source is the assistant's own utterance. No revision pressure. | — |

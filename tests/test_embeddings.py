@@ -20,11 +20,12 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import urllib.request
 
 import numpy as np
 import pytest
 
-from ksa.baselines.embeddings import (
+from ask.baselines.embeddings import (
     Embedder,
     FakeEmbedder,
     OllamaEmbedder,
@@ -108,7 +109,7 @@ def test_ollama_embedder_uses_api_embed_and_normalizes(monkeypatch) -> None:
         rows = len(payload["input"])
         return _Response({"embeddings": [[float(i + 1), 0.0, 0.0] for i in range(rows)]})
 
-    monkeypatch.setattr("ksa.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
 
     e = OllamaEmbedder(
         model_id="llama3.2:3b",
@@ -156,7 +157,7 @@ def test_openai_compatible_embedder_uses_v1_embeddings_and_normalizes(monkeypatc
         ]
         return _Response({"model": "auto", "data": data})
 
-    monkeypatch.setattr("ksa.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
 
     e = OpenAICompatibleEmbedder(
         model_id="auto",
@@ -207,7 +208,7 @@ def test_openai_compatible_embedder_uses_modal_headers_from_env(monkeypatch) -> 
         calls.append(req.headers)
         return _Response()
 
-    monkeypatch.setattr("ksa.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
 
     e = OpenAICompatibleEmbedder(
         model_id="auto",
@@ -246,7 +247,7 @@ def test_openai_compatible_embedder_splits_by_batch_chars(monkeypatch) -> None:
         ]
         return _Response({"model": "bge-m3", "data": data})
 
-    monkeypatch.setattr("ksa.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.urlopen", fake_urlopen)
 
     e = OpenAICompatibleEmbedder(
         model_id="bge-m3",
@@ -258,6 +259,58 @@ def test_openai_compatible_embedder_splits_by_batch_chars(monkeypatch) -> None:
     e.embed(["aa", "bbbb", "cc"])
 
     assert calls == [["aa"], ["bbbb"], ["cc"]]
+
+
+def test_openai_compatible_embedder_bypasses_proxy_for_loopback(monkeypatch) -> None:
+    calls: dict[str, object] = {}
+
+    class _Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_exc) -> None:
+            return None
+
+        def read(self) -> bytes:
+            payload = {
+                "model": "minilm",
+                "data": [{"index": 0, "embedding": [1.0, 0.0]}],
+            }
+            return json.dumps(payload).encode("utf-8")
+
+    class _ProxylessOpener:
+        def open(self, req, timeout):  # noqa: ANN001
+            calls["url"] = req.full_url
+            calls["timeout"] = timeout
+            return _Response()
+
+    def fake_build_opener(handler):  # noqa: ANN001
+        calls["handler"] = handler
+        return _ProxylessOpener()
+
+    def forbidden_urlopen(*_args, **_kwargs):
+        raise AssertionError("loopback request used the system-proxy opener")
+
+    monkeypatch.setattr(
+        "ask.baselines.embeddings.urllib.request.build_opener", fake_build_opener
+    )
+    monkeypatch.setattr(
+        "ask.baselines.embeddings.urllib.request.urlopen", forbidden_urlopen
+    )
+
+    e = OpenAICompatibleEmbedder(
+        model_id="minilm",
+        base_url="http://127.0.0.1:8100/v1",
+        timeout_s=7.0,
+    )
+    out = e.embed(["alpha"])
+
+    assert out.shape == (1, 2)
+    assert calls["url"] == "http://127.0.0.1:8100/v1/embeddings"
+    assert calls["timeout"] == 7.0
+    handler = calls["handler"]
+    assert isinstance(handler, urllib.request.ProxyHandler)
+    assert handler.proxies == {}
 
 
 # --------------------------------------------------------------------- #
@@ -302,11 +355,11 @@ _HAS_ST = importlib.util.find_spec("sentence_transformers") is not None
 # REAL MiniLM weights.
 #
 # To run them on the host:
-#   KSA_RUN_MINILM_SMOKE=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
+#   ASK_RUN_MINILM_SMOKE=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false \
 #       PYTHONPATH=src pytest tests/test_embeddings.py -k minilm
-_RUN_MINILM_SMOKE = os.environ.get("KSA_RUN_MINILM_SMOKE", "0") == "1"
+_RUN_MINILM_SMOKE = os.environ.get("ASK_RUN_MINILM_SMOKE", "0") == "1"
 _SKIP_REASON_MINILM = (
-    "MiniLM smoke tests are gated by KSA_RUN_MINILM_SMOKE=1 "
+    "MiniLM smoke tests are gated by ASK_RUN_MINILM_SMOKE=1 "
     "(default off — Apple-Silicon libomp segfault risk; see test_embeddings.py)"
 )
 
@@ -330,7 +383,7 @@ def test_turn_embedder_default_model_is_minilm() -> None:
 
 
 def test_sentence_transformer_auto_device_uses_cuda_when_available(monkeypatch) -> None:
-    monkeypatch.setattr("ksa.baselines.embeddings._torch_cuda_is_available", lambda: True)
+    monkeypatch.setattr("ask.baselines.embeddings._torch_cuda_is_available", lambda: True)
 
     assert _resolve_sentence_transformer_device("auto") == "cuda"
 
@@ -339,7 +392,7 @@ def test_sentence_transformer_cuda_device_falls_back_to_cpu(
     monkeypatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    monkeypatch.setattr("ksa.baselines.embeddings._torch_cuda_is_available", lambda: False)
+    monkeypatch.setattr("ask.baselines.embeddings._torch_cuda_is_available", lambda: False)
 
     assert _resolve_sentence_transformer_device("cuda") == "cpu"
     assert "falling back to CPU" in capsys.readouterr().out

@@ -12,8 +12,8 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.audit import ActionLogWriter  # noqa: E402
-from ksa.memory import (  # noqa: E402
+from ask.audit import ActionLogWriter  # noqa: E402
+from ask.memory import (  # noqa: E402
     ActionLogEntry,
     ControllerAction,
     MemoryItem,

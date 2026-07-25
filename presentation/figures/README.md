@@ -4,7 +4,7 @@ This directory contains reusable visuals accompanying the English and Persian
 defense decks.
 
 - `annotation_agreement.*`, `evaluation_causal_chain.*`, and
-  `ksa_controller_architecture.*` are copied from the repository's canonical
+  `ask_controller_architecture.*` are copied from the repository's canonical
   `docs/figures` sources. SVG files remain editable; PNG files are convenient
   for documents and web previews.
 - `main_results_{en,fa}.png`, `external_system_mapping_{en,fa}.png`, and

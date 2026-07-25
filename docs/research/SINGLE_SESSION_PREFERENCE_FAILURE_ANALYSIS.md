@@ -1,7 +1,7 @@
-# Single-Session-Preference (SSP) Failure Analysis — LongMemEval-M / KSA controller
+# Single-Session-Preference (SSP) Failure Analysis — LongMemEval-M / ASK controller
 
 **Scope.** Error analysis of the `single-session-preference` competency in the
-KSA memory-governance controller's LongMemEval-M evaluation. Evidence-first: every
+ASK memory-governance controller's LongMemEval-M evaluation. Evidence-first: every
 number below is recomputed from the run's `judgments.jsonl`, and every failure
 classification is checked against the *constructed prompt* (`raw_prompt`) to see
 whether the decisive fact was actually available to the answerer.
@@ -10,10 +10,10 @@ whether the decisive fact was actually available to the answerer.
 
 | Role | Path |
 |------|------|
-| v7 base run (merged 180 items) | `ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/` |
+| v7 base run (merged 180 items) | `ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/` |
 | SSP questions / gold answers | `…/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/range_0_179.jsonl` |
-| Failure replay (70 items) | `ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/` |
-| Adjudicated merge | `ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/` |
+| Failure replay (70 items) | `ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/` |
+| Adjudicated merge | `ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/` |
 | Machine-readable taxonomy | `artifacts/single_session_preference_error_taxonomy.json` |
 
 ## 2. Verified headline numbers

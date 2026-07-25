@@ -16,8 +16,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from ksa.inference.llm import LLM, InferenceConfig, build_llm
-from ksa.inference.ollama import OllamaLLM
+from ask.inference.llm import LLM, InferenceConfig, build_llm
+from ask.inference.ollama import OllamaLLM
 
 
 def test_ollama_satisfies_llm_protocol() -> None:

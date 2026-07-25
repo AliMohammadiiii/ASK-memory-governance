@@ -224,7 +224,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     L.append(
         "- **No LLM.** These are deterministic reference systems, not the "
-        "LLM-backed KSA controller. They exist to exercise the harness end-to-end "
+        "LLM-backed ASK controller. They exist to exercise the harness end-to-end "
         "and give a governance baseline; swap in real model predictions by writing "
         "the same `predictions.jsonl` format."
     )

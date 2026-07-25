@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from datetime import date
 
-from ksa.controller.temporal import (
+from ask.controller.temporal import (
     classify_temporal_question,
     collect_dated_memories,
     is_temporal_question,

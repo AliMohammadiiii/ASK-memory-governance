@@ -17,7 +17,7 @@ to {correct, incorrect}. The paper's recommended judge is GPT-4o (frontier
 proprietary) at temperature 0.
 
 We adopt the published rubric verbatim (rubric text reproduced in
-`src/ksa/eval/longmemeval.py:_JUDGE_PROMPT_TEMPLATE`) but substitute the judge
+`src/ask/eval/longmemeval.py:_JUDGE_PROMPT_TEMPLATE`) but substitute the judge
 model — see §3.
 
 There are two domain-specific subtleties the published rubric handles, which
@@ -94,5 +94,5 @@ judgments without re-invoking Ollama, finishing in seconds.
 ## 6. Exit criterion
 
 This note exists. The judge prompt template is implemented in
-`src/ksa/eval/longmemeval.py` and exercised in `tests/test_longmemeval_eval.py`
+`src/ask/eval/longmemeval.py` and exercised in `tests/test_longmemeval_eval.py`
 on hand-crafted right/wrong fixtures.

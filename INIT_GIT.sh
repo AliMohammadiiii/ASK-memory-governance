@@ -9,4 +9,4 @@ fi
 git init -b main
 git add .
 echo "Repository initialized. Configure your Git identity, then run:"
-echo "  git commit -m 'Initial public KSA memory governance repository'"
+echo "  git commit -m 'Initial public ASK memory governance repository'"

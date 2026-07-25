@@ -1,8 +1,8 @@
 # M4-W13 T4 Controller Partial Answer Analysis
 
-Source upload: `/Users/ali/Downloads/runs(1).zip`  
-Imported source root: `/Users/ali/Documents/Master/_incoming_runs1/content/ksa_controller_mgp6_t4_colab/runs/m4w13_50_t4_ollama/controller`  
-Run status: partial, controller-only, `11/50` completed.  
+Source upload: `/Users/ali/Downloads/runs(1).zip`
+Imported source root: `/Users/ali/Documents/Master/_incoming_runs1/content/ask_controller_mgp6_t4_colab/runs/m4w13_50_t4_ollama/controller`
+Run status: partial, controller-only, `11/50` completed.
 Manifest: `complete=false`, `model_profile=t4`, `run_tier=development`, `raw_turn_fallback=false`, `controller_include_assistant_context=false`.
 
 ## Executive Verdict

@@ -218,7 +218,7 @@ status/version/superseded-by edges.
 ## 4. Implementation plan
 
 ```
-ksa_controller/src/ksa/baselines/
+ask_controller/src/ask/baselines/
 ├── embeddings.py          (TurnEmbedder; lazy sentence-transformers import)
 ├── flat_vector_store.py   (FlatVectorStore; FAISS IndexFlatIP)
 ├── flat_vector.py         (FlatVectorBaseline; the BaselineAnswer producer)
@@ -231,7 +231,7 @@ Tests (mirroring Week 2's style — _RecordingLLM, FakeEmbedder, JSON
 fixtures):
 
 ```
-ksa_controller/tests/
+ask_controller/tests/
 ├── test_embeddings.py            (shape, dtype, L2-norm = 1, determinism)
 ├── test_flat_vector_store.py     (round-trip, clear, k > size)
 └── test_flat_vector.py           (top-k correctness, no current-session
@@ -284,7 +284,7 @@ tests trigger the path.
 
 Mitigation (landed):
 
-1. Gated the two MiniLM smoke tests behind `KSA_RUN_MINILM_SMOKE=1`
+1. Gated the two MiniLM smoke tests behind `ASK_RUN_MINILM_SMOKE=1`
    (default off). The hermetic `FakeEmbedder` tests already cover the
    L2-norm / shape / determinism / Protocol contract; the smoke tests
    were a "real weights also work" guard, not a contract guard.
@@ -295,7 +295,7 @@ Mitigation (landed):
    negligible at our scale (50 sessions × 384-dim).
 
 Validation procedure on the host: run
-`KSA_RUN_MINILM_SMOKE=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false
+`ASK_RUN_MINILM_SMOKE=1 OMP_NUM_THREADS=1 TOKENIZERS_PARALLELISM=false
 PYTHONPATH=src .venv/bin/python -m pytest tests/test_embeddings.py
 -k minilm` once to confirm the env-var fix lets the smoke tests pass on
 this hardware. After the one-time validation, the env-var-gated default

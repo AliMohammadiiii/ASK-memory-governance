@@ -1,1 +1,1 @@
-"""Benchmark packages bundled with KSA."""
+"""Benchmark packages bundled with ASK."""

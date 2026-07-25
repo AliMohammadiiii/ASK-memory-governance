@@ -31,11 +31,11 @@ Week 1 finalized against the laptop dev model (`gemma4:e4b` via local Ollama). R
 - `NOTES/status_m1w1.md` — this file
 
 **Code**
-- `src/ksa/data/__init__.py`, `src/ksa/data/longmemeval.py` — loader + slicer
-- `src/ksa/inference/__init__.py`, `src/ksa/inference/llm.py` — Protocol, HF, StructuredLLM
-- `src/ksa/inference/fake.py` — deterministic dev/test stub
-- `src/ksa/inference/ollama.py` — Ollama HTTP backend (`/api/chat` + `/api/generate`)
-- `src/ksa/inference/structured_pai.py` — optional pydantic-ai wrapper
+- `src/ask/data/__init__.py`, `src/ask/data/longmemeval.py` — loader + slicer
+- `src/ask/inference/__init__.py`, `src/ask/inference/llm.py` — Protocol, HF, StructuredLLM
+- `src/ask/inference/fake.py` — deterministic dev/test stub
+- `src/ask/inference/ollama.py` — Ollama HTTP backend (`/api/chat` + `/api/generate`)
+- `src/ask/inference/structured_pai.py` — optional pydantic-ai wrapper
 
 **Configs / data**
 - `configs/inference.yaml` — primary (Llama-3-8B / Qwen2.5-7B fallback)

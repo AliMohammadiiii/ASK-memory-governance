@@ -192,7 +192,7 @@ overwrite ablation, proposal §I.7.3) pick this up as the load-bearing
 example without re-implementation.
 
 A `supersede_evict` helper that wraps the status-flip + action_log
-write lives in `src/ksa/memory/operations.py` (added this week, see
+write lives in `src/ask/memory/operations.py` (added this week, see
 §3.1). Tests assert the post-state: `status='superseded'`,
 `supersedes_id IS NULL`, `action_log` has one matching row.
 
@@ -236,22 +236,22 @@ spot-check 5 winning sessions before relying on the table.
 ## 4. Implementation plan
 
 ```
-ksa_controller/src/ksa/baselines/
+ask_controller/src/ask/baselines/
 ├── recency_pruning.py         (NEW — Baseline 3)
 └── prompts/
     └── recency_pruning.j2     (NEW — identical retrieved-memory block to W3)
 
-ksa_controller/src/ksa/memory/
+ask_controller/src/ask/memory/
 └── operations.py              (EXTEND — add get_by_id, get_lineage,
                                 supersede_evict; existing insert_active +
                                 supersede + retrieve_active are kept verbatim)
 
-ksa_controller/src/ksa/audit/
+ask_controller/src/ask/audit/
 └── action_log.py              (EXTEND — add `baseline` and `session_id`
                                 fields to ActionLogEntry; mode='w' truncate
                                 option; fsync on every write)
 
-ksa_controller/tests/
+ask_controller/tests/
 ├── test_memory_operations.py  (NEW — insert, supersede atomicity,
                                 retrieve-active-only, type filter, lineage,
                                 double-supersede concurrency, supersede_evict)
@@ -261,7 +261,7 @@ ksa_controller/tests/
                                 action_log shape, determinism, prompt slot
                                 rendering, retrieval semantics)
 
-ksa_controller/scripts/
+ask_controller/scripts/
 ├── run_baseline.py            (EXTEND — accept --baseline recency, --capacity)
 └── finalize_m1w4.sh           (NEW — runs all 3 baselines, merges, gate doc)
 ```

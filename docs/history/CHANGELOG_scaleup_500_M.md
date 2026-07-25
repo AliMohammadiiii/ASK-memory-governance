@@ -1,15 +1,15 @@
 # Changelog — eval harness hardening for full 500-Q LongMemEval-S + LongMemEval-M
 
 Scope: the eval harness only — runner (`scripts/run_m4w13_ollama.py`,
-`scripts/run_baseline.py`), loader (`src/ksa/data/longmemeval.py`), grader
-(`src/ksa/eval/longmemeval.py`), plus the minimal root-cause fix for the
-truncation bug in `src/ksa/pipeline/orchestrator.py`. No controller scoring /
+`scripts/run_baseline.py`), loader (`src/ask/data/longmemeval.py`), grader
+(`src/ask/eval/longmemeval.py`), plus the minimal root-cause fix for the
+truncation bug in `src/ask/pipeline/orchestrator.py`. No controller scoring /
 policy / memory-DB / extraction semantics were changed.
 
 All changes verified: **369 passed, 5 skipped** (full suite), incl. 14 new
 regression tests in `tests/test_scaleup_500_m_fixes.py`. Ruff clean.
 
-## Grader — `src/ksa/eval/longmemeval.py`
+## Grader — `src/ask/eval/longmemeval.py`
 
 1. **Numeric/currency normalization (docx §8 false-negatives).**
    `_normalize_text` now collapses thousands separators between digits, so
@@ -29,7 +29,7 @@ regression tests in `tests/test_scaleup_500_m_fixes.py`. Ruff clean.
    Backward-compatible: classification is done at aggregation time from
    (competency, gold) — no `GradeResult` schema change.
 
-## Loader — `src/ksa/data/longmemeval.py`
+## Loader — `src/ask/data/longmemeval.py`
 
 4. **Exact full-set slicing.** `sample_slice(n == len(pool))` short-circuits to
    the whole pool in deterministic id order (no largest-remainder rounding edge
@@ -62,7 +62,7 @@ regression tests in `tests/test_scaleup_500_m_fixes.py`. Ruff clean.
     `dataset`/`dataset_family` accurately instead of hardcoding
     "LongMemEval-S cleaned". An M run is never mislabeled S.
 
-## Pipeline (root cause of the truncation bug) — `src/ksa/pipeline/orchestrator.py`
+## Pipeline (root cause of the truncation bug) — `src/ask/pipeline/orchestrator.py`
 
 11. **Answer-retry now fires on a bare symbol.** The retry trigger
     (`_answer_needs_retry`, extracted for unit-testability) fires on exact

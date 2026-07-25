@@ -17,7 +17,7 @@ from pathlib import Path
 
 import pytest
 
-from ksa.eval import sanity
+from ask.eval import sanity
 
 _SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 

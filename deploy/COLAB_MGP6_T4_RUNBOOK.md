@@ -12,11 +12,11 @@ from google.colab import files
 uploaded = files.upload()
 ```
 
-Upload the `ksa_controller_mgp6_t4_colab_*.zip` file, then run:
+Upload the `ask_controller_mgp6_t4_colab_*.zip` file, then run:
 
 ```bash
-!unzip -q ksa_controller_mgp6_t4_colab_*.zip
-%cd ksa_controller_mgp6_t4_colab
+!unzip -q ask_controller_mgp6_t4_colab_*.zip
+%cd ask_controller_mgp6_t4_colab
 ```
 
 ## 2. Practical T4 Run
@@ -44,7 +44,7 @@ On T4 this is slower, but it is the path to a citable artifact:
 
 ```bash
 !PROFILE=thesis OUT=runs/m4w14_thesis RC_OUT=runs/m4w15_thesis \
-  RESULT_ZIP=/content/ksa_mgp6_thesis_results.zip \
+  RESULT_ZIP=/content/ask_mgp6_thesis_results.zip \
   bash deploy/run_colab_mgp6_t4.sh
 ```
 
@@ -60,23 +60,23 @@ Use the exact `RESULT_ZIP` path printed by the script:
 
 ```python
 from google.colab import files
-files.download("/content/ksa_mgp6_thesis_results.zip")
+files.download("/content/ask_mgp6_thesis_results.zip")
 ```
 
 If you used the default practical run, the filename starts with
-`/content/ksa_mgp6_t4_results_`.
+`/content/ask_mgp6_t4_results_`.
 
 ## 5. Useful Overrides
 
 ```bash
 # Skip tests to save time.
-!KSA_RUN_TESTS=0 PROFILE=t4 bash deploy/run_colab_mgp6_t4.sh
+!ASK_RUN_TESTS=0 PROFILE=t4 bash deploy/run_colab_mgp6_t4.sh
 
 # Keep artifacts even if sanity warnings fire.
 !FAIL_ON_SANITY=0 PROFILE=t4 bash deploy/run_colab_mgp6_t4.sh
 
 # Reuse already-pulled Ollama models.
-!KSA_PULL_MODELS=0 PROFILE=t4 bash deploy/run_colab_mgp6_t4.sh
+!ASK_PULL_MODELS=0 PROFILE=t4 bash deploy/run_colab_mgp6_t4.sh
 ```
 
 ## 6. What To Send Back

@@ -7,8 +7,8 @@ M4-W15 RC@C final-candidate artifacts.
 ## 1. Unpack And Setup
 
 ```bash
-unzip ksa_gpu_run_package_2026-05-29.zip
-cd ksa_gpu_run_package_2026-05-29/ksa_controller
+unzip ask_gpu_run_package_2026-05-29.zip
+cd ask_gpu_run_package_2026-05-29/ask_controller
 ```
 
 For Colab or a fresh Linux GPU box:
@@ -60,7 +60,7 @@ pilot evidence unless rejudged.
 
 ```bash
 source .venv/bin/activate
-KSA_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
+ASK_SETUP_OLLAMA=0 bash deploy/colab_prepare.sh
 bash deploy/run_colab_m4w13_hf_a100_parallel.sh
 ```
 
@@ -120,10 +120,10 @@ python scripts/evaluate_rc_at_c_mgp6.py \
 
 ## 5. Zip Results To Send Back
 
-Run this from `ksa_controller`:
+Run this from `ask_controller`:
 
 ```bash
-RESULT_ZIP="/content/ksa_gpu_results_$(date +%Y%m%d_%H%M%S).zip"
+RESULT_ZIP="/content/ask_gpu_results_$(date +%Y%m%d_%H%M%S).zip"
 zip -r "$RESULT_ZIP" \
   ARTIFACT_MANIFEST.md \
   README.md \

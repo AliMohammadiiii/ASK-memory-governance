@@ -9,7 +9,7 @@ GPU-acceptance step — see `NOTES/inference_bench.md` and `NOTES/finalize_m1w1.
 Run on your Mac:
 
 ```
-cd ~/Documents/Master/ksa_controller
+cd ~/Documents/Master/ask_controller
 ollama serve &
 ollama pull gemma4:e4b
 bash scripts/finalize_m1w1.sh
@@ -96,7 +96,7 @@ The slicer is byte-stable under fixed seed (verified by
 ## Optional: pydantic-ai for structured extraction
 
 The harness ships an optional wrapper at
-`src/ksa/inference/structured_pai.py`. Install:
+`src/ask/inference/structured_pai.py`. Install:
 
 ```
 pip install pydantic-ai pydantic-ai-slim[ollama]
@@ -105,7 +105,7 @@ pip install pydantic-ai pydantic-ai-slim[ollama]
 Then:
 
 ```
-from ksa.inference.structured_pai import structured_via_pydantic_ai
+from ask.inference.structured_pai import structured_via_pydantic_ai
 from pydantic import BaseModel
 
 class Extraction(BaseModel):
@@ -119,7 +119,7 @@ obj = structured_via_pydantic_ai(
 )
 ```
 
-The hand-rolled `StructuredLLM` in `src/ksa/inference/llm.py` continues
+The hand-rolled `StructuredLLM` in `src/ask/inference/llm.py` continues
 to be the M1-W1 default — it's the path under test. pydantic-ai is a
 drop-in alternative for Month 2 when the relation classifier ships and
 we want grammar-constrained generation.

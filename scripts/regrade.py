@@ -32,9 +32,9 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.baselines.base import BaselineAnswer  # noqa: E402
-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
-from ksa.eval.longmemeval import (  # noqa: E402
+from ask.baselines.base import BaselineAnswer  # noqa: E402
+from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
+from ask.eval.longmemeval import (  # noqa: E402
     JudgmentCache,
     LongMemEvalGrader,
     evaluate_baseline,

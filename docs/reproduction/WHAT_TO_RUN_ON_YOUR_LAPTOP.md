@@ -1,7 +1,7 @@
 # What to run on your laptop (ordered)
 
-Frozen protocol `final-1.1`. This is the exact, ordered command list to take the
-KSA final evaluation from a fresh clone to a return package. Every command is
+Frozen protocol `final-2.0`. This is the exact, ordered command list to take the
+ASK final evaluation from a fresh clone to a return package. Every command is
 based on an entry point that exists in this repo. **No duration estimates are
 given** (they depend on your machine and OpenRouter throughput).
 
@@ -11,10 +11,8 @@ macOS: all wrappers are POSIX/BSD-compatible and use `python3`.
 
 ## Two hard prerequisites (nothing hosted runs without these)
 
-1. **A newly authorized `OPENROUTER_API_KEY`.** The credential supplied during
-   the 2026-07-13 audit returned HTTP 403 before inference under default,
-   Venice-only, and DeepInfra-only routing. Do not reuse it. Export a replacement
-   only in your shell; never put a key in a tracked file or review package.
+1. **A valid `OPENROUTER_API_KEY`.** Export it only in your shell; never put a
+   key in a tracked file or review package.
 2. **LongMemEval-M data present locally** (not redistributable). You need:
    - `LONGMEMEVAL_DATA` -> the full slice jsonl (e.g. `data/slices/longmemeval_m_full.jsonl`)
    - optionally `LONGMEMEVAL_SRC` -> the cleaned source json
@@ -103,8 +101,8 @@ bash scripts/evaluation/run_longmemeval_final.sh --dry-run
 - Purpose: confirm the frozen command assembles and prints the models/judge in
   use, without calling any model.
 - Workload: none (prints plan).
-- Success: prints the frozen config (main model qwen/qwen3.5-9b; judge primary
-  google/gemma-4-31b-it:free; fallback google/gemma-4-31b-it; MiniLM cpu; seed 0)
+- Success: prints the frozen config (main model qwen/qwen3.5-9b; only judge
+  google/gemma-4-31b-it with no model fallback; MiniLM cpu; seed 0)
   and the SAMPLE range; executes nothing.
 
 ## 6. Homogeneous LongMemEval-M rerun (HOSTED — the required run)
@@ -117,32 +115,45 @@ OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jso
 # the full run:
 OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl \
   bash scripts/evaluation/run_longmemeval_final.sh --full
+
+# controller-only final-candidate run through the identical frozen path:
+OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl \
+  bash scripts/evaluation/run_longmemeval_final.sh --full --controller-only
 ```
 - Purpose: the frozen full-180, 5-system (controller,b4,b3,b2,b1), one-config,
-  one-judge-policy rerun needed to establish the first final LongMemEval result.
+  one-judge-policy V12 engineering confirmation. Because V11 outcomes informed
+  the fixes, this reused-slice run is post-hoc; a new untouched holdout is needed
+  to establish a confirmatory final LongMemEval result.
   The 77.2% value is a selection-biased failure-replay construction contradicted
   by the non-empty top-up and is never a result to "replace."
 - Workload: `--smoke` = 2 questions; `--full` = 180 questions x 5 systems.
-- Expected outputs: `runs_local/lme_final_5systems_180/<system>/{answers,judgments}.jsonl`,
-  `.../report.json`, `.../final_summary.json`, `.../logs/`.
+- Controller-only workload: `--full --controller-only` = 180 controller
+  questions, written to `runs_local/lme_final_controller_v12_qwen_180`. This is the
+  canonical choice when validating the contribution alone; the five-system run
+  remains required for a homogeneous comparative table.
+- Extraction, relation, and final-answer requests all use Qwen3.5-9B through
+  the Venice, DeepInfra, and SiliconFlow pool with reasoning disabled.
+- Expected outputs: `runs_local/lme_final_5systems_v12_qwen_180/<system>/{answers,judgments}.jsonl`,
+  `.../report.json`, `.../final_summary.json`,
+  `.../controller_accuracy_gate.json`, `.../manifest.json`, and `.../logs/`.
 - Success: `scripts/verify_homogeneous_run.py` passes (all 180 items per system,
-  one judge policy, no patching); `final_summary.json` lists per-system accuracy.
+  one judge policy, no patching), and the controller accuracy gate reports at
+  least 153/180 (85%). The wrapper exits non-zero if either gate fails.
 - Resume: `... bash scripts/evaluation/run_longmemeval_final.sh --resume`
   (continues incomplete shards in place; never rewrites scored items).
 - Immutability: without `--resume`, the script refuses to write into a non-empty
-  `runs_local/lme_final_5systems_180` and exits with an error.
+  `runs_local/lme_final_5systems_v12_qwen_180` and exits with an error.
 
 ## 7. Judge audit (offline, after step 6)
 
 ```
-bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_180
+bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_v12_qwen_180
 ```
-- Purpose: quantify any primary/fallback judge confound.
+- Purpose: confirm zero model fallback and audit scoring fallbacks.
 - Workload: reads all `judgments.jsonl` under the run.
-- Expected outputs: `runs_local/judge_audit/lme_final_5systems_180_judge_audit.json`.
-- Success: reports fallback rate, accuracy split (primary- vs fallback-graded),
-  and per-competency fallback rate. A single judge with ~0 fallback rate is the
-  clean case; disclose any large split.
+- Expected outputs: `runs_local/judge_audit/lme_final_5systems_v12_qwen_180_judge_audit.json`.
+- Success: reports zero model fallback; any deterministic scoring fallback is
+  separately visible by competency.
 
 ## 8. Ablations (MGP-6 offline; SSP matrix pending)
 
@@ -172,12 +183,12 @@ bash scripts/experiments/run_ablations.sh --all
 ## 10. Package for return
 
 ```
-bash scripts/release/package_run_for_review.sh runs_local/lme_final_5systems_180
+bash scripts/release/package_run_for_review.sh runs_local/lme_final_5systems_v12_qwen_180
 ```
 - Purpose: package aggregate reports, manifests, audit summaries, environment
   metadata, and checksums. Raw answers, judgments, prompts, and logs are excluded
   from this public review package by design.
-- Expected output: `return_package_lme_final_5systems_180.tar.gz` at repo root.
+- Expected output: `return_package_lme_final_5systems_v12_qwen_180.tar.gz` at repo root.
 - Success: one tarball; credentials excluded; `CHECKSUMS.sha256` + `ENV_REPORT.txt`
   inside.
 
@@ -186,12 +197,12 @@ bash scripts/release/package_run_for_review.sh runs_local/lme_final_5systems_180
 ## Files to return
 
 Return, at minimum:
-- `return_package_lme_final_5systems_180.tar.gz` (from step 10), which contains
+- `return_package_lme_final_5systems_v12_qwen_180.tar.gz` (from step 10), which contains
   the sanitized aggregate run artifacts, `manifest.json`, `ENV_REPORT.txt`, the freeze
   (`configs/release/final.yaml` + `artifacts/manifests/freeze_hashes.json`), and
   `CHECKSUMS.sha256`.
 - `runs_local/mgp6_few6_rescore/few6_report.json` (step 3).
-- `runs_local/judge_audit/lme_final_5systems_180_judge_audit.json` (step 7).
+- `runs_local/judge_audit/lme_final_5systems_v12_qwen_180_judge_audit.json` (step 7).
 - `reports/FINAL_RESULTS.md` and `reports/FINAL_RESULTS.json` (step 2).
 
 Do NOT return `.env` or any file containing the API key. The packaging step

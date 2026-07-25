@@ -20,7 +20,7 @@ format:
 	ruff format src tests scripts benchmarks
 
 typecheck:
-	mypy --follow-imports=skip src/ksa/controller src/ksa/memory src/ksa/eval/mgp6.py src/ksa/eval/mgp6_schema.py
+	mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py
 
 build:
 	$(PYTHON) -m build

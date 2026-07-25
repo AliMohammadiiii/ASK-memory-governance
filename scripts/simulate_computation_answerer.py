@@ -10,7 +10,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.computation_replay import (  # noqa: E402
+from ask.eval.computation_replay import (  # noqa: E402
     simulate_computation_on_answers,
     simulate_computation_on_slice,
 )

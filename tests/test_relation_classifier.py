@@ -8,9 +8,9 @@ from collections import deque
 import pytest
 from pydantic import ValidationError
 
-from ksa.classifier import CandidateMemory, PriorMemory, RelationClassifier, Stage1Output
-from ksa.inference.fake import FakeLLM
-from ksa.inference.llm import StructuredLLM
+from ask.classifier import CandidateMemory, PriorMemory, RelationClassifier, Stage1Output
+from ask.inference.fake import FakeLLM
+from ask.inference.llm import StructuredLLM
 
 STAGE1 = """
 Candidate: {{ candidate | tojson }}

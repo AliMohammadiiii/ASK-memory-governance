@@ -76,6 +76,9 @@ def check_system(
     expected_answer_provider: str | None,
     expected_judge_primary: str | None,
     allowed_judge_fallbacks: set[str],
+    allowed_answer_providers: tuple[str, ...] = (),
+    required_answer_providers: set[str] | None = None,
+    allowed_auxiliary_models: set[str] | None = None,
 ) -> dict[str, Any]:
     sys_dir = run_root / system
     result: dict[str, Any] = {"system": system, "errors": [], "warnings": []}
@@ -105,7 +108,11 @@ def check_system(
             err(f"missing {path}")
             continue
         rows = load_jsonl(path)
-        ids = Counter(r.get("session_id") for r in rows)
+        raw_ids = [r.get("session_id") for r in rows]
+        missing_ids = sum(1 for value in raw_ids if not isinstance(value, str) or not value)
+        if missing_ids:
+            err(f"{name}: {missing_ids} rows lack a non-empty string session_id")
+        ids: Counter[str] = Counter(value for value in raw_ids if isinstance(value, str) and value)
         dupes = {k: c for k, c in ids.items() if c > 1}
         missing = set(slice_counter) - set(ids)
         extra = set(ids) - set(slice_counter)
@@ -146,6 +153,11 @@ def check_system(
             if unexpected:
                 err(f"unexpected actual judge model(s): {sorted(unexpected)}")
             result["model_fallbacks"] = sum(1 for r in rows if bool(r.get("used_model_fallback")))
+            if not allowed_judge_fallbacks and result["model_fallbacks"]:
+                err(
+                    "judgments.jsonl: model fallback was used even though the "
+                    "frozen policy declares no fallback model"
+                )
             result["scoring_fallbacks"] = sum(
                 1 for r in rows if bool(r.get("used_scoring_fallback"))
             )
@@ -235,7 +247,11 @@ def check_system(
                     )
                 if not requested_answer_models:
                     err("answer telemetry contains no requested_model provenance")
-            seeds = sorted({r.get("seed") for r in rows})
+            raw_seeds = [r.get("seed") for r in rows]
+            missing_seeds = sum(value is None for value in raw_seeds)
+            if missing_seeds:
+                err(f"answers.jsonl: {missing_seeds} rows lack seed provenance")
+            seeds = sorted({str(value) for value in raw_seeds if value is not None})
             result["seeds"] = seeds
             if len(seeds) > 1:
                 result["warnings"].append(f"multiple seeds: {seeds}")
@@ -253,7 +269,7 @@ def check_system(
         model
         for model in ({expected_answer_model, expected_judge_primary} | allowed_judge_fallbacks)
         if model
-    }
+    } | (allowed_auxiliary_models or set())
     unexpected_call_models = set(requested_call_models) - allowed_requested_models
     if unexpected_call_models:
         err(f"LLM telemetry requested unexpected models: {sorted(unexpected_call_models)}")
@@ -276,12 +292,20 @@ def check_system(
             json.dumps(row.get("provider_preferences"), sort_keys=True) for row in answer_calls
         }
         result["answer_provider_policies"] = sorted(provider_policies)
-        if expected_answer_provider:
+        if allowed_answer_providers:
+            expected_policy = {
+                "allow_fallbacks": True,
+                "only": list(allowed_answer_providers),
+            }
+        elif expected_answer_provider:
             expected_policy = {
                 "allow_fallbacks": False,
                 "only": [expected_answer_provider],
                 "order": [expected_answer_provider],
             }
+        else:
+            expected_policy = None
+        if expected_policy is not None:
             bad_provider_policies = [
                 row.get("provider_preferences")
                 for row in answer_calls
@@ -290,11 +314,27 @@ def check_system(
             if bad_provider_policies:
                 err(
                     f"{len(bad_provider_policies)} answer calls lack the frozen "
-                    f"single-provider policy {expected_policy}"
+                    f"provider policy {expected_policy}"
                 )
-        result["actual_answer_providers"] = dict(
-            Counter(str(row.get("provider") or "unreported") for row in answer_calls)
+        actual_answer_providers = Counter(
+            str(row.get("provider") or "unreported").lower() for row in answer_calls
         )
+        result["actual_answer_providers"] = dict(actual_answer_providers)
+        if allowed_answer_providers:
+            allowed = {provider.lower() for provider in allowed_answer_providers}
+            unexpected_providers = set(actual_answer_providers) - allowed
+            if unexpected_providers:
+                err(
+                    "answer calls used provider(s) outside the frozen pool: "
+                    f"{sorted(unexpected_providers)}"
+                )
+        if required_answer_providers:
+            required = {provider.lower() for provider in required_answer_providers}
+            missing_providers = required - set(actual_answer_providers)
+            if missing_providers:
+                err(
+                    f"answer calls did not use every required provider: {sorted(missing_providers)}"
+                )
     return result
 
 
@@ -315,12 +355,30 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--expected-answer-model", default=None)
     parser.add_argument("--expected-answer-provider", default=None)
+    parser.add_argument(
+        "--allowed-answer-provider",
+        action="append",
+        default=[],
+        help="allowed provider slug for answer-side calls (repeatable)",
+    )
+    parser.add_argument(
+        "--required-answer-provider",
+        action="append",
+        default=[],
+        help="provider slug that must appear in answer-side telemetry (repeatable)",
+    )
     parser.add_argument("--expected-judge-primary", default=None)
     parser.add_argument(
         "--allowed-judge-fallback",
         action="append",
         default=[],
         help="allowed actual fallback model (repeatable)",
+    )
+    parser.add_argument(
+        "--allowed-auxiliary-model",
+        action="append",
+        default=[],
+        help="model allowed in extraction/relation telemetry but not as final answerer",
     )
     parser.add_argument(
         "--out",
@@ -335,7 +393,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.sample_from < 0 or sample_to < args.sample_from:
         parser.error("invalid --sample-from/--sample-to range")
     slice_rows = all_slice_rows[args.sample_from : sample_to + 1]
-    slice_ids = [r.get("session_id") for r in slice_rows]
+    raw_slice_ids = [r.get("session_id") for r in slice_rows]
+    slice_ids = [item if isinstance(item, str) else "" for item in raw_slice_ids]
     expected_n = args.expected_n or len(slice_ids)
     slice_sha = sha256_file(args.slice)
 
@@ -350,6 +409,9 @@ def main(argv: list[str] | None = None) -> int:
             expected_answer_provider=args.expected_answer_provider,
             expected_judge_primary=args.expected_judge_primary,
             allowed_judge_fallbacks=set(args.allowed_judge_fallback),
+            allowed_answer_providers=tuple(args.allowed_answer_provider),
+            required_answer_providers=set(args.required_answer_provider),
+            allowed_auxiliary_models=set(args.allowed_auxiliary_model),
         )
         for s in systems
     ]
@@ -373,9 +435,9 @@ def main(argv: list[str] | None = None) -> int:
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         manifest_expectations = {
             "slice_sha256": slice_sha,
-            "evaluated_session_ids_sha256": _selected_ids_hash([str(item) for item in slice_ids]),
+            "evaluated_session_ids_sha256": _selected_ids_hash(slice_ids),
             "evaluated_n": len(slice_ids),
-            "main_model": args.expected_answer_model,
+            "answer_model": args.expected_answer_model,
             "judge_primary": args.expected_judge_primary,
         }
         for field, expected in manifest_expectations.items():
@@ -383,7 +445,21 @@ def main(argv: list[str] | None = None) -> int:
                 global_errors.append(
                     f"manifest {field}={manifest.get(field)!r}; expected {expected!r}"
                 )
-        if args.expected_answer_provider:
+        if args.allowed_auxiliary_model and manifest.get("main_model") not in set(
+            args.allowed_auxiliary_model
+        ):
+            global_errors.append(
+                "manifest main_model is not in the allowed auxiliary model set: "
+                f"{manifest.get('main_model')!r}"
+            )
+        if args.allowed_answer_provider:
+            expected_policy = {
+                "only": args.allowed_answer_provider,
+                "allow_fallbacks": True,
+            }
+            if manifest.get("answer_provider_policy") != expected_policy:
+                global_errors.append("manifest answer_provider_policy differs from verifier")
+        elif args.expected_answer_provider:
             expected_policy = {
                 "order": [args.expected_answer_provider],
                 "only": [args.expected_answer_provider],
@@ -435,8 +511,11 @@ def main(argv: list[str] | None = None) -> int:
         "expected_n": expected_n,
         "expected_answer_model": args.expected_answer_model,
         "expected_answer_provider": args.expected_answer_provider,
+        "allowed_answer_providers": args.allowed_answer_provider,
+        "required_answer_providers": args.required_answer_provider,
         "expected_judge_primary": args.expected_judge_primary,
         "allowed_judge_fallbacks": args.allowed_judge_fallback,
+        "allowed_auxiliary_models": args.allowed_auxiliary_model,
         "homogeneous": ok,
         "systems": results,
         "global_errors": global_errors,

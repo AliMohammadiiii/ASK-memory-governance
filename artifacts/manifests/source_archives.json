@@ -8,7 +8,7 @@
       "files": 508,
       "kind": "external_directory",
       "label": "lme_m last version",
-      "pointer": "external://Master/ksa_controller/runs/lme_m last version",
+      "pointer": "external://Master/ask_controller/runs/lme_m last version",
       "size_bytes": 2410997121,
       "tree_sha256": "6e10915aefb613305af70e7fda83764fde03e7bc0c892de9556476fae09b3d4d"
     },
@@ -16,7 +16,7 @@
       "files": 1144,
       "kind": "external_directory",
       "label": "lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7",
-      "pointer": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7",
+      "pointer": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7",
       "size_bytes": 2307852573,
       "tree_sha256": "9023a31b72a20d140f768d8cae3ecd3df14d1d337a296227c3cb2befcb5c7666"
     },
@@ -66,13 +66,13 @@
   "external_data_not_redistributed": [
     {
       "label": "LongMemEval-M cleaned full source (500 rows)",
-      "pointer": "external://Master/ksa_controller/data/slices/longmemeval_m_full.jsonl",
+      "pointer": "external://Master/ask_controller/data/slices/longmemeval_m_full.jsonl",
       "sha256": "89a0745fba506c37407da74f004515ba8a337a2aadc9ba9ba543030483223942",
       "size_bytes": 2638798639
     },
     {
       "label": "LongMemEval-M stratified seed-0 slice (180 rows)",
-      "pointer": "external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/range_0_179.jsonl",
+      "pointer": "external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/range_0_179.jsonl",
       "sha256": "f10b4fb4173d3e2d9310d90c2b6bf8f5e7b147cea1d04affa9037b1b9fe6787d",
       "size_bytes": 950452379
     }
@@ -85,7 +85,7 @@
       "verification": "hash retained from the prior immutable archive inventory"
     },
     {
-      "label": "KSACodes.zip",
+      "label": "ASKCodes.zip",
       "sha256": "a076ecb68e99070a09a4bc2e6dcbd4c1a787402a3833a88cd473ac01ae00da01",
       "size_bytes": 809821,
       "verification": "hash retained from the prior immutable archive inventory"

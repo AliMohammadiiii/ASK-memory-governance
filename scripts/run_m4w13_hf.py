@@ -43,7 +43,7 @@ def _repo_root() -> Path:
 
 
 def _preferred_python() -> str:
-    override = os.environ.get("KSA_PYTHON")
+    override = os.environ.get("ASK_PYTHON")
     if override:
         return override
     for rel_path in (".venv/bin/python", "venv/bin/python"):
@@ -102,7 +102,7 @@ def _check_python_environment(
     if result.returncode != 0 or missing:
         raise SystemExit(
             f"Python environment {python} is missing required modules: {', '.join(missing)}. "
-            "Run deploy/colab_prepare.sh from the repo root, or set KSA_PYTHON to the prepared "
+            "Run deploy/colab_prepare.sh from the repo root, or set ASK_PYTHON to the prepared "
             "virtualenv interpreter."
         )
 
@@ -395,7 +395,7 @@ def _run_system(
 
     if "src" not in sys.path:
         sys.path.insert(0, "src")
-    from ksa.eval.merge import merge_run_shards
+    from ask.eval.merge import merge_run_shards
 
     meta = json.loads((shard_dirs[0] / "report.json").read_text(encoding="utf-8"))
     report = merge_run_shards(

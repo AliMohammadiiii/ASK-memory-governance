@@ -14,6 +14,13 @@ set -euo pipefail
 cd "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 export PYTHONPATH="src:${PYTHONPATH:-}"
 
+# Python's urllib reads the macOS system proxy configuration even when the
+# shell has no proxy variables.  Keep every local embed request on loopback;
+# otherwise a configured Privoxy can return HTTP 500 for 127.0.0.1.
+_LOOPBACK_NO_PROXY="127.0.0.1,localhost,::1"
+export NO_PROXY="${NO_PROXY:+${NO_PROXY},}${_LOOPBACK_NO_PROXY}"
+export no_proxy="${no_proxy:+${no_proxy},}${_LOOPBACK_NO_PROXY}"
+
 PYTHON="${PYTHON:-python3}"
 MODAL_KEY="${MODAL_KEY:-}"
 MODAL_SECRET="${MODAL_SECRET:-}"
@@ -68,6 +75,9 @@ RELATION_MAX_NEW_TOKENS="${RELATION_MAX_NEW_TOKENS:-256}"
 # 320->134 items. qwen3.5-9b supports 32k+ on the routed providers, so default
 # to 32768 (v4 ran it without issue).
 OPENAI_MAX_MODEL_LEN="${OPENAI_MAX_MODEL_LEN:-32768}"
+ANSWER_MODEL="${ANSWER_MODEL:-}"
+ANSWER_MAX_NEW_TOKENS="${ANSWER_MAX_NEW_TOKENS:-768}"
+ANSWER_OPENAI_EXTRA_BODY_JSON="${ANSWER_OPENAI_EXTRA_BODY_JSON:-}"
 # --- docx v7 knobs (§4 accuracy + §5 efficiency). Defaults apply the fixes. ---
 RETRIEVAL_K="${RETRIEVAL_K:-16}"
 CONTROLLER_MEMORY_TOP_K="${CONTROLLER_MEMORY_TOP_K:-64}"
@@ -75,8 +85,13 @@ EXTRACTION_CONCURRENCY="${EXTRACTION_CONCURRENCY:-8}"
 ANSWER_CONTEXT_MAX_TOKENS="${ANSWER_CONTEXT_MAX_TOKENS:-12000}"
 V7_FIXES="${V7_FIXES:-1}"
 V8_FIXES="${V8_FIXES:-1}"
+V9_FIXES="${V9_FIXES:-1}"
 HISTORY_RETRIEVAL_K="${HISTORY_RETRIEVAL_K:-4}"
 ANSWER_CONTEXT_SESSION_CAP="${ANSWER_CONTEXT_SESSION_CAP:-4}"
+COMPETENCY_USER_CANDIDATE_K="${COMPETENCY_USER_CANDIDATE_K:-120}"
+COMPETENCY_ASSISTANT_CANDIDATE_K="${COMPETENCY_ASSISTANT_CANDIDATE_K:-60}"
+COMPETENCY_SESSION_TOP_K="${COMPETENCY_SESSION_TOP_K:-12}"
+COMPETENCY_PREFERENCE_SESSION_TOP_K="${COMPETENCY_PREFERENCE_SESSION_TOP_K:-18}"
 SHARD_RETRIES="${SHARD_RETRIES:-2}"
 SHARD_RETRY_BACKOFF_S="${SHARD_RETRY_BACKOFF_S:-5}"
 SHARED_EXTRACTION_CACHE="${SHARED_EXTRACTION_CACHE:-}"
@@ -90,7 +105,9 @@ OPENAI_CHAT_TEMPLATE_KWARGS_JSON="${OPENAI_CHAT_TEMPLATE_KWARGS_JSON:-}"
 # invisible thinking channel and returns 0 visible chars (v5 run: every answer
 # empty with finish_reason=length, every extraction itemless). The controller's
 # own WORK/FINAL prompt supplies visible, parseable reasoning instead.
-_DEFAULT_OPENAI_EXTRA_BODY_JSON='{"provider":{"order":["venice","deepinfra","siliconflow"],"only":["venice","deepinfra","siliconflow"],"allow_fallbacks":true},"reasoning":{"enabled":false}}'
+# No provider.order here: OpenRouter's default policy load-balances concurrent
+# requests across this constrained pool and falls back when a route is limited.
+_DEFAULT_OPENAI_EXTRA_BODY_JSON='{"provider":{"only":["venice","deepinfra","siliconflow"],"allow_fallbacks":true},"reasoning":{"enabled":false}}'
 OPENAI_EXTRA_BODY_JSON="${OPENAI_EXTRA_BODY_JSON:-${_DEFAULT_OPENAI_EXTRA_BODY_JSON}}"
 JUDGE_OPENAI_CHAT_TEMPLATE_KWARGS_JSON="${JUDGE_OPENAI_CHAT_TEMPLATE_KWARGS_JSON:-}"
 _DEFAULT_JUDGE_OPENAI_EXTRA_BODY_JSON='{"provider":{"order":["wandb","venice"],"only":["wandb","venice"],"allow_fallbacks":true},"reasoning":{"enabled":false}}'
@@ -172,14 +189,22 @@ echo "  openai_retry_max_delay_s=${OPENAI_RETRY_MAX_DELAY_S}"
 echo "  extraction_max_new_tokens=${EXTRACTION_MAX_NEW_TOKENS}"
 echo "  relation_max_new_tokens=${RELATION_MAX_NEW_TOKENS}"
 echo "  openai_max_model_len=${OPENAI_MAX_MODEL_LEN}"
+echo "  answer_model=${ANSWER_MODEL:-<big-model default>}"
+echo "  answer_max_new_tokens=${ANSWER_MAX_NEW_TOKENS}"
+echo "  answer_openai_extra_body_json=${ANSWER_OPENAI_EXTRA_BODY_JSON:-<global default>}"
 echo "  retrieval_k=${RETRIEVAL_K}"
 echo "  controller_memory_top_k=${CONTROLLER_MEMORY_TOP_K}"
 echo "  extraction_concurrency=${EXTRACTION_CONCURRENCY}"
 echo "  answer_context_max_tokens=${ANSWER_CONTEXT_MAX_TOKENS}"
 echo "  v7_fixes=${V7_FIXES}"
 echo "  v8_fixes=${V8_FIXES}"
+echo "  v9_fixes=${V9_FIXES}"
 echo "  history_retrieval_k=${HISTORY_RETRIEVAL_K}"
 echo "  answer_context_session_cap=${ANSWER_CONTEXT_SESSION_CAP}"
+echo "  competency_user_candidate_k=${COMPETENCY_USER_CANDIDATE_K}"
+echo "  competency_assistant_candidate_k=${COMPETENCY_ASSISTANT_CANDIDATE_K}"
+echo "  competency_session_top_k=${COMPETENCY_SESSION_TOP_K}"
+echo "  competency_preference_session_top_k=${COMPETENCY_PREFERENCE_SESSION_TOP_K}"
 echo "  shard_retries=${SHARD_RETRIES}"
 echo "  shard_retry_backoff_s=${SHARD_RETRY_BACKOFF_S}"
 echo "  shared_extraction_cache=${SHARED_EXTRACTION_CACHE:-<per-run default>}"
@@ -256,11 +281,14 @@ base = "${EMBED_BASE_URL}".rstrip("/")
 parsed = urllib.parse.urlparse(base)
 path = parsed.path.removesuffix("/v1")
 url = urllib.parse.urlunparse(parsed._replace(path=f"{path}/health"))
+open_url = urllib.request.urlopen
+if parsed.hostname in {"localhost", "127.0.0.1", "::1"}:
+    open_url = urllib.request.build_opener(urllib.request.ProxyHandler({})).open
 deadline = time.time() + int("${EMBED_READY_TIMEOUT_S}")
 last_error = None
 while time.time() < deadline:
     try:
-        with urllib.request.urlopen(url, timeout=5) as resp:
+        with open_url(url, timeout=5) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
         if payload.get("status") == "ok" or payload.get("ok") is True:
             print(f"[colab-modal] embed health ok: {json.dumps(payload, sort_keys=True)}")
@@ -349,13 +377,24 @@ cascade_cmd=(
   --extraction-max-new-tokens "${EXTRACTION_MAX_NEW_TOKENS}" \
   --relation-max-new-tokens "${RELATION_MAX_NEW_TOKENS}" \
   --openai-max-model-len "${OPENAI_MAX_MODEL_LEN}" \
+  --answer-max-new-tokens "${ANSWER_MAX_NEW_TOKENS}" \
   --retrieval-k "${RETRIEVAL_K}" \
   --controller-memory-top-k "${CONTROLLER_MEMORY_TOP_K}" \
   --extraction-concurrency "${EXTRACTION_CONCURRENCY}" \
   --answer-context-max-tokens "${ANSWER_CONTEXT_MAX_TOKENS}" \
   --history-retrieval-k "${HISTORY_RETRIEVAL_K}" \
-  --answer-context-session-cap "${ANSWER_CONTEXT_SESSION_CAP}"
+  --answer-context-session-cap "${ANSWER_CONTEXT_SESSION_CAP}" \
+  --competency-user-candidate-k "${COMPETENCY_USER_CANDIDATE_K}" \
+  --competency-assistant-candidate-k "${COMPETENCY_ASSISTANT_CANDIDATE_K}" \
+  --competency-session-top-k "${COMPETENCY_SESSION_TOP_K}" \
+  --competency-preference-session-top-k "${COMPETENCY_PREFERENCE_SESSION_TOP_K}"
 )
+if [[ -n "${ANSWER_MODEL}" ]]; then
+  cascade_cmd+=(--answer-model "${ANSWER_MODEL}")
+fi
+if [[ -n "${ANSWER_OPENAI_EXTRA_BODY_JSON}" ]]; then
+  cascade_cmd+=(--answer-openai-extra-body-json "${ANSWER_OPENAI_EXTRA_BODY_JSON}")
+fi
 # docx v7 accuracy fixes: on by default; set V7_FIXES=0 to reproduce v6 behavior.
 if [[ "${V7_FIXES}" == "0" ]]; then
   cascade_cmd+=(--no-v7-fixes)
@@ -367,6 +406,12 @@ if [[ "${V8_FIXES}" == "0" ]]; then
   cascade_cmd+=(--no-v8-fixes)
 else
   cascade_cmd+=(--v8-fixes)
+fi
+# v9 adds competency-aware retrieval and deterministic reconciliation.
+if [[ "${V9_FIXES}" == "0" ]]; then
+  cascade_cmd+=(--no-v9-fixes)
+else
+  cascade_cmd+=(--v9-fixes)
 fi
 if [[ -n "${SHARED_EXTRACTION_CACHE}" ]]; then
   cascade_cmd+=(--shared-extraction-cache "${SHARED_EXTRACTION_CACHE}")

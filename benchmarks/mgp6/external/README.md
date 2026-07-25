@@ -20,7 +20,7 @@ flagged). Always smoke-test with `--limit 2` first. Outputs both
 (NOOP→ABSTAIN); report both, cite the better as the system's upper bound.
 Mapping + rationale: see the docstring in `common.py`.
 
-LongMemEval: `../ksa_controller/scripts/run_external_lme.py` reuses these
+LongMemEval: `../ask_controller/scripts/run_external_lme.py` reuses these
 adapters with the SAME judge/report machinery as the internal systems.
 
 Framework verified end-to-end with a stub adapter against

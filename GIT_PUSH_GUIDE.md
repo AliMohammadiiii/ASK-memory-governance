@@ -5,8 +5,8 @@ remote. After extracting the canonical repository package, initialize or attach
 the public repository that you control.
 
 ```bash
-unzip ksa-memory-governance-final.zip
-cd ksa-memory-governance
+unzip ask-memory-governance-final.zip
+cd ask-memory-governance
 git init
 git add .
 git commit -m "Initial public release"

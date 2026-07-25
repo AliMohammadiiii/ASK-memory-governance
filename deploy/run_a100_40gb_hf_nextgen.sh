@@ -71,7 +71,7 @@ print(f"[nextgen] torch={torch.__version__} transformers={transformers.__version
 PY
 
 # Make the runner subprocesses use THIS venv's interpreter.
-export KSA_PYTHON="${KIT_ROOT}/${VENV}/bin/python"
+export ASK_PYTHON="${KIT_ROOT}/${VENV}/bin/python"
 
 # 3) Dataset + slice (skip when present).
 if [ ! -f "${SLICE}" ]; then

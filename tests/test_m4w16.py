@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from ksa.eval.m4w16 import audit_patterns, decide_g3, run_m4w16, validate_artifacts
+from ask.eval.m4w16 import audit_patterns, decide_g3, run_m4w16, validate_artifacts
 
 
 def _write_json(path, payload):

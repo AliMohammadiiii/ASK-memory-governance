@@ -20,19 +20,19 @@ from pathlib import Path
 
 import numpy as np
 
-from ksa.classifier import RelationOutput
-from ksa.controller.computation import (
+from ask.classifier import RelationOutput
+from ask.controller.computation import (
     ComputeIntent,
     RetrievedEvidence,
     classify_compute_intent,
     compute_answer,
 )
-from ksa.controller.temporal import parse_dates
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
-from ksa.extraction import ExtractionOutput
-from ksa.inference.fake import FakeLLM
-from ksa.pipeline import ControllerOrchestrator
-from ksa.pipeline.orchestrator import (
+from ask.controller.temporal import parse_dates
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
+from ask.extraction import ExtractionOutput
+from ask.inference.fake import FakeLLM
+from ask.pipeline import ControllerOrchestrator
+from ask.pipeline.orchestrator import (
     _conflict_block,
     _same_slot_numeric_conflict,
 )
@@ -433,7 +433,7 @@ class _EchoExtractor:
     """Extract the raw user turn as one episodic fact (identity extractor)."""
 
     def extract(self, turn, window, *, max_new_tokens=512, temperature=0.0, seed=0):
-        from ksa.extraction import EvidenceSpan, ExtractedItem
+        from ask.extraction import EvidenceSpan, ExtractedItem
 
         return ExtractionOutput(
             items=[

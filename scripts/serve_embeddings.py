@@ -27,7 +27,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 if "src" not in sys.path:
     sys.path.insert(0, "src")
-from ksa.baselines.embeddings import TurnEmbedder  # noqa: E402
+from ask.baselines.embeddings import TurnEmbedder  # noqa: E402
 
 _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"

@@ -5,8 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ksa.eval.longmemeval import GradeResult
-from ksa.eval.merge import grade_from_dict, merge_run_shards
+from ask.eval.longmemeval import GradeResult
+from ask.eval.merge import grade_from_dict, merge_run_shards
 
 
 def _grade(sid: str, comp: str, correct: bool) -> GradeResult:

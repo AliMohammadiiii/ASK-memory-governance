@@ -5,8 +5,8 @@ from __future__ import annotations
 import subprocess
 import sys
 
-from ksa.eval.mgp6 import build_prediction, compute_report
-from ksa.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
+from ask.eval.mgp6 import build_prediction, compute_report
+from ask.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
 
 
 def _scenario(scenario_id: str):

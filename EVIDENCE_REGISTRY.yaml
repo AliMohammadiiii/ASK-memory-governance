@@ -1,9 +1,9 @@
 version: 3
 updated: 2026-07-13
 artifacts:
-  - id: ksa_source
+  - id: ask_source
     role: authoritative_implementation_source
-    source_archive: KSACodes.zip
+    source_archive: ASKCodes.zip
     sha256: a076ecb68e99070a09a4bc2e6dcbd4c1a787402a3833a88cd473ac01ae00da01
   - id: mgp6_v2
     role: frozen_diagnostic_dataset
@@ -37,19 +37,26 @@ artifacts:
     path: artifacts/single_session_preference_error_taxonomy.json
   - id: v7_run_evidence
     role: diagnostic_only_provider_contaminated
-    location_outside_repo: external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
+    location_outside_repo: external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
   - id: v8_adjudicated_merge
     role: failure_replay_only_selection_biased_construction
-    location_outside_repo: "external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
+    location_outside_repo: "external://Master/ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
     historical_value: 139/180 after four Codex/GPT-5 overrides; 135/180 raw construction
     known_defect: manifest replay_run path does not resolve; canonical mapping in controller_run_comparison.json
   - id: v8_modal_topup
     role: incomplete_but_decisive_contradictory_evidence
-    location_outside_repo: "external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
+    location_outside_repo: "external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
     observed: 84/110 completed; 71 correct; 13 regressions
     combined_with_replay: 96/154 raw observed; full-180 bounds 53.3%-67.8%
+  - id: longmemeval_final_v12
+    role: homogeneous_full_slice_downstream_result
+    path: runs_local/lme_final_controller_v12_qwen_180
+    freeze_version: final-2.0
+    result: "controller 137/180 = 76.1% (95% CI 70.0-82.2); B1 5.0%, B3 23.9%, B2 44.4%, B4 63.3%"
+    integrity: "single judge google/gemma-4-31b-it; 0 model fallbacks; 2 scoring fallbacks; 40 deterministic guards; 9 documented semantic-equivalence adjudications with pre_adjudication backups"
+    open_items: "homogeneity flag from stale launcher code hash (per-system errors empty); manifest status not finalized"
   - id: longmemeval_final_1_1
-    role: externally_pending_homogeneous_run
+    role: superseded_by_longmemeval_final_v12
     path: runs_local/lme_final_5systems_180
     blocker: supplied OpenRouter credential returned HTTP 403 before inference on 2026-07-13
   - id: exports_cold_archive

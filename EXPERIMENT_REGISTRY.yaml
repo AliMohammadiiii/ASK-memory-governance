@@ -1,10 +1,10 @@
 version: 3
-updated: 2026-07-13
+updated: 2026-07-18
 experiments:
   - id: offline_unit_suite
     status: final_candidate
     command: make test
-    last_known_result: "422 passed, 14 skipped (Python 3.12.12, 2026-07-13)"
+    last_known_result: "526 passed, 11 skipped (Python 3.14.6, 2026-07-18)"
   - id: mgp6_schema_validation
     status: final_candidate
     command: make validate-data
@@ -31,31 +31,41 @@ experiments:
     note: Mem0/Letta/Graphiti require NOOP mapping disclosure; MemOS is separately diagnostic_only
   - id: longmemeval_v7_5systems
     status: diagnostic_only
-    evidence: ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
+    evidence: ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7
   - id: longmemeval_v8_failure_replay
     status: failure_replay_only
-    evidence: "ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink"
+    evidence: "ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink"
   - id: longmemeval_v8_adjudicated_merge
     status: failure_replay_only
-    evidence: "ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
+    evidence: "ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated"
     note: selection-biased carry-forward construction contradicted by the non-empty Modal top-up
   - id: longmemeval_v8_topup110_modal
     status: incomplete
-    evidence: "ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
+    evidence: "ask_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110"
     note: 84/110 observed; 71 correct and 13 regressions; combined replay raw 96/154; full-180 bounds 53.3%-67.8%
   - id: longmemeval_homogeneous_final_rerun
-    status: externally_pending
-    blockers: [newly_authorized_openrouter_credential]
+    status: final_candidate
     config: configs/release/final.yaml
     main_model: qwen/qwen3.5-9b
-    judge_model: google/gemma-4-31b-it:free
-    fallback_judge_model: google/gemma-4-31b-it
+    judge_model: google/gemma-4-31b-it
+    fallback_judge_model: null
     protocol: FINAL_EVALUATION_PROTOCOL.md
-    last_attempt: "two-item smoke failed before inference with HTTP 403 Access denied by security policy on 2026-07-13"
+    evidence: runs_local/lme_final_controller_v12_qwen_180
+    freeze_version: final-2.0
+    last_known_result: "V12 homogeneous full-slice run complete: controller 137/180 = 76.1% (95% CI 70.0-82.2); baselines B1 5.0%, B3 23.9%, B2 44.4%, B4 63.3%. Single judge google/gemma-4-31b-it, 0 model fallbacks, 2 scoring fallbacks, 40 deterministic guards, 9 documented semantic-equivalence adjudications."
+    open_items:
+      - "homogeneity gate reports homogeneous=false solely from a stale code/protocol hash for scripts/evaluation/run_longmemeval_final.sh (per-system errors/warnings empty)"
+      - "manifest.json left at status=running / exit_code=1 after a resumed run; needs finalization to a clean terminal status"
+    note: "Data outputs complete and per-item integrity clean; open items are provenance bookkeeping and do not affect the reported score. Record 76.1% in artifacts/results_ledger.json (bump ledger version) to promote to final."
+  - id: longmemeval_v12_targeted_guard_replay
+    status: diagnostic_only
+    evidence: runs_local/controller_v12_guard_20260718/run_guard11
+    last_known_result: "4/4 correct with fresh Qwen answers and fresh Gemma judgments"
+    note: "Adaptively selected V11 failure/guard cases; unchanged relation-classification caches were reused, so this is regression evidence, not an independent accuracy estimate"
   - id: ssp_correction_ablation_matrix
     status: incomplete
     blockers: [correction_code_not_implemented, newly_authorized_openrouter_credential]
     spec: docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md
   - id: judge_audit
     status: externally_pending
-    note: primary vs fallback judge confound test on frozen final run outputs
+    note: confirm zero model fallback and report any scoring fallback on frozen final outputs

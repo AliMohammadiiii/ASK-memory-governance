@@ -158,8 +158,8 @@ def build_json(ledger: dict[str, Any], ledger_sha: str) -> dict[str, Any]:
                 "71 remained correct and 13 regressed. Combining those observations "
                 "with the replay yields 96/154 raw and a full-180 raw bound of "
                 "53.3%-67.8%, so this attempt cannot reproduce 77.2%. The frozen "
-                "final-1.1 homogeneous run remains externally pending because the "
-                "supplied OpenRouter credential returned HTTP 403 before inference."
+                "final-2.0/V12 post-hoc confirmatory run remains externally pending until the "
+                "frozen full rerun completes."
             ),
         },
         "ssp_analysis": ledger.get("ssp_analysis"),

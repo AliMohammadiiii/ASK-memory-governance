@@ -8,15 +8,25 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from ksa.baselines.embeddings import FakeEmbedder
-from ksa.baselines.flat_vector_store import MemoryItem, RetrievedItem
-from ksa.classifier import RelationOutput
-from ksa.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
-from ksa.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
-from ksa.inference.fake import FakeLLM
-from ksa.memory.models import ControllerAction
-from ksa.pipeline import ControllerOrchestrator
-from ksa.pipeline.orchestrator import DEFAULT_SYSTEM_PROMPT, _conflict_block
+from ask.baselines.embeddings import FakeEmbedder
+from ask.baselines.flat_vector_store import MemoryItem, RetrievedItem
+from ask.classifier import RelationOutput
+from ask.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
+from ask.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.inference.fake import FakeLLM
+from ask.memory.models import ControllerAction
+from ask.pipeline import ControllerOrchestrator
+from ask.pipeline.orchestrator import (
+    DEFAULT_SYSTEM_PROMPT,
+    PREFERENCE_ANSWER_RETRY_SYSTEM_PROMPT,
+    PREFERENCE_SYSTEM_PROMPT,
+    _answer_retry_reason,
+    _branch_out_exclusions,
+    _conflict_block,
+    _expanded_retrieval_query,
+    _requests_historical_memory,
+    _search_query_variants,
+)
 
 
 class FakeExtractor:
@@ -202,9 +212,7 @@ def test_current_location_conflict_block_prefers_newest_matching_memory() -> Non
 
     assert "CURRENT LOCATION CANDIDATES" in block
     assert "Most recent (2023-05-28): User is looking forward" in block
-    historical = _conflict_block(
-        retrieved, "Where did I initially keep my old sneakers?"
-    )
+    historical = _conflict_block(retrieved, "Where did I initially keep my old sneakers?")
     assert "CURRENT LOCATION CANDIDATES" not in historical
 
 
@@ -217,15 +225,9 @@ def test_answer_context_diversity_prioritizes_distinct_sessions() -> None:
         answer_context_session_cap=1,
     )
     hits = [
-        RetrievedItem(
-            item=MemoryItem("s1-a", "user", "s1", 0), score=0.99, rank=0
-        ),
-        RetrievedItem(
-            item=MemoryItem("s1-b", "user", "s1", 1), score=0.98, rank=1
-        ),
-        RetrievedItem(
-            item=MemoryItem("s2-a", "user", "s2", 0), score=0.75, rank=2
-        ),
+        RetrievedItem(item=MemoryItem("s1-a", "user", "s1", 0), score=0.99, rank=0),
+        RetrievedItem(item=MemoryItem("s1-b", "user", "s1", 1), score=0.98, rank=1),
+        RetrievedItem(item=MemoryItem("s2-a", "user", "s2", 0), score=0.75, rank=2),
     ]
 
     ordered = orchestrator._session_diverse_answer_order(hits)
@@ -259,7 +261,9 @@ def _session(session_id: str, user_text: str, supporting=()) -> LongMemEvalSessi
     )
 
 
-def test_controller_supersedes_with_lineage_and_no_current_session_retrieval(tmp_path: Path) -> None:
+def test_controller_supersedes_with_lineage_and_no_current_session_retrieval(
+    tmp_path: Path,
+) -> None:
     prior = _session("s-prior", "I prefer coffee in the morning.", ())
     current = _session("s-current", "I prefer tea in the morning now.", ("s-prior", "s-current"))
     log_path = tmp_path / "controller.action_log.jsonl"
@@ -562,9 +566,7 @@ def test_controller_keep_does_not_drop_distinct_fact_rated_support(tmp_path: Pat
     'support' against an unrelated newest-same-type prior must still be committed,
     not discarded (44/226 genuine memories were lost on the m4w13 smoke run)."""
     prior = _session("s-prior", "I collect autographed baseballs.", ())
-    current = _session(
-        "s-current", "I am planning a triathlon in June.", ("s-prior", "s-current")
-    )
+    current = _session("s-current", "I am planning a triathlon in June.", ("s-prior", "s-current"))
     llm = FakeLLM()
     llm.queue("ok")
     orchestrator = ControllerOrchestrator(
@@ -587,9 +589,7 @@ def test_controller_keep_does_not_drop_distinct_fact_rated_support(tmp_path: Pat
 def test_controller_keep_collapses_verbatim_duplicate(tmp_path: Path) -> None:
     """A near-verbatim restatement of the prior is still de-duplicated on KEEP."""
     prior = _session("s-prior", "I collect autographed baseballs.", ())
-    current = _session(
-        "s-current", "I collect autographed baseballs.", ("s-prior", "s-current")
-    )
+    current = _session("s-current", "I collect autographed baseballs.", ("s-prior", "s-current"))
     llm = FakeLLM()
     llm.queue("ok")
     orchestrator = ControllerOrchestrator(
@@ -608,7 +608,7 @@ def test_controller_keep_collapses_verbatim_duplicate(tmp_path: Path) -> None:
 
 
 def test_chunk_text_splits_long_turns_and_passes_short() -> None:
-    from ksa.pipeline.orchestrator import _chunk_text
+    from ask.pipeline.orchestrator import _chunk_text
 
     assert _chunk_text("Short fact.") == ["Short fact."]
     long = " ".join(f"Sentence number {i} about a distinct topic." for i in range(40))
@@ -643,9 +643,12 @@ def test_assistant_context_is_chunked(tmp_path: Path) -> None:
         supporting_session_ids=("s-prior", "s-current"),
     )
     orch = ControllerOrchestrator(
-        llm=FakeLLM(), extractor=_EchoExtractor(), classifier=_SupportClassifier(),
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
         corpus={"s-prior": answer_sess, "s-current": current},
-        embedder=FakeEmbedder(embedding_dim=32), include_assistant_context=True,
+        embedder=FakeEmbedder(embedding_dim=32),
+        include_assistant_context=True,
     )
     items = orch._assistant_context_items(current)
     assert len(items) > 1  # the long turn was split
@@ -676,18 +679,795 @@ def test_controller_includes_assistant_context_when_enabled(tmp_path: Path) -> N
     corpus = {"s-prior": answer_sess, "s-current": current}
 
     off = ControllerOrchestrator(
-        llm=FakeLLM(), extractor=_EchoExtractor(), classifier=_SupportClassifier(),
-        corpus=corpus, embedder=FakeEmbedder(embedding_dim=32),
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus=corpus,
+        embedder=FakeEmbedder(embedding_dim=32),
     )
     assert off._assistant_context_items(current) == [] or True  # default off path
     on = ControllerOrchestrator(
-        llm=FakeLLM(), extractor=_EchoExtractor(), classifier=_SupportClassifier(),
-        corpus=corpus, embedder=FakeEmbedder(embedding_dim=32),
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus=corpus,
+        embedder=FakeEmbedder(embedding_dim=32),
         include_assistant_context=True,
     )
     items = on._assistant_context_items(current)
     assert any("Transcriptionist" in it.text for it in items)
     assert all(it.role == "assistant" for it in items)
+
+
+def test_competency_aware_assistant_retrieval_expands_full_dialogue_session() -> None:
+    long_answer = "Transcriptionist is item seven. " + ("supporting detail " * 40)
+    prior = LongMemEvalSession(
+        session_id="s-prior",
+        turns=(
+            LongMemEvalTurn(role="user", content="Suggest remote work."),
+            LongMemEvalTurn(role="assistant", content=long_answer),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-assistant",
+    )
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="What was the seventh remote job?",
+        gold_answer="Transcriptionist",
+        competency="single-session-assistant",
+        supporting_session_ids=("s-prior",),
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={"s-prior": prior},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_aware_retrieval=True,
+    )
+
+    strategy, hits, replace_default = orch._competency_context_hits(current)
+
+    assert strategy == "assistant-dialogue-session-bundle"
+    assert replace_default is True
+    assert len(hits) == 1
+    assert hits[0].item.role == "assistant"
+    assert "Suggest remote work" in hits[0].item.text
+    assert long_answer.strip() in hits[0].item.text
+    assert "USER" in hits[0].item.text
+    assert "ASSISTANT" in hits[0].item.text
+    assert len(hits[0].item.text) > 400  # proves this path did not chunk the turn
+
+
+def test_competency_aware_preference_retrieval_keeps_user_session_coherent() -> None:
+    user_turns = tuple(
+        LongMemEvalTurn(role="user", content=f"Preference evidence number {idx}")
+        for idx in range(45)
+    )
+    prior = LongMemEvalSession(
+        session_id="s-prior",
+        turns=user_turns
+        + (LongMemEvalTurn(role="assistant", content="assistant-only distractor"),),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="What kind of option would I prefer?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("s-prior",),
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={"s-prior": prior},
+        embedder=FakeEmbedder(embedding_dim=32),
+        k=16,
+        competency_aware_retrieval=True,
+        competency_user_candidate_k=40,
+    )
+
+    strategy, hits, replace_default = orch._competency_context_hits(current)
+
+    assert strategy == "preference-user-session-bundle"
+    assert replace_default is True
+    assert len(hits) == 1
+    assert all(hit.item.role == "user" for hit in hits)
+    assert "Preference evidence number 0" in hits[0].item.text
+    assert "Preference evidence number 44" in hits[0].item.text
+    assert "assistant-only distractor" not in hits[0].item.text
+
+
+def test_homegrown_preference_ranks_harvested_garden_session_over_fresh_herb_distractor() -> None:
+    support = LongMemEvalSession(
+        session_id="z-support",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I use basil and mint in cooking and harvested cherry tomatoes from my garden.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    distractor = LongMemEvalSession(
+        session_id="a-distractor",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I used some fresh rosemary in lasagna and want sourdough tips.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What should I serve for dinner with my homegrown ingredients?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("z-support", "a-distractor"),
+    )
+    support_item = MemoryItem(
+        text=support.turns[0].content,
+        role="user",
+        session_id=support.session_id,
+        turn_idx=0,
+    )
+    distractor_item = MemoryItem(
+        text=distractor.turns[0].content,
+        role="user",
+        session_id=distractor.session_id,
+        turn_idx=0,
+    )
+    hits = [
+        RetrievedItem(item=distractor_item, score=0.90, rank=0),
+        RetrievedItem(item=support_item, score=0.55, rank=1),
+    ]
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={support.session_id: support, distractor.session_id: distractor},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_preference_session_top_k=1,
+    )
+
+    expanded = orch._expand_single_session_hits(
+        current,
+        hits,
+        candidate_items=[distractor_item, support_item],
+        bundle_roles={"user"},
+        bundle_output_role="user",
+        preference=True,
+    )
+
+    assert len(expanded) == 1
+    assert expanded[0].item.session_id == "z-support"
+
+
+def test_preference_ranks_category_bound_commitment_across_locations() -> None:
+    support = LongMemEvalSession(
+        session_id="z-support",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content=(
+                    "In Seattle, I'll stick with the Harbor View Hotel because "
+                    "I like its rooftop pool and skyline views."
+                ),
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    distractor = LongMemEvalSession(
+        session_id="a-distractor",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I am packing light for my upcoming trip to San Diego.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="Can you suggest a hotel for my upcoming trip to San Diego?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("z-support",),
+    )
+    support_item = MemoryItem(
+        text=support.turns[0].content,
+        role="user",
+        session_id=support.session_id,
+        turn_idx=0,
+    )
+    distractor_item = MemoryItem(
+        text=distractor.turns[0].content,
+        role="user",
+        session_id=distractor.session_id,
+        turn_idx=0,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={support.session_id: support, distractor.session_id: distractor},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_preference_session_top_k=1,
+    )
+
+    expanded = orch._expand_single_session_hits(
+        current,
+        [
+            RetrievedItem(item=distractor_item, score=0.70, rank=0),
+            RetrievedItem(item=support_item, score=0.55, rank=1),
+        ],
+        candidate_items=[distractor_item, support_item],
+        bundle_roles={"user"},
+        bundle_output_role="user",
+        preference=True,
+    )
+
+    assert len(expanded) == 1
+    assert expanded[0].item.session_id == "z-support"
+
+
+def test_preference_ranks_explicit_branch_out_boundary_over_positive_topic_match() -> None:
+    support = LongMemEvalSession(
+        session_id="z-support",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content=(
+                    "I listen during my commute, but I want to branch out beyond "
+                    "true crime and self-improvement into history podcasts."
+                ),
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    distractor = LongMemEvalSession(
+        session_id="a-distractor",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I listen to self-improvement podcasts during my daily commute.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What can I listen to during my commute?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("z-support",),
+    )
+    support_item = MemoryItem(
+        text=support.turns[0].content,
+        role="user",
+        session_id=support.session_id,
+        turn_idx=0,
+    )
+    distractor_item = MemoryItem(
+        text=distractor.turns[0].content,
+        role="user",
+        session_id=distractor.session_id,
+        turn_idx=0,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={support.session_id: support, distractor.session_id: distractor},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_preference_session_top_k=1,
+    )
+
+    expanded = orch._expand_single_session_hits(
+        current,
+        [
+            RetrievedItem(item=distractor_item, score=0.88, rank=0),
+            RetrievedItem(item=support_item, score=0.49, rank=1),
+        ],
+        candidate_items=[distractor_item, support_item],
+        bundle_roles={"user"},
+        bundle_output_role="user",
+        preference=True,
+    )
+
+    assert len(expanded) == 1
+    assert expanded[0].item.session_id == "z-support"
+
+
+def test_preference_focus_locks_high_confidence_top_session() -> None:
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What accessories complement my photography setup?",
+        gold_answer="profile",
+        competency="single-session-preference",
+    )
+    support = RetrievedItem(
+        item=MemoryItem(
+            text="As a Sony camera user, I need compatible photography accessories.",
+            role="user",
+            session_id="z-support",
+            turn_idx=0,
+        ),
+        score=1.05,
+        rank=0,
+    )
+    distractor = RetrievedItem(
+        item=MemoryItem(
+            text="I own a Canon tripod and a Nikon flash.",
+            role="user",
+            session_id="a-distractor",
+            turn_idx=0,
+        ),
+        score=1.00,
+        rank=1,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        embedder=FakeEmbedder(embedding_dim=32),
+        per_competency_answer_prompt=True,
+    )
+
+    focused = orch._focus_preference_answer_context(current, [support, distractor])
+
+    assert [hit.item.session_id for hit in focused] == ["z-support"]
+
+
+def test_preference_focus_preserves_ambiguous_context_for_recall() -> None:
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What accessories complement my photography setup?",
+        gold_answer="profile",
+        competency="single-session-preference",
+    )
+    top = RetrievedItem(
+        item=MemoryItem(
+            text="I use photography accessories.",
+            role="user",
+            session_id="first",
+            turn_idx=0,
+        ),
+        score=0.89,
+        rank=0,
+    )
+    alternate = RetrievedItem(
+        item=MemoryItem(
+            text="I use a Sony camera.",
+            role="user",
+            session_id="second",
+            turn_idx=0,
+        ),
+        score=0.88,
+        rank=1,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        embedder=FakeEmbedder(embedding_dim=32),
+        per_competency_answer_prompt=True,
+    )
+
+    focused = orch._focus_preference_answer_context(current, [top, alternate])
+
+    assert focused == [top, alternate]
+
+
+def test_preference_focus_requires_subject_anchor_not_generic_work_match() -> None:
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="Can you suggest activities for my commute to work?",
+        gold_answer="profile",
+        competency="single-session-preference",
+    )
+    routine = RetrievedItem(
+        item=MemoryItem(
+            text=(
+                "Can you suggest a daily work routine with some time for self-care "
+                "during my most productive morning hours?"
+            ),
+            role="user",
+            session_id="routine",
+            turn_idx=0,
+        ),
+        score=0.97,
+        rank=0,
+    )
+    commute = RetrievedItem(
+        item=MemoryItem(
+            text="I listen to history podcasts during my commute.",
+            role="user",
+            session_id="commute",
+            turn_idx=0,
+        ),
+        score=0.94,
+        rank=1,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        embedder=FakeEmbedder(embedding_dim=32),
+        per_competency_answer_prompt=True,
+    )
+
+    focused = orch._focus_preference_answer_context(current, [routine, commute])
+
+    assert focused == [routine, commute]
+
+
+def test_preference_does_not_boost_unrelated_constraint_in_same_session() -> None:
+    relevant = LongMemEvalSession(
+        session_id="z-relevant",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I use a Sony camera and want durable photography accessories.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    distractor = LongMemEvalSession(
+        session_id="a-distractor",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content=(
+                    "I display vinyl records without taking up much space. "
+                    "I might upgrade my audio setup later."
+                ),
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What accessories complement my current photography setup?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("z-relevant",),
+    )
+    relevant_item = MemoryItem(
+        text=relevant.turns[0].content,
+        role="user",
+        session_id=relevant.session_id,
+        turn_idx=0,
+    )
+    distractor_item = MemoryItem(
+        text=distractor.turns[0].content,
+        role="user",
+        session_id=distractor.session_id,
+        turn_idx=0,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={relevant.session_id: relevant, distractor.session_id: distractor},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_preference_session_top_k=1,
+    )
+
+    expanded = orch._expand_single_session_hits(
+        current,
+        [
+            RetrievedItem(item=relevant_item, score=0.65, rank=0),
+            RetrievedItem(item=distractor_item, score=0.60, rank=1),
+        ],
+        candidate_items=[relevant_item, distractor_item],
+        bundle_roles={"user"},
+        bundle_output_role="user",
+        preference=True,
+    )
+
+    assert len(expanded) == 1
+    assert expanded[0].item.session_id == "z-relevant"
+
+
+def test_preference_ranks_category_bound_stable_identity_over_scattered_gear() -> None:
+    support = LongMemEvalSession(
+        session_id="z-support",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content=(
+                    "As a Sony camera user, I prefer durable accessories that "
+                    "are compatible with my camera."
+                ),
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    distractor = LongMemEvalSession(
+        session_id="a-distractor",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="I once bought a Canon lens and stored a Nikon body on a shelf.",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-preference",
+    )
+    current = LongMemEvalSession(
+        session_id="current",
+        turns=(),
+        question="What accessories complement my current photography setup?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=("z-support",),
+    )
+    support_item = MemoryItem(
+        text=support.turns[0].content,
+        role="user",
+        session_id=support.session_id,
+        turn_idx=0,
+    )
+    distractor_item = MemoryItem(
+        text=distractor.turns[0].content,
+        role="user",
+        session_id=distractor.session_id,
+        turn_idx=0,
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus={support.session_id: support, distractor.session_id: distractor},
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_preference_session_top_k=1,
+    )
+
+    expanded = orch._expand_single_session_hits(
+        current,
+        [
+            RetrievedItem(item=distractor_item, score=0.75, rank=0),
+            RetrievedItem(item=support_item, score=0.55, rank=1),
+        ],
+        candidate_items=[distractor_item, support_item],
+        bundle_roles={"user"},
+        bundle_output_role="user",
+        preference=True,
+    )
+
+    assert len(expanded) == 1
+    assert expanded[0].item.session_id == "z-support"
+
+
+def test_preference_session_limit_is_independent_from_other_competencies() -> None:
+    priors = {
+        f"s-{idx}": LongMemEvalSession(
+            session_id=f"s-{idx}",
+            turns=(LongMemEvalTurn(role="user", content=f"I prefer option {idx}."),),
+            question="",
+            gold_answer="",
+            competency="single-session-preference",
+        )
+        for idx in range(3)
+    }
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="What kind of option would I prefer?",
+        gold_answer="profile",
+        competency="single-session-preference",
+        supporting_session_ids=tuple(priors),
+    )
+    orch = ControllerOrchestrator(
+        llm=FakeLLM(),
+        extractor=_EchoExtractor(),
+        classifier=_SupportClassifier(),
+        corpus=priors,
+        embedder=FakeEmbedder(embedding_dim=32),
+        competency_aware_retrieval=True,
+        competency_session_top_k=1,
+        competency_preference_session_top_k=2,
+    )
+
+    _, hits, _ = orch._competency_context_hits(current)
+
+    assert len({hit.item.session_id for hit in hits}) == 2
+
+
+def test_query_expansion_closes_observed_paraphrase_gaps() -> None:
+    occupation = _expanded_retrieval_query("What was my previous occupation?")
+    purchase = _expanded_retrieval_query(
+        "What investment did I make for the competition four weeks ago?"
+    )
+    battery = _expanded_retrieval_query("Any tips for my phone battery life?")
+    age = _expanded_retrieval_query("How many years older is my grandma than me?")
+    homegrown = _expanded_retrieval_query("What dinner can I make with homegrown ingredients?")
+    baking = _expanded_retrieval_query("How can I improve my chocolate chip cookies?")
+
+    assert "role" in occupation and "employment" in occupation
+    assert "purchased" in purchase and "tools" in purchase
+    assert "acquired" in purchase and "own" in purchase
+    assert "portable power bank" in battery
+    assert "birthday" in age and "young" in age
+    assert "harvested" in homegrown and "garden produce" in homegrown
+    assert "sugar" in baking and "flour" in baking
+
+
+def test_query_variants_include_focused_action_synonyms() -> None:
+    class RecordingStore:
+        def __init__(self) -> None:
+            self.queries: list[str] = []
+
+        def search(self, query: str, *, k: int) -> list[RetrievedItem]:
+            self.queries.append(query)
+            return []
+
+    store = RecordingStore()
+
+    _search_query_variants(
+        store,  # type: ignore[arg-type]
+        "What investment did I make for the competition four weeks ago?",
+        k=20,
+    )
+
+    assert any("got own acquired" in query for query in store.queries)
+
+
+def test_before_personal_milestone_activates_history_retrieval() -> None:
+    assert _requests_historical_memory("What status did I have before I reached Gold?")
+
+
+def test_answer_retry_detects_token_limit_without_final_line() -> None:
+    reason = _answer_retry_reason(
+        "- 2023/05/22",
+        raw_text="WORK:\n" + ("timeline detail\n" * 100) + "- 2023/05/22",
+        finish_reason="length",
+        completion_tokens=4096,
+        max_new_tokens=4096,
+    )
+
+    assert reason == "truncated"
+
+
+def test_answer_retry_detects_preference_semantic_abstention() -> None:
+    reason = _answer_retry_reason(
+        "The user would prefer a hotel in Miami. No specific amenities were provided.",
+        raw_text="FINAL: The user would prefer a hotel in Miami. "
+        "No specific amenities were provided.",
+        finish_reason="stop",
+        completion_tokens=40,
+        max_new_tokens=4096,
+        preference=True,
+    )
+
+    assert reason == "preference_abstention"
+
+
+def test_answer_retry_detects_has_not_specified_preference_abstention() -> None:
+    answer = (
+        "The user would prefer to visit Miami soon but has not specified a "
+        "particular hotel or amenity preference for that trip."
+    )
+
+    reason = _answer_retry_reason(
+        answer,
+        raw_text=f"FINAL: {answer}",
+        finish_reason="stop",
+        completion_tokens=35,
+        max_new_tokens=4096,
+        preference=True,
+    )
+
+    assert reason == "preference_abstention"
+
+
+def test_answer_retry_does_not_apply_preference_rule_to_factual_answer() -> None:
+    reason = _answer_retry_reason(
+        "No specific amenities were provided.",
+        raw_text="FINAL: No specific amenities were provided.",
+        finish_reason="stop",
+        completion_tokens=20,
+        max_new_tokens=4096,
+        preference=False,
+    )
+
+    assert reason is None
+
+
+def test_answer_retry_preserves_negative_missing_ingredient_constraint() -> None:
+    reason = _answer_retry_reason(
+        "They may not prefer recipes requiring ingredients they do not have.",
+        raw_text="FINAL: They may not prefer recipes requiring ingredients they do not have.",
+        finish_reason="stop",
+        completion_tokens=20,
+        max_new_tokens=4096,
+        preference=True,
+    )
+
+    assert reason is None
+
+
+def test_branch_out_exclusions_extract_prior_topics() -> None:
+    hit = RetrievedItem(
+        item=MemoryItem(
+            text=(
+                "I've been listening to a lot of true crime and self-improvement "
+                "stuff. I enjoy it during my commute, but I want to branch out "
+                "into other genres."
+            ),
+            role="user",
+            session_id="podcasts",
+            turn_idx=0,
+        ),
+        score=0.9,
+        rank=0,
+    )
+
+    assert _branch_out_exclusions([hit]) == ("self-improvement", "true crime")
+
+
+def test_answer_retry_detects_branch_out_topic_in_positive_preference() -> None:
+    reason = _answer_retry_reason(
+        "The user would prefer history and self-improvement podcasts. "
+        "They may not prefer unrelated commute activities.",
+        raw_text="FINAL: The user would prefer history and self-improvement podcasts.",
+        finish_reason="stop",
+        completion_tokens=30,
+        max_new_tokens=4096,
+        preference=True,
+        preference_exclusions=("self-improvement", "true crime"),
+    )
+
+    assert reason == "preference_polarity"
+
+
+def test_answer_retry_allows_branch_out_topics_only_in_negative_preference() -> None:
+    reason = _answer_retry_reason(
+        "The user would prefer history and science podcasts. "
+        "They may not prefer true crime or self-improvement.",
+        raw_text="FINAL: The user would prefer history and science podcasts.",
+        finish_reason="stop",
+        completion_tokens=30,
+        max_new_tokens=4096,
+        preference=True,
+        preference_exclusions=("self-improvement", "true crime"),
+    )
+
+    assert reason is None
 
 
 def test_controller_caches_extraction_outputs_across_questions(tmp_path: Path) -> None:
@@ -872,7 +1652,11 @@ def test_controller_prefilters_memory_turns_before_extraction(tmp_path: Path) ->
 
 
 def test_controller_raw_turn_fallback_indexes_selected_empty_extractions(tmp_path: Path) -> None:
-    commute = _session("s-commute", "I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.", ())
+    commute = _session(
+        "s-commute",
+        "I've been listening to audiobooks during my daily commute, which takes 45 minutes each way.",
+        (),
+    )
     current = LongMemEvalSession(
         session_id="s-current",
         turns=(),
@@ -912,8 +1696,7 @@ def test_controller_raw_turn_fallback_preserves_partial_extractor_context(tmp_pa
             LongMemEvalTurn(
                 role="user",
                 content=(
-                    "I need to update my address. My old name was Johnson, "
-                    "but now it's Winters."
+                    "I need to update my address. My old name was Johnson, but now it's Winters."
                 ),
                 timestamp="2026-01-01T00:00:00Z",
             ),
@@ -980,13 +1763,53 @@ def test_answer_retry_on_unknown_uses_retrieved_evidence(tmp_path: Path) -> None
     assert "previous final answer was 'Unknown'" in answer.raw_prompt
 
 
-def test_controller_retrieval_neighbor_window_adds_nearby_same_session_context(tmp_path: Path) -> None:
+def test_preference_unknown_retry_keeps_grounded_profile_prompt(tmp_path: Path) -> None:
+    prior = _session("s-prior", "I prefer coffee in the morning.", ())
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="What kind of breakfast suggestion would suit me?",
+        gold_answer="The user would prefer coffee with breakfast.",
+        competency="single-session-preference",
+        supporting_session_ids=("s-prior",),
+    )
+    llm = FakeLLM()
+    llm.queue("FINAL: Unknown", "FINAL: The user would prefer coffee with breakfast.")
+    orchestrator = ControllerOrchestrator(
+        llm=llm,
+        extractor=FakeExtractor(),
+        classifier=FakeClassifier(),
+        corpus={"s-prior": prior},
+        embedder=FakeEmbedder(embedding_dim=32),
+        action_log_path=tmp_path / "controller.action_log.jsonl",
+        answer_retry_on_unknown=True,
+        per_competency_answer_prompt=True,
+    )
+
+    answer = orchestrator.answer(current)
+
+    assert answer.text == "The user would prefer coffee with breakfast."
+    assert answer.extras["answer_retry_used"] is True
+    assert answer.extras["answer_system_prompt_variant"] == "preference"
+    assert "previous preference profile was 'Unknown'" in answer.raw_prompt
+    assert "Do not fall back to literal recommendations" in answer.raw_prompt
+
+
+def test_controller_retrieval_neighbor_window_adds_nearby_same_session_context(
+    tmp_path: Path,
+) -> None:
     session = LongMemEvalSession(
         session_id="answer-store",
         turns=(
-            LongMemEvalTurn(role="user", content="I use the Cartwheel app from Target.", timestamp=None),
+            LongMemEvalTurn(
+                role="user", content="I use the Cartwheel app from Target.", timestamp=None
+            ),
             LongMemEvalTurn(role="assistant", content="noted", timestamp=None),
-            LongMemEvalTurn(role="user", content="I redeemed a $5 coupon on coffee creamer last Sunday.", timestamp=None),
+            LongMemEvalTurn(
+                role="user",
+                content="I redeemed a $5 coupon on coffee creamer last Sunday.",
+                timestamp=None,
+            ),
         ),
         question="",
         gold_answer="",
@@ -1024,9 +1847,15 @@ def test_controller_retrieval_neighbors_use_raw_haystack_after_prefilter(tmp_pat
     session = LongMemEvalSession(
         session_id="answer-store",
         turns=(
-            LongMemEvalTurn(role="user", content="I use the Cartwheel app from Target.", timestamp=None),
+            LongMemEvalTurn(
+                role="user", content="I use the Cartwheel app from Target.", timestamp=None
+            ),
             LongMemEvalTurn(role="assistant", content="noted", timestamp=None),
-            LongMemEvalTurn(role="user", content="I redeemed a $5 coupon on coffee creamer last Sunday.", timestamp=None),
+            LongMemEvalTurn(
+                role="user",
+                content="I redeemed a $5 coupon on coffee creamer last Sunday.",
+                timestamp=None,
+            ),
         ),
         question="",
         gold_answer="",
@@ -1088,11 +1917,50 @@ def test_controller_answer_prompt_preserves_qualifiers_and_question_type() -> No
     assert "requested category is not supported" in prompt
 
 
+def test_preference_prompt_requires_grounded_target_and_polarity() -> None:
+    prompt = PREFERENCE_SYSTEM_PROMPT.lower()
+
+    assert "exact subject or decision" in prompt
+    assert "direct user statement" in prompt
+    assert "stable self-description, profession" in prompt
+    assert "casual past mention" in prompt
+    assert "one coherent" in prompt
+    assert "do not blend" in prompt
+    assert "hard constraint" in prompt
+    assert "a request to branch out" in prompt
+    assert "puts those options in negative" in prompt
+    assert "x is prior exposure and belongs only in negative" in prompt
+    assert "the new or other genres belong in positive" in prompt
+    assert "preserve its polarity exactly" in prompt
+    assert "do not turn unaccepted assistant suggestions" in prompt
+    assert "the word 'fresh' alone does not establish garden origin" in prompt
+    assert "do not replace it with a broader recurring theme" in prompt
+    assert "match the requested category before the place" in prompt
+    assert "when only the destination changes" in prompt
+    assert "do not require the preference statement to name the new place" in prompt
+    assert "an exact-place memory about a different activity never establishes" in prompt
+    assert "carry over the general feature statement" in prompt
+    assert "not venue-specific names, landmarks" in prompt
+    assert "durable, recurring signals" not in prompt
+    assert "broader ecosystem" not in prompt
+
+
+def test_preference_retry_keeps_profile_contract() -> None:
+    prompt = PREFERENCE_ANSWER_RETRY_SYSTEM_PROMPT.lower()
+
+    assert "preference profile" in prompt
+    assert "do not fall back to literal recommendations" in prompt
+    assert "preserve every negative constraint" in prompt
+    assert "final: <preference profile>" in prompt
+
+
 def test_controller_answer_prompt_includes_retrieved_timestamp(tmp_path: Path) -> None:
     """The retrieved-memory block must carry each item's timestamp so the
     answerer can prefer the most recent value on knowledge-update questions."""
     prior = _session("s-prior", "I prefer coffee in the morning.", ())
-    current = _session("s-current", "I drink something hot in the morning.", ("s-prior", "s-current"))
+    current = _session(
+        "s-current", "I drink something hot in the morning.", ("s-prior", "s-current")
+    )
     llm = FakeLLM()
     llm.queue("coffee")
     orchestrator = ControllerOrchestrator(
@@ -1163,9 +2031,7 @@ def test_temporal_scaffold_injects_event_dates_when_enabled(tmp_path: Path) -> N
     """When enabled, a temporal question gets a normalized-dates block built from
     the memory text; default (off) leaves the prompt unchanged."""
     prior = _session("s-prior", "I attended the Coastal Cleanup on March 7, 2023.", ())
-    current = _session(
-        "s-now", "I did something.", ("s-prior", "s-now")
-    )
+    current = _session("s-now", "I did something.", ("s-prior", "s-now"))
     # Make it a temporal 'order' question.
     current = LongMemEvalSession(
         session_id=current.session_id,
@@ -1429,3 +2295,111 @@ def test_computation_answerer_bypasses_ordinal_assistant_list(tmp_path: Path) ->
 
     assert answer.text == "Transcriptionist"
     assert answer.extras["computation_intent"] == "ordinal_list_item"
+
+
+def test_verified_ordinal_reconstruction_wins_llm_disagreement(tmp_path: Path) -> None:
+    prior = LongMemEvalSession(
+        session_id="s-prior",
+        turns=(
+            LongMemEvalTurn(role="user", content="Brainstorm remote jobs."),
+            LongMemEvalTurn(
+                role="assistant",
+                content=(
+                    "1. Customer service 2. Bookkeeper 3. Tutor 4. Writer "
+                    "5. Survey taker 6. Social media manager "
+                    "7. Transcriptionist 8. Data entry specialist"
+                ),
+                timestamp="2023/05/26 (Fri) 12:40",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="single-session-assistant",
+    )
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="What was the 7th job in the list you provided?",
+        gold_answer="Transcriptionist",
+        competency="single-session-assistant",
+        supporting_session_ids=("s-prior",),
+    )
+    llm = FakeLLM()
+    llm.queue("FINAL: Data entry specialist")
+    orch = ControllerOrchestrator(
+        llm=llm,
+        extractor=_EchoExtractor(),
+        classifier=IndependentClassifier(),
+        corpus={"s-prior": prior},
+        embedder=FakeEmbedder(embedding_dim=32),
+        action_log_path=tmp_path / "c.jsonl",
+        include_assistant_context=True,
+        computation_answerer=True,
+        verify_computation_bypass=True,
+        computation_bypass_min_confidence=0.9,
+        ordinal_list_reconstruction=True,
+        prefer_unambiguous_computation=True,
+    )
+
+    answer = orch.answer(current)
+
+    assert answer.text == "Transcriptionist"
+    assert answer.extras["computation_preferred_over_llm"] is True
+    assert answer.extras["computation_verify_disagreed"] is False
+
+
+def test_verified_relational_age_difference_wins_llm_disagreement(tmp_path: Path) -> None:
+    self_age = LongMemEvalSession(
+        session_id="s-self-age",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="Do you think 32 is considered young or old in the grand scheme of things?",
+                timestamp="2024/02/05 (Mon) 08:13",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="multi-session",
+    )
+    grandma_age = LongMemEvalSession(
+        session_id="s-grandma-age",
+        turns=(
+            LongMemEvalTurn(
+                role="user",
+                content="My grandma's 75th birthday celebration was really inspiring.",
+                timestamp="2024/02/05 (Mon) 09:14",
+            ),
+        ),
+        question="",
+        gold_answer="",
+        competency="multi-session",
+    )
+    current = LongMemEvalSession(
+        session_id="s-current",
+        turns=(),
+        question="How many years older is my grandma than me?",
+        gold_answer="43",
+        competency="multi-session",
+        supporting_session_ids=("s-self-age", "s-grandma-age"),
+    )
+    llm = FakeLLM()
+    llm.queue("FINAL: 42")
+    orch = ControllerOrchestrator(
+        llm=llm,
+        extractor=_EchoExtractor(),
+        classifier=IndependentClassifier(),
+        corpus={"s-self-age": self_age, "s-grandma-age": grandma_age},
+        embedder=FakeEmbedder(embedding_dim=32),
+        action_log_path=tmp_path / "c.jsonl",
+        computation_answerer=True,
+        verify_computation_bypass=True,
+        computation_bypass_min_confidence=0.9,
+        prefer_unambiguous_computation=True,
+    )
+
+    answer = orch.answer(current)
+
+    assert answer.text == "43"
+    assert answer.extras["computation_preferred_over_llm"] is True
+    assert answer.extras["computation_verify_disagreed"] is False

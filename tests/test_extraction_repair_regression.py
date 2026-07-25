@@ -19,10 +19,10 @@ from pathlib import Path
 
 import pytest
 
-from ksa.extraction import Extractor
-from ksa.extraction.schema import ExtractionOutput
-from ksa.inference.fake import FakeLLM
-from ksa.inference.llm import StructuredLLM, _validate_any_json_object
+from ask.extraction import Extractor
+from ask.extraction.schema import ExtractionOutput
+from ask.inference.fake import FakeLLM
+from ask.inference.llm import StructuredLLM, _validate_any_json_object
 
 _FIXTURE = Path(__file__).parent / "fixtures" / "m4w14_extraction_first_pass.jsonl"
 

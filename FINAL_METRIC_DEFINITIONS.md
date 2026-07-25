@@ -1,6 +1,6 @@
 # Final metric definitions (FROZEN)
 
-Freeze version: `final-1.1` (2026-07-13). Every metric that appears in a final
+Freeze version: `final-2.0` (2026-07-18). Every metric that appears in a final
 table is defined here with its formula, numerator/denominator, directionality
 (higher-is-better `up` / lower-is-better `down`), edge cases, and the exact code
 that implements it. Two MGP-6 metrics are explicitly **excluded** from final
@@ -9,7 +9,7 @@ tables (section "Excluded metrics").
 Implementation anchors:
 - MGP-6 scorer: `benchmarks/mgp6/metrics_mgp6.py`
 - MGP-6 schema / gold access: `benchmarks/mgp6/mgp6_schema_v2.py`
-- LongMemEval scorer: `src/ksa/eval/longmemeval.py` (`build_eval_report`, `LongMemEvalGrader`)
+- LongMemEval scorer: `src/ask/eval/longmemeval.py` (`build_eval_report`, `LongMemEvalGrader`)
 - SSP evaluator: `scripts/evaluation/evaluate_single_session_preferences.py`
 - Paired significance: `benchmarks/mgp6/metrics_mgp6.py` (`paired_mcnemar`) and
   `scripts/analysis/mcnemar_mgp6.py`
@@ -181,7 +181,7 @@ completeness because the ledger and reports reference them.
   judge; the hard gold-token reject fires only on a provable numeric conflict
   (all other mismatches defer to the semantic judge). Every verdict logs the
   judge that produced it (`judge_model_id`, `used_fallback`).
-- **Code:** `src/ksa/eval/longmemeval.py` `build_eval_report` (904) over
+- **Code:** `src/ask/eval/longmemeval.py` `build_eval_report` (904) over
   `GradeResult`s; grading in `LongMemEvalGrader.grade` (646).
 
 ### E2. Per-competency accuracy

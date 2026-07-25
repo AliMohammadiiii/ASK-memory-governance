@@ -63,8 +63,8 @@ for path in candidate_paths:
         for pattern in SECRET_PATTERNS:
             if pattern.search(text):
                 errors.append(f"possible embedded secret: {rel}")
-if not (ROOT / "src/ksa").is_dir():
-    errors.append("missing src/ksa")
+if not (ROOT / "src/ask").is_dir():
+    errors.append("missing src/ask")
 if not (ROOT / "benchmarks/mgp6/data/mgp6_v2.jsonl").is_file():
     errors.append("missing MGP-6 v2 data")
 if errors:

@@ -6,9 +6,9 @@ layer, the correction applied (with fix-doc citation), regression evidence, and
 the remaining limitation. Paths are absolute. Numbers were read from the cited
 files for this audit.
 
-Abbreviations: base run `V7 = ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7`;
-replay family under `LV = ksa_controller/runs/lme_m last version`; canonical
-source `SRC = ksa-memory-governance/src/ksa`.
+Abbreviations: base run `V7 = ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7`;
+replay family under `LV = ask_controller/runs/lme_m last version`; canonical
+source `SRC = ask-memory-governance/src/ask`.
 
 > **Superseding status (ledger v1.1).** The historical `139/180 = 77.2%`
 > artifact is `failure_replay_only`, selection-biased, and not a final result.
@@ -102,7 +102,7 @@ source `SRC = ksa-memory-governance/src/ksa`.
   concurrency); no unit test reproduces signal 11 directly.
 
 ### F5 — v5 run misnaming + abort (unusable)
-- **Originating run:** `ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v5`.
+- **Originating run:** `ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_100_129_seed0_v5`.
 - **Evidence:** directory is named `..._100_129_...` but the only data file is
   `range_200_239.jsonl` (its first record is `single-session-preference`,
   `ultrachat_139656`) → **misnamed**. `controller/` holds only `_shard*/`

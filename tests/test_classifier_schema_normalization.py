@@ -12,7 +12,7 @@ from __future__ import annotations
 import pytest
 from pydantic import ValidationError
 
-from ksa.classifier.schema import RelationOutput, Stage1Output, Stage2Output
+from ask.classifier.schema import RelationOutput, Stage1Output, Stage2Output
 
 
 def test_stage1_missing_rationale_keeps_label() -> None:

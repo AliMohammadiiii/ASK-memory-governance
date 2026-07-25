@@ -4,7 +4,7 @@
 
 ## Completed
 
-- Full KSA implementation, scripts, tests, configs, prompts, and schemas restored.
+- Full ASK implementation, scripts, tests, configs, prompts, and schemas restored.
 - MGP-6 v2 dataset, benchmark code, adapters, and annotations integrated.
 - Repository pollution removed.
 - Scorer canonicalization defect patched with regression tests.

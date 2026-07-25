@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ksa.eval.sanity import (
+from ask.eval.sanity import (
     build_sanity_report,
     duplicate_confusion_matrices,
     extraction_recall,

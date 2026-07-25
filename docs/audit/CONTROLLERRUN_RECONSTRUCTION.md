@@ -14,22 +14,22 @@ that was read for this audit; file paths are absolute.
 > These observations do not reproduce 77.2%.
 
 **Evidence roots.**
-- Runs (read-only): `external://Master/ksa_controller/runs/`
-- Canonical source: `repo://src/ksa/`
+- Runs (read-only): `external://Master/ask_controller/runs/`
+- Canonical source: `repo://src/ask/`
 - Drivers: `repo://scripts/run_vllm_cascade.py`,
   `.../scripts/build_v8_adjudicated_report.py`
 
-> Note on repo copies. The live run artifacts live under `ksa_controller/`. The
-> canonical, published-layout copy of the same code is `ksa-memory-governance/`
-> (`src/ksa/...`). Source citations below use the canonical copy; run artifacts
-> are cited from `ksa_controller/runs/`.
+> Note on repo copies. The live run artifacts live under `ask_controller/`. The
+> canonical, published-layout copy of the same code is `ask-memory-governance/`
+> (`src/ask/...`). Source citations below use the canonical copy; run artifacts
+> are cited from `ask_controller/runs/`.
 
 ---
 
 ## 1. Pipeline stages (per session), with code anchors
 
 The whole per-session flow is driven by `ControllerOrchestrator.answer()`
-(`src/ksa/pipeline/orchestrator.py:653`). The eval harness wraps it with
+(`src/ask/pipeline/orchestrator.py:653`). The eval harness wraps it with
 extraction, judging, and scoring. Stages in execution order:
 
 ### 1.1 Dataset loading / slice selection
@@ -38,14 +38,14 @@ extraction, judging, and scoring. Stages in execution order:
   (30 items/competency × 6 = 180, seed 0). This is documented in
   `V7_FIXES_AND_RUN.md` ("builds the stratified slice once … deterministic under seed 0").
 - Sessions are parsed into `LongMemEvalSession` objects by
-  `src/ksa/data/longmemeval.py`.
+  `src/ask/data/longmemeval.py`.
 - Slice/range selection and sharding are argument-driven in
   `scripts/run_vllm_cascade.py` (`--slice`, `--sample-from/-to`, `--shards`) and
   passed down to `scripts/run_baseline.py` per shard
   (`_base_cmd`, `_shard_cmd` at `run_vllm_cascade.py:56,234`).
 
 ### 1.2 Prompt construction (extraction)
-- `Extractor.render_prompt()` (`src/ksa/extraction/extractor.py:202`) renders the
+- `Extractor.render_prompt()` (`src/ask/extraction/extractor.py:202`) renders the
   per-turn extraction prompt with a strict JSON schema
   (`ExtractionOutput.model_json_schema()`).
 
@@ -68,19 +68,19 @@ extraction, judging, and scoring. Stages in execution order:
 ### 1.4 Controller decisions (Keep / Supersede / Abstain)
 - `_process_candidate()` (`orchestrator.py:1530`) drives, per candidate memory:
   1. relation classification `_classify_relation()` (`orchestrator.py:1572`) →
-     `RelationClassifier.classify()` (`src/ksa/classifier/relation.py:70`), a
+     `RelationClassifier.classify()` (`src/ask/classifier/relation.py:70`), a
      two-stage classifier with optional cascade escalation
      (`_should_escalate`, `orchestrator.py:1615`);
   2. prior selection `_find_prior` / `_select_prior_relation`
      (`orchestrator.py:1721,1743`);
   3. the scored three-action rule `controller.policy.decide()`
-     (`src/ksa/controller/policy.py:39`): `if S_abs>θ_abs: ABSTAIN;
+     (`src/ask/controller/policy.py:39`): `if S_abs>θ_abs: ABSTAIN;
      elif S_rev>θ_sup and relation_update>0: SUPERSEDE; else KEEP`
-     (feature scoring in `src/ksa/controller/scoring.py` / `score.py`);
+     (feature scoring in `src/ask/controller/scoring.py` / `score.py`);
   4. `_execute_decision()` / `_write_decision()` (`orchestrator.py:1872,1907`).
 
 ### 1.5 Memory persistence
-- SQLite-backed store operations in `src/ksa/memory/operations.py`:
+- SQLite-backed store operations in `src/ask/memory/operations.py`:
   `insert_active` (`:34`), `supersede` (`:76`, links lineage, marks prior
   inactive), `supersede_evict` (`:155`), `retrieve_active` (`:199`,
   excludes superseded), `get_lineage` (`:234`).
@@ -111,7 +111,7 @@ extraction, judging, and scoring. Stages in execution order:
   (a genuinely stronger model **only** if configured — see §3).
 
 ### 1.9 Judge requests / fallbacks
-- `LongMemEvalGrader.grade()` (`src/ksa/eval/longmemeval.py:646`) applies, in
+- `LongMemEvalGrader.grade()` (`src/ask/eval/longmemeval.py:646`) applies, in
   order: blank guard (`:652`), degenerate guard (`:668`,
   `looks_degenerate_answer` `:531`), refusal guard (`:686`), abstention guard
   (`:702`), then the token guard. Abstention routing uses
@@ -134,7 +134,7 @@ extraction, judging, and scoring. Stages in execution order:
 - Per-shard resume via `run_baseline --resume`; failed shards retried in-place
   with backoff (`_run_logged_with_retries`, `run_vllm_cascade.py:280`;
   `--shard-retries 2`), append-only logs (`_write_command_header`, `:258`).
-- Shard union rebuilt by `merge_run_shards()` (`src/ksa/eval/merge.py:57`),
+- Shard union rebuilt by `merge_run_shards()` (`src/ask/eval/merge.py:57`),
   which dedups judgments by `session_id` and rebuilds the report from the union
   of grades.
 

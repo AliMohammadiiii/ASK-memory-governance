@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend
-from ksa.inference.fake import FakeLLM
-from ksa.inference.openai_compatible import OpenAICompatibleLLM
+from ask.eval.judge import JudgeBackendConfig, build_judge_backend
+from ask.inference.fake import FakeLLM
+from ask.inference.openai_compatible import OpenAICompatibleLLM
 
 
 def test_same_as_answerer_returns_answerer_instance() -> None:

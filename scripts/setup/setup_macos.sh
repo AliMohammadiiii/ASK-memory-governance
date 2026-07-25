@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# macOS setup for the KSA final-evaluation laptop workflow.
+# macOS setup for the ASK final-evaluation laptop workflow.
 #   - creates .venv (Python >= 3.11, required by pyproject)
 #   - installs the package editable + dev extra
 #   - copies .env.example -> .env if .env is absent (NEVER writes secrets)

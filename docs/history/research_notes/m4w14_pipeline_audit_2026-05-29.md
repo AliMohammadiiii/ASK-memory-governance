@@ -35,18 +35,18 @@ because neither system saw a candidate.
 
 ## 2. Fix (landed)
 
-- `src/ksa/extraction/schema.py`: `mode="before"` validator infers
+- `src/ask/extraction/schema.py`: `mode="before"` validator infers
   `no_extractable_content` from `items` **only when the field is absent**. An
   explicitly inconsistent flag is still rejected (strict against malformed).
-- `src/ksa/classifier/schema.py`: `mode="before"` validators default an omitted
+- `src/ask/classifier/schema.py`: `mode="before"` validators default an omitted
   `rationale` while keeping the relation/temporal label, so an omitted rationale
   no longer collapses a real contradiction to `independent`/`unclear` → Keep.
-- `src/ksa/inference/llm.py`: `generate_json` gains an optional `trace` dict
+- `src/ask/inference/llm.py`: `generate_json` gains an optional `trace` dict
   recording `parse_path` / `repair_used` / `first_error` / `repair_error`.
   Because the before-validators make recoverable output valid on the first pass,
   the repair call is skipped entirely for that output, so a successful-but-empty
   repair can no longer overwrite a good first pass.
-- `src/ksa/extraction/extractor.py`: trace now logs `parse_path`, `repair_used`,
+- `src/ask/extraction/extractor.py`: trace now logs `parse_path`, `repair_used`,
   `first_parse_error`, `repair_parse_error`.
 
 ## 3. Verification without a live model
@@ -64,11 +64,11 @@ first passes (legitimate).
 
 ## 4. New diagnostics
 
-- **`superseded_recoverability`** (`ksa.eval.recoverability`,
+- **`superseded_recoverability`** (`ask.eval.recoverability`,
   `scripts/evaluate_recoverability_mgp6.py`) — the H2 metric SMRR cannot
   provide. On the *invalid* m4w14 outputs it already separates the systems:
   controller = 1.0 (9/9 revisions recoverable), naive overwrite = 0.0 (0/9).
-- **Run-level sanity checks** (`ksa.eval.sanity`, wired into `scripts/run_mgp6.py`)
+- **Run-level sanity checks** (`ask.eval.sanity`, wired into `scripts/run_mgp6.py`)
   — flag low extraction recall (< 50%) and byte-identical confusion matrices
   among distinct-policy systems, writing `sanity_report.json` and (optionally,
   `--fail-on-sanity`) exiting non-zero. Run against m4w14 these fire exactly the
@@ -89,7 +89,7 @@ first passes (legitimate).
 ## 6. Required re-run (on a machine with Ollama models)
 
 ```bash
-cd ksa_controller
+cd ask_controller
 source .venv/bin/activate
 
 # 1. MGP-6 all-system re-run (final-candidate), with sanity gate ON.

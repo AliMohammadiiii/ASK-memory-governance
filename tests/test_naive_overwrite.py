@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ksa.baselines.embeddings import FakeEmbedder
-from ksa.baselines.naive_overwrite import NaiveOverwriteBaseline
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
-from ksa.inference.fake import FakeLLM
+from ask.baselines.embeddings import FakeEmbedder
+from ask.baselines.naive_overwrite import NaiveOverwriteBaseline
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
+from ask.inference.fake import FakeLLM
 from tests.test_pipeline_orchestrator import FakeClassifier, FakeExtractor
 
 

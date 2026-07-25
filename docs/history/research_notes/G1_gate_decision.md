@@ -91,18 +91,18 @@ slice the null result is the correct, documented behavior.
 
 ### 2.5 Repo state
 
-- Memory substrate: `src/ksa/memory/operations.py` extends W2 with
+- Memory substrate: `src/ask/memory/operations.py` extends W2 with
   `get_by_id`, `get_lineage`, `supersede_evict`. Atomicity hardened
   via `BEGIN IMMEDIATE` + row-version row-status check.
-- Audit substrate: `src/ksa/audit/action_log.py` extends W2 with
+- Audit substrate: `src/ask/audit/action_log.py` extends W2 with
   `baseline` field + writer-bound override; `mode='w'` truncate
   default; `fsync_on_write=True` default; baseline allow-list
   enforcement.
-- Schema: `schema/generated/ksa_memory.schema.json` extends W2 with
+- Schema: `schema/generated/ask_memory.schema.json` extends W2 with
   `session_id`, `baseline` (enum), `candidate_type` (enum nullable).
   Pre-W4 entries remain valid (new fields are nullable).
-- Baseline 3: `src/ksa/baselines/recency_pruning.py` +
-  `src/ksa/baselines/prompts/recency_pruning.j2` — RecencyPruningBaseline
+- Baseline 3: `src/ask/baselines/recency_pruning.py` +
+  `src/ask/baselines/prompts/recency_pruning.j2` — RecencyPruningBaseline
   with capacity, k, action_log_path knobs.
 - Run driver: `scripts/run_baseline.py` accepts
   `--baseline recency --capacity N --no-action-log`.

@@ -208,7 +208,7 @@ These guard against regression of the §3.4 invariants (analogous to
 M1-W2's §7). The full M1-W3 + carried-forward suite was **58 passed,
 2 skipped** as the pre-flight check at the start of this run (the 2
 skipped are the host-only MiniLM smoke tests, gated by
-`KSA_RUN_MINILM_SMOKE=1` to defuse the Apple-Silicon libomp segfault
+`ASK_RUN_MINILM_SMOKE=1` to defuse the Apple-Silicon libomp segfault
 documented in `m1w3_design.md` §5b).
 
 - `tests/test_embeddings.py::test_fake_embedder_rows_are_l2_normalized`

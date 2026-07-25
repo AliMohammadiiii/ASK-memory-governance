@@ -9,12 +9,12 @@ retrieved items must survive.
 
 from __future__ import annotations
 
-from ksa.baselines.embeddings import FakeEmbedder
-from ksa.baselines.flat_vector_store import MemoryItem, RetrievedItem
-from ksa.data.longmemeval import LongMemEvalSession
-from ksa.inference.fake import FakeLLM
-from ksa.pipeline import ControllerOrchestrator
-from ksa.pipeline.orchestrator import _BUDGET_FLOOR_ITEMS, _estimate_prompt_tokens
+from ask.baselines.embeddings import FakeEmbedder
+from ask.baselines.flat_vector_store import MemoryItem, RetrievedItem
+from ask.data.longmemeval import LongMemEvalSession
+from ask.inference.fake import FakeLLM
+from ask.pipeline import ControllerOrchestrator
+from ask.pipeline.orchestrator import _BUDGET_FLOOR_ITEMS, _estimate_prompt_tokens
 from tests.test_pipeline_orchestrator import FakeClassifier, FakeExtractor
 
 

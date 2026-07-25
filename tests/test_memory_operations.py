@@ -13,7 +13,7 @@ import sqlite3
 
 import pytest
 
-from ksa.memory import (
+from ask.memory import (
     MemoryItem,
     MemoryStatus,
     MemoryType,
@@ -121,7 +121,7 @@ def test_supersede_is_atomic_under_forced_exception(
     assert before == 1
 
     # Patch `insert_active` (called by supersede) to raise.
-    import ksa.memory.operations as ops
+    import ask.memory.operations as ops
 
     def _raise(*_a: object, **_kw: object) -> int:
         raise RuntimeError("forced mid-transaction failure")

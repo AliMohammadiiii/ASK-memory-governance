@@ -17,8 +17,8 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from ksa.audit import ActionLogWriter
-from ksa.memory.models import ActionLogEntry, ControllerAction, MemoryType
+from ask.audit import ActionLogWriter
+from ask.memory.models import ActionLogEntry, ControllerAction, MemoryType
 
 # --------------------------------------------------------------------- #
 # Helpers                                                                #

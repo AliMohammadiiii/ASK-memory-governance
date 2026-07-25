@@ -19,8 +19,8 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
-from ksa.eval.smrr import compute_smrr, mgp6_stale_items  # noqa: E402
+from ask.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
+from ask.eval.smrr import compute_smrr, mgp6_stale_items  # noqa: E402
 
 SYSTEM_ALIASES = ("b1", "b2", "b3", "b4", "controller")
 

@@ -2,7 +2,7 @@
   "meta": {
     "workstream": "single-session-preference (SSP) failure taxonomy",
     "benchmark": "LongMemEval-M, competency=single-session-preference",
-    "controller": "KSA memory-governance controller",
+    "controller": "ASK memory-governance controller",
     "base_run": "runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller",
     "replay_run": "runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller",
     "adjudicated_run": "runs/lme_m last version/lme_m_v8_failure_replay_adjudicated",

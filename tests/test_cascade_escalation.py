@@ -5,8 +5,8 @@ from __future__ import annotations
 
 import types
 
-import ksa.pipeline.orchestrator as O
-from ksa.classifier import RelationOutput
+import ask.pipeline.orchestrator as O
+from ask.classifier import RelationOutput
 
 
 def _rel(label: str) -> RelationOutput:

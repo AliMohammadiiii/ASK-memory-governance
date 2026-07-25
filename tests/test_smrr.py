@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from ksa.eval.mgp6_schema import load_mgp6_jsonl
-from ksa.eval.smrr import compute_smrr, mgp6_stale_items
+from ask.eval.mgp6_schema import load_mgp6_jsonl
+from ask.eval.smrr import compute_smrr, mgp6_stale_items
 
 
 def test_compute_smrr_counts_retrieved_superseded_memory() -> None:

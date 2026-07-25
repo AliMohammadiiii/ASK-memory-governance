@@ -11,9 +11,9 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.extraction import Extractor  # noqa: E402
-from ksa.inference.llm import StructuredLLM  # noqa: E402
-from ksa.inference.ollama import OllamaLLM  # noqa: E402
+from ask.extraction import Extractor  # noqa: E402
+from ask.inference.llm import StructuredLLM  # noqa: E402
+from ask.inference.ollama import OllamaLLM  # noqa: E402
 
 
 def _iter_jsonl(path: Path):

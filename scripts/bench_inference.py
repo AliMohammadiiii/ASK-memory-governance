@@ -32,7 +32,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.inference.llm import LLM, build_llm, load_inference_config  # noqa: E402
+from ask.inference.llm import LLM, build_llm, load_inference_config  # noqa: E402
 
 
 def _make_prompt(n_target_tokens: int) -> str:
@@ -85,7 +85,7 @@ def main() -> int:
     args = p.parse_args()
 
     if args.ollama:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
         llm: LLM = OllamaLLM(model_id=args.ollama_model, host=args.ollama_host)
         backend_label = "ollama"
     else:

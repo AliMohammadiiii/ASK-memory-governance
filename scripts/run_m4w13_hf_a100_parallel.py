@@ -238,7 +238,7 @@ def _smoke_load_quality_model(args: argparse.Namespace) -> None:
     if args.dry_run or args.quality_preset == _QUALITY_PRESET_NONE:
         return
     code = (
-        "from ksa.inference.llm import HuggingFaceLLM, InferenceConfig\n"
+        "from ask.inference.llm import HuggingFaceLLM, InferenceConfig\n"
         "llm = HuggingFaceLLM(InferenceConfig(\n"
         "    model_id=%r, dtype=%r, device_map=%r, load_in_4bit=%r,\n"
         "    trust_remote_code=%r, max_seq_len=%r, backend='huggingface'))\n"

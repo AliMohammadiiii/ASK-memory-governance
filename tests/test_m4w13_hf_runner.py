@@ -100,7 +100,7 @@ def test_retrieval_k_is_forwarded_to_memory_systems() -> None:
 
 
 def test_command_prefers_configured_python(monkeypatch) -> None:
-    monkeypatch.setenv("KSA_PYTHON", "/tmp/ksa-python")
+    monkeypatch.setenv("ASK_PYTHON", "/tmp/ask-python")
 
     cmd = _command_for(
         baseline_alias="controller",
@@ -109,8 +109,8 @@ def test_command_prefers_configured_python(monkeypatch) -> None:
         args=_args(),
     )
 
-    assert _preferred_python() == "/tmp/ksa-python"
-    assert cmd[0] == "/tmp/ksa-python"
+    assert _preferred_python() == "/tmp/ask-python"
+    assert cmd[0] == "/tmp/ask-python"
 
 
 def test_quality_preset_is_forwarded_to_run_baseline() -> None:

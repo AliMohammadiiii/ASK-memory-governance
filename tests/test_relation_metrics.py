@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ksa.classifier.metrics import confusion_counts, per_label_metrics
+from ask.classifier.metrics import confusion_counts, per_label_metrics
 
 
 def test_confusion_counts_include_all_label_pairs() -> None:

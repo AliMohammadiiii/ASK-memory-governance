@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from pathlib import Path
 
-from ksa.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
+from ask.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
 
 
 def test_mgp6_v1_schema_and_coverage() -> None:

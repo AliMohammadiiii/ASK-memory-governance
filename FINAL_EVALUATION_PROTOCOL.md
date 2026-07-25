@@ -1,7 +1,12 @@
 # Final evaluation protocol (FROZEN)
 
-Freeze version: `final-1.1`. Re-frozen on 2026-07-13 after judge-provenance,
-homogeneity-gate, input-isolation, and single-answer-model hardening.
+Freeze version: `final-2.0`. Re-frozen on 2026-07-18 after the partial V11 run
+exposed excessive request concurrency and concrete numeric/preference failures.
+V12 lowers concurrency and applies the guarded controller fixes while keeping
+the model, provider, judge, slice, seed, and acceptance policies fixed. Because
+the same 180-item slice informed these changes, V12 is a post-hoc confirmatory
+engineering run; statistical claims on this reused slice are exploratory unless
+they are reproduced on a new untouched holdout.
 Machine-readable companions: `configs/release/final.yaml`, `FINAL_RUN_MATRIX.yaml`,
 `FINAL_METRIC_DEFINITIONS.md`, `FINAL_ANALYSIS_PLAN.md`.
 Hash manifest: `artifacts/manifests/freeze_hashes.json`.
@@ -45,9 +50,17 @@ of 53.3%-67.8%; this attempt cannot reproduce 77.2%. Rows therefore retain their
 exact `diagnostic_only`, `failure_replay_only`, `incomplete`, `invalid`, or
 `externally_pending` status until a homogeneous full-180 run completes.
 
-The pending required run is a **homogeneous full-180 LongMemEval-M rerun** under
-this frozen config: one configuration, one pass, all five systems, no
-failure-replay patching, no manual adjudication baked into the numbers.
+The pending required comparative run is a **homogeneous full-180 LongMemEval-M
+rerun** under this frozen config: one configuration, one pass, all five systems,
+no failure-replay patching, no manual adjudication baked into the numbers. A
+controller-only full-180 scope is also frozen for measuring the contribution
+alone; it uses the identical slice, model, provider, judge, and verifier path,
+but cannot support controller-vs-baseline claims.
+
+Extraction, relation, final-answer, and answer-contract retry requests all use
+the pinned `qwen/qwen3.5-9b` model across the audited `venice`, `deepinfra`, and
+`siliconflow` pool, with reasoning disabled. The manifest records each role and
+the verifier rejects any hidden model substitution.
 
 ---
 
@@ -59,8 +72,8 @@ failure-replay patching, no manual adjudication baked into the numbers.
 | S2 | flat-vector retrieval (b2) | yes | yes | retrieval-only baseline |
 | S3 | recency (b3) | yes | yes | recency-only baseline |
 | S4 | naive-overwrite (b4) | yes | yes | destructive-update baseline |
-| S5 | rule-KSA controller | yes | yes (controller) | contribution (rule policy) |
-| S6 | LLM-KSA controller (qwen3.5-9b) | yes | (via controller path) | contribution (LLM-backed) |
+| S5 | rule-ASK controller | yes | yes (controller) | contribution (rule policy) |
+| S6 | LLM-ASK controller (qwen3.5-9b) | yes | (via controller path) | contribution (LLM-backed) |
 | S7 | zero-shot LLM decision baseline | yes | - | decision-only ablation of the controller |
 | S8 | few-shot (6-shot) LLM decision baseline | incomplete (coverage-aware rescore complete) | - | decision-only ablation |
 | X | external adapters (Mem0, Letta/MemGPT, Graphiti, MemOS) | **MGP-6 only** | - | third-party comparison |
@@ -68,6 +81,8 @@ failure-replay patching, no manual adjudication baked into the numbers.
 Rules:
 - The homogeneous LongMemEval rerun evaluates exactly the five systems
   `controller, b4, b3, b2, b1` on the SAME 180 items in ONE configuration.
+- `--controller-only` is the frozen contribution-only scope on those same 180
+  items. It may establish controller accuracy, but not comparative claims.
 - **External adapters are MGP-6 only** and always carry a **mapping disclosure**:
   their native `NOOP` outcome has no KEEP/SUPERSEDE/ABSTAIN equivalent, so each
   external number is reported as the `NOOP->ABSTAIN` upper bound with the
@@ -75,17 +90,17 @@ Rules:
   cannot observe `replaced_old`, so supersession is inexpressible; it is never
   reported as a capability measurement (`diagnostic_only`).
 - The two decision baselines (S7, S8) isolate "LLM makes the action call with no
-  KSA scaffold" and are reported next to the LLM-KSA controller.
+  ASK scaffold" and are reported next to the LLM-ASK controller.
 
 ---
 
 ## 3. Judge policy
 
-**Primary judge:** `google/gemma-4-31b-it:free` (OpenRouter).
-**Fallback judge:** `google/gemma-4-31b-it` (non-free), fired **only on
-operational failure** of the primary (HTTP error, empty content, or timeout
-after the configured retries) — never for quality reasons and never as a silent
-A/B. Temperature 0, JSON response format.
+**Only judge:** `google/gemma-4-31b-it` (OpenRouter), temperature 0, JSON
+response format. There is **no model fallback**. HTTP errors, empty content,
+timeouts, and invalid response envelopes are retried against this same model;
+after exhaustion, the shard fails and can be resumed. This replaces V9's
+free-primary policy, whose heavy 429 rate produced a mixed-judge run.
 
 **Per-item judge logging (mandatory, one record per graded item in
 `judgments.jsonl`):**
@@ -94,22 +109,19 @@ A/B. Temperature 0, JSON response format.
 |---|---|
 | `requested_judge` | the judge the protocol asked for (primary) |
 | `judge_model_id` / `actual_judge` | the judge that actually returned the verdict |
-| `used_fallback` | boolean; true iff the fallback graded this item |
-| `fallback_reason` | why the primary failed (error class), empty if none |
+| `used_model_fallback` | must be false in this freeze; any true row fails homogeneity |
+| `used_scoring_fallback` | whether deterministic parsing/guard logic replaced a malformed judge verdict |
+| `fallback_reason` | reason for a scoring fallback, empty when none |
 | `attempts` | number of judge calls made for this item |
 | `judge_rationale` / raw output | the judge's raw verdict text, retained verbatim |
 | `prompt_hash` | sha256 of the exact judge prompt |
 
 The **judge audit** (`scripts/evaluation/run_judge_audit.sh`) reads these fields
-across all `judgments.jsonl` files and quantifies any primary/fallback confound
-(accuracy split by `used_fallback`, fallback rate per competency), so a judge
-switch can never be mistaken for a capability effect.
+across all `judgments.jsonl` files. For final-2.0 it must confirm zero model
+fallbacks and reports any scoring-fallback rows separately.
 
-Known deviation to correct: the legacy deploy scripts
-(`deploy/run_lme_v8_full_5systems.sh`) hardcode `JUDGE_MODEL=google/gemma-4-31b-it`
-(the non-free route) with no fallback. The final wrapper
-`scripts/evaluation/run_longmemeval_final.sh` overrides this to the
-primary(:free) + fallback policy above and records both in the run manifest.
+The final wrapper explicitly passes this no-model-fallback policy through the
+legacy deploy layer and records it in the run manifest.
 
 ---
 
@@ -133,11 +145,11 @@ primary(:free) + fallback policy above and records both in the run manifest.
   non-empty and `--resume` was not passed, the wrapper exits with an error and
   changes nothing.
 - `--resume` is the only way to continue an existing run dir; it resumes by shard
-  union (per-shard resume + `src/ksa/eval/merge.py` dedup by `session_id`) and
+  union (per-shard resume + `src/ask/eval/merge.py` dedup by `session_id`) and
   never rewrites already-scored items.
 - Summaries are written atomically (`.tmp` then rename) so an interrupted write
   never leaves a half-file that a later resume would trust.
-- Raw evidence archives (`../ksa_controller/`, `../mgp6_v2/`) and
+- Raw evidence archives (`../ask_controller/`, `../mgp6_v2/`) and
   `artifacts/results_ledger.json` are **read-only inputs** and are never modified.
 
 ---
@@ -161,8 +173,8 @@ primary(:free) + fallback policy above and records both in the run manifest.
 
 ## 7. Freeze declaration and hash manifest
 
-The following inputs are frozen for `final-1.1`. Actual sha256 values live in
-`artifacts/manifests/freeze_hashes.json` (computed 2026-07-13):
+The following inputs are frozen for `final-2.0`. Actual sha256 values live in
+`artifacts/manifests/freeze_hashes.json` (computed 2026-07-18):
 
 | Input | Purpose |
 |---|---|
@@ -170,6 +182,10 @@ The following inputs are frozen for `final-1.1`. Actual sha256 values live in
 | `prompts/` (combined hash) | extraction + relation prompt templates |
 | `configs/models/openrouter_qwen_gemma.yaml` | model + judge routing spec |
 | `configs/release/final.yaml` (self-hash) | this freeze's machine config |
+| `scripts/analysis/check_controller_accuracy_gate.py` | full-run controller acceptance gate (>=153/180) |
+| `src/ask/baselines/embeddings.py` | MiniLM client, including proxy-free loopback transport |
+| `src/ask/controller/computation.py` | deterministic temporal/numeric reconstruction |
+| `src/ask/pipeline/orchestrator.py` | answer contracts, including grounded SSP handling |
 
 Recompute the combined prompts hash exactly as:
 
@@ -197,3 +213,8 @@ LongMemEval claim becomes citable only after the homogeneous rerun completes,
 passes `scripts/verify_homogeneous_run.py` (one config, one judge policy, all 180
 items, all five systems, no patching), and the pre-specified analysis is applied.
 **Per-item inspection of the rerun before scoring is prohibited.**
+
+Separately, the requested controller release target is met only when
+`scripts/analysis/check_controller_accuracy_gate.py` verifies at least 153
+correct judgments out of 180 (85%). The final wrapper runs this gate
+automatically after homogeneity verification and exits non-zero below target.

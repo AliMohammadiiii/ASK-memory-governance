@@ -11,7 +11,7 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
+from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
 
 
 def _load_jsonl(path: Path) -> list[dict[str, Any]]:

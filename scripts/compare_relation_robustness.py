@@ -11,7 +11,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.classifier.metrics import per_label_metrics  # noqa: E402
+from ask.classifier.metrics import per_label_metrics  # noqa: E402
 
 
 def _read(path: Path) -> tuple[list[str], list[str]]:

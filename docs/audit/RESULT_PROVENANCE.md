@@ -26,15 +26,15 @@ The 180-item slice is deterministic seed-0 sampling of 30 examples from each of 
 
 | Value | Claim status | Evidence chain and interpretation |
 |---|---|---|
-| v7 controller 110/180 post-adjudication; 108/180 before | diagnostic_only | external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/report.json and pre_adjudication originals; contaminated by provider and extraction failures |
+| v7 controller 110/180 post-adjudication; 108/180 before | diagnostic_only | external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/report.json and pre_adjudication originals; contaminated by provider and extraction failures |
 | v7 B4 114/180; B2 80/180; B3 43/180; B1 9/180 | diagnostic_only | same v7 external tree under b4, b2, b3, and b1 report.json files |
-| v8 no-thinking replay 25/70 | failure_replay_only | external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/report.json; exactly the prior 70 v7 failures |
-| v8 top-up 71/84 with 13 regressions | incomplete | external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards/; 84 of 110 former-success items completed |
+| v8 no-thinking replay 25/70 | failure_replay_only | external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/report.json; exactly the prior 70 v7 failures |
+| v8 top-up 71/84 with 13 regressions | incomplete | external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards/; 84 of 110 former-success items completed |
 | combined observed raw 96/154 | incomplete | 71 top-up-correct plus 25 replay-correct over 84 plus 70 observed items |
 | full-180 raw bound 53.3% to 67.8% | incomplete | unresolved 26 items assigned all incorrect or all correct: 96/180 to 122/180 |
 | full-180 adjudicated bound 55.6% to 70.0% | incomplete | same bound after adding the four replay overrides: 100/180 to 126/180 |
 | single-session preference observed 8/29; maximum 9/30 | incomplete | top-up retained 8/10 completed former successes; replay repaired 0/19 failures; one former success unresolved |
-| raw replay construction 135/180 = 75.0% | failure_replay_only | external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw/report.json ← all 110 v7 successes carried forward plus 25 replay repairs |
+| raw replay construction 135/180 = 75.0% | failure_replay_only | external://Master/ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw/report.json ← all 110 v7 successes carried forward plus 25 replay repairs |
 | adjudicated replay construction 139/180 = 77.2% | failure_replay_only | sibling controller/report.json ← raw construction plus four Codex/GPT-5 overrides; contradicted by the top-up regressions and not an observed homogeneous run |
 | final-1.1 five-system result | externally_pending | configs/release/final.yaml and FINAL_EVALUATION_PROTOCOL.md; API request returned HTTP 403 before inference, so no predictions or accuracy exist |
 
@@ -42,7 +42,7 @@ The v8 external tree is bound by SHA-256 tree digest 6e10915aefb613305af70e7fda8
 
 ## Known provenance defects
 
-1. The historical adjudicated manifest names a replay directory that does not exist. The actual completed replay is external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink. The original evidence is preserved; artifacts/controller_run_comparison.json records the corrected mapping.
+1. The historical adjudicated manifest names a replay directory that does not exist. The actual completed replay is external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink. The original evidence is preserved; artifacts/controller_run_comparison.json records the corrected mapping.
 2. The 139/180 construction labels four Codex/GPT-5 decisions as human adjudication in historical records. They are machine-assisted semantic overrides and are described that way in the canonical audit.
 3. Replay contexts differ from v7 contexts, so a cross-version item outcome does not isolate the answer model or memory policy as the cause.
 4. The narrative file external://Master/MGP6_LongMemEval_Final_Report_EN.md is a secondary source. Where it conflicts with the ledger or top-up evidence, the ledger wins.

@@ -58,26 +58,26 @@ esac
 if [ -f .venv/bin/activate ]; then
   # shellcheck disable=SC1091
   source .venv/bin/activate
-  export KSA_PYTHON="$(command -v python)"
+  export ASK_PYTHON="$(command -v python)"
 elif [ -f venv/bin/activate ]; then
   # shellcheck disable=SC1091
   source venv/bin/activate
-  export KSA_PYTHON="$(command -v python)"
-elif [ -f .ksa_colab_env ]; then
+  export ASK_PYTHON="$(command -v python)"
+elif [ -f .ask_colab_env ]; then
   # shellcheck disable=SC1091
-  source .ksa_colab_env
-elif [ -n "${KSA_PYTHON:-}" ] && [ ! -x "${KSA_PYTHON}" ]; then
-  echo "[m4w13-50] ignoring non-executable KSA_PYTHON=${KSA_PYTHON}"
-  unset KSA_PYTHON
+  source .ask_colab_env
+elif [ -n "${ASK_PYTHON:-}" ] && [ ! -x "${ASK_PYTHON}" ]; then
+  echo "[m4w13-50] ignoring non-executable ASK_PYTHON=${ASK_PYTHON}"
+  unset ASK_PYTHON
 fi
 
-if [ -z "${KSA_PYTHON:-}" ]; then
+if [ -z "${ASK_PYTHON:-}" ]; then
   DEFAULT_PYTHON="$(command -v python || command -v python3 || true)"
   if [ -z "${DEFAULT_PYTHON}" ]; then
     echo "[m4w13-50] could not find python or python3" >&2
     exit 2
   fi
-  export KSA_PYTHON="${DEFAULT_PYTHON}"
+  export ASK_PYTHON="${DEFAULT_PYTHON}"
 fi
 
 EXTRA_ARGS=()
@@ -124,4 +124,4 @@ if [ "${#EXTRA_ARGS[@]}" -gt 0 ]; then
   RUNNER_ARGS+=("${EXTRA_ARGS[@]}")
 fi
 
-"${KSA_PYTHON}" scripts/run_m4w13_hf_a100_parallel.py "${RUNNER_ARGS[@]}" "$@"
+"${ASK_PYTHON}" scripts/run_m4w13_hf_a100_parallel.py "${RUNNER_ARGS[@]}" "$@"

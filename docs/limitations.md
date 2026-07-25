@@ -74,6 +74,6 @@ See `LICENSE-DATA.md`.
 The supported contribution is a layered diagnostic and a reproducible validity
 audit for typed write decisions, explicit supersession lineage, and first-class
 abstention. The release does not claim that any individual component is new,
-that KSA is the first memory-governance system, that the reference policy is
+that ASK is the first memory-governance system, that the reference policy is
 superior, that zero observed false commits implies population safety, or that it
 improves LongMemEval.

@@ -1,7 +1,7 @@
 # =====================================================================
 # FINAL RUN MATRIX  (machine-readable list of every pending run)
 # =====================================================================
-# Freeze: final-1.1 (2026-07-13). Governed by configs/release/final.yaml and
+# Freeze: final-2.0 (2026-07-18). Governed by configs/release/final.yaml and
 # FINAL_EVALUATION_PROTOCOL.md. Commands are based on entry points that ACTUALLY
 # EXIST in this repo (verified 2026-07-12).
 #
@@ -10,33 +10,95 @@
 # incomplete; a run blocked only by external service access is externally_pending.
 #
 # Two hard prerequisites for every hosted run:
-#   1. A newly authorized OPENROUTER_API_KEY. The supplied credential returned
-#      HTTP 403 before inference on 2026-07-13 and must not be reused.
+#   1. An authorized OPENROUTER_API_KEY exported only in the local shell.
 #   2. LongMemEval-M data present locally (not redistributable):
 #      data/slices/longmemeval_m_full.jsonl and data/longmemeval_m_cleaned.json .
 
-freeze_version: final-1.1
+freeze_version: final-2.0
 
 runs:
 
   # -------------------------------------------------------------------
-  # 1. The required homogeneous LongMemEval-M rerun (the paper-grade run).
+  # 0. Controller-only contribution run (same frozen path and 180 items).
   # -------------------------------------------------------------------
-  - id: lme_final_5systems_180
+  - id: lme_final_controller_v12_qwen_180
+    benchmark: longmemeval_m
+    systems: [controller]
+    scope: contribution_only
+    classification: posthoc_confirmatory
+    n_items: 180
+    slice: ${LONGMEMEVAL_STRATIFIED_SLICE}
+    range: range_0_179
+    config:
+      main_model: qwen/qwen3.5-9b
+      answer_model: qwen/qwen3.5-9b
+      judge_primary: google/gemma-4-31b-it
+      judge_fallback: null
+      embedder: sentence-transformers/all-MiniLM-L6-v2
+      embedder_loopback_proxy_bypass: true
+      seed: 0
+      shards: 8
+      extraction_concurrency: 4
+      memory_provider_pool: [venice, deepinfra, siliconflow]
+      answer_provider_pool: [venice, deepinfra, siliconflow]
+      answer_reasoning_enabled: false
+      answer_provider_fallbacks: true
+      v7_fixes: true
+      v8_fixes: true
+      v9_fixes: true
+      competency_user_candidate_k: 120
+      competency_assistant_candidate_k: 60
+      competency_session_top_k: 12
+      competency_preference_session_top_k: 18
+      enable_thinking: false
+    wrapper: scripts/evaluation/run_longmemeval_final.sh
+    command: >-
+      OPENROUTER_API_KEY=... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl
+      bash scripts/evaluation/run_longmemeval_final.sh --full --controller-only
+    resume_command: >-
+      OPENROUTER_API_KEY=... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl
+      bash scripts/evaluation/run_longmemeval_final.sh --full --controller-only --resume
+    output_dir: runs_local/lme_final_controller_v12_qwen_180/
+    acceptance:
+      controller_accuracy_threshold: 0.85
+      controller_required_correct: 153
+      gate: scripts/analysis/check_controller_accuracy_gate.py
+    status: externally_pending
+    upgrades_claims:
+      - "LongMemEval controller accuracy"
+    limitation: "Reuses the V11 tuning slice and does not support confirmatory or controller-vs-baseline comparative claims without a new holdout."
+
+  # -------------------------------------------------------------------
+  # 1. The required homogeneous LongMemEval-M rerun (post-hoc confirmation).
+  # -------------------------------------------------------------------
+  - id: lme_final_5systems_v12_qwen_180
     benchmark: longmemeval_m
     systems: [controller, b4, b3, b2, b1]
+    classification: posthoc_confirmatory
     n_items: 180
     slice: ${LONGMEMEVAL_STRATIFIED_SLICE}   # external exact seed-0 stratified input
     range: range_0_179
     config:
       main_model: qwen/qwen3.5-9b
-      judge_primary: google/gemma-4-31b-it:free
-      judge_fallback: google/gemma-4-31b-it
+      answer_model: qwen/qwen3.5-9b
+      judge_primary: google/gemma-4-31b-it
+      judge_fallback: null
       embedder: sentence-transformers/all-MiniLM-L6-v2
+      embedder_loopback_proxy_bypass: true
       seed: 0
-      shards: 10
+      shards: 8
+      extraction_concurrency: 4
+      memory_provider_pool: [venice, deepinfra, siliconflow]
+      answer_provider_pool: [venice, deepinfra, siliconflow]
+      answer_reasoning_enabled: false
+      answer_provider_fallbacks: true
       v7_fixes: true
       v8_fixes: true
+      v9_fixes: true
+      competency_user_candidate_k: 120
+      competency_assistant_candidate_k: 60
+      competency_session_top_k: 12
+      competency_preference_session_top_k: 18
       enable_thinking: false
     wrapper: scripts/evaluation/run_longmemeval_final.sh
     underlying_entry_points:
@@ -49,17 +111,20 @@ runs:
     resume_command: >-
       OPENROUTER_API_KEY=... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl
       bash scripts/evaluation/run_longmemeval_final.sh --resume
-    output_dir: runs_local/lme_final_5systems_180/
+    output_dir: runs_local/lme_final_5systems_v12_qwen_180/
+    acceptance:
+      controller_accuracy_threshold: 0.85
+      controller_required_correct: 153
+      gate: scripts/analysis/check_controller_accuracy_gate.py
     verify: >-
       python3 scripts/verify_homogeneous_run.py
-      --run-root runs_local/lme_final_5systems_180
+      --run-root runs_local/lme_final_5systems_v12_qwen_180
       --slice ${LONGMEMEVAL_STRATIFIED_SLICE}
       --sample-from 0 --sample-to 179
       --systems controller,b4,b3,b2,b1 --expected-n 180
       --expected-answer-model qwen/qwen3.5-9b
-      --expected-answer-provider venice
-      --expected-judge-primary google/gemma-4-31b-it:free
-      --allowed-judge-fallback google/gemma-4-31b-it
+      --allowed-auxiliary-model qwen/qwen3.5-9b
+      --expected-judge-primary google/gemma-4-31b-it
     status: externally_pending
     upgrades_claims:
       - "LongMemEval controller accuracy (currently no final result; v7 is diagnostic_only and 77.2% is failure_replay_only)"
@@ -80,7 +145,7 @@ runs:
     representation: false
     provenance_retrieval: false
     answer_contract: false
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh   # --ssp arm=A
     evaluator: scripts/evaluation/evaluate_single_session_preferences.py
     output_dir: runs_local/ssp_ablation/A_baseline/
@@ -96,7 +161,7 @@ runs:
     representation: false
     provenance_retrieval: false
     answer_contract: "wording only"
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/B_prompt_only/
     status: incomplete
@@ -110,7 +175,7 @@ runs:
     representation: true
     provenance_retrieval: false
     answer_contract: false
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/C_representation_only/
     status: incomplete
@@ -124,7 +189,7 @@ runs:
     representation: true
     provenance_retrieval: true
     answer_contract: false
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/D_retrieval_only/
     status: incomplete
@@ -138,7 +203,7 @@ runs:
     representation: false
     provenance_retrieval: false
     answer_contract: true
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/E_answer_contract_only/
     status: incomplete
@@ -152,7 +217,7 @@ runs:
     representation: true
     provenance_retrieval: true
     answer_contract: true
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/F_combined/
     status: incomplete
@@ -167,7 +232,7 @@ runs:
     provenance_retrieval: true
     answer_contract: true
     binding_ablated: true
-    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it:free, judge_fallback: google/gemma-4-31b-it, seed: 0}
+    config: {main_model: qwen/qwen3.5-9b, judge_primary: google/gemma-4-31b-it, judge_fallback: null, seed: 0}
     wrapper: scripts/experiments/run_ablations.sh
     output_dir: runs_local/ssp_ablation/G_combined_minus_binding/
     status: incomplete
@@ -214,10 +279,10 @@ runs:
   # -------------------------------------------------------------------
   - id: judge_audit
     benchmark: cross_cutting
-    inputs: "every judgments.jsonl under runs_local/ (and, read-only, ../ksa_controller/runs/)"
+    inputs: "every judgments.jsonl under runs_local/ (and, read-only, ../ask_controller/runs/)"
     fields_used: [judge_model_id, used_fallback, correct, competency]
     wrapper: scripts/evaluation/run_judge_audit.sh
-    command: bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_180
+    command: bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_v12_qwen_180
     output_dir: runs_local/judge_audit/
     status: externally_pending
-    note: "Runs after lme_final_5systems_180 so the frozen run's judgments exist. Quantifies accuracy split by used_fallback and per-competency fallback rate."
+    note: "Runs after lme_final_5systems_v12_qwen_180 so the frozen run's judgments exist. Confirms that the no-model-fallback policy held and reports any scoring fallback separately."

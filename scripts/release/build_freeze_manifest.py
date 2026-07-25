@@ -28,10 +28,14 @@ FROZEN_FILES = (
     "scripts/run_vllm_cascade.py",
     "scripts/run_baseline.py",
     "scripts/verify_homogeneous_run.py",
+    "scripts/analysis/check_controller_accuracy_gate.py",
     "scripts/analysis/judge_audit.py",
-    "src/ksa/eval/longmemeval.py",
-    "src/ksa/eval/merge.py",
-    "src/ksa/inference/openai_compatible.py",
+    "src/ask/baselines/embeddings.py",
+    "src/ask/controller/computation.py",
+    "src/ask/eval/longmemeval.py",
+    "src/ask/eval/merge.py",
+    "src/ask/inference/openai_compatible.py",
+    "src/ask/pipeline/orchestrator.py",
 )
 
 
@@ -46,7 +50,7 @@ def sha256_file(path: Path) -> str:
 def prompt_bundle() -> tuple[list[str], str]:
     paths = sorted(
         path
-        for root in (REPO / "prompts", REPO / "src/ksa/baselines/prompts")
+        for root in (REPO / "prompts", REPO / "src/ask/baselines/prompts")
         for path in root.rglob("*")
         if path.is_file() and "__pycache__" not in path.parts
     )
@@ -115,7 +119,7 @@ def main() -> int:
 
     payload = {
         "manifest": "freeze_hashes",
-        "freeze_version": "final-1.1",
+        "freeze_version": "final-2.0",
         "algorithm": "sha256",
         "computed_at_utc": dt.datetime.now(dt.UTC).isoformat(),
         "git_head": git_head,

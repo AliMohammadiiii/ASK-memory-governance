@@ -10,7 +10,7 @@
 #
 # Run on your Mac (NOT in the sandbox — it needs localhost:11434):
 #
-#   cd ~/Documents/Master/ksa_controller
+#   cd ~/Documents/Master/ask_controller
 #   bash scripts/finalize_m1w1.sh
 #
 # Tunables via env vars:

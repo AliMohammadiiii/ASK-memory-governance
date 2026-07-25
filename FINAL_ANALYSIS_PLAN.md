@@ -1,14 +1,15 @@
-# Final analysis plan (PRE-SPECIFIED, FROZEN)
+# Final analysis plan (FROZEN; V12 reused-slice analyses are exploratory)
 
-Freeze version: `final-1.1` (2026-07-13). This plan is fixed **before** the
-homogeneous LongMemEval-M rerun is scored. It specifies every statistical test,
-correction, effect size, and decision rule in advance so that no analysis choice
-is made after seeing the rerun's per-item outcomes.
+Freeze version: `final-2.0` (2026-07-18). The V12 implementation was selected
+after inspecting the partial V11 outcomes on this same LongMemEval-M slice.
+Therefore its tests, intervals, and acceptance readout are descriptive and
+exploratory on this slice; a new untouched holdout is required for a genuinely
+pre-specified confirmatory claim.
 
 Implementation anchors: `benchmarks/mgp6/metrics_mgp6.py` (`paired_mcnemar`,
 `BootstrapReporter`), `scripts/analysis/mcnemar_mgp6.py` (MGP-6 family, stdlib,
 read-only), `scripts/evaluation/evaluate_single_session_preferences.py` (SSP
-bootstrap), `src/ksa/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
+bootstrap), `src/ask/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
 
 ---
 
@@ -55,10 +56,10 @@ family; SSP family) to the McNemar p-values, sorted ascending, threshold
 `alpha / (m - i + 1)` at rank `i` of `m`, alpha = 0.05.
 
 ### 4a. MGP-6 family (m = 4; on the locked 180-item predictions)
-1. rule-KSA controller **vs** b4 (naive-overwrite)
-2. rule-KSA controller **vs** b2 (flat-retrieval)
-3. LLM-KSA controller (qwen3.5-9b) **vs** zero-shot decision baseline
-4. rule-KSA controller **vs** LLM-KSA controller (qwen3.5-9b)
+1. rule-ASK controller **vs** b4 (naive-overwrite)
+2. rule-ASK controller **vs** b2 (flat-retrieval)
+3. LLM-ASK controller (qwen3.5-9b) **vs** zero-shot decision baseline
+4. rule-ASK controller **vs** LLM-ASK controller (qwen3.5-9b)
    (`scripts/analysis/mcnemar_mgp6.py` computes comparisons 1-4; comparison 3 here
    is that script's "llm_controller vs zero_shot"; it also reports controller-vs-
    llm_controller.)
@@ -90,15 +91,19 @@ confirmatory result.
 
 A claim is **upgraded from diagnostic to verified** only when ALL hold:
 
-1. The homogeneous LongMemEval-M rerun `lme_final_5systems_180` completes and
+1. The homogeneous LongMemEval-M rerun `lme_final_5systems_v12_qwen_180` completes and
    passes `scripts/verify_homogeneous_run.py` (one config, one judge policy across
    all items, all 180 items present per system, all five systems, no failure-replay
    patching, no adjudication baked into the raw number).
-2. The judge audit (`run_judge_audit.sh`) shows no material primary/fallback
-   confound (fallback-graded items are logged and their accuracy split reported;
-   a large split is disclosed, not hidden).
+2. The judge audit (`run_judge_audit.sh`) confirms zero model-fallback rows and
+   separately reports any deterministic scoring-fallback rows.
 3. The pre-specified analysis (sections 1-5) is applied and reported raw first,
    adjudicated second.
+
+The controller release has an additional pre-specified acceptance target:
+`scripts/analysis/check_controller_accuracy_gate.py` must verify at least
+153/180 correct (85%). A controller-only run can satisfy this engineering target,
+but it does not replace the five-system run required for comparative claims.
 
 Specific upgrades that the rerun enables:
 - **"Controller LongMemEval accuracy = X% (CI ...)"** becomes available for the

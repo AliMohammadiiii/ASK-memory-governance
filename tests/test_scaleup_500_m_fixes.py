@@ -18,8 +18,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from ksa.baselines.base import BaselineAnswer
-from ksa.data.longmemeval import (
+from ask.baselines.base import BaselineAnswer
+from ask.data.longmemeval import (
     LongMemEvalSession,
     LongMemEvalTurn,
     canonical_competency,
@@ -27,14 +27,14 @@ from ksa.data.longmemeval import (
     iter_longmemeval_s,
     sample_slice,
 )
-from ksa.eval.longmemeval import (
+from ask.eval.longmemeval import (
     LongMemEvalGrader,
     _normalize_text,
     build_eval_report,
     looks_degenerate_answer,
 )
-from ksa.inference.llm import LLMResponse
-from ksa.pipeline.orchestrator import _answer_needs_retry, _looks_degenerate_answer
+from ask.inference.llm import LLMResponse
+from ask.pipeline.orchestrator import _answer_needs_retry, _looks_degenerate_answer
 
 # --------------------------------------------------------------------- #
 # Helpers                                                               #

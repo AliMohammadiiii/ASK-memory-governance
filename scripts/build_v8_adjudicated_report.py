@@ -19,8 +19,8 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
-from ksa.eval.longmemeval import build_eval_report
-from ksa.eval.merge import grade_from_dict
+from ask.eval.longmemeval import build_eval_report
+from ask.eval.merge import grade_from_dict
 
 OVERRIDES: dict[str, str] = {
     "07741c44": (

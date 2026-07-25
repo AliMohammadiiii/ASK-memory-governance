@@ -10,9 +10,9 @@ points at an artifact; every "Partial/Pending" names exactly what is missing.
 
 | Item | Answer | Evidence / caveat |
 |---|---|---|
-| Is the controller/model code released? | **Yes** | `src/ksa/` (controller, memory, extraction, inference, baselines, evaluation). |
-| Are baselines released? | **Yes** | no-memory, flat-vector, recency, naive-overwrite in `src/ksa/baselines/`. |
-| Is the scoring code released? | **Yes** | `mgp6_v2/metrics_mgp6.py` (MGP-6); `src/ksa/eval/longmemeval.py` (LME). |
+| Is the controller/model code released? | **Yes** | `src/ask/` (controller, memory, extraction, inference, baselines, evaluation). |
+| Are baselines released? | **Yes** | no-memory, flat-vector, recency, naive-overwrite in `src/ask/baselines/`. |
+| Is the scoring code released? | **Yes** | `mgp6_v2/metrics_mgp6.py` (MGP-6); `src/ask/eval/longmemeval.py` (LME). |
 | Are the analysis scripts released? | **Yes** | `scripts/analysis/mcnemar_mgp6.py` (this layer), `build_final_results.py`, `analyze_single_session_preferences.py`, `build_v8_adjudicated_report.py`. |
 | Is there a test suite? | **Yes** | README: 420 passing tests + 14 documented skips; scorer-regression + failure-regression tests (e.g. `test_extractor_recovery.py`, `test_cascade_escalation.py`, `test_relation_classifier.py`, `test_scoring.py`). |
 | Is there CI? | **Yes** | `.github/workflows/ci.yml`. |

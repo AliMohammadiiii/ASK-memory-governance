@@ -25,11 +25,11 @@ mgp6_v2,external/memos,180,action_accuracy_noop_abstain,0.144,,diagnostic_only,a
 mgp6_v2,annotation_human_independent,90,cohen_kappa,0.98146,"[0.93997,1.0]",final_candidate,benchmarks/mgp6/annotations/human/human_annotation_agreement_summary.json
 mgp6_v2,annotation_human_independent,90,raw_agreement,0.9889,"[0.9667,1.0]",final_candidate,benchmarks/mgp6/annotations/human/human_annotation_agreement_summary.json
 mgp6_v2,annotation_panel_4llm,90,fleiss_kappa,0.9815,,diagnostic_only,mgp6_v2/annotation/*.csv (computed 2026-07-12)
-longmemeval_m,v7/controller,180,accuracy_post_adjudication,0.6111,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/controller/report.json
-longmemeval_m,v7/b4_naive_overwrite,180,accuracy,0.6333,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b4/report.json
-longmemeval_m,v7/b2_flat_vector,180,accuracy,0.4444,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b2/report.json
-longmemeval_m,v7/b3_recency,180,accuracy,0.2389,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b3/report.json
-longmemeval_m,v7/b1_no_memory,180,accuracy,0.05,,diagnostic_only,ksa_controller/runs/..._strat30_seed0_v7/b1/report.json
+longmemeval_m,v7/controller,180,accuracy_post_adjudication,0.6111,,diagnostic_only,ask_controller/runs/..._strat30_seed0_v7/controller/report.json
+longmemeval_m,v7/b4_naive_overwrite,180,accuracy,0.6333,,diagnostic_only,ask_controller/runs/..._strat30_seed0_v7/b4/report.json
+longmemeval_m,v7/b2_flat_vector,180,accuracy,0.4444,,diagnostic_only,ask_controller/runs/..._strat30_seed0_v7/b2/report.json
+longmemeval_m,v7/b3_recency,180,accuracy,0.2389,,diagnostic_only,ask_controller/runs/..._strat30_seed0_v7/b3/report.json
+longmemeval_m,v7/b1_no_memory,180,accuracy,0.05,,diagnostic_only,ask_controller/runs/..._strat30_seed0_v7/b1/report.json
 longmemeval_m,v8_failure_replay_adjudicated,180,accuracy_adjudicated,0.7722,"[0.7111,0.8333]",failure_replay_only,"runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller/report.json"
 longmemeval_m,v8_failure_replay_adjudicated,180,accuracy_raw,0.75,,failure_replay_only,"runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller_raw/report.json"
 longmemeval_m,v8_topup110_modal,84,observed_accuracy,0.8452,,incomplete,"runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards"

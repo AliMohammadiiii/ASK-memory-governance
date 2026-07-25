@@ -5,7 +5,7 @@ Date: 2026-05-21
 ## Decision
 
 M4-W13 uses an explicit judge backend instead of the implicit M1 self-judge.
-The backend is configured through `src/ksa/eval/judge.py` and surfaced in
+The backend is configured through `src/ask/eval/judge.py` and surfaced in
 `scripts/run_baseline.py` via:
 
 ```bash
@@ -32,7 +32,7 @@ Default role assignment is recorded in `configs/m4w13-ollama.yaml`:
 | Substituted judge | `phi4:14b` |
 
 The judge asks Ollama for JSON-formatted output and uses the same LongMemEval
-binary rubric in `src/ksa/eval/longmemeval.py`.
+binary rubric in `src/ask/eval/longmemeval.py`.
 
 ## Determinism Check
 

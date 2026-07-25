@@ -25,7 +25,7 @@ set -euo pipefail
 #     --controller-retrieval-neighbor-window 0 \
 #     --no-controller-include-assistant-context
 #
-# The prompt-budget guard in the controller (src/ksa/pipeline/orchestrator.py)
+# The prompt-budget guard in the controller (src/ask/pipeline/orchestrator.py)
 # additionally trims retrieved context so the prompt can never fill num_ctx,
 # regardless of the flags above.
 

@@ -40,10 +40,10 @@ from typing import Any
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
-from ksa.baselines.base import BaselineAnswer  # noqa: E402
-from ksa.data.longmemeval import load_longmemeval_s  # noqa: E402
-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
-from ksa.eval.longmemeval import (  # noqa: E402
+from ask.baselines.base import BaselineAnswer  # noqa: E402
+from ask.data.longmemeval import load_longmemeval_s  # noqa: E402
+from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
+from ask.eval.longmemeval import (  # noqa: E402
     GradeResult,
     JudgmentCache,
     LongMemEvalGrader,

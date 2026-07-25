@@ -33,7 +33,7 @@ case "$RUN_DIR_ABS/" in
     ;;
 esac
 RUN_ID="$(basename "$RUN_DIR")"
-STAGE="$(mktemp -d "${TMPDIR:-/tmp}/ksa_pkg_${RUN_ID}.XXXXXX")"
+STAGE="$(mktemp -d "${TMPDIR:-/tmp}/ask_pkg_${RUN_ID}.XXXXXX")"
 PKG_ROOT="$STAGE/return_package_$RUN_ID"
 mkdir -p "$PKG_ROOT"
 
@@ -53,7 +53,7 @@ fi
 
 # --- 1. copy only public aggregate artifacts --------------------------- #
 mkdir -p "$PKG_ROOT/run"
-for name in manifest.json final_summary.json homogeneity_report.json judge_audit.json; do
+for name in manifest.json final_summary.json controller_accuracy_gate.json homogeneity_report.json judge_audit.json; do
   [ -f "$RUN_DIR/$name" ] && cp "$RUN_DIR/$name" "$PKG_ROOT/run/$name"
 done
 for system in controller b4 b3 b2 b1; do

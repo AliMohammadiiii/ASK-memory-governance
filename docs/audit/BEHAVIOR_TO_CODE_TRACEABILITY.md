@@ -1,12 +1,12 @@
 # Behavior → Code Traceability — LongMemEval-M Controller
 
 Maps each observed behavior class from the LongMemEval-M runs to the responsible
-code in the canonical repo (`ksa-memory-governance/src/ksa/...`) and the tests
-(`ksa-memory-governance/tests/...`) that cover it. All source line numbers were
+code in the canonical repo (`ask-memory-governance/src/ask/...`) and the tests
+(`ask-memory-governance/tests/...`) that cover it. All source line numbers were
 read for this audit. Run-evidence paths are absolute and read-only.
 
-Roots: `RUNS = external://Master/ksa_controller/runs`,
-`SRC = repo://src/ksa`,
+Roots: `RUNS = external://Master/ask_controller/runs`,
+`SRC = repo://src/ask`,
 `TESTS = repo://tests`.
 
 > **Superseding status (ledger v1.1).** References below to the 139/180 merge

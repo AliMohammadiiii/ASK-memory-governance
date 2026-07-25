@@ -22,9 +22,9 @@ Profiles:
 ## Cell 1 - Unpack And Enter The Latest Package
 
 ```python
-!rm -rf /content/ksa_gpu_run_package
-!unzip -q /content/ksa_gpu_run_package_allfixes_v4_tradeoff_20260602.zip -d /content
-%cd /content/ksa_gpu_run_package/ksa_controller
+!rm -rf /content/ask_gpu_run_package
+!unzip -q /content/ask_gpu_run_package_allfixes_v4_tradeoff_20260602.zip -d /content
+%cd /content/ask_gpu_run_package/ask_controller
 ```
 
 If you are using a differently named zip, replace only the zip filename. Keep
@@ -33,7 +33,7 @@ the `%cd` line; a shell `!cd ...` does not persist between notebook cells.
 ## Cell 2 - Install Dependencies
 
 ```python
-!KSA_SETUP_OLLAMA=0 KSA_RUN_TESTS=0 bash deploy/colab_prepare.sh
+!ASK_SETUP_OLLAMA=0 ASK_RUN_TESTS=0 bash deploy/colab_prepare.sh
 !source .venv/bin/activate && python -m pip install --upgrade pip wheel "setuptools<82"
 !source .venv/bin/activate && python -m pip install -e .
 !source .venv/bin/activate && python -m pip install -r deploy/colab_requirements.txt
@@ -125,7 +125,7 @@ On A10G, use the quality preset for controller-only:
 The old notebook cells have three avoidable failure modes:
 
 - `!cd ...` does not persist across cells.
-- `ksa_controllerdeploy/colab_requirements.txt` is a path typo.
+- `ask_controllerdeploy/colab_requirements.txt` is a path typo.
 - `--session-workers 16` with Ollama can overload one daemon and makes failure
   recovery harder than the HF runner's per-system fingerprint/resume/zip path.
 

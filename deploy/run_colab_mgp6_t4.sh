@@ -24,14 +24,14 @@ OLLAMA_TIMEOUT_S="${OLLAMA_TIMEOUT_S:-1800}"
 STRUCTURED_NUM_CTX="${STRUCTURED_NUM_CTX:-4096}"
 EXTRACTION_MAX_NEW_TOKENS="${EXTRACTION_MAX_NEW_TOKENS:-512}"
 RELATION_MAX_NEW_TOKENS="${RELATION_MAX_NEW_TOKENS:-128}"
-KSA_INSTALL_DEPS="${KSA_INSTALL_DEPS:-1}"
-KSA_SETUP_OLLAMA="${KSA_SETUP_OLLAMA:-1}"
-KSA_PULL_MODELS="${KSA_PULL_MODELS:-1}"
-KSA_RUN_TESTS="${KSA_RUN_TESTS:-smoke}" # 0 | smoke | full
+ASK_INSTALL_DEPS="${ASK_INSTALL_DEPS:-1}"
+ASK_SETUP_OLLAMA="${ASK_SETUP_OLLAMA:-1}"
+ASK_PULL_MODELS="${ASK_PULL_MODELS:-1}"
+ASK_RUN_TESTS="${ASK_RUN_TESTS:-smoke}" # 0 | smoke | full
 FAIL_ON_SANITY="${FAIL_ON_SANITY:-1}"
 REQUIRE_PROMOTION="${REQUIRE_PROMOTION:-0}"
-RESULT_ZIP="${RESULT_ZIP:-/content/ksa_mgp6_${PROFILE}_results_$(date +%Y%m%d_%H%M%S).zip}"
-LOG_DIR="${KSA_LOG_DIR:-/content/ksa_logs}"
+RESULT_ZIP="${RESULT_ZIP:-/content/ask_mgp6_${PROFILE}_results_$(date +%Y%m%d_%H%M%S).zip}"
+LOG_DIR="${ASK_LOG_DIR:-/content/ask_logs}"
 
 case "${PROFILE}" in
   t4|light)
@@ -73,8 +73,8 @@ activate_or_create_venv() {
     source venv/bin/activate
     return
   fi
-  if [ "${KSA_INSTALL_DEPS}" != "1" ]; then
-    log "No venv found and KSA_INSTALL_DEPS=${KSA_INSTALL_DEPS}; using active Python."
+  if [ "${ASK_INSTALL_DEPS}" != "1" ]; then
+    log "No venv found and ASK_INSTALL_DEPS=${ASK_INSTALL_DEPS}; using active Python."
     return
   fi
   log "Creating .venv with --system-site-packages"
@@ -90,7 +90,7 @@ activate_or_create_venv() {
 }
 
 install_deps() {
-  if [ "${KSA_INSTALL_DEPS}" != "1" ]; then
+  if [ "${ASK_INSTALL_DEPS}" != "1" ]; then
     log "Skipping dependency install."
     return
   fi
@@ -99,7 +99,7 @@ install_deps() {
 }
 
 ensure_ollama() {
-  if [ "${KSA_SETUP_OLLAMA}" != "1" ]; then
+  if [ "${ASK_SETUP_OLLAMA}" != "1" ]; then
     log "Skipping Ollama setup."
     return
   fi
@@ -125,7 +125,7 @@ ensure_ollama() {
   fi
   run curl -fsS "${OLLAMA_HOST%/}/api/tags"
 
-  if [ "${KSA_PULL_MODELS}" = "1" ]; then
+  if [ "${ASK_PULL_MODELS}" = "1" ]; then
     for model in "${REQUIRED_MODELS[@]}"; do
       run ollama pull "${model}"
     done
@@ -135,7 +135,7 @@ ensure_ollama() {
 }
 
 run_tests() {
-  case "${KSA_RUN_TESTS}" in
+  case "${ASK_RUN_TESTS}" in
     0|false|False|none)
       log "Skipping tests."
       ;;
@@ -152,7 +152,7 @@ run_tests() {
       run python -m pytest tests -q
       ;;
     *)
-      echo "KSA_RUN_TESTS must be 0, smoke, or full; got ${KSA_RUN_TESTS}" >&2
+      echo "ASK_RUN_TESTS must be 0, smoke, or full; got ${ASK_RUN_TESTS}" >&2
       exit 2
       ;;
   esac

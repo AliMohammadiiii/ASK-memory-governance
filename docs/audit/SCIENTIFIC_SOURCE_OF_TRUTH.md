@@ -20,7 +20,7 @@ All values below were recomputed from complete 180-line prediction files and can
 
 | System | Action accuracy | Macro-F1 | Required disclosure |
 |---|---:|---:|---|
-| Rule KSA controller | 0.9222 | 0.9399 | Full-180 includes train and development; held-out test-90 is 0.8889 / 0.9145 |
+| Rule ASK controller | 0.9222 | 0.9399 | Full-180 includes train and development; held-out test-90 is 0.8889 / 0.9145 |
 | Qwen 3.5 9B LLM controller | 0.8889 | 0.8913 | Premise resistance is 0.0889, versus 1.0 for the rule controller |
 | Zero-shot LLM decision baseline | 0.7000 | 0.6657 | Same author-designed diagnostic |
 | B1 no memory | 0.3667 | 0.1789 | Deterministic reference baseline |
@@ -86,10 +86,10 @@ The final-1.1 protocol specifies a homogeneous 180-item, five-system run with Qw
 |---|---|
 | MGP-6 rule controller 0.9222 / 0.9399 | artifacts/mgp6_v2/ref_5systems/controller/report.json and predictions.jsonl → metrics_mgp6.py → benchmarks/mgp6/data/mgp6_v2.jsonl |
 | MGP-6 six-shot coverage-aware bound | artifacts/results/mgp6_few6_report.json → 174 source predictions aligned to 180 gold IDs with six INVALID entries |
-| v7 controller 110/180 | external://Master/ksa_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/report.json; pre-adjudication original records 108/180 |
-| replay 25/70 | external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/report.json |
-| top-up 71/84 with 13 regressions | external://Master/ksa_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards/ |
-| historical 139/180 construction | external://Master/ksa_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller/report.json → selection-biased merge of v7 retained successes, replay failures, and four overrides |
+| v7 controller 110/180 | external://Master/ask_controller/runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/controller/report.json; pre-adjudication original records 108/180 |
+| replay 25/70 | external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen35_9b_v8_failures_nothink/controller/report.json |
+| top-up 71/84 with 13 regressions | external://Master/ask_controller/runs/lme_m last version/lme_m_modal_qwen_gemma_minilm_strat30_seed0_v8_topup110/controller/_shards/ |
+| historical 139/180 construction | external://Master/ask_controller/runs/lme_m last version/lme_m_v8_failure_replay_adjudicated/controller/report.json → selection-biased merge of v7 retained successes, replay failures, and four overrides |
 
 The historical adjudicated manifest points to a replay directory name that does not exist. The actual completed replay pointer is the one shown above and in artifacts/controller_run_comparison.json. The evidence artifact is preserved; the public audit records the corrected mapping.
 
@@ -102,4 +102,4 @@ The historical adjudicated manifest points to a replay directory name that does 
 5. `RUN_CLASSIFICATION.csv` and this document govern run status, subject to later documented validity audits.
 6. Narrative reports, thesis text, proposals, and slides are secondary and must be corrected if they disagree.
 
-No current MGP-6 v2 policy, ablation, or mapped-adapter row is eligible as a primary capability result because the shortcut gate failed. They may appear only as clearly labelled diagnostics, led by the shortcut probe and held-out null/trade-off analysis. The 77.2% LongMemEval value may be named only to explain why it was rejected; it is not a KSA performance result. Stronger claims require the independent v3 protocol and the externally pending homogeneous LongMemEval run to pass their respective gates.
+No current MGP-6 v2 policy, ablation, or mapped-adapter row is eligible as a primary capability result because the shortcut gate failed. They may appear only as clearly labelled diagnostics, led by the shortcut probe and held-out null/trade-off analysis. The 77.2% LongMemEval value may be named only to explain why it was rejected; it is not a ASK performance result. Stronger claims require the independent v3 protocol and the externally pending homogeneous LongMemEval run to pass their respective gates.

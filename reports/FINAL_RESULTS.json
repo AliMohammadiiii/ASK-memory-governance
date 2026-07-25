@@ -3,7 +3,7 @@
     "generator": "scripts/analysis/build_final_results.py",
     "ledger_created": "2026-07-13",
     "ledger_path": "artifacts/results_ledger.json",
-    "ledger_sha256": "fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e",
+    "ledger_sha256": "9069a7728b0b6096e8d10ba45b985ffcd41f790d7b1a421baac9bfce805eba83",
     "ledger_version": "1.1",
     "note": "Deterministic transcription of the ledger under the frozen claim policy. No metric is recomputed here."
   },
@@ -21,7 +21,7 @@
       "source": "data/slices/longmemeval_m_full.jsonl -> range_0_179.jsonl"
     },
     "has_final_candidate": false,
-    "headline_disclosure": "There is no final LongMemEval result. The 77.2% (139/180) value is a selection-biased failure-replay construction, not a complete v8 run. A non-empty top-up re-evaluated 84/110 carried-forward items: 71 remained correct and 13 regressed. Combining those observations with the replay yields 96/154 raw and a full-180 raw bound of 53.3%-67.8%, so this attempt cannot reproduce 77.2%. The frozen final-1.1 homogeneous run remains externally pending because the supplied OpenRouter credential returned HTTP 403 before inference.",
+    "headline_disclosure": "There is no final LongMemEval result. The 77.2% (139/180) value is a selection-biased failure-replay construction, not a complete v8 run. A non-empty top-up re-evaluated 84/110 carried-forward items: 71 remained correct and 13 regressed. Combining those observations with the replay yields 96/154 raw and a full-180 raw bound of 53.3%-67.8%, so this attempt cannot reproduce 77.2%. The frozen final-2.0/V12 post-hoc confirmatory run remains externally pending until the full rerun completes; an untouched holdout is still needed for confirmatory statistical claims.",
     "rows": [
       {
         "accuracy": 0.05,

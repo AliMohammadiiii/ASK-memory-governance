@@ -168,13 +168,13 @@ else
 fi
 ANSWER_MODEL="$(printf '%s\n' ${MODELS} | head -n 1)"
 PING_PAYLOAD="$(printf '{"model":"%s","messages":[{"role":"user","content":"reply with only: ok"}],"stream":false,"options":{"temperature":0,"num_predict":8,"num_ctx":2048}}' "${ANSWER_MODEL}")"
-PING_STATUS="$(curl -sS -o /tmp/ksa_ollama_ping.json -w '%{http_code}' http://127.0.0.1:11434/api/chat \
+PING_STATUS="$(curl -sS -o /tmp/ask_ollama_ping.json -w '%{http_code}' http://127.0.0.1:11434/api/chat \
   -H 'Content-Type: application/json' \
   -d "${PING_PAYLOAD}" || true)"
 if [ "${PING_STATUS}" != "200" ]; then
   echo "[server] ERROR: Ollama chat ping failed for ${ANSWER_MODEL} (HTTP ${PING_STATUS})."
   echo "[server] Response, if any:"
-  cat /tmp/ksa_ollama_ping.json 2>/dev/null || true
+  cat /tmp/ask_ollama_ping.json 2>/dev/null || true
   echo
   echo "[server] Last ~/ollama.log lines:"
   tail -120 "$HOME/ollama.log" || true

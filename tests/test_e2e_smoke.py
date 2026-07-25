@@ -17,8 +17,8 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
-from ksa.inference.fake import FakeLLM
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
+from ask.inference.fake import FakeLLM
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from smoke_e2e import run_smoke  # type: ignore[import-not-found]

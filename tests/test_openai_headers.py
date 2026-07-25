@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from ksa.inference.openai_headers import openai_compatible_headers
+from ask.inference.openai_headers import openai_compatible_headers
 
 
 def test_missing_api_key_error_redacts_secret_like_env_name(monkeypatch) -> None:

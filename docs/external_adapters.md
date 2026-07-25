@@ -7,7 +7,7 @@ Every comparison must document:
 - package/service version;
 - enabled memory configuration;
 - per-scenario state isolation;
-- native behavior and KSA action mapping;
+- native behavior and ASK action mapping;
 - whether snapshots are full active state or top-k retrieval;
 - retries and failures;
 - semantic limitations of the comparison.

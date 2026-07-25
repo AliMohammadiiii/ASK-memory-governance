@@ -7,9 +7,9 @@ from collections import deque
 
 import pytest
 
-from ksa.extraction import Extractor
-from ksa.inference.fake import FakeLLM
-from ksa.inference.llm import StructuredLLM
+from ask.extraction import Extractor
+from ask.inference.fake import FakeLLM
+from ask.inference.llm import StructuredLLM
 
 
 class _UnavailableLLM:

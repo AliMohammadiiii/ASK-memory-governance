@@ -16,8 +16,8 @@ from __future__ import annotations
 
 import pytest
 
-from ksa.baselines.embeddings import FakeEmbedder
-from ksa.baselines.flat_vector_store import (
+from ask.baselines.embeddings import FakeEmbedder
+from ask.baselines.flat_vector_store import (
     FlatVectorStore,
     MemoryItem,
     RetrievedItem,

@@ -63,7 +63,7 @@ There is no final LongMemEval result.
 
 ### Prohibited LongMemEval claims
 
-- The historical 139/180 = 77.2% value must not be presented as KSA accuracy, a v8 result, an improvement over v7, or evidence of superiority. It is a selection-biased failure-replay construction and is classified failure_replay_only.
+- The historical 139/180 = 77.2% value must not be presented as ASK accuracy, a v8 result, an improvement over v7, or evidence of superiority. It is a selection-biased failure-replay construction and is classified failure_replay_only.
 - The raw 135/180 = 75.0% construction is subject to the same prohibition.
 - The 11/30 single-session-preference row in that construction must not be described as unchanged v7-to-v8 performance. The top-up shows regressions and caps this attempt at 9/30.
 - The published-style confidence interval attached to 139/180 does not repair selection bias and must not be used as evidence of generalization.

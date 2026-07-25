@@ -2,7 +2,7 @@
 
 ## 2026-07-12 — Canonical source
 
-Use `KSACodes.zip` as the implementation base because it contains the complete package, scripts, and tests. The earlier generated `02_canonical_repository` was only a small evaluator and is retained conceptually, not used as the repository root.
+Use `ASKCodes.zip` as the implementation base because it contains the complete package, scripts, and tests. The earlier generated `02_canonical_repository` was only a small evaluator and is retained conceptually, not used as the repository root.
 
 ## 2026-07-12 — Data policy
 

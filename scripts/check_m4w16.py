@@ -10,7 +10,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.m4w16 import run_m4w16, validate_artifacts  # noqa: E402
+from ask.eval.m4w16 import run_m4w16, validate_artifacts  # noqa: E402
 
 
 def main() -> int:

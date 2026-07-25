@@ -52,7 +52,7 @@ Reproduction anchors: statistics in `reports/STATISTICAL_ANALYSIS.md` and
 
 | # | Claim | Tag | Evidence path(s) | Allowed venue phrasing |
 |---|---|---|---|---|
-| D1 | KSA is an interpretable, abstention-aware, typed+provenance memory-governance formulation. | verified (as a design) | `src/ksa/`; `README.md` | "We formulate memory governance as explicit KEEP/SUPERSEDE/ABSTAIN over typed, provenance-tracked memories." |
+| D1 | ASK is an interpretable, abstention-aware, typed+provenance memory-governance formulation. | verified (as a design) | `src/ask/`; `README.md` | "We formulate memory governance as explicit KEEP/SUPERSEDE/ABSTAIN over typed, provenance-tracked memories." |
 | D2 | A typed preference record + provenance-constrained retrieval + answer contract would repair most SSP failures. | hypothesized | SSP analysis §7; `SINGLE_SESSION_PREFERENCE_METHOD.md` (proposed) | "We propose (and do not yet evaluate) provenance-constrained preference grounding as the highest-leverage fix." |
 | D3 | The approach is "safe" for long-lived agents. | suggestive (scope-limited) | ledger (invalid-commit 0.0 on MGP-6) | Restrict to: "the controller never invalidly commits on the MGP-6 diagnostic (invalid-commit 0.0)." Do not generalise to end tasks. |
 | D4 | Results are fully reproducible. | supported (partial) | `reports/REPRODUCIBILITY_CHECKLIST.md`; `Makefile`; `.github/workflows/ci.yml` | "Code, MGP-6 data, per-item predictions, seeds, and CIs are released; LongMemEval data is external; several runs are pending." |

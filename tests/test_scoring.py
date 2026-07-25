@@ -18,13 +18,13 @@ import math
 
 import pytest
 
-from ksa.controller.features import (
+from ask.controller.features import (
     FeatureVector,
     explicitness,
     recency_protection,
     repetition,
 )
-from ksa.controller.scoring import load_config, s_abs, s_rev
+from ask.controller.scoring import load_config, s_abs, s_rev
 
 
 def test_features_coffee_to_tea_numerics() -> None:

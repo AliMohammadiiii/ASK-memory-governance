@@ -7,7 +7,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
 
 
 def _slice(path: Path, n: int = 3) -> Path:

@@ -7,8 +7,14 @@ import json
 import urllib.error
 from unittest.mock import MagicMock, patch
 
-from ksa.inference.llm import InferenceConfig, build_llm
-from ksa.inference.openai_compatible import OpenAICompatibleLLM, _retry_after_from_body
+import pytest
+
+from ask.inference.llm import InferenceConfig, build_llm
+from ask.inference.openai_compatible import (
+    OpenAICompatibleFatalError,
+    OpenAICompatibleLLM,
+    _retry_after_from_body,
+)
 
 
 def _response(payload: dict) -> MagicMock:
@@ -128,6 +134,37 @@ def test_openai_compatible_retries_transient_429() -> None:
     assert resp.metadata["fallback_used"] is False
 
 
+def test_openai_compatible_retries_error_envelope_returned_with_http_200() -> None:
+    """OpenRouter can tunnel a provider 504 inside an HTTP-200 JSON body."""
+    llm = OpenAICompatibleLLM(
+        model_id="busy-model",
+        base_url="http://localhost:3001/v1",
+        api_key="key",
+        retry_max_attempts=2,
+        retry_initial_delay_s=0,
+    )
+    embedded_error = {
+        "error": {
+            "code": 504,
+            "message": "Provider returned an error",
+            "metadata": {"provider_name": "upstream"},
+        }
+    }
+
+    with patch(
+        "urllib.request.urlopen",
+        side_effect=[
+            _response(embedded_error),
+            _response(_chat("ok", model="busy-model")),
+        ],
+    ) as mock:
+        resp = llm.generate("Say ok.")
+
+    assert mock.call_count == 2
+    assert resp.text == "ok"
+    assert resp.metadata["fallback_used"] is False
+
+
 def test_openai_compatible_reads_retry_after_from_openrouter_error_body() -> None:
     body = json.dumps(
         {
@@ -168,6 +205,25 @@ def test_openai_compatible_falls_back_after_transient_retries_exhausted() -> Non
     assert resp.text == "backup ok"
     assert resp.metadata["requested_model"] == "backup-model"
     assert resp.metadata["fallback_used"] is True
+
+
+def test_openai_compatible_does_not_retry_or_fallback_after_credit_402() -> None:
+    llm = OpenAICompatibleLLM(
+        model_id="primary-model",
+        fallback_model_ids=("backup-model",),
+        base_url="http://localhost:3001/v1",
+        api_key="key",
+        retry_max_attempts=5,
+        retry_initial_delay_s=0,
+    )
+
+    with patch(
+        "urllib.request.urlopen", side_effect=_http_error(402, "Insufficient credits")
+    ) as mock:
+        with pytest.raises(OpenAICompatibleFatalError, match="HTTP 402"):
+            llm.generate("Say ok.")
+
+    assert mock.call_count == 1
 
 
 def test_openai_compatible_falls_back_when_json_gate_fails() -> None:

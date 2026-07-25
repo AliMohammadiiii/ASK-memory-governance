@@ -29,7 +29,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.longmemeval import CompetencyRow, EvalReport  # noqa: E402
+from ask.eval.longmemeval import CompetencyRow, EvalReport  # noqa: E402
 
 
 def _report_from_dict(d: dict) -> EvalReport:

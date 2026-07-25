@@ -13,8 +13,8 @@ from pathlib import Path
 
 import pytest
 
-from ksa.baselines.flat_vector import build_session_corpus
-from ksa.data.longmemeval import (
+from ask.baselines.flat_vector import build_session_corpus
+from ask.data.longmemeval import (
     LONGMEMEVAL_COMPETENCIES,
     LongMemEvalSession,
     iter_longmemeval_s,

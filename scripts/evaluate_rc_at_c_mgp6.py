@@ -20,8 +20,8 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.m4w15 import compute_rc_at_c, threshold_values  # noqa: E402
-from ksa.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
+from ask.eval.m4w15 import compute_rc_at_c, threshold_values  # noqa: E402
+from ask.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
 
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:

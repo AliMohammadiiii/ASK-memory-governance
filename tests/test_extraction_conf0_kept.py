@@ -7,7 +7,7 @@ of 0.0 onto otherwise-valid items. An earlier ``extractor_postprocessor_v1``
 dropped every item whose confidence was <= 0.0, which silently emptied 390/400
 extractions on LongMemEval and sank MGP-6 T1 recall to 0.0.
 
-The shipped fix (src/ksa/extraction/extractor.py) only drops *strictly negative*
+The shipped fix (src/ask/extraction/extractor.py) only drops *strictly negative*
 confidence. This test pins that contract against a non-placeholder fact so the
 drop bug cannot regress, and it is the model-free half of the forensic
 before/after: under the old rule these items vanished; under the current rule
@@ -16,8 +16,8 @@ they survive.
 
 from __future__ import annotations
 
-from ksa.extraction.extractor import _is_non_assertion, _postprocess_output
-from ksa.extraction.schema import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.extraction.extractor import _is_non_assertion, _postprocess_output
+from ask.extraction.schema import EvidenceSpan, ExtractedItem, ExtractionOutput
 
 
 def _item(text: str, confidence: float) -> ExtractedItem:

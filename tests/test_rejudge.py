@@ -11,8 +11,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from rejudge import rejudge  # type: ignore[import-not-found]  # noqa: E402
 
-from ksa.baselines.base import BaselineAnswer
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
+from ask.baselines.base import BaselineAnswer
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, write_slice_jsonl
 
 
 def test_rejudge_writes_separate_report_from_persisted_answers(tmp_path: Path) -> None:

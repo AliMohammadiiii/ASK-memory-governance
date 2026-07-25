@@ -49,6 +49,6 @@ directories. On the definitive bytes, every `SHA256SUMS` entry and the separate
 public copy passed the repository validator, 472-test offline suite, strict
 180/0 MGP-6 validation, and two-item dry run. It also built an sdist and
 universal wheel; a fresh virtual environment installed that wheel without
-dependency resolution, imported `ksa`, and found all four required packaged
+dependency resolution, imported `ask`, and found all four required packaged
 configuration/schema resources. The nested ZIP independently passed the
 repository, bibliography, strict-schema, test, and build checks.

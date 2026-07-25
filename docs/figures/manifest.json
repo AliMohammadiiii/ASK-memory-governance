@@ -14,9 +14,9 @@
     "note": "Decision, memory state, and answer behavior are measured separately"
   },
   {
-    "figure": "figure_07_ksa_controller_architecture",
-    "png": "04_documents/figures/figure_07_ksa_controller_architecture.png",
-    "svg": "04_documents/figures/figure_07_ksa_controller_architecture.svg",
+    "figure": "figure_07_ask_controller_architecture",
+    "png": "04_documents/figures/figure_07_ask_controller_architecture.png",
+    "svg": "04_documents/figures/figure_07_ask_controller_architecture.svg",
     "source": "SYSTEM_SPECIFICATION.md",
     "note": "Conceptual architecture; not a performance result"
   }

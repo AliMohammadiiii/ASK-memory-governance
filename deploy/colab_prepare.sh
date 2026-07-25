@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 KIT_ROOT="$(cd -- "${SCRIPT_DIR}/.." >/dev/null 2>&1 && pwd)"
 cd "${KIT_ROOT}"
 
-LOG_DIR="${KSA_LOG_DIR:-/content/ksa_logs}"
+LOG_DIR="${ASK_LOG_DIR:-/content/ask_logs}"
 mkdir -p "${LOG_DIR}"
 LOG_FILE="${LOG_DIR}/colab_prepare_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "${LOG_FILE}") 2>&1
@@ -24,8 +24,8 @@ log "start colab_prepare.sh"
 log "cwd=$(pwd)"
 log "log_file=${LOG_FILE}"
 log "python=$(command -v python || true)"
-log "KSA_SETUP_OLLAMA=${KSA_SETUP_OLLAMA:-1}"
-log "KSA_RUN_TESTS=${KSA_RUN_TESTS:-1}"
+log "ASK_SETUP_OLLAMA=${ASK_SETUP_OLLAMA:-1}"
+log "ASK_RUN_TESTS=${ASK_RUN_TESTS:-1}"
 
 if python -m venv --system-site-packages .venv && [ -f .venv/bin/activate ] && [ -x .venv/bin/python ]; then
   # Colab sometimes disables ensurepip; use the venv when it works, but do
@@ -40,8 +40,8 @@ fi
 
 ACTIVE_PYTHON="$(command -v python)"
 log "active_python=${ACTIVE_PYTHON}"
-printf 'export KSA_PYTHON=%q\n' "${ACTIVE_PYTHON}" > .ksa_colab_env
-log "wrote .ksa_colab_env with KSA_PYTHON=${ACTIVE_PYTHON}"
+printf 'export ASK_PYTHON=%q\n' "${ACTIVE_PYTHON}" > .ask_colab_env
+log "wrote .ask_colab_env with ASK_PYTHON=${ACTIVE_PYTHON}"
 run python -m pip install --upgrade pip wheel "setuptools<82"
 run python -m pip install -e .
 run python -m pip install -r deploy/colab_requirements.txt
@@ -50,7 +50,7 @@ log "installing apt dependency: zstd"
 run apt-get update -qq
 run apt-get install -y zstd
 
-if [ "${KSA_SETUP_OLLAMA:-1}" = "1" ]; then
+if [ "${ASK_SETUP_OLLAMA:-1}" = "1" ]; then
   log "Ollama setup enabled"
   if ! command -v ollama >/dev/null 2>&1; then
     log "Ollama binary not found; installing"
@@ -76,18 +76,18 @@ if [ "${KSA_SETUP_OLLAMA:-1}" = "1" ]; then
   run ollama pull qwen3.5:9b
   run ollama pull phi4:14b
 else
-  log "Skipping Ollama setup because KSA_SETUP_OLLAMA=${KSA_SETUP_OLLAMA:-0}."
+  log "Skipping Ollama setup because ASK_SETUP_OLLAMA=${ASK_SETUP_OLLAMA:-0}."
 fi
 
 log "downloading cleaned LongMemEval slice"
 run python deploy/download_longmemeval_s.py \
   --out /content/longmemeval/longmemeval_s_cleaned.json
 
-if [ "${KSA_RUN_TESTS:-1}" = "1" ]; then
+if [ "${ASK_RUN_TESTS:-1}" = "1" ]; then
   log "running package test suite"
   run python -m pytest tests -q
 else
-  log "skipping tests because KSA_RUN_TESTS=${KSA_RUN_TESTS:-0}"
+  log "skipping tests because ASK_RUN_TESTS=${ASK_RUN_TESTS:-0}"
 fi
 
 log "Colab setup complete."

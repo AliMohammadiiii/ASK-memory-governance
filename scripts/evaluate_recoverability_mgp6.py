@@ -20,8 +20,8 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
-from ksa.eval.recoverability import (  # noqa: E402
+from ask.eval.mgp6_schema import load_mgp6_jsonl  # noqa: E402
+from ask.eval.recoverability import (  # noqa: E402
     aggregate_recoverability,
     recoverability_for_scenario,
 )

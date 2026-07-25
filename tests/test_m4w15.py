@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from ksa.eval.m4w15 import (
+from ask.eval.m4w15 import (
     LONGMEMEVAL_COMPETENCIES,
     MGP6_TYPES,
     assemble_threshold_report,

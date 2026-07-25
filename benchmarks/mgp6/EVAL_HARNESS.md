@@ -57,4 +57,4 @@ judge model is irrelevant to MGP-6 v2 scoring.
   text against the canonicalised value). They are dropped from the headline
   tables; raw values stay in each `report.json`.
 - The offline systems are reference implementations to exercise the harness and
-  provide a governance floor/ceiling, not the production KSA controller.
+  provide a governance floor/ceiling, not the production ASK controller.

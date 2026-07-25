@@ -5,7 +5,7 @@
 {"kind":"textbox","id":"sh/ji1k76h8","slide":1,"text":"جلسهٔ دفاع پایان‌نامهٔ کارشناسی ارشد","textPreview":"جلسهٔ دفاع پایان‌نامهٔ کارشناسی ارشد","textChars":36,"textLines":1,"bbox":[52,52,1176,36]}
 {"kind":"textbox","id":"sh/4jalgbyt","slide":1,"text":"حاکمیت حافظهٔ بلندمدت پیش از بازیابی","textPreview":"حاکمیت حافظهٔ بلندمدت پیش از بازیابی","textChars":36,"textLines":1,"bbox":[52,190,1176,210]}
 {"kind":"textbox","id":"sh/5kjm9gfe","slide":1,"text":"نگه‌داری · جایگزینی · خودداری برای حافظهٔ نوع‌دار، منشأدار و دارای تبار","textPreview":"نگه‌داری · جایگزینی · خودداری برای حافظهٔ نوع‌دار، منشأدار و دارای تبار","textChars":71,"textLines":1,"bbox":[52,466,790,110]}
-{"kind":"textbox","id":"sh/ads3ahgr","slide":1,"text":"علی محمدی · سامانهٔ حاکمیت حافظهٔ KSA · ۲۰۲۶","textPreview":"علی محمدی · سامانهٔ حاکمیت حافظهٔ KSA · ۲۰۲۶","textChars":44,"textLines":1,"bbox":[52,610,1176,48]}
+{"kind":"textbox","id":"sh/ads3ahgr","slide":1,"text":"علی محمدی · سامانهٔ حاکمیت حافظهٔ ASK · ۲۰۲۶","textPreview":"علی محمدی · سامانهٔ حاکمیت حافظهٔ ASK · ۲۰۲۶","textChars":44,"textLines":1,"bbox":[52,610,1176,48]}
 {"kind":"notes","id":"nt/lwzrb0","slide":1,"text":"با پرسش اصلی شروع کنید: سامانهٔ حافظه چگونه تصمیم بگیرد یک ادعا ثبت شود، ادعای قبلی را جایگزین کند، یا به‌دلیل ابهام از تغییر حافظه خودداری کند؟ تأکید کنید که این پایان‌نامه خودِ تصمیم نوشتن را مستقل از دقت پاسخ می‌سنجد."}
 {"kind":"slide","id":"sl/g8d14u","slide":2,"title":"انگیزه","textShapes":5}
 {"kind":"textbox","id":"sh/ze503udw","slide":2,"text":"انگیزه","textPreview":"انگیزه","textChars":6,"textLines":1,"bbox":[52,31,1176,24]}
@@ -52,10 +52,10 @@
 {"kind":"shape","id":"sh/yx0vu103","slide":5,"bbox":[854,230,374,350]}
 {"kind":"textbox","id":"sh/zy9cn61o","slide":5,"text":"نگه‌داری KEEP","textPreview":"نگه‌داری KEEP","textChars":13,"textLines":1,"bbox":[882,270,318,55]}
 {"kind":"textbox","id":"sh/kj2dwbit","slide":5,"text":"ادعای سازگار را فعال ثبت می‌کند و رکوردهای بدون تعارض را فعال نگه می‌دارد.","textPreview":"ادعای سازگار را فعال ثبت می‌کند و رکوردهای بدون تعارض را فعال نگه می‌دارد.","textChars":74,"textLines":1,"bbox":[882,350,318,176]}
-{"kind":"textbox","id":"sh/lkbupgje","slide":5,"text":"منبع: فصل‌های ۳ و ۴ پایان‌نامه؛ src/ksa/memory/operations.py","textPreview":"منبع: فصل‌های ۳ و ۴ پایان‌نامه؛ src/ksa/memory/operations.py","textChars":60,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/lkbupgje","slide":5,"text":"منبع: فصل‌های ۳ و ۴ پایان‌نامه؛ src/ask/memory/operations.py","textPreview":"منبع: فصل‌های ۳ و ۴ پایان‌نامه؛ src/ask/memory/operations.py","textChars":60,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/qp7sj1","slide":5,"text":"سه کنش را دقیق تعریف کنید. خودداری یک کنش ایمنیِ بدون تغییر حالت است، نه امتناع در پاسخ‌گویی. جایگزینی نیز رکورد قدیمی را حذف نمی‌کند."}
-{"kind":"slide","id":"sl/l9siyr","slide":6,"title":"KSA پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textShapes":15}
-{"kind":"textbox","id":"sh/el8rqhgv","slide":6,"text":"KSA پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textPreview":"KSA پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textChars":54,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"slide","id":"sl/l9siyr","slide":6,"title":"ASK پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textShapes":15}
+{"kind":"textbox","id":"sh/el8rqhgv","slide":6,"text":"ASK پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textPreview":"ASK پیشنهاد مدل را درون یک مرز حاکمیت قطعی قرار می‌دهد","textChars":54,"textLines":1,"bbox":[52,39,1176,86]}
 {"kind":"textbox","id":"sh/1ojqlwfm","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/gna9sry1","slide":6,"bbox":[52,258,160,96]}
 {"kind":"textbox","id":"sh/3q18nmxs","slide":6,"text":"بازیابی / پاسخ","textPreview":"بازیابی / پاسخ","textChars":14,"textLines":1,"bbox":[62,276,140,60]}
@@ -76,7 +76,7 @@
 {"kind":"textbox","id":"sh/por2psru","slide":6,"text":"نرمال‌سازی","textPreview":"نرمال‌سازی","textChars":10,"textLines":1,"bbox":[1047,276,140,60]}
 {"kind":"shape","id":"sh/x4n29sjy","slide":6,"bbox":[250,430,780,116]}
 {"kind":"textbox","id":"sh/cje1gn2d","slide":6,"text":"شواهد نوع‌دار + رابطه‌ها ← سیاست ثابت ← گذار اتمی و قابل‌ممیزی","textPreview":"شواهد نوع‌دار + رابطه‌ها ← سیاست ثابت ← گذار اتمی و قابل‌ممیزی","textChars":62,"textLines":1,"bbox":[282,456,716,68]}
-{"kind":"textbox","id":"sh/bi5k7i18","slide":6,"text":"منبع: src/ksa/pipeline/orchestrator.py و شکل معماری مخزن","textPreview":"منبع: src/ksa/pipeline/orchestrator.py و شکل معماری مخزن","textChars":56,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/bi5k7i18","slide":6,"text":"منبع: src/ask/pipeline/orchestrator.py و شکل معماری مخزن","textPreview":"منبع: src/ask/pipeline/orchestrator.py و شکل معماری مخزن","textChars":56,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/l9siyr","slide":6,"text":"از راست به چپ مسیر را توضیح دهید. استخراج و طبقه‌بندی رابطه می‌توانند مدل‌یار باشند، اما واژگان کنش، رفتار بدون تغییر، پیوند تبار و بازیابی رکوردهای فعال قیدهای قطعی‌اند."}
 {"kind":"slide","id":"sl/bbgsoi","slide":7,"title":"کنترل‌گر تفسیرپذیر دو امتیاز و یک قاعدهٔ ترتیبی دارد","textShapes":8}
 {"kind":"textbox","id":"sh/8buxgf2x","slide":7,"text":"کنترل‌گر تفسیرپذیر دو امتیاز و یک قاعدهٔ ترتیبی دارد","textPreview":"کنترل‌گر تفسیرپذیر دو امتیاز و یک قاعدهٔ ترتیبی دارد","textChars":52,"textLines":1,"bbox":[52,39,1176,86]}
@@ -89,7 +89,7 @@
 {"kind":"shape","id":"sh/x4jeh0ja","slide":7,"bbox":[850,378,378,166]}
 {"kind":"textbox","id":"sh/w3ad8v2p","slide":7,"text":"شاخهٔ توضیح‌پذیر","textPreview":"شاخهٔ توضیح‌پذیر","textChars":16,"textLines":1,"bbox":[878,406,322,40]}
 {"kind":"textbox","id":"sh/ypgnqtkj","slide":7,"text":"امتیازها، آستانه‌ها و شاخهٔ انتخاب‌شده ثبت می‌شوند.","textPreview":"امتیازها، آستانه‌ها و شاخهٔ انتخاب‌شده ثبت می‌شوند.","textChars":51,"textLines":1,"bbox":[878,458,322,62]}
-{"kind":"textbox","id":"sh/zqp4zy14","slide":7,"text":"منبع: src/ksa/controller/policy.py و scoring.py","textPreview":"منبع: src/ksa/controller/policy.py و scoring.py","textChars":47,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/zqp4zy14","slide":7,"text":"منبع: src/ask/controller/policy.py و scoring.py","textPreview":"منبع: src/ask/controller/policy.py و scoring.py","textChars":47,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/bbgsoi","slide":7,"text":"قاعدهٔ ترتیبی را شرح دهید: ابتدا خودداری بررسی می‌شود. جایگزینی علاوه بر امتیاز بالا به فشار تعارض نیاز دارد، بنابراین صرف امتیاز بالا رکورد قبلی را غیرفعال نمی‌کند."}
 {"kind":"slide","id":"sl/7z5g7a","slide":8,"title":"تبار، بازنگری را قابل‌برگشت و قابل‌ممیزی می‌کند","textShapes":12}
 {"kind":"textbox","id":"sh/pgjutwvm","slide":8,"text":"تبار، بازنگری را قابل‌برگشت و قابل‌ممیزی می‌کند","textPreview":"تبار، بازنگری را قابل‌برگشت و قابل‌ممیزی می‌کند","textChars":47,"textLines":1,"bbox":[52,39,1176,86]}
@@ -142,7 +142,7 @@
 {"kind":"textbox","id":"sh/076dsfa5","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/6h4vm5s3","slide":11,"bbox":[825,168,403,418]}
 {"kind":"textbox","id":"sh/ridcva9o","slide":11,"text":"+۱۸٫۹ واحد درصد","textPreview":"+۱۸٫۹ واحد درصد","textChars":15,"textLines":1,"bbox":[855,206,343,55]}
-{"kind":"textbox","id":"sh/sjmdofa9","slide":11,"text":"KSA قاعده‌ای در برابر تصمیم بدون ساختار. p اصلاح‌شدهٔ Holm برابر 1.6×10⁻⁵ است.\n\nتفاوت کنترل‌گر قاعده‌ای و مدل‌محور از نظر دقت معنادار نیست (p=0.286).","textPreview":"KSA قاعده‌ای در برابر تصمیم بدون ساختار. p اصلاح‌شدهٔ Holm برابر 1.6×10⁻⁵ است. |  | تفاوت کنترل‌گر قاعده‌ای و مدل‌محور از نظر دقت معنادار...","textChars":149,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/sjmdofa9","slide":11,"text":"ASK قاعده‌ای در برابر تصمیم بدون ساختار. p اصلاح‌شدهٔ Holm برابر 1.6×10⁻⁵ است.\n\nتفاوت کنترل‌گر قاعده‌ای و مدل‌محور از نظر دقت معنادار نیست (p=0.286).","textPreview":"ASK قاعده‌ای در برابر تصمیم بدون ساختار. p اصلاح‌شدهٔ Holm برابر 1.6×10⁻⁵ است. |  | تفاوت کنترل‌گر قاعده‌ای و مدل‌محور از نظر دقت معنادار...","textChars":149,"textLines":3,"bbox":[855,290,343,244]}
 {"kind":"textbox","id":"sh/tkvuxkru","slide":11,"text":"منبع: گزارش‌های MGP-6 و تحلیل آماری جفتی n=180","textPreview":"منبع: گزارش‌های MGP-6 و تحلیل آماری جفتی n=180","textChars":46,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"chart","id":"ch/p8rahw3q","slide":11,"name":"","chartType":"bar","bbox":[48,145,735,500]}
 {"kind":"notes","id":"nt/ymu7tw","slide":11,"text":"نتایج کامل را ارائه کنید. کنتراست استنباطی اصلی، سیاست قاعده‌ای ساخت‌یافته در برابر تصمیم بدون ساختار است. برتری آماری نسبت به کنترل‌گر مدل‌محور ادعا نکنید."}
@@ -173,7 +173,7 @@
 {"kind":"textbox","id":"sh/kf61kfe1","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/mh8jmpw7","slide":14,"bbox":[825,168,403,418]}
 {"kind":"textbox","id":"sh/7ihkfudc","slide":14,"text":"کران وابسته به نگاشت","textPreview":"کران وابسته به نگاشت","textChars":20,"textLines":1,"bbox":[855,206,343,55]}
-{"kind":"textbox","id":"sh/8jq1ozex","slide":14,"text":"این رابط‌ها معنای کنش KSA را مستقیماً ارائه نمی‌کنند. هر دو نگاشت باید گزارش شود.\n\nMemOS با امتیاز 0.144 فقط تشخیصی است، چون جایگزینی در رابط مشاهده‌پذیر نیست.","textPreview":"این رابط‌ها معنای کنش KSA را مستقیماً ارائه نمی‌کنند. هر دو نگاشت باید گزارش شود. |  | MemOS با امتیاز 0.144 فقط تشخیصی است، چون جایگزینی...","textChars":159,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/8jq1ozex","slide":14,"text":"این رابط‌ها معنای کنش ASK را مستقیماً ارائه نمی‌کنند. هر دو نگاشت باید گزارش شود.\n\nMemOS با امتیاز 0.144 فقط تشخیصی است، چون جایگزینی در رابط مشاهده‌پذیر نیست.","textPreview":"این رابط‌ها معنای کنش ASK را مستقیماً ارائه نمی‌کنند. هر دو نگاشت باید گزارش شود. |  | MemOS با امتیاز 0.144 فقط تشخیصی است، چون جایگزینی...","textChars":159,"textLines":3,"bbox":[855,290,343,244]}
 {"kind":"textbox","id":"sh/9kz2h4vi","slide":14,"text":"منبع: گزارش‌های رابط سامانه‌های بیرونی؛ دفتر نتایج v1.1","textPreview":"منبع: گزارش‌های رابط سامانه‌های بیرونی؛ دفتر نتایج v1.1","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"chart","id":"ch/h876dkny","slide":14,"name":"","chartType":"bar","bbox":[48,145,735,500]}
 {"kind":"notes","id":"nt/zlb2il","slide":14,"text":"دلیل دو نگاشت را توضیح دهید. این اعداد رفتار رابط آزمایش را نشان می‌دهند، نه توانایی کامل سامانه‌ها در کاربرد اصلی‌شان."}
@@ -233,7 +233,7 @@
 {"kind":"textbox","id":"sh/elsrat0v","slide":18,"text":"دقت تصمیم ثابت است ولی قابلیت ممیزی به‌شدت افت می‌کند.","textPreview":"دقت تصمیم ثابت است ولی قابلیت ممیزی به‌شدت افت می‌کند.","textChars":54,"textLines":1,"bbox":[654,237,574,126]}
 {"kind":"textbox","id":"sh/fm183yhg","slide":18,"text":"تصمیم بدون ساختار","textPreview":"تصمیم بدون ساختار","textChars":17,"textLines":1,"bbox":[52,408,574,48]}
 {"kind":"textbox","id":"sh/0je9o7i5","slide":18,"text":"در ۶۰٫۶٪ موارد طلاییِ خودداری، ثبت نامعتبر انجام می‌دهد.","textPreview":"در ۶۰٫۶٪ موارد طلاییِ خودداری، ثبت نامعتبر انجام می‌دهد.","textChars":56,"textLines":1,"bbox":[52,470,574,126]}
-{"kind":"textbox","id":"sh/lknahszq","slide":18,"text":"KSA قاعده‌ای","textPreview":"KSA قاعده‌ای","textChars":12,"textLines":1,"bbox":[654,408,574,48]}
+{"kind":"textbox","id":"sh/lknahszq","slide":18,"text":"ASK قاعده‌ای","textPreview":"ASK قاعده‌ای","textChars":12,"textLines":1,"bbox":[654,408,574,48]}
 {"kind":"textbox","id":"sh/pkfmd83m","slide":18,"text":"بازیابی محافظه‌کارانهٔ جایگزینی: هر خطای باقی‌مانده خودداری می‌کند.","textPreview":"بازیابی محافظه‌کارانهٔ جایگزینی: هر خطای باقی‌مانده خودداری می‌کند.","textChars":67,"textLines":1,"bbox":[654,470,574,126]}
 {"kind":"textbox","id":"sh/oj6lk3m1","slide":18,"text":"منبع: گزارش طبقه‌بندی خطا و تحلیل SSP","textPreview":"منبع: گزارش طبقه‌بندی خطا و تحلیل SSP","textChars":37,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/fdogq8","slide":18,"text":"هر خطا را به لایهٔ مشخص وصل کنید. این کار از امتیاز کل مفیدتر است، چون مشخص می‌کند کدام مداخله واقعاً لازم است."}
@@ -342,7 +342,7 @@
 {"kind":"textbox","id":"sh/ulcfe9s7","slide":28,"text":"پشتیبان — نزدیک‌ترین کارها ادعای نوآوری را محدود می‌کنند","textPreview":"پشتیبان — نزدیک‌ترین کارها ادعای نوآوری را محدود می‌کنند","textChars":56,"textLines":1,"bbox":[52,39,1176,86]}
 {"kind":"textbox","id":"sh/h8nepoby","slide":28,"text":"28","textPreview":"28","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"textbox","id":"sh/7ilwjetw","slide":28,"text":"منبع: تحلیل نزدیک‌ترین همسایه‌ها و ماتریس نوآوری","textPreview":"منبع: تحلیل نزدیک‌ترین همسایه‌ها و ماتریس نوآوری","textChars":48,"textLines":1,"bbox":[80,667,1070,23]}
-{"kind":"table","id":"tb/p0vm9wjm","slide":28,"name":"","rows":6,"cols":3,"preview":"تفاوت با ترکیب ارزیابی‌شدهٔ KSA | ایدهٔ مشترک | کار نزدیک","bbox":[52,162,1176,470]}
+{"kind":"table","id":"tb/p0vm9wjm","slide":28,"name":"","rows":6,"cols":3,"preview":"تفاوت با ترکیب ارزیابی‌شدهٔ ASK | ایدهٔ مشترک | کار نزدیک","bbox":[52,162,1176,470]}
 {"kind":"notes","id":"nt/2fy0bm","slide":28,"text":"ادعای مجاز را بیان کنید: عملیاتی‌سازی و ارزیابی کنترل‌شدهٔ چندلایهٔ این ترکیب. ابداع کنش، خودداری، تبار، منشأ یا واژهٔ حاکمیت حافظه ادعا نمی‌شود."}
 {"kind":"slide","id":"sl/0b2051","slide":29,"title":"پشتیبان — خطرهای اخلاقی و استقرار","textShapes":11}
 {"kind":"textbox","id":"sh/4725sv2x","slide":29,"text":"پشتیبان — خطرهای اخلاقی و استقرار","textPreview":"پشتیبان — خطرهای اخلاقی و استقرار","textChars":33,"textLines":1,"bbox":[52,39,1176,86]}
@@ -385,5 +385,5 @@
 {"kind":"textbox","id":"sh/fad8bypg","slide":31,"text":"داده / شِما","textPreview":"داده / شِما","textChars":11,"textLines":1,"bbox":[1047,276,140,60]}
 {"kind":"shape","id":"sh/bexojy58","slide":31,"bbox":[250,430,780,116]}
 {"kind":"textbox","id":"sh/ado7qton","slide":31,"text":"آزمون‌ها قیدها، بازیابی پس از خطا، ادغام، منشأ و امتیازدهی قطعی MGP را پوشش می‌دهند","textPreview":"آزمون‌ها قیدها، بازیابی پس از خطا، ادغام، منشأ و امتیازدهی قطعی MGP را پوشش می‌دهند","textChars":83,"textLines":1,"bbox":[282,456,716,68]}
-{"kind":"textbox","id":"sh/xgf6l8ne","slide":31,"text":"منبع: src/ksa؛ scripts/evaluation؛ tests؛ ردیابی رفتار به کد","textPreview":"منبع: src/ksa؛ scripts/evaluation؛ tests؛ ردیابی رفتار به کد","textChars":60,"textLines":1,"bbox":[80,667,1070,23]}
-{"kind":"notes","id":"nt/013158","slide":31,"text":"در پاسخ به پرسش پیاده‌سازی، ساختار مخزن را نشان دهید: src/ksa کتابخانه؛ scripts اجرا و راستی‌آزمایی؛ benchmarks آزمون MGP-6؛ artifacts و reports دفتر نتایج و ممیزی."}
+{"kind":"textbox","id":"sh/xgf6l8ne","slide":31,"text":"منبع: src/ask؛ scripts/evaluation؛ tests؛ ردیابی رفتار به کد","textPreview":"منبع: src/ask؛ scripts/evaluation؛ tests؛ ردیابی رفتار به کد","textChars":60,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/013158","slide":31,"text":"در پاسخ به پرسش پیاده‌سازی، ساختار مخزن را نشان دهید: src/ask کتابخانه؛ scripts اجرا و راستی‌آزمایی؛ benchmarks آزمون MGP-6؛ artifacts و reports دفتر نتایج و ممیزی."}

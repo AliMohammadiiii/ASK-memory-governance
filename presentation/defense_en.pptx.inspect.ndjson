@@ -5,7 +5,7 @@
 {"kind":"textbox","id":"sh/0zyhs3y5","slide":1,"text":"MASTER’S THESIS DEFENSE","textPreview":"MASTER’S THESIS DEFENSE","textChars":23,"textLines":1,"bbox":[52,52,1176,36]}
 {"kind":"textbox","id":"sh/zypgzyhk","slide":1,"text":"Governing Long-Term Memory Before Retrieval","textPreview":"Governing Long-Term Memory Before Retrieval","textChars":43,"textLines":1,"bbox":[52,190,1176,210]}
 {"kind":"textbox","id":"sh/yxgfqtgz","slide":1,"text":"KEEP · SUPERSEDE · ABSTAIN over typed, provenance-tracked, lineage-preserving memory","textPreview":"KEEP · SUPERSEDE · ABSTAIN over typed, provenance-tracked, lineage-preserving memory","textChars":84,"textLines":1,"bbox":[52,466,790,110]}
-{"kind":"textbox","id":"sh/dw7yxoze","slide":1,"text":"Ali Mohammadi · KSA Memory Governance · 2026","textPreview":"Ali Mohammadi · KSA Memory Governance · 2026","textChars":44,"textLines":1,"bbox":[52,610,1176,48]}
+{"kind":"textbox","id":"sh/dw7yxoze","slide":1,"text":"Ali Mohammadi · ASK Memory Governance · 2026","textPreview":"Ali Mohammadi · ASK Memory Governance · 2026","textChars":44,"textLines":1,"bbox":[52,610,1176,48]}
 {"kind":"notes","id":"nt/2yyuru","slide":1,"text":"Open with the research question: can a memory system decide whether a new claim should be committed, replace an older claim, or be refused? Preview that the thesis evaluates this decision directly, not only downstream answer accuracy."}
 {"kind":"slide","id":"sl/l4hmib","slide":2,"title":"MOTIVATION","textShapes":5}
 {"kind":"textbox","id":"sh/el4nydcz","slide":2,"text":"MOTIVATION","textPreview":"MOTIVATION","textChars":10,"textLines":1,"bbox":[52,31,1176,24]}
@@ -52,10 +52,10 @@
 {"kind":"shape","id":"sh/3ih4n2l8","slide":5,"bbox":[854,230,374,350]}
 {"kind":"textbox","id":"sh/ih8nex4n","slide":5,"text":"ABSTAIN","textPreview":"ABSTAIN","textChars":7,"textLines":1,"bbox":[882,270,318,55]}
 {"kind":"textbox","id":"sh/5kzmpc3e","slide":5,"text":"Do not mutate memory. Record the conflict or ambiguity for review.","textPreview":"Do not mutate memory. Record the conflict or ambiguity for review.","textChars":66,"textLines":1,"bbox":[882,350,318,176]}
-{"kind":"textbox","id":"sh/4jq5g7mt","slide":5,"text":"Source: thesis §3–4; src/ksa/memory/operations.py","textPreview":"Source: thesis §3–4; src/ksa/memory/operations.py","textChars":49,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/4jq5g7mt","slide":5,"text":"Source: thesis §3–4; src/ask/memory/operations.py","textPreview":"Source: thesis §3–4; src/ask/memory/operations.py","textChars":49,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/p1ds3v","slide":5,"text":"Define each action precisely. Stress that ABSTAIN is a no-mutation safety action, not an answer-level refusal, and that SUPERSEDE preserves the old record for audit."}
-{"kind":"slide","id":"sl/cqrejr","slide":6,"title":"KSA places model proposals inside a deterministic governance boundary","textShapes":15}
-{"kind":"textbox","id":"sh/50vmtczi","slide":6,"text":"KSA places model proposals inside a deterministic governance boundary","textPreview":"KSA places model proposals inside a deterministic governance boundary","textChars":69,"textLines":1,"bbox":[52,39,1176,86]}
+{"kind":"slide","id":"sl/cqrejr","slide":6,"title":"ASK places model proposals inside a deterministic governance boundary","textShapes":15}
+{"kind":"textbox","id":"sh/50vmtczi","slide":6,"text":"ASK places model proposals inside a deterministic governance boundary","textPreview":"ASK places model proposals inside a deterministic governance boundary","textChars":69,"textLines":1,"bbox":[52,39,1176,86]}
 {"kind":"textbox","id":"sh/idknyxgr","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/3et4r2hc","slide":6,"bbox":[52,258,160,96]}
 {"kind":"textbox","id":"sh/wb25wnyl","slide":6,"text":"Normalize","textPreview":"Normalize","textChars":9,"textLines":1,"bbox":[62,276,140,60]}
@@ -76,7 +76,7 @@
 {"kind":"textbox","id":"sh/kbqd8ze9","slide":6,"text":"Retrieve / answer","textPreview":"Retrieve / answer","textChars":17,"textLines":1,"bbox":[1047,276,140,60]}
 {"kind":"shape","id":"sh/4vyx43m5","slide":6,"bbox":[250,430,780,116]}
 {"kind":"textbox","id":"sh/5g7yx8nq","slide":6,"text":"Typed evidence + relation signals → fixed policy → atomic, auditable memory transition","textPreview":"Typed evidence + relation signals → fixed policy → atomic, auditable memory transition","textChars":86,"textLines":1,"bbox":[282,456,716,68]}
-{"kind":"textbox","id":"sh/itwf2t4z","slide":6,"text":"Source: src/ksa/pipeline/orchestrator.py; docs/figures/figure_07_ksa_controller_architecture.svg","textPreview":"Source: src/ksa/pipeline/orchestrator.py; docs/figures/figure_07_ksa_controller_architecture.svg","textChars":96,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/itwf2t4z","slide":6,"text":"Source: src/ask/pipeline/orchestrator.py; docs/figures/figure_07_ask_controller_architecture.svg","textPreview":"Source: src/ask/pipeline/orchestrator.py; docs/figures/figure_07_ask_controller_architecture.svg","textChars":96,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/cqrejr","slide":6,"text":"Walk left to right. Extraction and relation classification can be model-assisted; the action vocabulary, no-mutation behavior, lineage update, and active-only retrieval remain deterministic invariants."}
 {"kind":"slide","id":"sl/aez1p0","slide":7,"title":"The interpretable controller uses two scores and an ordered decision rule","textShapes":8}
 {"kind":"textbox","id":"sh/7qpof2h8","slide":7,"text":"The interpretable controller uses two scores and an ordered decision rule","textPreview":"The interpretable controller uses two scores and an ordered decision rule","textChars":73,"textLines":1,"bbox":[52,39,1176,86]}
@@ -89,7 +89,7 @@
 {"kind":"shape","id":"sh/ih0neh0v","slide":7,"bbox":[850,378,378,166]}
 {"kind":"textbox","id":"sh/3i9onmhg","slide":7,"text":"Explainable branch","textPreview":"Explainable branch","textChars":18,"textLines":1,"bbox":[878,406,322,40]}
 {"kind":"textbox","id":"sh/bul4b6t8","slide":7,"text":"Every action logs scores, active thresholds, and the branch taken.","textPreview":"Every action logs scores, active thresholds, and the branch taken.","textChars":66,"textLines":1,"bbox":[878,458,322,62]}
-{"kind":"textbox","id":"sh/atc321sn","slide":7,"text":"Source: src/ksa/controller/policy.py and scoring.py","textPreview":"Source: src/ksa/controller/policy.py and scoring.py","textChars":51,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/atc321sn","slide":7,"text":"Source: src/ask/controller/policy.py and scoring.py","textPreview":"Source: src/ask/controller/policy.py and scoring.py","textChars":51,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/aez1p0","slide":7,"text":"Explain the ordered rule. Abstention is evaluated first. Supersession also requires contradiction pressure, so a high score alone cannot deactivate a prior record."}
 {"kind":"slide","id":"sl/99ai8z","slide":8,"title":"Lineage makes revision reversible and auditable","textShapes":12}
 {"kind":"textbox","id":"sh/cbq1cnap","slide":8,"text":"Lineage makes revision reversible and auditable","textPreview":"Lineage makes revision reversible and auditable","textChars":47,"textLines":1,"bbox":[52,39,1176,86]}
@@ -107,7 +107,7 @@
 {"kind":"textbox","id":"sh/t8nutcfu","slide":8,"text":"t₂","textPreview":"t₂","textChars":2,"textLines":1,"bbox":[826,255,300,38]}
 {"kind":"textbox","id":"sh/i1cbuxw7","slide":8,"text":"Linked transition","textPreview":"Linked transition","textChars":17,"textLines":1,"bbox":[826,376,300,45]}
 {"kind":"textbox","id":"sh/j25sn2xs","slide":8,"text":"New record is active; old record is inactive but remains queryable.","textPreview":"New record is active; old record is inactive but remains queryable.","textChars":67,"textLines":1,"bbox":[826,438,300,120]}
-{"kind":"textbox","id":"sh/k3etw7ex","slide":8,"text":"Source: src/ksa/memory/operations.py; lineage-integrity metric","textPreview":"Source: src/ksa/memory/operations.py; lineage-integrity metric","textChars":62,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"textbox","id":"sh/k3etw7ex","slide":8,"text":"Source: src/ask/memory/operations.py; lineage-integrity metric","textPreview":"Source: src/ask/memory/operations.py; lineage-integrity metric","textChars":62,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"notes","id":"nt/99ai8z","slide":8,"text":"Describe lineage as a state invariant, not a decorative log. Normal retrieval excludes inactive records, while explicitly historical questions can still inspect the chain."}
 {"kind":"slide","id":"sl/38rdxr","slide":9,"title":"MGP-6 isolates the write decision across six conflict types","textShapes":10}
 {"kind":"textbox","id":"sh/ja50ni1o","slide":9,"text":"MGP-6 isolates the write decision across six conflict types","textPreview":"MGP-6 isolates the write decision across six conflict types","textChars":59,"textLines":1,"bbox":[52,39,1176,86]}
@@ -142,7 +142,7 @@
 {"kind":"textbox","id":"sh/4vql8b6p","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/upo32h8n","slide":11,"bbox":[825,168,403,418]}
 {"kind":"textbox","id":"sh/vqhkvmp8","slide":11,"text":"+18.9 points","textPreview":"+18.9 points","textChars":12,"textLines":1,"bbox":[855,206,343,55]}
-{"kind":"textbox","id":"sh/wrql4r6t","slide":11,"text":"Rule KSA vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵.\n\nThe rule and LLM controllers are not significantly different on action accuracy (p = 0.286).","textPreview":"Rule KSA vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵. |  | The rule and LLM controllers are not significantly...","textChars":175,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/wrql4r6t","slide":11,"text":"Rule ASK vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵.\n\nThe rule and LLM controllers are not significantly different on action accuracy (p = 0.286).","textPreview":"Rule ASK vs unstructured zero-shot decision baseline. Holm-adjusted p = 1.6×10⁻⁵. |  | The rule and LLM controllers are not significantly...","textChars":175,"textLines":3,"bbox":[855,290,343,244]}
 {"kind":"textbox","id":"sh/hsz2xw7y","slide":11,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated; Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated; Source: reports/STATISTICAL_ANALYSIS.md; paired n=180","textChars":110,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"chart","id":"ch/h47yh8ba","slide":11,"name":"","chartType":"bar","bbox":[48,145,735,500]}
 {"kind":"notes","id":"nt/9xttwc","slide":11,"text":"Lead with the completed full-corpus results. The safest inferential contrast is structured rule governance versus the unstructured zero-shot decision baseline. Do not claim the rule policy beats the LLM policy statistically."}
@@ -173,7 +173,7 @@
 {"kind":"textbox","id":"sh/sn6p8ji5","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"shape","id":"sh/ih472903","slide":14,"bbox":[825,168,403,418]}
 {"kind":"textbox","id":"sh/jidobeho","slide":14,"text":"Mapping-specific bounds","textPreview":"Mapping-specific bounds","textChars":23,"textLines":1,"bbox":[855,206,343,55]}
-{"kind":"textbox","id":"sh/kj6p4ji9","slide":14,"text":"These adapters do not expose KSA’s native action semantics. Report both mappings; do not read the favourable mapping as a capability estimate.\n\nMemOS 0.144 is diagnostic_only because supersession is unobservable.","textPreview":"These adapters do not expose KSA’s native action semantics. Report both mappings; do not read the favourable mapping as a capability esti...","textChars":212,"textLines":3,"bbox":[855,290,343,244]}
+{"kind":"textbox","id":"sh/kj6p4ji9","slide":14,"text":"These adapters do not expose ASK’s native action semantics. Report both mappings; do not read the favourable mapping as a capability estimate.\n\nMemOS 0.144 is diagnostic_only because supersession is unobservable.","textPreview":"These adapters do not expose ASK’s native action semantics. Report both mappings; do not read the favourable mapping as a capability esti...","textChars":212,"textLines":3,"bbox":[855,290,343,244]}
 {"kind":"textbox","id":"sh/5kf6d4zu","slide":14,"text":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textPreview":"Source: MGP-6 v2 canonical reports; n=180 unless stated","textChars":55,"textLines":1,"bbox":[80,667,1070,23]}
 {"kind":"chart","id":"ch/1of69kn6","slide":14,"name":"","chartType":"bar","bbox":[48,145,735,500]}
 {"kind":"notes","id":"nt/m3sk2a","slide":14,"text":"Explain why adapter comparisons need two mappings. These values describe behavior under the harness interface, not the systems’ full native capabilities."}
@@ -227,7 +227,7 @@
 {"kind":"slide","id":"sl/nn30tg","slide":18,"title":"The error analysis separates safety failures from coverage failures","textShapes":11}
 {"kind":"textbox","id":"sh/o7uhgnyl","slide":18,"text":"The error analysis separates safety failures from coverage failures","textPreview":"The error analysis separates safety failures from coverage failures","textChars":67,"textLines":1,"bbox":[52,39,1176,86]}
 {"kind":"textbox","id":"sh/n6lgnih0","slide":18,"text":"18","textPreview":"18","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
-{"kind":"textbox","id":"sh/m5czedgf","slide":18,"text":"Rule KSA","textPreview":"Rule KSA","textChars":8,"textLines":1,"bbox":[52,175,574,48]}
+{"kind":"textbox","id":"sh/m5czedgf","slide":18,"text":"Rule ASK","textPreview":"Rule ASK","textChars":8,"textLines":1,"bbox":[52,175,574,48]}
 {"kind":"textbox","id":"sh/143yl8zu","slide":18,"text":"Conservative supersession recall: every residual error abstains instead of overwriting.","textPreview":"Conservative supersession recall: every residual error abstains instead of overwriting.","textChars":87,"textLines":1,"bbox":[52,237,574,126]}
 {"kind":"textbox","id":"sh/03uhc3y9","slide":18,"text":"Zero-shot decision","textPreview":"Zero-shot decision","textChars":18,"textLines":1,"bbox":[654,175,574,48]}
 {"kind":"textbox","id":"sh/zilgjyho","slide":18,"text":"Invalid commits on 60.6% of gold-ABSTAIN items.","textPreview":"Invalid commits on 60.6% of gold-ABSTAIN items.","textChars":47,"textLines":1,"bbox":[654,237,574,126]}
@@ -342,7 +342,7 @@
 {"kind":"textbox","id":"sh/adwja98n","slide":28,"text":"Backup — nearest conceptual neighbors narrow the novelty claim","textPreview":"Backup — nearest conceptual neighbors narrow the novelty claim","textChars":62,"textLines":1,"bbox":[52,39,1176,86]}
 {"kind":"textbox","id":"sh/xg72l47e","slide":28,"text":"28","textPreview":"28","textChars":2,"textLines":1,"bbox":[1174,672,54,20]}
 {"kind":"textbox","id":"sh/jipknepk","slide":28,"text":"Source: reports/NEAREST_NEIGHBOR_ANALYSIS.md; NOVELTY_MATRIX.csv","textPreview":"Source: reports/NEAREST_NEIGHBOR_ANALYSIS.md; NOVELTY_MATRIX.csv","textChars":64,"textLines":1,"bbox":[80,667,1070,23]}
-{"kind":"table","id":"tb/dwvqtgzu","slide":28,"name":"","rows":6,"cols":3,"preview":"Neighbor | Shared idea | Difference from evaluated KSA combination","bbox":[52,162,1176,470]}
+{"kind":"table","id":"tb/dwvqtgzu","slide":28,"name":"","rows":6,"cols":3,"preview":"Neighbor | Shared idea | Difference from evaluated ASK combination","bbox":[52,162,1176,470]}
 {"kind":"notes","id":"nt/65hiu5","slide":28,"text":"State the allowed novelty claim: operationalization and controlled layered evaluation of this combination. Do not claim invention of update actions, abstention, lineage, provenance, or memory governance."}
 {"kind":"slide","id":"sl/hgqtpu","slide":29,"title":"Backup — ethical and deployment risks","textShapes":11}
 {"kind":"textbox","id":"sh/rm5snqto","slide":29,"text":"Backup — ethical and deployment risks","textPreview":"Backup — ethical and deployment risks","textChars":37,"textLines":1,"bbox":[52,39,1176,86]}
@@ -385,5 +385,5 @@
 {"kind":"textbox","id":"sh/c3utszy5","slide":31,"text":"evaluation","textPreview":"evaluation","textChars":10,"textLines":1,"bbox":[1047,276,140,60]}
 {"kind":"shape","id":"sh/w72do36h","slide":31,"bbox":[250,430,780,116]}
 {"kind":"textbox","id":"sh/x8vux8n2","slide":31,"text":"Tests cover invariants, recovery, merge, provenance verification, and deterministic MGP scoring","textPreview":"Tests cover invariants, recovery, merge, provenance verification, and deterministic MGP scoring","textChars":95,"textLines":1,"bbox":[282,456,716,68]}
-{"kind":"textbox","id":"sh/a5kvmtob","slide":31,"text":"Source: src/ksa; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textPreview":"Source: src/ksa; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textChars":87,"textLines":1,"bbox":[80,667,1070,23]}
-{"kind":"notes","id":"nt/jurw63","slide":31,"text":"Point to the repository structure if implementation questions arise: src/ksa contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs."}
+{"kind":"textbox","id":"sh/a5kvmtob","slide":31,"text":"Source: src/ask; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textPreview":"Source: src/ask; scripts/evaluation; tests; docs/audit/BEHAVIOR_TO_CODE_TRACEABILITY.md","textChars":87,"textLines":1,"bbox":[80,667,1070,23]}
+{"kind":"notes","id":"nt/jurw63","slide":31,"text":"Point to the repository structure if implementation questions arise: src/ask contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs."}

@@ -8,7 +8,7 @@ The project is positioned at the intersection of retrieval-augmented language mo
 
 ### Retrieval and memory architecture
 
-Retrieval-augmented generation and large external memories show how models can access information beyond a single prompt [@lewis2020retrieval; @borgeaud2022improving]. Generative-agent and memory-manager systems demonstrate the usefulness of persistent episodic or hierarchical memory [@park2023generative; @packer2023memgpt; @zhong2023memorybank]. The KSA contribution is complementary: it asks whether the retained or retrieved information is authorized and whether mutation semantics are verifiable.
+Retrieval-augmented generation and large external memories show how models can access information beyond a single prompt [@lewis2020retrieval; @borgeaud2022improving]. Generative-agent and memory-manager systems demonstrate the usefulness of persistent episodic or hierarchical memory [@park2023generative; @packer2023memgpt; @zhong2023memorybank]. The ASK contribution is complementary: it asks whether the retained or retrieved information is authorized and whether mutation semantics are verifiable.
 
 ### Long-context limitations
 
@@ -16,7 +16,7 @@ Longer context does not imply uniform use of evidence [@liu2024lost]. This suppo
 
 ### Selective prediction
 
-Selective classification provides the conceptual basis for abstention, risk–coverage curves, and thresholded automation [@geifman2017selective]. KSA extends the motivation to memory side effects, where the cost of a wrong autonomous action may exceed the cost of clarification.
+Selective classification provides the conceptual basis for abstention, risk–coverage curves, and thresholded automation [@geifman2017selective]. ASK extends the motivation to memory side effects, where the cost of a wrong autonomous action may exceed the cost of clarification.
 
 ### Documentation and holistic evaluation
 
@@ -28,7 +28,7 @@ Training-data extraction and membership inference illustrate why persistent info
 
 ### Responsible deployment
 
-Risk taxonomies and governance frameworks emphasize documentation, monitoring, and contextual controls [@bender2021dangers; @weidinger2022taxonomy; @nist2023airmf]. KSA operationalizes a subset of these concerns through least-privilege mutation, target resolution, policy versioning, auditability, and abstention.
+Risk taxonomies and governance frameworks emphasize documentation, monitoring, and contextual controls [@bender2021dangers; @weidinger2022taxonomy; @nist2023airmf]. ASK operationalizes a subset of these concerns through least-privilege mutation, target resolution, policy versioning, auditability, and abstention.
 
 ## Novelty boundary
 

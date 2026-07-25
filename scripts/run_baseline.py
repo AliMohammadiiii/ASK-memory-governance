@@ -50,7 +50,7 @@ from m4w13_validation import action_log_required, validate_run_dir
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.baselines import (  # noqa: E402
+from ask.baselines import (  # noqa: E402
     FlatVectorBaseline,
     FlatVectorStore,
     NaiveOverwriteBaseline,
@@ -62,11 +62,11 @@ from ksa.baselines import (  # noqa: E402
     build_session_corpus,
     build_session_corpus_for_recency,
 )
-from ksa.classifier import RelationClassifier  # noqa: E402
-from ksa.controller.active import ScorecardConfig, load_scorecard_config  # noqa: E402
-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
-from ksa.eval.longmemeval import (  # noqa: E402
+from ask.classifier import RelationClassifier  # noqa: E402
+from ask.controller.active import ScorecardConfig, load_scorecard_config  # noqa: E402
+from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
+from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
+from ask.eval.longmemeval import (  # noqa: E402
     GradeResult,
     JudgmentCache,
     LongMemEvalGrader,
@@ -74,14 +74,14 @@ from ksa.eval.longmemeval import (  # noqa: E402
     evaluate_baseline,
     looks_degenerate_answer,
 )
-from ksa.extraction import Extractor  # noqa: E402
-from ksa.inference.llm import (  # noqa: E402
+from ask.extraction import Extractor  # noqa: E402
+from ask.inference.llm import (  # noqa: E402
     LLM,
     HuggingFaceLLM,
     InferenceConfig,
     StructuredLLM,  # noqa: E402
 )
-from ksa.pipeline import ControllerOrchestrator  # noqa: E402
+from ask.pipeline import ControllerOrchestrator  # noqa: E402
 
 _BASELINES_M1_W2 = {"no_memory"}
 _BASELINES_M1_W3 = {"flat_vector"}
@@ -198,15 +198,19 @@ def _load_resume_state(
 def _build_llm(args: argparse.Namespace) -> LLM:
     """Resolve the answerer LLM from CLI flags."""
     if args.fake:
-        from ksa.inference.fake import FakeLLM
+        from ask.inference.fake import FakeLLM
 
         return FakeLLM()
     if args.openai_compatible:
-        return _openai_llm(args, require_json=False)
+        return _openai_llm(
+            args,
+            require_json=False,
+            extra_body_json=getattr(args, "answer_openai_extra_body_json", None),
+        )
     if args.hf:
         return HuggingFaceLLM(_hf_config(args, args.hf_model))
     if args.ollama:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
 
         return OllamaLLM(
             model_id=args.ollama_model,
@@ -215,7 +219,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
             think=args.ollama_think,
             num_ctx=args.ollama_num_ctx,
         )
-    from ksa.inference.llm import build_llm, load_inference_config
+    from ask.inference.llm import build_llm, load_inference_config
 
     cfg = load_inference_config(args.config) if args.config else None
     return build_llm(cfg)
@@ -234,9 +238,9 @@ def _openai_llm(
     fallback_model_ids: tuple[str, ...] | None = None,
     use_openmodel_primary: bool = True,
 ) -> LLM:
-    from ksa.inference.fallback import FallbackLLM
-    from ksa.inference.openai_compatible import OpenAICompatibleLLM
-    from ksa.inference.openmodel_messages import OpenModelMessagesLLM
+    from ask.inference.fallback import FallbackLLM
+    from ask.inference.openai_compatible import OpenAICompatibleLLM
+    from ask.inference.openmodel_messages import OpenModelMessagesLLM
 
     response_format = {"type": "json_object"} if require_json else None
     # Provider-specific chat template kwargs. vLLM uses enable_thinking; NVIDIA
@@ -329,7 +333,7 @@ def _hf_config(args: argparse.Namespace, model_id: str) -> InferenceConfig:
 def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
     """Resolve the judge LLM from explicit M4 backend flags."""
     if args.fake_judge:
-        from ksa.inference.fake import FakeLLM
+        from ask.inference.fake import FakeLLM
 
         return FakeLLM()
 
@@ -430,7 +434,7 @@ def _sha256(path: Path) -> str | None:
 def _build_embedder(args: argparse.Namespace):
     """Build the retrieval embedder shared by memory baselines."""
     if args.fake_embedder:
-        from ksa.baselines.embeddings import FakeEmbedder
+        from ask.baselines.embeddings import FakeEmbedder
 
         return FakeEmbedder(embedding_dim=64)
     if args.embedder_backend == "ollama":
@@ -460,7 +464,7 @@ def _build_embedder(args: argparse.Namespace):
             min_interval_s=args.embedder_openai_min_interval_s,
             max_batch_chars=args.embedder_openai_max_batch_chars,
         )
-    embedder_kwargs: dict[str, object] = {"device": args.embedder_device}
+    embedder_kwargs: dict[str, Any] = {"device": args.embedder_device}
     if getattr(args, "embedder_st_model", None):
         embedder_kwargs["model_id"] = args.embedder_st_model
     if getattr(args, "embedder_trust_remote_code", False):
@@ -475,7 +479,7 @@ def _build_embedder(args: argparse.Namespace):
 def _build_extractor(args: argparse.Namespace, out_dir: Path):
     """Build the shared M2 extractor."""
     if args.ollama:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
 
         extractor_model = args.extractor_ollama_model or args.ollama_model
         extractor_inner = OllamaLLM(
@@ -511,7 +515,7 @@ def _build_extractor_and_classifier(args: argparse.Namespace, out_dir: Path):
     """Build the shared M3-W10 extractor + relation classifier."""
     extractor = _build_extractor(args, out_dir)
     if args.ollama:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
 
         classifier_model = args.classifier_ollama_model or args.ollama_model
         classifier_inner = OllamaLLM(
@@ -567,7 +571,7 @@ def _build_classifier_escalation(args: argparse.Namespace, out_dir: Path):
     elif args.hf and esc_hf:
         inner = HuggingFaceLLM(_hf_config(args, esc_hf))
     elif args.ollama and esc_hf:
-        from ksa.inference.ollama import OllamaLLM
+        from ask.inference.ollama import OllamaLLM
 
         inner = OllamaLLM(
             model_id=esc_hf,
@@ -652,7 +656,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             NaiveOverwriteBaseline if args.baseline == "naive_overwrite" else ControllerOrchestrator
         )
         scorecard_config = _load_scorecard_config(args)
-        kwargs: dict[str, object] = dict(
+        kwargs: dict[str, Any] = dict(
             llm=llm,
             extractor=extractor,
             classifier=classifier,
@@ -661,6 +665,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             config=scorecard_config,
             k=args.k,
             seed=args.seed,
+            max_new_tokens=getattr(args, "answer_max_new_tokens", 768),
             action_log_path=action_log_path,
             append_action_log=getattr(args, "append_action_log", False),
             extraction_cache_path=args.out / "extraction_cache.jsonl",
@@ -697,6 +702,22 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             history_retrieval_k=args.controller_history_retrieval_k,
             answer_context_session_cap=args.answer_context_session_cap,
             prefilter_chunk_turns=args.prefilter_chunk_turns,
+            competency_aware_retrieval=getattr(
+                args, "controller_competency_aware_retrieval", False
+            ),
+            competency_user_candidate_k=getattr(
+                args, "controller_competency_user_candidate_k", 120
+            ),
+            competency_assistant_candidate_k=(
+                getattr(args, "controller_competency_assistant_candidate_k", 60)
+            ),
+            competency_session_top_k=getattr(args, "controller_competency_session_top_k", 12),
+            competency_preference_session_top_k=getattr(
+                args, "controller_competency_preference_session_top_k", 18
+            ),
+            prefer_unambiguous_computation=(
+                getattr(args, "controller_prefer_unambiguous_computation", False)
+            ),
         )
         # §4 fix 3: optional stronger model for the escalate-on-Unknown retry.
         if getattr(args, "answer_escalation_openai_model", None):
@@ -705,6 +726,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
                 model_id=args.answer_escalation_openai_model,
                 base_url=(args.answer_escalation_openai_base_url or args.openai_base_url),
                 require_json=False,
+                extra_body_json=getattr(args, "answer_openai_extra_body_json", None),
             )
         if klass is ControllerOrchestrator:
             # Cascade: only the controller supports the escalation classifier.
@@ -1138,6 +1160,38 @@ def main() -> int:
         "validated runs are unchanged.",
     )
     p.add_argument(
+        "--controller-competency-aware-retrieval",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Use role-specific turn retrieval followed by bounded chronological "
+        "session expansion for LongMemEval competency labels. This is "
+        "anti-leakage safe and remains off by default.",
+    )
+    p.add_argument("--controller-competency-user-candidate-k", type=int, default=120)
+    p.add_argument("--controller-competency-assistant-candidate-k", type=int, default=60)
+    p.add_argument(
+        "--controller-competency-session-top-k",
+        type=int,
+        default=12,
+        help="Number of top conversations expanded chronologically for "
+        "assistant/user single-session competencies after turn-level search.",
+    )
+    p.add_argument(
+        "--controller-competency-preference-session-top-k",
+        type=int,
+        default=18,
+        help="Preference-specific conversation expansion limit. It is wider "
+        "because generic recommendation questions can hide the stable user "
+        "preference below casual topical mentions.",
+    )
+    p.add_argument(
+        "--controller-prefer-unambiguous-computation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="On a verified LLM disagreement, prefer reconstructed ordinal and "
+        "action-matched date-difference results only.",
+    )
+    p.add_argument(
         "--controller-retrieval-query-augmentation",
         action=argparse.BooleanOptionalAction,
         default=False,
@@ -1452,6 +1506,13 @@ def main() -> int:
         "context window (avoids vLLM HTTP 400).",
     )
     p.add_argument(
+        "--answer-max-new-tokens",
+        type=int,
+        default=768,
+        help="Completion budget for the final answerer (separate from structured "
+        "extraction and relation budgets).",
+    )
+    p.add_argument(
         "--openai-api-key",
         default=None,
         help="Bearer token for the OpenAI-compatible endpoint. Prefer "
@@ -1494,6 +1555,12 @@ def main() -> int:
         help="JSON object merged into OpenAI-compatible request "
         "bodies. Use this for provider-specific routing such "
         "as OpenRouter's provider.order/provider.only.",
+    )
+    p.add_argument(
+        "--answer-openai-extra-body-json",
+        default=None,
+        help="Optional JSON body used only by the answerer and answer retry; "
+        "overrides --openai-extra-body-json for those calls.",
     )
     p.add_argument(
         "--openmodel-primary",

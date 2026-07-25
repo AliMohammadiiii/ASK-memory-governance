@@ -14,7 +14,7 @@ from build_failed_slice_from_run import (
     build_failed_slice,  # type: ignore[import-not-found]  # noqa: E402
 )
 
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, iter_longmemeval_s
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, iter_longmemeval_s
 
 
 def _session(session_id: str) -> LongMemEvalSession:

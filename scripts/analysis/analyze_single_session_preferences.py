@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Analyze the single-session-preference (SSP) failure taxonomy.
 
-Loads the machine-readable taxonomy produced for the KSA controller's
+Loads the machine-readable taxonomy produced for the ASK controller's
 LongMemEval-M single-session-preference failures and prints:
 
   * headline numbers (verified from the run judgments),

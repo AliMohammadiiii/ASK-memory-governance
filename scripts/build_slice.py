@@ -39,7 +39,7 @@ from pathlib import Path
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.data.longmemeval import (  # noqa: E402  (sys.path insert above)
+from ask.data.longmemeval import (  # noqa: E402  (sys.path insert above)
     iter_longmemeval_s,
     sample_slice,
     write_slice_jsonl,

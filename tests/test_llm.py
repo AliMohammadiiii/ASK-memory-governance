@@ -11,8 +11,8 @@ from __future__ import annotations
 
 import pytest
 
-from ksa.inference.fake import FakeLLM
-from ksa.inference.llm import (
+from ask.inference.fake import FakeLLM
+from ask.inference.llm import (
     LLM,
     InferenceConfig,
     LLMResponse,
@@ -161,7 +161,7 @@ def test_build_llm_raises_on_missing_fallback() -> None:
 
 def test_huggingface_llm_construction_does_not_load_weights() -> None:
     """Construction is cheap; weights are loaded only on first generate()."""
-    from ksa.inference.llm import HuggingFaceLLM
+    from ask.inference.llm import HuggingFaceLLM
 
     cfg = InferenceConfig(model_id="meta-llama/Meta-Llama-3-8B-Instruct", max_seq_len=6144)
     h = HuggingFaceLLM(cfg)

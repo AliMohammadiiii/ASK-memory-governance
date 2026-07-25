@@ -15,7 +15,7 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.eval.m4w15 import (  # noqa: E402
+from ask.eval.m4w15 import (  # noqa: E402
     assemble_threshold_report,
     build_main_table,
     load_threshold_reports,

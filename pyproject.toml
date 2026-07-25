@@ -3,7 +3,7 @@ requires = ["setuptools>=68,<82", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ksa-memory-governance"
+name = "ask-memory-governance"
 version = "0.2.0"
 description = "Interpretable KEEP/SUPERSEDE/ABSTAIN governance for long-lived LLM memory"
 readme = "README.md"
@@ -43,7 +43,7 @@ pai = ["pydantic-ai>=0.0.13"]
 where = ["src"]
 
 [tool.setuptools.package-data]
-ksa = [
+ask = [
   "py.typed",
   "baselines/prompts/*.j2",
   "resources/configs/*.yaml",
@@ -72,7 +72,7 @@ ignore = ["E501", "B905", "B904", "B027", "B007", "E741", "E702", "UP031", "UP04
 
 [tool.mypy]
 python_version = "3.11"
-packages = ["ksa"]
+packages = ["ask"]
 warn_unused_configs = true
 check_untyped_defs = true
 ignore_missing_imports = true

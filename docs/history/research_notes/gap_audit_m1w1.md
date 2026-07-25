@@ -7,16 +7,16 @@
 
 | Area | Path | Status |
 |------|------|--------|
-| LinkML schema source | `schema/ksa_memory.yaml` | ✓ Complete; matches proposal §I.5.1 / §I.5.5 |
+| LinkML schema source | `schema/ask_memory.yaml` | ✓ Complete; matches proposal §I.5.1 / §I.5.5 |
 | Generated SQL DDL | `schema/generated/schema.sql` | ✓ Tables: `memory_items`, `evidence_spans`, `memory_evidence`, `memory_relations`, `action_log` |
-| Generated JSON Schema | `schema/generated/ksa_memory.schema.json` | ✓ Top class = `ActionLogEntry` |
-| Memory dataclasses | `src/ksa/memory/models.py` | ✓ `MemoryItem`, `EvidenceSpan`, `MemoryRelation`, `ActionLogEntry` + enums |
-| DB connect/init | `src/ksa/memory/db.py` | ✓ `connect()`, `init_schema()`, FK pragma on |
-| Memory ops | `src/ksa/memory/operations.py` | ✓ `insert_active`, `supersede` (atomic), `retrieve_active` |
-| Controller features | `src/ksa/controller/features.py` | ✓ Signatures stable; `explicitness`, `repetition`, `recency_protection`, `FeatureVector` |
-| Controller scoring | `src/ksa/controller/scoring.py` | ✓ `s_rev`, `s_abs`, `load_config`, named YAML config |
-| Controller actions | `src/ksa/controller/actions.py` | ✓ `decide()` with Abstain-wins-tie precedence |
-| Action-log writer | `src/ksa/audit/action_log.py` | ✓ JSONL + jsonschema validation |
+| Generated JSON Schema | `schema/generated/ask_memory.schema.json` | ✓ Top class = `ActionLogEntry` |
+| Memory dataclasses | `src/ask/memory/models.py` | ✓ `MemoryItem`, `EvidenceSpan`, `MemoryRelation`, `ActionLogEntry` + enums |
+| DB connect/init | `src/ask/memory/db.py` | ✓ `connect()`, `init_schema()`, FK pragma on |
+| Memory ops | `src/ask/memory/operations.py` | ✓ `insert_active`, `supersede` (atomic), `retrieve_active` |
+| Controller features | `src/ask/controller/features.py` | ✓ Signatures stable; `explicitness`, `repetition`, `recency_protection`, `FeatureVector` |
+| Controller scoring | `src/ask/controller/scoring.py` | ✓ `s_rev`, `s_abs`, `load_config`, named YAML config |
+| Controller actions | `src/ask/controller/actions.py` | ✓ `decide()` with Abstain-wins-tie precedence |
+| Action-log writer | `src/ask/audit/action_log.py` | ✓ JSONL + jsonschema validation |
 | Default config | `configs/default.yaml` | ✓ Per-type weights + thresholds (proposal §I.5.5 Table) |
 | Tests (skeleton) | `tests/` | ✓ 20 passing on Python 3.10 + Python 3.11+: `test_schema`, `test_supersede`, `test_scoring`, `test_actions`, `test_action_log` |
 
@@ -64,8 +64,8 @@ Both present; columns match. `memory_relations.relation` is restricted to `{supp
 
 These are the items in M1-W1 §3 that did **not** exist in the Month-0 skeleton and will be added this week:
 
-1. **No data ingestion.** Nothing in `src/ksa/data/` yet. → §3.1 of the M1-W1 task adds `src/ksa/data/longmemeval.py`, the slicer, and the `data/slices/longmemeval_s_50_seed0.jsonl` artifact.
-2. **No inference harness.** Nothing in `src/ksa/inference/` yet. → §3.2 adds `src/ksa/inference/llm.py` (Protocol, `HuggingFaceLLM`, `StructuredLLM`).
+1. **No data ingestion.** Nothing in `src/ask/data/` yet. → §3.1 of the M1-W1 task adds `src/ask/data/longmemeval.py`, the slicer, and the `data/slices/longmemeval_s_50_seed0.jsonl` artifact.
+2. **No inference harness.** Nothing in `src/ask/inference/` yet. → §3.2 adds `src/ask/inference/llm.py` (Protocol, `HuggingFaceLLM`, `StructuredLLM`).
 3. **No end-to-end smoke.** No script that actually pulls a session through model → DB. → §3.3 adds `scripts/smoke_e2e.py` and `tests/test_e2e_smoke.py`.
 4. **No environment lock.** `pyproject.toml` declares loose `>=` constraints; no `requirements-lock.txt`. → §3.4 freezes versions and tags `v0.1.0-m1w1`.
 5. **No competency-to-action mapping** for LongMemEval-S. → §3.1 produces `NOTES/longmemeval_mapping.md`.

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from ksa.controller.active import load_scorecard_config
+from ask.controller.active import load_scorecard_config
 
 
 def test_active_controller_config_is_loadable() -> None:

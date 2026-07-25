@@ -24,16 +24,16 @@ from pathlib import Path
 
 import pytest
 
-from ksa.baselines.embeddings import FakeEmbedder
-from ksa.baselines.recency_pruning import (
+from ask.baselines.embeddings import FakeEmbedder
+from ask.baselines.recency_pruning import (
     DEFAULT_SYSTEM_PROMPT,
     RecencyPruningBaseline,
     build_session_corpus_for_recency,
     trivial_extract,
 )
-from ksa.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
-from ksa.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
-from ksa.inference.llm import LLMResponse
+from ask.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
+from ask.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.inference.llm import LLMResponse
 
 # faiss is required for the underlying retrieval store; skip if missing.
 faiss = pytest.importorskip("faiss")
@@ -338,7 +338,7 @@ def test_render_prompt_includes_required_slots() -> None:
 
 
 def test_default_system_prompt_matches_no_memory_for_cross_baseline_consistency() -> None:
-    from ksa.baselines.no_memory import DEFAULT_SYSTEM_PROMPT as NO_MEM_SYS
+    from ask.baselines.no_memory import DEFAULT_SYSTEM_PROMPT as NO_MEM_SYS
 
     assert DEFAULT_SYSTEM_PROMPT == NO_MEM_SYS
 

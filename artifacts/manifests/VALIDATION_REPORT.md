@@ -11,7 +11,7 @@ Generated: 2026-07-15
 - MGP-6 validity audit: regenerated; conflict type alone reaches **1.000 held-out accuracy**, so v2 policy scores are diagnostic.
 - Repository structure and secret scan: passed.
 - Extracted public repository: sdist and universal wheel build passed.
-- Fresh isolated environment: wheel installed with `--no-deps`, `ksa` imported,
+- Fresh isolated environment: wheel installed with `--no-deps`, `ask` imported,
   and all four packaged configuration/schema resources were present.
 - Release archive: internal checksums, outer checksum, nested ZIP integrity, and
   extracted-copy smoke gates passed.

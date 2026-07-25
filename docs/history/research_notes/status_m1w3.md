@@ -68,21 +68,21 @@ baseline + the first `action_log` exercises that close Gate G1).
 - `NOTES/status_m1w3.md` — this file.
 
 **Code**
-- `src/ksa/baselines/embeddings.py` — `Embedder` Protocol,
+- `src/ask/baselines/embeddings.py` — `Embedder` Protocol,
   `TurnEmbedder` (lazy MiniLM, module-level singleton cache),
   `FakeEmbedder` (sha256 hashing, hermetic test stub),
   `role_tag(role, content)` (single source of truth for the
   embeddable string).
-- `src/ksa/baselines/flat_vector_store.py` — `MemoryItem`,
+- `src/ask/baselines/flat_vector_store.py` — `MemoryItem`,
   `RetrievedItem`, `FlatVectorStore` (FAISS `IndexFlatIP` + parallel
   metadata list; narrow API: `add`, `search`, `clear`).
-- `src/ksa/baselines/flat_vector.py` — `FlatVectorBaseline`
+- `src/ask/baselines/flat_vector.py` — `FlatVectorBaseline`
   (per-question reset, current-session exclusion, retrieval
   telemetry on `extras`); `build_session_corpus(sessions)`.
-- `src/ksa/baselines/prompts/flat_vector.j2` — Jinja2 template with
+- `src/ask/baselines/prompts/flat_vector.j2` — Jinja2 template with
   `{system_prompt}`, `{retrieved_memory}` (role + score + session_id
   + turn_idx + text), `{turns}`, `{question}` slots.
-- `src/ksa/baselines/__init__.py` — exports the new public surface.
+- `src/ask/baselines/__init__.py` — exports the new public surface.
 
 **Scripts**
 - `scripts/run_baseline.py` — `--baseline flat_vector` wired with
@@ -126,7 +126,7 @@ baseline + the first `action_log` exercises that close Gate G1).
 | 7 (W3.6) | Distractor retrieval blows up context | **Open** — k=5 × ~30 tokens/turn = ~250 retrieved tokens; well under `num_ctx=2048`. Will check in `m1w3_sanity.md` §1 after the host run. |
 | 8 (W3.6) | Per-question reset choice is wrong | **Closed for this baseline** — documented in `m1w3_design.md` §2.5; cumulative variant is a different baseline (deferred to PhD). |
 | New | Synthetic slice masks the substantive comparison | **Open / documented** — `m1w3_design.md` §1, `m1w3_sanity.md` §0. Resolves the moment a real LME-S file replaces the placeholder corpus. |
-| New (host) | Apple-Silicon libomp segfault during MiniLM smoke pytest | **Closed** — `m1w3_design.md` §5b. MiniLM smoke tests now gated by `KSA_RUN_MINILM_SMOKE=1` (default off); `finalize_m1w3.sh` exports `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `TOKENIZERS_PARALLELISM=false` to defuse libomp double-load. The hermetic `FakeEmbedder` tests still cover the contract. |
+| New (host) | Apple-Silicon libomp segfault during MiniLM smoke pytest | **Closed** — `m1w3_design.md` §5b. MiniLM smoke tests now gated by `ASK_RUN_MINILM_SMOKE=1` (default off); `finalize_m1w3.sh` exports `OMP_NUM_THREADS=1`, `MKL_NUM_THREADS=1`, `TOKENIZERS_PARALLELISM=false` to defuse libomp double-load. The hermetic `FakeEmbedder` tests still cover the contract. |
 
 ## Out-of-scope items confirmed unstarted
 
@@ -166,7 +166,7 @@ sessions, all numbers in one table.
 ## How to finalize on the host
 
 ```bash
-cd ksa_controller
+cd ask_controller
 
 # 1) Pytest sanity. The MiniLM smoke tests run if .venv has
 #    sentence-transformers; otherwise they skip.

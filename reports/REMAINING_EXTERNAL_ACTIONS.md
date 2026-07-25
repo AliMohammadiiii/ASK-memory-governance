@@ -1,19 +1,19 @@
 # Remaining external actions
 
-## 1. Rotate the exposed credential
+## 1. Keep the credential out of artifacts
 
-Revoke/rotate the OpenRouter key that was pasted into the task. It returned HTTP
-403 before inference and is not stored in the repository or release. Use a new,
-authorized key only as a shell environment variable.
+Use a valid OpenRouter key only as a shell environment variable. It is not stored
+in the repository, run manifest, or release artifacts. Rotate any credential that
+has been exposed outside its intended environment.
 
-## 2. Run the homogeneous LongMemEval final-1.1 experiment
+## 2. Run the homogeneous LongMemEval final experiment
 
-Prerequisites: a newly authorized key, the upstream LongMemEval-M full JSONL,
+Prerequisites: a valid key, the upstream LongMemEval-M full JSONL,
 and the cleaned source JSON. Neither dataset is redistributed.
 
 ```bash
-cd ksa-memory-governance
-export OPENROUTER_API_KEY='<newly-rotated-key>'
+cd ask-memory-governance
+export OPENROUTER_API_KEY='<your-valid-key>'
 export LONGMEMEVAL_DATA='/absolute/path/to/longmemeval_m_full.jsonl'
 export LONGMEMEVAL_SRC='/absolute/path/to/longmemeval_m_cleaned.json'
 
@@ -27,31 +27,35 @@ bash scripts/evaluation/run_longmemeval_final.sh --full
 bash scripts/evaluation/run_longmemeval_final.sh --resume
 ```
 
-The wrapper pins Qwen 3.5 9B for answer/extraction/relation roles, Gemma 4 31B
-free as primary judge with the paid route only as operational fallback, MiniLM
-on CPU, seed 0, and all five systems on the same 180-item slice.
+The wrapper pins Qwen 3.5 9B for extraction, relation, final answers, and
+answer-contract retries. The paid Gemma 4 31B route is the only judge; model
+fallback is disabled. MiniLM runs on CPU with seed 0.
+After a full run, the wrapper also checks the controller's pre-specified 85%
+target (at least 153/180) and exits non-zero if it is not reached.
 
 After completion:
 
 ```bash
 python3 scripts/verify_homogeneous_run.py \
-  --run-root runs_local/lme_final_5systems_180 \
+  --run-root runs_local/lme_final_5systems_v12_qwen_180 \
   --slice runs_local/_inputs/longmemeval_m_strat30_seed0.jsonl \
   --sample-from 0 --sample-to 179 \
   --systems controller,b4,b3,b2,b1 --expected-n 180 \
   --expected-answer-model qwen/qwen3.5-9b \
-  --expected-answer-provider venice \
-  --expected-judge-primary google/gemma-4-31b-it:free \
-  --allowed-judge-fallback google/gemma-4-31b-it
+  --allowed-auxiliary-model qwen/qwen3.5-9b \
+  --expected-judge-primary google/gemma-4-31b-it
 
-bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_180
+bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_v12_qwen_180
 bash scripts/release/package_run_for_review.sh \
-  runs_local/lme_final_5systems_180 \
-  runs_local/lme_final_5systems_180_review.tar.gz
+  runs_local/lme_final_5systems_v12_qwen_180 \
+  runs_local/lme_final_5systems_v12_qwen_180_review.tar.gz
 ```
 
-Do not add a LongMemEval headline until the verifier passes and the result ledger
-is rebuilt under the frozen claim gate.
+Share `final_summary.json`, `controller_accuracy_gate.json`, and `manifest.json`
+when diagnosing a controller-only final run.
+
+Do not add a LongMemEval headline until the homogeneity verifier and controller
+accuracy gate pass and the result ledger is rebuilt under the frozen claim gate.
 
 ## 3. Thesis and defense administration
 

@@ -86,6 +86,59 @@ def test_shard_runner_retries_called_process_errors(monkeypatch, tmp_path: Path)
     assert attempts == 2
 
 
+def test_shard_runner_suppresses_restart_after_credit_402(monkeypatch, tmp_path: Path) -> None:
+    attempts = 0
+    log_path = tmp_path / "shard.log"
+
+    def fake_run(cmd, path):
+        nonlocal attempts
+        attempts += 1
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write("OpenAICompatibleFatalError: HTTP 402: Insufficient credits\n")
+        raise subprocess.CalledProcessError(1, cmd)
+
+    monkeypatch.setattr(cascade, "_run_logged", fake_run)
+
+    try:
+        _run_logged_with_retries(
+            ["python", "worker.py"],
+            log_path,
+            retries=3,
+            backoff_s=0,
+        )
+    except subprocess.CalledProcessError:
+        pass
+    else:  # pragma: no cover - defensive assertion branch
+        raise AssertionError("credit failure must propagate")
+
+    assert attempts == 1
+    assert "suppressing shard restart" in log_path.read_text(encoding="utf-8")
+
+
+def test_shard_runner_ignores_402_marker_from_an_older_attempt(monkeypatch, tmp_path: Path) -> None:
+    attempts = 0
+    log_path = tmp_path / "shard.log"
+    log_path.write_text("old run: HTTP 402 Insufficient credits\n", encoding="utf-8")
+
+    def fake_run(cmd, _path):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise subprocess.CalledProcessError(1, cmd)
+
+    monkeypatch.setattr(cascade, "_run_logged", fake_run)
+    monkeypatch.setattr(cascade.time, "sleep", lambda _seconds: None)
+
+    _run_logged_with_retries(
+        ["python", "worker.py"],
+        log_path,
+        retries=1,
+        backoff_s=0,
+    )
+
+    assert attempts == 2
+
+
 def test_base_cmd_forwards_judge_body_and_fallback_models() -> None:
     judge_body = {
         "provider": {
@@ -101,6 +154,11 @@ def test_base_cmd_forwards_judge_body_and_fallback_models() -> None:
         n_bootstrap=10,
         big_base_url="https://openrouter.ai/api/v1",
         big_model="qwen/qwen3.5-9b",
+        answer_model="test/answer-model",
+        answer_max_new_tokens=1536,
+        answer_openai_extra_body_json=json.dumps(
+            {"reasoning": {"effort": "medium", "exclude": True}}
+        ),
         openai_api_key_env="OPENROUTER_API_KEY",
         openai_timeout_s=300,
         enable_thinking=False,
@@ -134,10 +192,15 @@ def test_base_cmd_forwards_judge_body_and_fallback_models() -> None:
         answer_context_max_tokens=12000,
         v7_fixes=True,
         v8_fixes=True,
+        v9_fixes=True,
         answer_escalation_model="qwen/qwen3.5-35b-a3b",
         answer_escalation_base_url="https://openrouter.ai/api/v1",
         history_retrieval_k=4,
         answer_context_session_cap=4,
+        competency_user_candidate_k=40,
+        competency_assistant_candidate_k=20,
+        competency_session_top_k=7,
+        competency_preference_session_top_k=19,
     )
 
     cmd = _base_cmd("controller", "controller", Path("out"), args)
@@ -151,4 +214,14 @@ def test_base_cmd_forwards_judge_body_and_fallback_models() -> None:
     assert "--controller-history-aware-retrieval" in cmd
     assert "--fail-on-extraction-error" in cmd
     assert cmd[cmd.index("--answer-context-session-cap") + 1] == "4"
+    assert "--controller-competency-aware-retrieval" in cmd
+    assert cmd[cmd.index("--controller-competency-user-candidate-k") + 1] == "40"
+    assert cmd[cmd.index("--controller-competency-assistant-candidate-k") + 1] == "20"
+    assert cmd[cmd.index("--controller-competency-session-top-k") + 1] == "7"
+    assert cmd[cmd.index("--controller-competency-preference-session-top-k") + 1] == "19"
+    assert "--controller-prefer-unambiguous-computation" in cmd
     assert "--controller-aggregation-scaffold" not in cmd
+    assert cmd[cmd.index("--openai-model") + 1] == "test/answer-model"
+    assert cmd[cmd.index("--answer-max-new-tokens") + 1] == "1536"
+    answer_body_flag = cmd.index("--answer-openai-extra-body-json")
+    assert json.loads(cmd[answer_body_flag + 1])["reasoning"]["effort"] == "medium"

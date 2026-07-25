@@ -593,7 +593,7 @@ def _run_system(
 
     if "src" not in sys.path:
         sys.path.insert(0, "src")
-    from ksa.eval.merge import merge_run_shards
+    from ask.eval.merge import merge_run_shards
 
     meta = json.loads((shard_dirs[0] / "report.json").read_text(encoding="utf-8"))
     report = merge_run_shards(

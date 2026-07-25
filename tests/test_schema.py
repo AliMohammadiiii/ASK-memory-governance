@@ -6,7 +6,7 @@ import sqlite3
 
 import pytest
 
-from ksa.memory import MemoryItem, MemoryType, insert_active
+from ask.memory import MemoryItem, MemoryType, insert_active
 
 
 def test_init_creates_tables(db: sqlite3.Connection) -> None:

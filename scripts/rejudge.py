@@ -16,10 +16,10 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
-from ksa.baselines.base import BaselineAnswer  # noqa: E402
-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
-from ksa.eval.longmemeval import JudgmentCache, LongMemEvalGrader, evaluate_baseline  # noqa: E402
+from ask.baselines.base import BaselineAnswer  # noqa: E402
+from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
+from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
+from ask.eval.longmemeval import JudgmentCache, LongMemEvalGrader, evaluate_baseline  # noqa: E402
 
 
 class ReplayBaseline:

@@ -54,11 +54,11 @@ tests). On track for flat-vector baseline in Week 3.
 - `NOTES/status_m1w2.md` — this file
 
 **Code**
-- `src/ksa/baselines/__init__.py` — public `BaselineAnswer`, `NoMemoryBaseline`
-- `src/ksa/baselines/base.py` — shared `BaselineAnswer` dataclass (used by all 4 baselines + controller)
-- `src/ksa/baselines/no_memory.py` — `NoMemoryBaseline` (Baseline 1)
-- `src/ksa/baselines/prompts/__init__.py`, `prompts/no_memory.j2` — Jinja2 template
-- `src/ksa/eval/__init__.py`, `src/ksa/eval/longmemeval.py` — judge prompt, `LongMemEvalGrader`,
+- `src/ask/baselines/__init__.py` — public `BaselineAnswer`, `NoMemoryBaseline`
+- `src/ask/baselines/base.py` — shared `BaselineAnswer` dataclass (used by all 4 baselines + controller)
+- `src/ask/baselines/no_memory.py` — `NoMemoryBaseline` (Baseline 1)
+- `src/ask/baselines/prompts/__init__.py`, `prompts/no_memory.j2` — Jinja2 template
+- `src/ask/eval/__init__.py`, `src/ask/eval/longmemeval.py` — judge prompt, `LongMemEvalGrader`,
   `JudgmentCache`, `bootstrap_accuracy_ci`, `evaluate_baseline`, `EvalReport`,
   `_wilson_interval` (test reference)
 
@@ -75,8 +75,8 @@ tests). On track for flat-vector baseline in Week 3.
   retries, 60s budget contract, num_ctx opt-out)
 
 **Hotfix artifacts (post-host-run)**
-- `src/ksa/inference/ollama.py` — 5xx retry-with-backoff, `keep_alive=30m`, `num_ctx=2048`
-- `src/ksa/eval/longmemeval.py` — `normalized_substring_grade(...)`, `used_fallback` field
+- `src/ask/inference/ollama.py` — 5xx retry-with-backoff, `keep_alive=30m`, `num_ctx=2048`
+- `src/ask/eval/longmemeval.py` — `normalized_substring_grade(...)`, `used_fallback` field
 - `scripts/regrade.py` — re-grade from `judge_cache.jsonl` without re-calling Ollama
 - `scripts/finalize_m1w2.sh` — chat-ping pre-flight that warms the model with the same
   `num_ctx` / `keep_alive` settings the run uses; hardware-headroom error message
@@ -125,7 +125,7 @@ retrieval alone is not memory governance.
 ## How to finalize on the host (already done; commands archived for the record)
 
 ```bash
-cd ksa_controller
+cd ask_controller
 
 # 1) Pytest sanity (78/78 green).
 PYTHONPATH=src .venv/bin/python -m pytest -q

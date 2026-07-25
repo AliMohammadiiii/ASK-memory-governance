@@ -53,13 +53,13 @@ EMBEDDER_BACKEND="${EMBEDDER_BACKEND:-sentence_transformer}"
 # compete with the worker processes for the 2 CPU cores. Falls back to CPU
 # automatically if the torch build has no CUDA.
 EMBEDDER_DEVICE="${EMBEDDER_DEVICE:-cuda}"
-KSA_INSTALL_DEPS="${KSA_INSTALL_DEPS:-1}"
-KSA_SETUP_OLLAMA="${KSA_SETUP_OLLAMA:-1}"
-KSA_PULL_MODELS="${KSA_PULL_MODELS:-1}"
-KSA_RUN_TESTS="${KSA_RUN_TESTS:-smoke}" # 0 | smoke | full
-KSA_RUN_PREFLIGHT="${KSA_RUN_PREFLIGHT:-1}"
-RESULT_ZIP="${RESULT_ZIP:-/content/ksa_m4w13_50_${QUALITY}_results_$(date +%Y%m%d_%H%M%S).zip}"
-LOG_DIR="${KSA_LOG_DIR:-/content/ksa_logs}"
+ASK_INSTALL_DEPS="${ASK_INSTALL_DEPS:-1}"
+ASK_SETUP_OLLAMA="${ASK_SETUP_OLLAMA:-1}"
+ASK_PULL_MODELS="${ASK_PULL_MODELS:-1}"
+ASK_RUN_TESTS="${ASK_RUN_TESTS:-smoke}" # 0 | smoke | full
+ASK_RUN_PREFLIGHT="${ASK_RUN_PREFLIGHT:-1}"
+RESULT_ZIP="${RESULT_ZIP:-/content/ask_m4w13_50_${QUALITY}_results_$(date +%Y%m%d_%H%M%S).zip}"
+LOG_DIR="${ASK_LOG_DIR:-/content/ask_logs}"
 
 case "${PROFILE}" in
   t4)
@@ -99,8 +99,8 @@ activate_or_create_venv() {
     source venv/bin/activate
     return
   fi
-  if [ "${KSA_INSTALL_DEPS}" != "1" ]; then
-    log "No venv found and KSA_INSTALL_DEPS=${KSA_INSTALL_DEPS}; using active Python."
+  if [ "${ASK_INSTALL_DEPS}" != "1" ]; then
+    log "No venv found and ASK_INSTALL_DEPS=${ASK_INSTALL_DEPS}; using active Python."
     return
   fi
   log "Creating .venv with --system-site-packages"
@@ -115,7 +115,7 @@ activate_or_create_venv() {
 }
 
 install_deps() {
-  if [ "${KSA_INSTALL_DEPS}" != "1" ]; then
+  if [ "${ASK_INSTALL_DEPS}" != "1" ]; then
     log "Skipping dependency install."
     return
   fi
@@ -125,7 +125,7 @@ install_deps() {
 }
 
 ensure_ollama() {
-  if [ "${KSA_SETUP_OLLAMA}" != "1" ]; then
+  if [ "${ASK_SETUP_OLLAMA}" != "1" ]; then
     log "Skipping Ollama setup."
     return
   fi
@@ -153,7 +153,7 @@ ensure_ollama() {
   done
   run curl -fsS "${OLLAMA_HOST%/}/api/tags"
 
-  if [ "${KSA_PULL_MODELS}" = "1" ]; then
+  if [ "${ASK_PULL_MODELS}" = "1" ]; then
     for model in "${REQUIRED_MODELS[@]}"; do
       run ollama pull "${model}"
     done
@@ -163,7 +163,7 @@ ensure_ollama() {
 }
 
 run_tests() {
-  case "${KSA_RUN_TESTS}" in
+  case "${ASK_RUN_TESTS}" in
     0|false|False|none)
       log "Skipping tests."
       ;;
@@ -180,14 +180,14 @@ run_tests() {
       run python -m pytest tests -q
       ;;
     *)
-      echo "KSA_RUN_TESTS must be 0, smoke, or full; got ${KSA_RUN_TESTS}" >&2
+      echo "ASK_RUN_TESTS must be 0, smoke, or full; got ${ASK_RUN_TESTS}" >&2
       exit 2
       ;;
   esac
 }
 
 run_preflight() {
-  if [ "${KSA_RUN_PREFLIGHT}" != "1" ]; then
+  if [ "${ASK_RUN_PREFLIGHT}" != "1" ]; then
     log "Skipping computation preflight."
     return
   fi
@@ -225,7 +225,7 @@ log "cwd=$(pwd)"
 log "profile=${PROFILE} quality=${QUALITY} systems=${SYSTEMS}"
 log "slice=${SLICE} out=${OUT} limit=${LIMIT:-<full>}"
 log "log_file=${LOG_FILE}"
-log "KSA_RUN_TESTS=${KSA_RUN_TESTS} KSA_RUN_PREFLIGHT=${KSA_RUN_PREFLIGHT}"
+log "ASK_RUN_TESTS=${ASK_RUN_TESTS} ASK_RUN_PREFLIGHT=${ASK_RUN_PREFLIGHT}"
 if command -v nvidia-smi >/dev/null 2>&1; then
   nvidia-smi || true
 fi

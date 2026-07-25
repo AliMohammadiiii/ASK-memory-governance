@@ -1,6 +1,6 @@
 # Controller forensic debug kit (2026-05-30)
 
-Two files. Unzip at the repo root (`ksa_controller/`); paths are preserved.
+Two files. Unzip at the repo root (`ask_controller/`); paths are preserved.
 
 - `scripts/debug_controller_trace.py` — one-command diagnostic over a finished run.
 - `tests/test_extraction_conf0_kept.py` — regression test (model-free).
@@ -8,7 +8,7 @@ Two files. Unzip at the repo root (`ksa_controller/`); paths are preserved.
 ## 1. Confirm the regression test is green
 
 ```bash
-cd ksa_controller
+cd ask_controller
 source .venv/bin/activate            # or your env
 python -m pytest tests/test_extraction_conf0_kept.py -q
 ```

@@ -1,7 +1,7 @@
 # Repository tree
 
 ```text
-ksa-memory-governance/
+ask-memory-governance/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -123,8 +123,8 @@ ksa-memory-governance/
 │   │   ├── figure_04_annotation_agreement.svg
 │   │   ├── figure_06_evaluation_causal_chain.png
 │   │   ├── figure_06_evaluation_causal_chain.svg
-│   │   ├── figure_07_ksa_controller_architecture.png
-│   │   ├── figure_07_ksa_controller_architecture.svg
+│   │   ├── figure_07_ask_controller_architecture.png
+│   │   ├── figure_07_ask_controller_architecture.svg
 │   │   └── manifest.json
 │   ├── history/
 │   │   ├── change_notes/
@@ -227,9 +227,9 @@ ksa-memory-governance/
 │   └── MASTER_EXECUTION_PROMPT.md
 ├── schema/
 │   ├── generated/
-│   │   ├── ksa_memory.schema.json
+│   │   ├── ask_memory.schema.json
 │   │   └── schema.sql
-│   └── ksa_memory.yaml
+│   └── ask_memory.yaml
 ├── scripts/
 │   ├── analyze_longmemeval_failures.py
 │   ├── audit_m4w13_sweep.py
@@ -281,7 +281,7 @@ ksa-memory-governance/
 │   ├── verify_homogeneous_run.py
 │   └── win_loss.py
 ├── src/
-│   ├── ksa/
+│   ├── ask/
 │   │   ├── audit/
 │   │   │   ├── __init__.py
 │   │   │   └── action_log.py
@@ -351,7 +351,7 @@ ksa-memory-governance/
 │   │   │   ├── __init__.py
 │   │   │   └── orchestrator.py
 │   │   └── __init__.py
-│   └── ksa_memory_governance.egg-info/
+│   └── ask_memory_governance.egg-info/
 │       ├── dependency_links.txt
 │       ├── PKG-INFO
 │       ├── requires.txt
@@ -428,7 +428,7 @@ ksa-memory-governance/
 │   ├── test_thesis_profile_tier_guard.py
 │   └── test_v4_run_fixes.py
 ├── thesis/
-│   ├── MASTERS_THESIS_KSA_MGP6.md
+│   ├── MASTERS_THESIS_ASK_MGP6.md
 │   ├── README.md
 │   └── references.bib
 ├── .env.example

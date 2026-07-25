@@ -16,13 +16,13 @@ import dataclasses
 
 import pytest
 
-from ksa.baselines.base import BaselineAnswer
-from ksa.baselines.no_memory import (
+from ask.baselines.base import BaselineAnswer
+from ask.baselines.no_memory import (
     DEFAULT_SYSTEM_PROMPT,
     NoMemoryBaseline,
 )
-from ksa.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
-from ksa.inference.llm import LLMResponse
+from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn
+from ask.inference.llm import LLMResponse
 
 # --------------------------------------------------------------------- #
 # Helpers / fixtures                                                     #

@@ -9,8 +9,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-from ksa.eval.mgp6_agreement import score_agreement, write_agreement_csv
-from ksa.eval.mgp6_schema import MGP6AdvisorAnnotation, load_mgp6_jsonl
+from ask.eval.mgp6_agreement import score_agreement, write_agreement_csv
+from ask.eval.mgp6_schema import MGP6AdvisorAnnotation, load_mgp6_jsonl
 
 
 def test_advisor_subsample_is_cold_and_stratified() -> None:

@@ -8,9 +8,9 @@ from pathlib import Path
 
 import pytest
 
-from ksa.audit import ActionLogRecord, ActionLogWriter
-from ksa.classifier.schema import RelationOutput
-from ksa.controller.active import (
+from ask.audit import ActionLogRecord, ActionLogWriter
+from ask.classifier.schema import RelationOutput
+from ask.controller.active import (
     FeatureSnapshot,
     ScorecardConfig,
     c,
@@ -22,8 +22,8 @@ from ksa.controller.active import (
     s_abs,
     s_rev,
 )
-from ksa.extraction.schema import EvidenceSpan, ExtractedItem
-from ksa.memory.models import ControllerAction, MemoryType
+from ask.extraction.schema import EvidenceSpan, ExtractedItem
+from ask.memory.models import ControllerAction, MemoryType
 
 
 def _candidate(**overrides: object) -> ExtractedItem:

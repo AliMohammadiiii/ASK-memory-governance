@@ -16,7 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "final_release"
 STAGE = ROOT / "final_release.__building__"
-OUTER_NAME = "ksa_memory_governance_final_2026-07-15.zip"
+OUTER_NAME = "ask_memory_governance_final_2026-07-15.zip"
 
 PUBLIC_EXCLUDED_PREFIXES = (
     ".git/",
@@ -267,12 +267,8 @@ def assemble_paper(stage: Path) -> None:
     paper = stage / "paper"
     copy_tree(ROOT / "paper/paper_1", paper / "canonical", exclude_parts={"compiled"})
     copy_file(ROOT / "paper/paper_1/compiled/main.pdf", paper / "compiled/paper.pdf")
-    copy_file(
-        ROOT / "paper/paper_1/compiled/build_log.txt", paper / "compiled/build_log.txt"
-    )
-    copy_file(
-        ROOT / "paper/VENUE_VARIANT_README.md", paper / "venue_variant/README.md"
-    )
+    copy_file(ROOT / "paper/paper_1/compiled/build_log.txt", paper / "compiled/build_log.txt")
+    copy_file(ROOT / "paper/VENUE_VARIANT_README.md", paper / "venue_variant/README.md")
     copy_file(
         ROOT / "paper/PUBLICATION_STRATEGY.md",
         paper / "venue_variant/PUBLICATION_STRATEGY.md",
@@ -290,7 +286,7 @@ def assemble_thesis(stage: Path) -> None:
     thesis = stage / "thesis"
     english = thesis / "english"
     for rel in (
-        "thesis/MASTERS_THESIS_KSA_MGP6.md",
+        "thesis/MASTERS_THESIS_ASK_MGP6.md",
         "thesis/README.md",
         "thesis/THESIS_NUMBER_AUDIT.md",
         "thesis/claims_evidence_matrix.md",
@@ -304,16 +300,14 @@ def assemble_thesis(stage: Path) -> None:
         copy_file(ROOT / rel, english / Path(rel).name)
     copy_tree(ROOT / "thesis/frontmatter", thesis / "persian")
     copy_file(
-        ROOT / "thesis/compiled/KSA_Masters_Thesis_English_Review_Draft.docx",
-        thesis / "compiled/KSA_Masters_Thesis_English_Review_Draft.docx",
+        ROOT / "thesis/compiled/ASK_Masters_Thesis_English_Review_Draft.docx",
+        thesis / "compiled/ASK_Masters_Thesis_English_Review_Draft.docx",
     )
     copy_file(
-        ROOT / "thesis/compiled/KSA_Masters_Thesis_English_Review_Draft.pdf",
-        thesis / "compiled/KSA_Masters_Thesis_English_Review_Draft.pdf",
+        ROOT / "thesis/compiled/ASK_Masters_Thesis_English_Review_Draft.pdf",
+        thesis / "compiled/ASK_Masters_Thesis_English_Review_Draft.pdf",
     )
-    copy_file(
-        ROOT / "thesis/compiled/QA_REPORT.md", thesis / "compiled/QA_REPORT.md"
-    )
+    copy_file(ROOT / "thesis/compiled/QA_REPORT.md", thesis / "compiled/QA_REPORT.md")
     copy_file(
         ROOT / "thesis/defense_questions.md",
         thesis / "defense_questions/defense_questions.md",
@@ -326,9 +320,7 @@ def assemble_presentation(stage: Path) -> None:
         copy_file(ROOT / "presentation" / name, presentation / name)
     copy_tree(ROOT / "presentation/speaker_notes", presentation / "speaker_notes")
     copy_tree(ROOT / "presentation/figures", presentation / "figures")
-    copy_file(
-        ROOT / "presentation/REHEARSAL_GUIDE.md", presentation / "REHEARSAL_GUIDE.md"
-    )
+    copy_file(ROOT / "presentation/REHEARSAL_GUIDE.md", presentation / "REHEARSAL_GUIDE.md")
 
 
 def assemble_reports_and_application(stage: Path) -> None:
@@ -344,16 +336,16 @@ def assemble_reports_and_application(stage: Path) -> None:
 
 def write_release_manifest(stage: Path, public_stats: dict[str, int]) -> None:
     payload = {
-        "release": "ksa-memory-governance-final",
+        "release": "ask-memory-governance-final",
         "release_date": "2026-07-15",
         "ledger_version": "1.1",
         "ledger_sha256": sha256_file(ROOT / "artifacts/results_ledger.json"),
-        "freeze_version": "final-1.1",
+        "freeze_version": "final-2.0",
         "scientific_status": {
             "mgp6": "diagnostic_construct_gate_failed",
             "mgp6_confirmation_v3": "externally_pending_independent_labor",
             "longmemeval": "externally_pending",
-            "longmemeval_reason": "OpenRouter HTTP 403 before inference",
+            "longmemeval_reason": "V12 post-hoc confirmatory rerun pending external execution",
         },
         "public_repository": public_stats,
         "public_exclusions": [
@@ -408,12 +400,12 @@ def main() -> int:
         safely_remove_generated(OUT)
     STAGE.mkdir(parents=True)
 
-    public_repo = STAGE / "repository/ksa-memory-governance"
+    public_repo = STAGE / "repository/ask-memory-governance"
     public_stats = build_public_repository(public_repo)
     write_zip(
         public_repo,
-        STAGE / "repository/ksa-memory-governance-final.zip",
-        prefix="ksa-memory-governance",
+        STAGE / "repository/ask-memory-governance-final.zip",
+        prefix="ask-memory-governance",
     )
     assemble_results(STAGE, public_repo)
     assemble_paper(STAGE)
@@ -432,9 +424,7 @@ def main() -> int:
         prefix="final_release",
         skip={OUTER_NAME, "OUTER_ZIP.sha256"},
     )
-    (OUT / "OUTER_ZIP.sha256").write_text(
-        f"{sha256_file(outer)}  {OUTER_NAME}\n", encoding="utf-8"
-    )
+    (OUT / "OUTER_ZIP.sha256").write_text(f"{sha256_file(outer)}  {OUTER_NAME}\n", encoding="utf-8")
     print(f"built {OUT}")
     print(f"outer archive: {outer}")
     print(f"public repository files: {public_stats['files']}")

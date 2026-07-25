@@ -4,9 +4,9 @@ import io
 import json
 import urllib.error
 
-from ksa.inference.fallback import FallbackLLM
-from ksa.inference.llm import LLMResponse
-from ksa.inference.openmodel_messages import OpenModelMessagesLLM
+from ask.inference.fallback import FallbackLLM
+from ask.inference.llm import LLMResponse
+from ask.inference.openmodel_messages import OpenModelMessagesLLM
 
 
 class _Resp:

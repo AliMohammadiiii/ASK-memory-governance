@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ksa.eval.recoverability import (
+from ask.eval.recoverability import (
     aggregate_recoverability,
     recoverability_for_scenario,
 )

@@ -15,7 +15,7 @@ Fails on literature: the reject option is 55+ years old (Chow 1970; selective cl
 Instead: A3 in ALLOWED (the measured diagnostic effect of abstain-on-write, with guards and no priority claim).
 
 **N4. "Production memory safety" / "safe for deployment" / "prevents memory corruption in production".**
-Fails on evidence: zero deployment or user-facing evaluation; MGP-6 is synthetic; LongMemEval runs were operationally unstable (316 HTTP-402 traces, 388 empty-extraction fallbacks). Fails on literature: the security/safety governance space (GateMem, MemGuard, memory-poisoning line, arXiv:2604.16548) addresses threat models KSA never tests (poisoning, multi-principal access, deletion compliance).
+Fails on evidence: zero deployment or user-facing evaluation; MGP-6 is synthetic; LongMemEval runs were operationally unstable (316 HTTP-402 traces, 388 empty-extraction fallbacks). Fails on literature: the security/safety governance space (GateMem, MemGuard, memory-poisoning line, arXiv:2604.16548) addresses threat models ASK never tests (poisoning, multi-principal access, deletion compliance).
 Instead: "a governance layer aimed at epistemic write correctness; security threat models are out of scope."
 
 **N5. Any claim resting on diagnostic-only LongMemEval evidence** — including "the controller improves downstream QA", "governance helps on LongMemEval", "77.2% demonstrates effectiveness", or using v7/v8 numbers in a comparison table without their diagnostic labels.

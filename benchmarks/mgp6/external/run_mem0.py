@@ -45,6 +45,10 @@ class Mem0Adapter(ExternalAdapter):
     name = "mem0"
 
     def __init__(self) -> None:
+        # Mem0's optional telemetry creates a shared ~/.mem0/migrations_qdrant
+        # store. It is unrelated to benchmark behavior and prevents safe use of
+        # independent embedded-Qdrant adapters in the same process.
+        os.environ.setdefault("MEM0_TELEMETRY", "false")
         try:
             from mem0 import Memory
         except ImportError as exc:
@@ -79,6 +83,7 @@ class Mem0Adapter(ExternalAdapter):
 
         self._tmp = tempfile.mkdtemp(prefix="mgp6_mem0_")
         config = {
+            "history_db_path": os.path.join(self._tmp, "history.db"),
             "llm": {"provider": "openai",
                     "config": {"model": MODEL, "temperature": 0.0,
                                "max_tokens": 800}},
@@ -145,7 +150,8 @@ class Mem0Adapter(ExternalAdapter):
         except ImportError:
             version = "unknown"
         return {"mem0_version": version, "llm_model": MODEL,
-                "embedder": "all-MiniLM-L6-v2", "vector_store": "qdrant(local)"}
+                "embedder": "all-MiniLM-L6-v2", "vector_store": "qdrant(local)",
+                "history_db": "isolated-temp", "telemetry": "disabled"}
 
 
 if __name__ == "__main__":

@@ -95,7 +95,7 @@ Validation command:
 source .venv/bin/activate
 python - <<'PY'
 from collections import Counter
-from ksa.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
+from ask.eval.mgp6_schema import load_mgp6_jsonl, validate_mgp6_coverage
 scenarios = load_mgp6_jsonl('data/mgp6_v1_seed0.jsonl')
 validate_mgp6_coverage(scenarios)
 print('rows', len(scenarios))

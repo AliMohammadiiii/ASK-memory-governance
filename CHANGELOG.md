@@ -2,7 +2,7 @@
 
 ## 0.2.0 — 2026-07-12
 
-- Reconstructed the full Git-ready repository from the authoritative KSA source archive.
+- Reconstructed the full Git-ready repository from the authoritative ASK source archive.
 - Integrated the frozen MGP-6 v2 benchmark and separated human from model annotations.
 - Removed caches, local databases, backup files, generated package metadata, and large historical runs.
 - Added CI, public repository metadata, OpenRouter configuration, reproducibility state files, and repository validation.

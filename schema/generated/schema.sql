@@ -1,5 +1,5 @@
--- Generated from schema/ksa_memory.yaml.
--- Regenerate with: `make schema`  (runs: gen-sqlddl --dialect sqlite schema/ksa_memory.yaml)
+-- Generated from schema/ask_memory.yaml.
+-- Regenerate with: `make schema`  (runs: gen-sqlddl --dialect sqlite schema/ask_memory.yaml)
 -- Hand-maintained to match LinkML source; if you edit the LinkML, rerun `make schema`.
 
 PRAGMA foreign_keys = ON;

@@ -1,6 +1,6 @@
 # Reviewer 2 Audit
 
-Date: 2026-07-12. The harshest *defensible* review of the KSA memory-governance
+Date: 2026-07-12. The harshest *defensible* review of the ASK memory-governance
 project. Each section states the attack, the evidence that exists, the honest
 response, and the claim that must be weakened or dropped. Nothing here is
 rhetorical: every number traces to the ledger or audit docs. Ends with the
@@ -110,7 +110,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
   both numbers are in the ledger and the favourable one is labelled "upper bound".
   MemOS is explicitly `bound_only_structural_limitation`, not a capability claim.
 - **Weaken/drop.** Present external adapters as an *upper-bound* comparison with the
-  mapping shown; drop any "KSA beats MemOS" phrasing — MemOS's number is a harness
+  mapping shown; drop any "ASK beats MemOS" phrasing — MemOS's number is a harness
   artifact.
 
 ## A8. Statistical power — n=180, SSP n=30

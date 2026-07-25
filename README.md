@@ -1,10 +1,10 @@
-# KSA Memory Governance
+# ASK Memory Governance
 
-A Git-ready research repository for interpretable, abstention-aware memory governance in long-lived LLM agents. KSA makes explicit **KEEP**, **SUPERSEDE**, and **ABSTAIN** decisions over typed memories with provenance and supersession lineage.
+A Git-ready research repository for interpretable, abstention-aware memory governance in long-lived LLM agents. ASK makes explicit **KEEP**, **SUPERSEDE**, and **ABSTAIN** decisions over typed memories with provenance and supersession lineage.
 
 ## What is included
 
-- Full KSA controller implementation under `src/ksa/`.
+- Full ASK controller implementation under `src/ask/`.
 - No-memory, vector, recency, and naive-overwrite baselines.
 - Extraction, relation classification, memory operations, orchestration, and evaluation code.
 - The frozen 180-item MGP-6 v2 diagnostic package under `benchmarks/mgp6/`.
@@ -12,7 +12,7 @@ A Git-ready research repository for interpretable, abstention-aware memory gover
   raw human labels are withheld from the public bundle pending redistribution consent.
 - A verified offline test suite plus scorer-regression tests (see the dated validation report for exact counts).
 - Colab/GPU/API run scripts and resumable experiment tooling.
-- OpenRouter model configuration for Qwen 3.5 9B with Gemma 4 31B judge/fallback.
+- OpenRouter model configuration for Qwen 3.5 9B with one homogeneous Gemma 4 31B judge.
 - Research, thesis, bibliography, figures, and persistent evidence/experiment registries.
 - CI, packaging, security, data-license, and release documentation.
 
@@ -22,7 +22,7 @@ Large historical outputs, local Qdrant/MemOS stores, caches, backups, and third-
 
 ```text
 .
-├── src/ksa/                 # controller, memory, extraction, inference, baselines, evaluation
+├── src/ask/                 # controller, memory, extraction, inference, baselines, evaluation
 ├── tests/                   # unit, regression, integration, CLI tests
 ├── benchmarks/mgp6/         # MGP-6 v2 data, schema, scorer, adapters, annotations
 ├── benchmarks/longmemeval/  # external-data integration contract
@@ -72,8 +72,7 @@ cat configs/models/openrouter_qwen_gemma.yaml
 Configured models:
 
 - Main: `qwen/qwen3.5-9b`
-- Preferred judge: `google/gemma-4-31b-it:free`
-- Judge fallback: `google/gemma-4-31b-it`
+- Judge: `google/gemma-4-31b-it` (no model fallback in the final freeze)
 
 ## Scientific status
 

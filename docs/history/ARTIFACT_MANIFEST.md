@@ -2,7 +2,7 @@
 
 Project: Keep, Supersede, or Abstain  
 Manifest date: 2026-07-07  
-Active codebase: `/Users/ali/Documents/Master/ksa_controller`
+Active codebase: `/Users/ali/Documents/Master/ask_controller`
 
 This manifest separates inspectable artifacts from smoke, pilot, incomplete,
 pending, external-local, and deprecated evidence. Only artifacts marked
@@ -95,7 +95,7 @@ pending, external-local, and deprecated evidence. Only artifacts marked
 - SMRR cannot test H2: it ties the controller with naive overwrite because both clear stale
   items from the active set. H2 (lineage auditability) is tested by
   `superseded_recoverability` (`scripts/evaluate_recoverability_mgp6.py`,
-  `ksa.eval.recoverability`): on the valid `runs/m4w14_thesis_colab_20260608`
+  `ask.eval.recoverability`): on the valid `runs/m4w14_thesis_colab_20260608`
   run, controller = 1.0 and naive overwrite = 0.0.
 - LongMemEval-S SMRR is reportable only where stale retrieval is semantically computed.
 - The shipped `runs/m4w13_modal_hf_b1_controller` LongMemEval result (controller 66%) is
