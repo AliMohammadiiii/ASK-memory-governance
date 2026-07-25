@@ -8,7 +8,7 @@ hidden run.
 
 ## Repository readiness
 
-Ready for development-adapter work and continued development selection. The public-only v4.3 loader,
+Ready for model-backed development selection. The public-only v4.3 loader,
 prediction validator, evaluator, private ignore protection, regression tests,
 development configuration registry, and development-only freeze index are in
 place. The train engineering fixture passed; it is not a system-performance
@@ -23,23 +23,24 @@ coverage-validated predictions with zero API/parse failures, but its action
 distribution was heavily skewed to `SUPERSEDE` (177 of 180). It is development
 evidence only and is not selected for final hidden evaluation.
 
-The public decision runner now accepts only the separately implemented
-`decision_zero_shot` system. It deliberately rejects B1--B4 and controller
-labels because those historical ASK systems do not yet have distinct v4.3
-adapters; merely recording an alternate label would not change the method. The
-registry marks those systems as adapter-required, which blocks their use in
-development comparison and blocks configuration freeze.
+Commit `c37b8878512cd4125a4beb793dd2a6625c35a9df` implements distinct public
+views and policies for B1--B4, the live and rules controllers, and all required
+ablations. The deterministic rules controller has completed a public-dev run:
+180 validated predictions, zero failures/retries/invalid responses, and no
+provider or hidden-gold access. Its development accuracy was 0.3333 and
+Macro-F1 was 0.2434, so it is not selected for hidden evaluation. See
+`ADAPTER_IMPLEMENTATION_REPORT.md` for the adapter contract and evidence.
 
 ## Hidden-run authorization
 
 Not generated. `authorized` is not true. Hidden inputs and hidden gold are held
-only in the ignored private boundary, and no model call or hidden scoring has
-occurred.
+only in the ignored private boundary, and no hidden model call or hidden scoring
+has occurred.
 
 ## Next gate
 
-Implement and test distinct v4.3 adapters for the selected historical systems,
-then run them on public dev and record every dev-informed choice. Only then
-replace the development index with a fully frozen final configuration and
-authorization audit. Do not open hidden gold before finalized prediction files
-are coverage-validated and hashed.
+Run the model-backed systems and required ablations on public dev, score them
+with the public scorer, and record every dev-informed choice. Only then replace
+the development index with a fully frozen final configuration and authorization
+audit. Do not open hidden gold before finalized prediction files are
+coverage-validated and hashed.

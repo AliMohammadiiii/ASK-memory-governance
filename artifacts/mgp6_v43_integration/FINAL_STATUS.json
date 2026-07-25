@@ -3,6 +3,7 @@
   "release_identity": "MGP-6 v4.3.0-human-validated-final",
   "integration_base_commit": "41f7ceeb38c971874b52578c4b622a704b992715",
   "runner_hardening_commit": "86e3674",
+  "adapter_implementation_commit": "c37b8878512cd4125a4beb793dd2a6625c35a9df",
   "follow_on_branch": "mgp6-v43-experiments",
   "post_integration_tracked_worktree": "clean; only classified historical untracked paths remained",
   "status": "READY_FOR_DEV_EXPERIMENTS",
@@ -10,24 +11,24 @@
   "release_verifier": "PASS",
   "private_data_boundary": "PASS",
   "public_loader_and_prediction_validation": "PASS",
-  "repository_tests": "PASS: 535 passed, 11 skipped",
+  "repository_tests": "PASS: 539 passed, 11 skipped",
   "repository_validation": "PASS",
   "ruff": "PASS",
-  "mypy": "PASS: no issues found in 17-source CI scope including mgp6_v43.py and run_mgp6_v43.py",
+  "mypy": "PASS: exact GitHub Actions Mypy scope found no issues in 16 source files; extended local Mypy found no issues in 63 source files including v4.3 adapters, runner, and public scorer",
   "package_build": "PASS",
   "train_engineering_fixture": "PASS: deterministic fixture smoke; no provider call and no scientific result",
   "live_provider_smoke": "PASS: public train 3-item OpenRouter/Qwen smoke; 3 predictions, 0 failures, 0 retries, 0 invalid responses, hidden_gold_accessed=false; no scientific result claimed.",
   "development_experiment_completed": true,
   "development_experiment": "PASS: completed public-dev decision_zero_shot OpenRouter/Qwen run; 180/180 validated predictions, 0 failures/retries/invalid responses, hidden_gold_accessed=false. Development result recorded; configuration is not selected for hidden evaluation.",
-  "development_runner_contract": "Only decision_zero_shot is implemented by scripts/run_mgp6_v43.py. B1-B4, rules/live controllers, and ablations are marked adapter-required and are not executable through that generic runner.",
+  "rules_controller_development_experiment": "PASS: committed local rules controller ran all 180 public-dev records with 0 failures/retries/invalid responses/provider calls and hidden_gold_accessed=false; accuracy=0.3333, macro_f1=0.2434, not selected for hidden evaluation.",
+  "development_runner_contract": "B1-B4, decision zero-shot, rules/live controllers, and required ablations have explicit public-only v4.3 adapters and per-system prompt/action contracts. Model-backed dev executions remain pending.",
   "hidden_run_authorized": false,
   "hidden_run_completed": false,
   "remaining_before_hidden": [
-    "Implement and test distinct v4.3 adapters for each selected historical baseline/controller before running or selecting it.",
-    "Run and record the remaining pre-registered development-only systems and ablations; document every dev-informed choice.",
+    "Run and record the remaining model-backed development-only systems and ablations; document every dev-informed choice.",
     "Select final systems and exact accessible provider model revisions.",
     "Record the post-development code commit and clean-worktree state.",
     "Freeze all controls and generate a valid FINAL_HIDDEN_RUN_AUTHORIZATION.json before any hidden prediction."
   ],
-  "next_required_action": "Implement and validate the selected v4.3 baseline/controller adapters, then run their public-dev configurations; do not access hidden gold."
+  "next_required_action": "Run and score the remaining model-backed public-dev configurations, then select final systems; do not access hidden gold."
 }

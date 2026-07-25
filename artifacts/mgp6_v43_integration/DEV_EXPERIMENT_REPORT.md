@@ -95,10 +95,18 @@ ablation configurations before final model, prompt, and system choices are
 frozen. No prompt, model, split, or release record was changed as a result of
 this run.
 
-The generic v4.3 decision runner now accepts only `decision_zero_shot`. Its
-former historical-system labels did not select distinct baseline/controller
-implementations, so accepting them would have made a false comparison. The
-configuration registry records those systems as requiring explicit, tested v4.3
-adapters before they may be run or selected.
+## Rules-controller development result
+
+After the system-adapter implementation commit
+`c37b8878512cd4125a4beb793dd2a6625c35a9df`, the deterministic ASK scorecard
+rules controller completed all 180 public dev records. It produced 180 valid
+predictions with zero failures, retries, invalid responses, provider calls, or
+hidden-gold access; its manifest records a clean tracked worktree. Accuracy was
+0.3333, Macro-F1 was 0.2434, coverage was 1.0000, and its predictions were
+KEEP 0, SUPERSEDE 39, ABSTAIN 141. It is not selected for hidden evaluation.
+
+The generic-label ambiguity is resolved: B1--B4, both controller modes, and
+the required ablations now have explicit v4.3 adapter contracts. Their
+model-backed dev runs remain pending; see `ADAPTER_IMPLEMENTATION_REPORT.md`.
 
 The hidden-run authorization remains absent and false.

@@ -13,6 +13,9 @@
 - The subsequently completed provider smoke and public-dev run used only public
   train/dev records. Their ignored logs and manifests record
   `hidden_gold_accessed=false`; neither run opened private inputs or gold.
+- The committed deterministic rules-controller dev run likewise used only the
+  public dev split; its ignored prediction, raw-response, manifest, and public
+  metric files are covered by the existing `runs/` ignore rule.
 - The tracked public prompt template and loader contain no prohibited private
   keys; ignored fixture and provider-run logs contain public IDs and model
   responses only, with no private fields.

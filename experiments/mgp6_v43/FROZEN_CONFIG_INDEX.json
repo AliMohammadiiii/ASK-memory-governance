@@ -5,7 +5,7 @@
   "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
-    "sha256": "d2097ab67c41c29c3fbade127b031e0860d6ada9c04cf5437f5c46830f2ceaa7",
+    "sha256": "62f6449f975c0d91e10af1e41516007eaed69f9ee31f9f8feeb98722d937aec8",
     "dataset_hashes": {
       "train": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
       "dev": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
@@ -14,12 +14,12 @@
     "adapter_version": "ask.mgp6_v43_adapter.v1",
     "prompt_hashes": "Per-system raw template hashes are recorded in DEV_EXPERIMENTS.json; prompts are not frozen.",
     "implementation_hashes": {
-      "runner": "e2f80a774c448ddc3bddf7977b9e64fe84f0ba050fe2f0185d07af41cc771dbb",
+      "runner": "dc95a3714ec8f0550e663e17f609dd5c94d8a4f497872f0384d585256b8dca16",
       "public_scorer": "c59a749804aa7e448196e114d9f4e56a3a170cb9ffe11c825dd6abde5bf32999",
       "evaluator_and_adapters": "1d2064df6727f48d115c5cbc337bdcbee0d0731c783d4cfa968365f486632624"
     },
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "PENDING_ADAPTER_COMMIT",
+    "code_commit": "c37b8878512cd4125a4beb793dd2a6625c35a9df",
     "environment_lock_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"
   },
   "freeze_requirements_remaining": [

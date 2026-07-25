@@ -80,3 +80,19 @@ changed.
   requiring distinct v4.3 adapters in the development configuration index.
 - The gate returns to development preparation until those adapters are tested;
   no provider call, hidden input, or private scoring occurred for this guard.
+
+## 2026-07-25 — explicit v4.3 adapters and public scorer
+
+- Committed `c37b8878512cd4125a4beb793dd2a6625c35a9df`
+  (`Implement MGP-6 v4.3 system adapters`).
+- Added distinct public-only adapter views and prompt policies for B1--B4, the
+  live controller, and required ablations; added a deterministic rules adapter
+  that uses the existing ASK scorecard without a provider call.
+- Added the public train/dev scorer with strict coverage validation and
+  operational accounting. It cannot read a hidden dataset without public gold
+  and intentionally does not read the private component map.
+- Ran and scored the committed deterministic rules controller on public dev:
+  180 validated predictions, 0 failures/retries/invalid responses/provider
+  calls, accuracy 0.3333, Macro-F1 0.2434, and no hidden-gold access.
+- Re-ran full repository validation: 539 passed, 11 skipped; Ruff, Mypy,
+  repository validation, and package build all passed.
