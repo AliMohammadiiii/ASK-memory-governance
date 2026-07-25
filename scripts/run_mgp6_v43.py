@@ -22,6 +22,7 @@ from ask.eval.mgp6_v43 import (  # noqa: E402
     MODEL_BACKED_SYSTEMS,
     MGP6V43Error,
     MGP6V43Prediction,
+    apply_live_controller_guard,
     build_system_prompt,
     load_predictions,
     load_predictions_allow_partial,
@@ -323,6 +324,10 @@ def main() -> int:
                             raise
                         retries += 1
                         continue
+                    model_action = action
+                    guard_trace: dict[str, Any] | None = None
+                    if args.system == "live_model_controller":
+                        action, guard_trace = apply_live_controller_guard(record, action)
                     write_raw_response(
                         raw_path,
                         public_id=record.public_id,
@@ -331,6 +336,8 @@ def main() -> int:
                             **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=True),
                             "adapter_version": ADAPTER_VERSION,
                             "system": args.system,
+                            "model_action": model_action,
+                            "guard_trace": guard_trace,
                         },
                     )
                     break

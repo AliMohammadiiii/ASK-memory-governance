@@ -9,14 +9,14 @@
     "split_map_sha256": "0ddcf67bc2a4c0b29f15df20618f83cad5d366f7266036e9fc39aaab8c55500b"
   },
   "controls": {
-    "adapter_version": "ask.mgp6_v43_adapter.v2",
+    "adapter_version": "ask.mgp6_v43_adapter.v3",
     "decoding": {"temperature": 0.0, "max_new_tokens": 128, "reasoning_effort": "none"},
     "seed": 4301,
     "retry_policy": {"transport_max_attempts": 3, "parse_max_attempts": 2},
     "timeout_s": 120,
     "concurrency": 1,
     "evaluator_version": "ask.eval.mgp6_v43.v1",
-    "code_commit": "932459ade6468a40126b06a2376e0e4cd43761dd",
+    "code_commit": "PENDING_HYBRID_GUARD_V3_COMMIT",
     "environment_lock": {"pyproject": "pyproject.toml", "sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"}
   },
   "execution_contract": {

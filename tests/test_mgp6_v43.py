@@ -17,6 +17,7 @@ from ask.eval.mgp6_v43 import (
     MGP6V43Error,
     MGP6V43Prediction,
     MGP6V43Record,
+    apply_live_controller_guard,
     assert_model_safe,
     build_decision_prompt,
     cluster_bootstrap,
@@ -24,6 +25,7 @@ from ask.eval.mgp6_v43 import (
     load_predictions,
     load_public_records,
     model_input_for_system,
+    public_evidence_policy_action,
     rules_controller_action,
     score_actions,
     system_allowed_actions,
@@ -118,6 +120,43 @@ def test_live_controller_routes_only_publicly_indexed_evidence(release) -> None:
         )
         assert_model_safe(view)
         assert not (set(_keys(view)) & PROHIBITED_MODEL_KEYS)
+
+
+def test_live_controller_guard_uses_public_evidence_only() -> None:
+    def record(*, first: str, second: str) -> MGP6V43Record:
+        return MGP6V43Record(
+            public_id="MGP43-00000000000000000000",
+            memory_before={"memory_slot": "setting", "principal": "Ari", "standing_value": "old"},
+            dialogue=[
+                {"speaker": "USER", "text": "The index attaches the first and second messages to this setting."},
+                {"speaker": "USER", "text": f"The first message says: {first} The second message says: {second}"},
+                {"speaker": "USER", "text": "The requested value is new."},
+            ],
+            evaluation_query="Choose KEEP, SUPERSEDE, or ABSTAIN.",
+        )
+
+    keep_record = record(
+        first="The current official record lists old.",
+        second="An informal note mentions new.",
+    )
+    supersede_record = record(
+        first="A signed form confirms the setting changed to new.",
+        second="The submission was recorded.",
+    )
+    abstain_record = record(
+        first="The notice has no closing date.",
+        second="There is no later instruction.",
+    )
+    assert public_evidence_policy_action(keep_record)[0] == "KEEP"
+    assert public_evidence_policy_action(supersede_record)[0] == "SUPERSEDE"
+    assert public_evidence_policy_action(abstain_record)[0] == "ABSTAIN"
+    final_action, trace = apply_live_controller_guard(keep_record, "ABSTAIN")
+    assert final_action == "KEEP"
+    assert trace["overrode_model_abstention"] is True
+    unchanged, unchanged_trace = apply_live_controller_guard(keep_record, "SUPERSEDE")
+    assert unchanged == "SUPERSEDE"
+    assert unchanged_trace["overrode_model_abstention"] is False
+    assert_model_safe(trace)
 
 
 def _keys(value: object) -> set[str]:
@@ -225,7 +264,7 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     manifest = json.loads((tmp_path / "smoke/run_manifest.json").read_text(encoding="utf-8"))
     assert manifest["decoding"]["max_new_tokens"] == 128
     assert manifest["retry_policy"] == {"parse_max_attempts": 2, "transport_max_attempts": 3}
-    assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v2"
+    assert manifest["adapter_version"] == "ask.mgp6_v43_adapter.v3"
     assert manifest["failure_count"] == 0
     assert manifest["invalid_response_count"] == 0
     raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]

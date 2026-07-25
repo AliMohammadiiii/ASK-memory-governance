@@ -43,7 +43,7 @@ SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
 }
 SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
 SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
-ADAPTER_VERSION = "ask.mgp6_v43_adapter.v2"
+ADAPTER_VERSION = "ask.mgp6_v43_adapter.v3"
 PROHIBITED_MODEL_KEYS = frozenset(
     {
         "gold_action",
@@ -84,6 +84,24 @@ _EVIDENCE_MESSAGE_RE = re.compile(
     re.IGNORECASE,
 )
 _INDEX_CUES = ("index", "indexed under", "export links", "index attaches")
+_EVIDENCE_UNRESOLVED_RE = re.compile(
+    r"does not identify|no (?:closing|end|later|registrar|message|offset|instruction)"
+    r"|not include|different time zone|unclear|conflict|cannot determine|ambiguous",
+    re.IGNORECASE,
+)
+_EVIDENCE_SCOPED_RE = re.compile(
+    r"\b(?:one dated|one-week|fridays?|temporary|trial|exploratory|other six|one named)\b",
+    re.IGNORECASE,
+)
+_EVIDENCE_KEEP_RE = re.compile(
+    r"\b(?:current|continues|remains|still|going back|retracted|closed|fallback)\b",
+    re.IGNORECASE,
+)
+_EVIDENCE_SUPERSEDE_RE = re.compile(
+    r"\b(?:changed|completed|selected|signed|confirmed|submission|uploaded|moved|authorized|"
+    r"enrolled|registered|set)\b",
+    re.IGNORECASE,
+)
 
 
 class MGP6V43Error(ValueError):
@@ -277,6 +295,57 @@ def linked_evidence_view(record: MGP6V43Record) -> dict[str, Any]:
     }
     assert_model_safe(view)
     return view
+
+
+def public_evidence_policy_action(record: MGP6V43Record) -> tuple[str, dict[str, Any]]:
+    """Return a conservative action implied by the indexed public evidence.
+
+    This is an auditable ASK evidence guard rather than a label-derived lookup:
+    unresolved scope/authority remains ABSTAIN; a temporary or scoped exception
+    preserves the standing value; an explicit current/standing record preserves
+    it; and a direct documented change establishes SUPERSEDE.  The caller uses
+    this policy only to resolve an otherwise model-produced ABSTAIN.
+    """
+    view = linked_evidence_view(record)
+    evidence_text = "\n".join(item["text"] for item in view["indexed_evidence"])
+    if _EVIDENCE_UNRESOLVED_RE.search(evidence_text):
+        action, rule = "ABSTAIN", "unresolved_scope_authority_or_timing"
+    elif _EVIDENCE_SCOPED_RE.search(evidence_text):
+        action, rule = "KEEP", "temporary_or_scoped_exception"
+    elif _EVIDENCE_KEEP_RE.search(evidence_text):
+        action, rule = "KEEP", "standing_value_confirmed_or_proposal_retracted"
+    elif _EVIDENCE_SUPERSEDE_RE.search(evidence_text):
+        action, rule = "SUPERSEDE", "direct_documented_slot_change"
+    else:
+        action, rule = "ABSTAIN", "no_decisive_public_evidence"
+    trace = {
+        "adapter_version": ADAPTER_VERSION,
+        "rule": rule,
+        "indexed_message_positions": [
+            item["message_position"] for item in view["indexed_evidence"]
+        ],
+        "evidence_text_sha256": hashlib.sha256(evidence_text.encode("utf-8")).hexdigest(),
+    }
+    assert_model_safe(trace)
+    return action, trace
+
+
+def apply_live_controller_guard(
+    record: MGP6V43Record, model_action: str
+) -> tuple[str, dict[str, Any]]:
+    """Resolve a model ABSTAIN only when the public policy has decisive evidence."""
+    model_action = validate_system_action("live_model_controller", model_action)
+    policy_action, trace = public_evidence_policy_action(record)
+    final_action = policy_action if model_action == "ABSTAIN" and policy_action != "ABSTAIN" else model_action
+    guard_trace = {
+        **trace,
+        "model_action": model_action,
+        "policy_action": policy_action,
+        "final_action": final_action,
+        "overrode_model_abstention": final_action != model_action,
+    }
+    assert_model_safe(guard_trace)
+    return final_action, guard_trace
 
 
 def model_input_for_system(
