@@ -272,6 +272,15 @@ def _write_markdown(report: dict[str, Any], path: Path) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def _attempt_report_paths(output_root: Path, attempt_id: str) -> tuple[Path, Path]:
+    """Return append-only report paths for one suite invocation."""
+
+    return (
+        output_root / f"SUITE_REPORT_{attempt_id}.json",
+        output_root / f"SUITE_REPORT_{attempt_id}.md",
+    )
+
+
 def _task_row(task: SuiteTask, *, status: str, note: str = "", **extra: Any) -> dict[str, Any]:
     return {
         "task_id": task.task_id,
@@ -327,11 +336,12 @@ class SuiteProgress:
         with self._event_path.open("a", encoding="utf-8") as handle:
             handle.write(json.dumps(event, sort_keys=True) + "\n")
 
-    def start(self, task: SuiteTask) -> None:
+    def start(self, task: SuiteTask, *, completed: int) -> None:
         with self._lock:
             if task.expected_items is not None and self._tqdm is not None:
                 self._bars[task.task_id] = self._tqdm(
                     total=task.expected_items,
+                    initial=completed,
                     desc=task.task_id,
                     unit="item",
                     dynamic_ncols=True,
@@ -339,7 +349,12 @@ class SuiteProgress:
                     leave=True,
                 )
                 self._next_position += 1
-            self._event(task, state="started", completed=0, elapsed_s=0.0)
+            self._event(
+                task,
+                state="resuming" if completed else "started",
+                completed=completed,
+                elapsed_s=0.0,
+            )
 
     def update(self, task: SuiteTask, *, completed: int, elapsed_s: float) -> None:
         with self._lock:
@@ -369,6 +384,19 @@ def _completed_items(task: SuiteTask) -> int:
     return _jsonl_record_count(task.progress_path)
 
 
+def _attempt_log_root(*, output_root: Path, task: SuiteTask) -> Path:
+    """Allocate an append-only log directory for a task attempt."""
+
+    task_log_root = output_root / "logs" / task.task_id.replace(":", "__")
+    task_log_root.mkdir(parents=True, exist_ok=True)
+    attempt_number = 1
+    while (task_log_root / f"attempt_{attempt_number:03d}").exists():
+        attempt_number += 1
+    attempt_root = task_log_root / f"attempt_{attempt_number:03d}"
+    attempt_root.mkdir()
+    return attempt_root
+
+
 def _run_task(
     task: SuiteTask,
     *,
@@ -376,12 +404,12 @@ def _run_task(
     progress: SuiteProgress,
     refresh_s: float,
 ) -> dict[str, Any]:
-    log_root = output_root / "logs" / task.task_id.replace(":", "__")
-    log_root.mkdir(parents=True, exist_ok=True)
+    log_root = _attempt_log_root(output_root=output_root, task=task)
     stdout_path, stderr_path = log_root / "stdout.log", log_root / "stderr.log"
     started = time.monotonic()
-    progress.start(task)
     completed_items = _completed_items(task)
+    initial_completed_items = completed_items
+    progress.start(task, completed=completed_items)
     returncode = 1
     try:
         with (
@@ -409,11 +437,13 @@ def _run_task(
         status=status,
         note=(
             f"exit={returncode}; completed={completed_items}/{task.expected_items or 'n/a'}; "
-            f"elapsed={_format_seconds(elapsed_s)}; logs={log_root.relative_to(output_root)}"
+            f"resumed_from={initial_completed_items}; elapsed={_format_seconds(elapsed_s)}; "
+            f"logs={log_root.relative_to(output_root)}"
         ),
         returncode=returncode,
         elapsed_seconds=round(elapsed_s, 3),
         completed_items=completed_items,
+        resumed_from_items=initial_completed_items,
         expected_items=task.expected_items,
         stdout_log=str(stdout_path),
         stderr_log=str(stderr_path),
@@ -507,6 +537,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Disable terminal progress bars; progress.jsonl is still written.",
     )
     parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume an existing run ID from validated partial public prediction files.",
+    )
+    parser.add_argument(
         "--memory-benchmarks-root", type=Path, default=DEFAULT_MEMORY_BENCHMARKS_ROOT
     )
     parser.add_argument(
@@ -544,6 +579,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     except ValueError as exc:
         raise SystemExit(str(exc)) from exc
     run_id = args.run_id or datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    attempt_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     output_root = _require_suite_output(args.out or DEFAULT_OUTPUT_ROOT / run_id)
     memory_root = args.memory_benchmarks_root.resolve()
     if not memory_root.is_dir():
@@ -569,6 +605,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         output_root=output_root,
         memory_benchmarks_root=memory_root,
     )
+    existing_v43_predictions = {
+        task.task_id: _completed_items(task)
+        for task in tasks
+        if task.family == "mgp6_v43_public_dev" and _completed_items(task)
+    }
+    if existing_v43_predictions and not args.resume:
+        detail = ", ".join(
+            f"{task_id}={count}" for task_id, count in sorted(existing_v43_predictions.items())
+        )
+        raise SystemExit(
+            "existing public predictions found for this run ID; use --resume to continue safely "
+            f"({detail})"
+        )
     planned_rows: dict[str, list[dict[str, Any]]] = {}
     selected_v43: list[SuiteTask] = []
     selected_serial: list[SuiteTask] = []
@@ -633,6 +682,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     report = {
         "schema_version": "benchmark-suite-report-v1",
         "run_id": run_id,
+        "attempt_id": attempt_id,
         "created_at_utc": datetime.now(UTC).isoformat(),
         "public_v43_input": str(input_path),
         "v43_hidden_access": False,
@@ -647,9 +697,14 @@ def main(argv: Sequence[str] | None = None) -> int:
             "model_id": MODEL_ID,
             "max_parallel": args.max_parallel,
             "progress_refresh_seconds": args.progress_refresh_s,
+            "resume": args.resume,
         },
+        "resumed_prediction_counts": existing_v43_predictions,
         "tasks": rows,
     }
+    attempt_json, attempt_markdown = _attempt_report_paths(output_root, attempt_id)
+    _write_json(attempt_json, report)
+    _write_markdown(report, attempt_markdown)
     _write_json(output_root / "SUITE_REPORT.json", report)
     _write_markdown(report, output_root / "SUITE_REPORT.md")
     print(json.dumps(report, indent=2, sort_keys=True))

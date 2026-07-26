@@ -74,3 +74,14 @@ def test_v43_tasks_expose_public_prediction_progress_only() -> None:
         task.progress_path and task.progress_path.name == "predictions.jsonl" for task in v43
     )
     assert all(".private" not in str(task.progress_path) for task in v43)
+
+
+def test_resume_flag_is_explicit() -> None:
+    assert run_benchmark_suite.parse_args(["--resume"]).resume is True
+
+
+def test_attempt_reports_are_append_only() -> None:
+    root = ROOT / "runs/benchmark_suite/test-attempts"
+    json_path, markdown_path = run_benchmark_suite._attempt_report_paths(root, "20260726T010203000000Z")
+    assert json_path.name == "SUITE_REPORT_20260726T010203000000Z.json"
+    assert markdown_path.name == "SUITE_REPORT_20260726T010203000000Z.md"
