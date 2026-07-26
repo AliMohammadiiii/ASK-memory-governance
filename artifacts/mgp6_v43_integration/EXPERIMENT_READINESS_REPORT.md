@@ -70,6 +70,14 @@ files before a separate local-private scoring step.
 
 ## Current gate
 
-`READY_FOR_FINAL_HIDDEN_RUN`. No hidden model call, hidden prediction file, or
-private scoring result exists yet. Hidden inputs and gold remain solely in the
-ignored private boundary.
+`FINAL_HIDDEN_RUN_COMPLETE`. The selected controller completed one 540-item
+hidden prediction after the authorization gate, then passed strict coverage and
+SHA-256 sealing before private scoring. The official private scorer produced
+aggregate accuracy 0.8481 and macro-F1 0.8479, with component-cluster 95% CIs
+[0.8037, 0.8889] and [0.8021, 0.8894]. Its complete aggregate result,
+operational accounting, and limitations are in
+`FINAL_HIDDEN_EXPERIMENT_REPORT.md`.
+
+The final authorization is consumed. Hidden gold was read only by the
+local-private scorer after sealing; it remains gitignored and absent from every
+tracked report and model-facing object.

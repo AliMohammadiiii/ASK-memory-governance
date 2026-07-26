@@ -19,11 +19,13 @@ This directory contains an **English review draft**, not an institution-ready su
 
 MGP-6 v2 policy results are diagnostic: conflict type alone reaches 1.000 held-out accuracy, so the pilot does not isolate evidence reasoning. The reference policy obtains 0.8889 test accuracy versus 0.9000 for the structured LLM, with a family-clustered paired interval containing zero. The few-shot result is incomplete; mapped external-system rankings and all LongMemEval evidence are non-primary.
 
-MGP-6 v4.3 is integrated as a controlled synthetic successor release with 900
-items, component-held-out train/dev/hidden splits, public/private separation,
-and owner-attested dual-human completion. Its final hidden experiment is not yet
-authorized or reported; no v4.3 performance number belongs in the thesis until
-that frozen procedure completes.
+MGP-6 v4.3 is a controlled synthetic successor release with 900 items,
+component-held-out train/dev/hidden splits, public/private separation, and
+owner-attested dual-human completion. Its single frozen final configuration
+completed the 540-item hidden procedure with aggregate accuracy 0.8481 and
+macro-F1 0.8479; component-bootstrap intervals and the prediction hash are
+reported in the thesis. This result is limited to the controlled synthetic
+diagnostic and is not an external-validation or deployment claim.
 
 ## External completion requirements
 

@@ -1,8 +1,8 @@
 {
   "schema_version": "mgp6-v4.3-frozen-config-index-1.0",
   "release_version": "4.3.0-human-validated-final",
-  "status": "FROZEN_FOR_FINAL_HIDDEN_PREDICTION_GENERATION",
-  "authorized_for_hidden_run": true,
+  "status": "FINAL_HIDDEN_RUN_COMPLETE",
+  "authorized_for_hidden_run": false,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
     "sha256": "ceb9fd7db7f68ec91bbf366ba26114bb7505672f30e2fd8e50ab6d16ed391b73",
@@ -23,12 +23,12 @@
     "environment_lock_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462"
   },
   "development_selection": {
-    "status": "PUBLIC_DEV_SELECTED_CANDIDATE_NOT_FROZEN",
+    "status": "PUBLIC_DEV_SELECTED_CANDIDATE_USED_FOR_FINAL_HIDDEN_RUN",
     "system": "live_model_controller",
     "variant": "public-indexed-evidence plus conservative public-evidence ABSTAIN guard",
     "development_run_commit": "54c8c728a1b6bdc7fc7c39a3e23267dfd8d492e5",
     "public_dev_metrics": {"accuracy": 0.8555555555555555, "macro_f1": 0.8565764126608312},
-    "selection_basis": "Public dev only; it exceeds every completed baseline and required ablation. This is not a hidden-run authorization."
+    "selection_basis": "Public dev only; it exceeds every completed baseline and required ablation. Its subsequent hidden run was separately authorized by the frozen controls."
   },
   "final_hidden_configuration": {
     "path": "experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json",
@@ -43,6 +43,20 @@
     "hidden_run_controls_sha256": "1c1d002fb2cf4842f892b022f5ed1ad91318c3a10c76afad2fb6c378caaf68bf"
   },
   "freeze_requirements_remaining": [],
-  "hidden_gold_accessed": false,
-  "hidden_predictions_generated": false
+  "hidden_gold_accessed_during_prediction": false,
+  "private_scoring_read_hidden_gold_after_prediction_seal": true,
+  "hidden_predictions_generated": true,
+  "final_hidden_completion": {
+    "prediction_count": 540,
+    "prediction_sha256": "e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806",
+    "aggregate_result_report": "artifacts/mgp6_v43_integration/FINAL_HIDDEN_EXPERIMENT_REPORT.md",
+    "accuracy": 0.8481481481481481,
+    "macro_f1": 0.847872957121512,
+    "component_cluster_bootstrap_95_ci": {
+      "accuracy": [0.8037037037037037, 0.8888888888888888],
+      "macro_f1": [0.8020749634748688, 0.889351432442434],
+      "replicates": 5000,
+      "seed": 4301
+    }
+  }
 }

@@ -9,9 +9,10 @@ the repository. Hidden inputs, hidden gold, final human gold, completed human
 annotations, private mappings, consensus records, and private audit material are
 stored locally in a gitignored boundary. The release supplies a locked split
 map, archive manifests, SHA-256 hashes, and annotation and final-gold Merkle
-roots. The v4.3 experiment index records configurations as development-only
-until all final controls are frozen; it must not be read as hidden-run
-authorization.
+roots. The v4.3 experiment index records the frozen final controls and their
+one-run authorization. The completed prediction file is coverage-validated and
+sealed with a SHA-256 before local-private scoring; tracked reports contain only
+aggregate metrics and hashes, never hidden records, gold, or private mappings.
 
 Each \mgp{} row is a JSON object. Exact field names are grouped below; the
 machine-readable schema remains authoritative.

@@ -67,4 +67,11 @@ timeout, concurrency, evaluator, split and data hashes, code commit, and
 environment lock are frozen. Hidden inputs are then predicted once per
 pre-registered final configuration; prediction files are validated and hashed
 before hidden gold is opened locally for scoring. At the time of writing, this
-procedure has not been completed and no v4.3 hidden result is reported.
+procedure was completed once for the selected public-indexed-evidence ASK live
+controller using Qwen~3.5-9B through OpenRouter. Its $540/540$ predictions were
+coverage-validated and sealed with SHA-256
+\texttt{e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806}
+before the local private scorer opened hidden gold. One transport-level remote
+disconnect occurred after 432 durable predictions; the same frozen manifest
+resumed only the remaining records, with no duplicate identifiers or changed
+controls. No hidden result was used for prompt, model, or configuration choice.

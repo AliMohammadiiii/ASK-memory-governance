@@ -34,7 +34,21 @@ ablations completed on public dev only. The selected controller and all four
 ablations had strict 180-item coverage with no hidden-gold access. Full
 protocol and public-dev metrics remain in `DEV_EXPERIMENT_REPORT.md`.
 
-No hidden prediction or private scoring run has been performed.
+## Final hidden execution
+
+The one authorized frozen configuration completed its 540-item hidden
+prediction after a transport-level disconnect at 432 durable predictions. The
+immutable manifest accepted a resume with identical controls; strict validation
+then found 540 unique public IDs and full coverage. The prediction SHA-256 was
+recorded before hidden gold was opened by the official local private scorer.
+
+Private scoring completed successfully. Aggregate accuracy is 0.8481 and
+macro-F1 is 0.8479; 5,000-replicate component-cluster 95% CIs are [0.8037,
+0.8889] and [0.8021, 0.8894]. The private scorer's full aggregate output and
+operational accounting are documented in `FINAL_HIDDEN_EXPERIMENT_REPORT.md`.
+No private record or label was added to tracked paths. Post-result `git diff
+--check`, Ruff, the full 545-pass pytest suite, and repository validation also
+passed.
 
 ## Remote CI and freeze evidence
 

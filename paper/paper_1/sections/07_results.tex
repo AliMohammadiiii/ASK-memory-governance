@@ -5,22 +5,55 @@ All results below are recomputed from released per-item predictions. We lead
 with validity checks because they determine how the policy scores may be
 interpreted.
 
-\subsection{MGP-6 v4.3 final hidden results: pending}
+\subsection{MGP-6 v4.3 final hidden result}
 
-The v4.3 release is integrated with public train/development data and a private
-hidden scoring boundary, but final hidden predictions have not yet been
-generated under a frozen configuration. Accordingly, this manuscript does not
-report v4.3 accuracy, macro-F1, confidence intervals, confusion matrices,
-ablations, cost, latency, or paired comparisons. The final-results block will
-be inserted only after predictions are finalized and hashed before private
-scoring.
+One pre-registered configuration was selected using public development data:
+the ASK live controller with public-indexed evidence routing and a conservative
+ABSTAIN-only guard, using \texttt{qwen/qwen3.5-9b} through OpenRouter. It was
+then run exactly once on the sealed hidden split ($n=540$), with complete
+prediction coverage before local-private scoring. It obtains $0.8481$ accuracy
+and $0.8479$ macro-F1. A 5,000-replicate component-cluster bootstrap gives
+95\% intervals $[0.8037, 0.8889]$ for accuracy and $[0.8021, 0.8894]$ for
+macro-F1. These are uncertainty estimates within this controlled synthetic
+diagnostic, not a real-world generalization estimate.
 
 \begin{center}
-\fbox{\parbox{0.88\linewidth}{\centering
-\textbf{Placeholder:} MGP-6 v4.3 final hidden system comparison,\
-component-cluster confidence intervals, confusion matrix, ablations, and
-cost/latency table.}}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Action & Precision & Recall & F1 & Support \\
+\midrule
+\abstain{} & 0.8554 & 0.7889 & 0.8208 & 180 \\
+\keep{} & 0.7947 & 0.8389 & 0.8162 & 180 \\
+\supersede{} & 0.8967 & 0.9167 & 0.9066 & 180 \\
+\bottomrule
+\end{tabular}
 \end{center}
+
+Rows in the following confusion matrix are gold actions and columns are
+predicted actions:
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Gold $\backslash$ predicted & \abstain{} & \keep{} & \supersede{} \\
+\midrule
+\abstain{} & 142 & 30 & 8 \\
+\keep{} & 18 & 151 & 11 \\
+\supersede{} & 6 & 9 & 165 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The controller predicted 166 abstentions, 190 keeps, and 184 supersessions.
+Coverage was 1.0; non-abstention coverage was $0.6926$ and selective accuracy
+was $0.8449$. Abstention precision/recall were $0.8554/0.7889$. Model-response
+latency had mean/median/p95 $1673/1278/2931$~ms (sum $903.5$~s across 540
+responses). One transport-level disconnect required a resume; there were no
+invalid responses, parse retries, or duplicate predictions. Provider telemetry
+did not contain price fields, so cost is reported as unavailable rather than
+estimated. No final hidden baseline, ablation, or paired system comparison was
+run: those configurations informed public development selection only.
 
 \subsection{The shortcut check fails}
 

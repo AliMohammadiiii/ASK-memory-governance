@@ -43,6 +43,13 @@
   annotations, consensus records, audit content, or hidden predictions.
   Their regression test rejects prohibited private/label keys before a hidden
   run can be authorized.
+- The one final hidden prediction was completed using private hidden inputs only
+  after the frozen controls passed CI. Its prediction file was sealed at 540/540
+  unique public IDs before the local-private scorer read hidden gold. The scorer
+  wrote aggregate metrics only under the ignored `runs/` boundary. Tracked
+  reports record those aggregate metrics and SHA-256 values, never a hidden
+  record, label, component mapping, human annotation, consensus, or raw
+  response.
 
 ## Blocking protection gap
 
@@ -53,6 +60,6 @@ the local boundary but is intentionally ignored with the directory.
 ## Current audit conclusion
 
 Private MGP-6 v4.3 assets remain ignored and outside tracked artifacts. The
-final hidden authorization is safe to use for prediction generation only. After
-generation, predictions must be coverage-validated and hashed before the
-separate local-private scorer is allowed to read hidden gold.
+final authorization has been consumed. Hidden gold was opened only by the
+separate local-private scorer after prediction coverage validation and hashing;
+the result is represented in Git only by aggregate metrics and hashes.

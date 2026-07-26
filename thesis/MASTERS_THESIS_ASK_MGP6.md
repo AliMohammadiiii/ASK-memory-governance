@@ -396,9 +396,11 @@ development records expose only the evidence required to make a decision;
 model-facing objects remove gold labels, design targets, component information,
 private IDs, and annotator metadata. Hidden inputs, hidden gold, final human
 gold, completed annotations, private mappings, source-aligned consensus, and
-private audits are stored only in a gitignored local boundary. No v4.3 hidden
-result is reported in this thesis: hidden prediction remains prohibited until
-configuration freeze and prediction-file hashing are complete.
+private audits are stored only in a gitignored local boundary. The single
+pre-registered v4.3 hidden prediction was made only after configuration freeze,
+coverage validation, and prediction-file hashing. Aggregate final results are
+reported in §6.8 and §7.10; no hidden record, gold label, component mapping, or
+annotation content is included in this thesis.
 
 
 ## 6.1 Evidence policy: the ledger and claim eligibility
@@ -441,7 +443,7 @@ The primary analysis uses the held-out 90-item test split and 10,000-replicate p
 
 Train+development lookup probes over type, conflict type, and public metadata precede policy interpretation. Conflict type reaches 1.000 test accuracy and therefore fails the construct-validity gate: test-first split hygiene alone is insufficient. The v7→v8 fix loop had no confirmation set, so its output is `failure_replay_only`; overrides remain separate from raw results; and invalid, incomplete, mapped, and superseded runs are excluded from primary claims.
 
-## 6.8 MGP-6 v4.3 experimental protocol (prepared; hidden run not authorized)
+## 6.8 MGP-6 v4.3 experimental protocol and completed hidden run
 
 MGP-6 v4.3 uses train for loader and engineering checks, and development for
 prompt, model, configuration, ablation, cost, and latency selection. Each system
@@ -454,18 +456,23 @@ failure accounting without private fields.
 Before hidden prediction, the release and split hashes, provider and exact model
 ID, prompt and system-prompt hashes, decoding, seed, retry policy, timeout,
 concurrency, evaluator version, code commit, environment lock, and prediction
-schema must be frozen and recorded. Hidden inputs are predicted once per
-pre-registered final configuration; prediction coverage is validated and the
-prediction files are hashed before hidden gold is opened locally. The evaluator
-then reports accuracy, macro-F1, per-class precision/recall/F1, confusion matrix,
-coverage, selective and abstention metrics where applicable, cost, latency,
-failures, component-cluster bootstrap intervals, and component-aware paired
-comparisons. LongMemEval remains a separate external evaluation, not a substitute
-for this controlled diagnostic.
+schema were frozen and recorded. The selected public-indexed-evidence ASK live
+controller with qwen/qwen3.5-9b was then run exactly once on the 540-item hidden
+split. Its prediction file was complete, duplicate-free, and sealed with
+SHA-256 e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806
+before the local-private scorer opened hidden gold. A transport disconnect after
+432 durable predictions was recorded; the frozen run resumed only the remaining
+108 records and did not change controls or duplicate IDs.
 
-**Results placeholder.** Final v4.3 system comparison, ablations, confidence
-intervals, confusion matrices, cost/latency analysis, and error taxonomy remain
-explicitly pending until the hidden procedure is genuinely completed.
+The private evaluator reports accuracy, macro-F1, per-class precision/recall/F1,
+confusion matrix, coverage, selective and abstention metrics, and a
+5,000-replicate component-cluster bootstrap with seed 4301. It does not expose
+gold records in its aggregate output. Provider telemetry supplies latency,
+tokens, failures, retries, and invalid-response counts, but no price field; cost
+is therefore recorded as unavailable. LongMemEval remains a separate external
+evaluation, not a substitute for this controlled diagnostic. Because only one
+final v4.3 configuration was pre-registered, there is no final hidden baseline,
+ablation, or paired comparison.
 
 
 # 7. Results
@@ -579,6 +586,29 @@ One independent annotator: raw agreement 0.9889 [0.9667, 1.0], Cohen's κ 0.9814
 ## 7.9 Hypothesis outcomes
 
 H1 is not identified by the shortcut-leaking pilot; H2 supports neither superiority nor non-inferiority; H3 and H4 remain within-generator mechanism demonstrations; H5 is unsupported. The independently generated v3 confirmation protocol is the required gate for stronger conclusions.
+
+## 7.10 MGP-6 v4.3 final hidden result (one frozen configuration)
+
+The pre-registered ASK live controller attained **0.8481 accuracy** and
+**0.8479 macro-F1** on all 540 hidden items. The component-cluster bootstrap
+(5,000 resamples, seed 4301) gives 95% intervals of **[0.8037, 0.8889]** for
+accuracy and **[0.8021, 0.8894]** for macro-F1. Every gold action has support
+180. Per-action precision / recall / F1 is ABSTAIN 0.8554 / 0.7889 / 0.8208,
+KEEP 0.7947 / 0.8389 / 0.8162, and SUPERSEDE 0.8967 / 0.9167 / 0.9066.
+
+The gold-by-prediction confusion rows are ABSTAIN: 142 / 30 / 8; KEEP:
+18 / 151 / 11; and SUPERSEDE: 6 / 9 / 165, with columns ordered ABSTAIN, KEEP,
+SUPERSEDE. Prediction coverage is 1.0. Of 540 outputs, 166 are ABSTAIN, 190
+KEEP, and 184 SUPERSEDE; non-abstention coverage is 0.6926, selective accuracy
+is 0.8449, and abstention precision/recall is 0.8554/0.7889. Mean / median / p95
+model latency is 1673 / 1278 / 2931 ms. One transport failure was recovered by
+resume; there were no invalid responses or in-client retries. The provider did
+not emit cost fields, so cost is unavailable rather than estimated.
+
+This is one result on a controlled synthetic diagnostic after public-dev model
+selection. It is not a comparison against the development-only baselines or
+ablations, not a paired test, and not evidence of real-world memory-governance
+performance or deployment safety.
 
 
 # 8. Error Analysis and Discussion
@@ -698,7 +728,7 @@ A system that supersedes and audits memories can be abused to rewrite records or
 
 ## 9.7 Reproducibility statement
 
-Released: code, MGP-6 v2 data, per-item predictions, the 10,000-sample construct-validity audit, cluster intervals, cost sensitivity, bibliographic checks, and the v3 confirmation protocol. The few-shot run is incomplete; mapped external systems and all LongMemEval evidence are non-primary. Independent v3 construction, three-human annotation, and hidden confirmation runs remain unexecuted. Documentation follows datasheet/model-card practice [@gebru2021datasheets; @mitchell2019modelcards].
+Released: code, MGP-6 v2 data, per-item predictions, the 10,000-sample construct-validity audit, cluster intervals, cost sensitivity, bibliographic checks, and the v3 confirmation protocol. The v4.3 final configuration, freeze authorization, aggregate hidden metrics, and prediction hash are reproducibly recorded, while hidden records and gold remain private. The few-shot run is incomplete; mapped external systems and all LongMemEval evidence are non-primary. Independent v3 construction and three-human annotation remain unexecuted. Documentation follows datasheet/model-card practice [@gebru2021datasheets; @mitchell2019modelcards].
 
 
 # 10. Conclusion and Future Work

@@ -167,4 +167,19 @@ changed.
   in hidden mode. Hidden-gold access remains prohibited until complete
   predictions are closed, validated, and hashed.
 - Added a regression test that validates the checked-in freeze artifacts and
-  rejects private/label keys. No hidden model call or private scoring has run.
+  rejects private/label keys. At that freeze stage, no hidden model call or
+  private scoring had run.
+
+## 2026-07-26 — final hidden execution and private scoring complete
+
+- The frozen ASK live-model-controller generated 540/540 hidden predictions.
+  A transport-level disconnect after 432 durable predictions was recovered by
+  the runner's immutable-manifest resume behavior; no duplicate public ID or
+  control change was accepted.
+- Prediction, raw-response, and run-manifest hashes were recorded before
+  private scoring. The official local private scorer then read hidden gold and
+  component membership only to emit aggregate metrics.
+- Final accuracy is 0.8481 and macro-F1 is 0.8479. Component-cluster bootstrap
+  95% CIs are [0.8037, 0.8889] for accuracy and [0.8021, 0.8894] for macro-F1.
+  This is one final controlled-synthetic result, not a final baseline
+  comparison, external validation, or real-world-generalization claim.
