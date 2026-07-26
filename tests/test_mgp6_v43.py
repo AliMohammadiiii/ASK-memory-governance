@@ -41,6 +41,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC = ROOT / "benchmarks/mgp6/mgp6_v4_3/public"
 FACTS = ROOT / "benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_FACTS.json"
 DEV_CONFIG = ROOT / "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json"
+FINAL_HIDDEN_CONFIG = ROOT / "experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json"
+FINAL_HIDDEN_AUTHORIZATION = ROOT / "experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
 
 
 @pytest.fixture(scope="module")
@@ -367,3 +369,17 @@ def test_hidden_run_authorization_binds_every_runtime_control(tmp_path: Path) ->
 def test_freeze_artifacts_reject_private_or_label_keys() -> None:
     with pytest.raises(SystemExit, match="prohibited"):
         freeze_mgp6_v43._assert_public_control_artifact({"hidden_gold": "forbidden"})
+
+
+def test_final_hidden_freeze_artifacts_are_authorized_and_label_free() -> None:
+    config = json.loads(FINAL_HIDDEN_CONFIG.read_text(encoding="utf-8"))
+    authorization = json.loads(FINAL_HIDDEN_AUTHORIZATION.read_text(encoding="utf-8"))
+    freeze_mgp6_v43._assert_public_control_artifact(config)
+    freeze_mgp6_v43._assert_public_control_artifact(authorization)
+    assert config["status"] == "FROZEN_FOR_FINAL_HIDDEN_PREDICTION_GENERATION"
+    assert config["freeze_preparation_commit"] == config["ci"]["head_sha"]
+    assert config["hidden_input_policy"]["expected_item_count"] == 540
+    assert authorization["authorized"] is True
+    assert authorization["hidden_run_controls"] == config["hidden_run_controls"]
+    assert authorization["hidden_run_controls_sha256"] == sha256_value(config["hidden_run_controls"])
+    assert authorization["frozen_config_sha256"] == sha256_value(config)

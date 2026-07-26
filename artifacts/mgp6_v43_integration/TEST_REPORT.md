@@ -1,76 +1,51 @@
 # MGP-6 v4.3 integration test report
 
-## Release integrity
+## Verified release and local checks
 
-- Outer handoff verifier: PASS.
-- Nested release verifier: PASS (five internal archives).
-- Outer and nested ZIP CRC checks: PASS.
-- Final pre-install nested ZIP CRC check: PASS.
+- Outer handoff verifier, nested release verifier (five internal archives),
+  outer/nested ZIP CRC checks, and the final pre-install CRC check: PASS.
+- `.venv/bin/python -m pip install -e '.[dev]'`: PASS; development
+  dependencies, including Mypy, are installed in the repository virtualenv.
+- `git diff --check`: PASS.
+- `.venv/bin/ruff check .`: PASS.
+- `.venv/bin/pytest`: PASS — 545 passed, 0 failed, 11 skipped; 19 focused
+  MGP-6 v4.3 tests cover release invariants, public-only model views, strict
+  prediction coverage, deterministic/resume-safe writing, metrics, private
+  ignore protection, and frozen-control authorization binding.
+- `.venv/bin/mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py`:
+  PASS — exact GitHub Actions scope, 16 source files, no issues.
+- `.venv/bin/mypy src/ask scripts/run_mgp6_v43.py scripts/score_mgp6_v43.py scripts/freeze_mgp6_v43.py`:
+  PASS — extended local Mypy scope, no issues.
+- `python3 scripts/validate_repository.py`: PASS — structure and secret scan
+  OK.
+- `env TMPDIR=<local-temporary-directory> .venv/bin/python -m build`: PASS —
+  source distribution and wheel built. The first direct invocation could not
+  create a system temporary directory while the volume was full; no package
+  error occurred, and the clean local temporary-directory rerun succeeded.
+- `latexmk -pdf -outdir=<temporary directory> main.tex`: PASS; tracked paper
+  build outputs were not replaced.
 
-## Local CI-equivalent checks
+## Executed development-only runs
 
-| Command | Result |
-| --- | --- |
-| `.venv/bin/python -m pip install -e '.[dev]'` | PASS — development dependencies, including Mypy, available in the repository virtual environment. |
-| `python3 scripts/validate_repository.py` | PASS — repository structure and secret scan OK. |
-| `.venv/bin/pytest` | PASS — 539 passed, 0 failed, 11 skipped after system-adapter implementation. |
-| `.venv/bin/ruff check .` | PASS. Immutable historical archive roots and release-source provenance are narrowly excluded from lint discovery. |
-| `.venv/bin/mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py` | PASS — exact GitHub Actions command; no issues found in 16 source files. |
-| `.venv/bin/mypy src/ask scripts/run_mgp6_v43.py scripts/score_mgp6_v43.py` | PASS — extended local static check; no issues found in 63 source files. |
-| `.venv/bin/python -m build` | PASS — source distribution and wheel built. |
-| `git diff --check` | PASS — no whitespace errors before the current development-selection report update. |
-| `.venv/bin/ruff check .` | PASS — current public-evidence controller and manifest hardening included. |
-| `.venv/bin/pytest` | PASS — 542 passed, 0 failed, 11 skipped; 16 MGP-6 v4.3 tests included. |
-| `.venv/bin/mypy --follow-imports=skip src/ask/controller src/ask/memory src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py` | PASS — no issues in 16 source files. |
-| `.venv/bin/mypy src/ask scripts/run_mgp6_v43.py scripts/score_mgp6_v43.py` | PASS — no issues in 63 source files. |
-| `python3 scripts/validate_repository.py` | PASS — repository structure and secret scan OK. |
-| `.venv/bin/python -m build` | PASS — current sdist and wheel built. |
-| `latexmk -pdf -outdir=<temporary directory> main.tex` | PASS — paper compiled without replacing tracked build outputs. |
-| `python3 scripts/run_mgp6_v43.py ... --limit 3 --action ABSTAIN` twice | PASS — deterministic train engineering fixture exercised serialization, parsing, persistence, resume behavior, and metric calculation; no provider call and no scientific result. |
-| `.venv/bin/python scripts/run_mgp6_v43.py --limit 2 --action ABSTAIN --out /tmp/mgp6_v43_runner_smoke` | PASS — runner hardening smoke verified manifest, raw-response, and prediction writing without any provider call. |
-| `python3 scripts/run_mgp6_v43.py ... --provider openrouter --model-id qwen/qwen3.5-9b --limit 3 --reasoning-effort none --parse-retry-max-attempts 2` | PASS — public train live-provider smoke wrote 3 predictions; 0 failures, 0 parse retries, 0 invalid responses, 1557 prompt tokens, 24 completion tokens, hidden gold not accessed. |
-| `python3 scripts/run_mgp6_v43.py ... --input benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl --provider openrouter --model-id qwen/qwen3.5-9b --reasoning-effort none --parse-retry-max-attempts 2` | PASS — completed public-dev `decision_zero_shot` execution: 180 strict-coverage predictions, 180 valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. Aggregate development metrics are in `DEV_EXPERIMENT_REPORT.md`. |
-| `.venv/bin/python scripts/run_mgp6_v43.py --system b1 ...public/dev.jsonl` and `scripts/score_mgp6_v43.py` | PASS — completed and public-scored B1 no-memory dev execution: 180 strict-coverage predictions, 180 valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. |
-| `.venv/bin/python scripts/run_mgp6_v43.py --system b2`, `b3`, and `b4` on public dev, followed by `scripts/score_mgp6_v43.py` | PASS — completed and public-scored B2--B4 executions: each produced 180 strict-coverage predictions and valid JSON responses with 0 failures, retries, or hidden-gold access. |
-| `.venv/bin/python scripts/run_mgp6_v43.py --system live_model_controller ...public/dev.jsonl` and `scripts/score_mgp6_v43.py` | PASS — completed and public-scored the ASK live-model-controller dev execution: 180 strict-coverage predictions, valid JSON responses, 0 failures, 0 retries, and hidden gold not accessed. |
-| `.venv/bin/pytest tests/test_mgp6_v43.py` after adapter implementation | PASS — 13 passed. It covers distinct public views, action-set constraints, the deterministic rules controller, prompt hashes, scoring, resume safety, and leakage protection. |
-| `.venv/bin/python scripts/run_mgp6_v43.py --system rules_controller ...dev.jsonl` | PASS — 180 committed public-dev predictions; 0 failures/retries/invalid responses/provider calls; hidden gold not accessed. |
+The deterministic train fixture and three-item public-train provider smoke
+passed. All model-backed baselines, the rules controller, the initial live
+controller, the selected public-indexed-evidence controller, and its required
+ablations completed on public dev only. The selected controller and all four
+ablations had strict 180-item coverage with no hidden-gold access. Full
+protocol and public-dev metrics remain in `DEV_EXPERIMENT_REPORT.md`.
 
-## CI status
+No hidden prediction or private scoring run has been performed.
 
-The GitHub Actions workflow includes the v4.3 evaluator in its Mypy scope. Its
-complete command sequence was re-run locally under Python 3.12.12 and passed
-(542 passed, 11 skipped; Ruff; both Mypy scopes; repository validation; and
-package build). The most recent remote workflow observed is CI run
-`30169334394`, a successful push run for
-`d3d5af0eb7170301e35ef00c369d27efb56e804d` on this branch. The current branch
-is ahead of its remote by 16 commits, including the public-evidence controller
-and development-selection commits, so no remote CI result is claimed for those
-unpushed commits.
+## Remote CI and freeze evidence
 
-Seven development candidates have run and are documented separately:
-`decision_zero_shot`, B1--B4, and `live_model_controller` (model-backed), plus
-`rules_controller` (local deterministic). None is selected for final hidden
-evaluation. No hidden-prediction or private-scoring experiment has run. The
-live-provider smoke above used public train records only and is not reported as
-system performance.
+GitHub Actions CI run [`30189412351`](https://github.com/AliMohammadiiii/KSA-memory-governance/actions/runs/30189412351)
+completed successfully for
+`af12517a15c9d9af4bb3bf95f7caee7330e6b243` (`Gate MGP-6 v4.3 hidden runs on
+frozen controls`). That SHA is the frozen runtime-control commit and is bound
+by both final hidden-control artifacts. At freeze time the tracked worktree was
+clean; only the separately classified historical untracked paths remained.
 
-The full repository suite was re-run after public-evidence controller and
-manifest hardening: 542 passed, 11 skipped. The v4.3-focused file has 16
-passing tests, including public-index routing, public-only guard behavior,
-configuration hashing, durable/resume-safe writes, and explicit rejection of
-unsupported in-process concurrency. All required model-backed ablations have
-now completed and been public-scored; they are documented in
-`DEV_EXPERIMENT_REPORT.md`.
-
-## Integration commit and worktree state
-
-- Integration base commit: `41f7ceeb38c971874b52578c4b622a704b992715`
-  (`Integrate MGP-6 v4.3 final release`).
-- Runner hardening commit: `86e3674` (`Harden MGP-6 v4.3 OpenRouter smoke runner`).
-- Current manifest-hardening commit:
-  `b978976f5bc2b25f22dc08d7c27113c8d820431f`
-  (`Harden MGP-6 v4.3 run manifests`).
-- Immediately after that commit, the tracked worktree was clean. The only
-  remaining `git status --short` entries were the deliberately preserved,
-  classified historical untracked paths; no private v4.3 path was visible.
+`FINAL_HIDDEN_CONFIG.json` and `FINAL_HIDDEN_RUN_AUTHORIZATION.json` were then
+validated as JSON and by a regression test. The authorization is true only for
+one complete prediction-generation run; it enforces exact runtime controls and
+requires complete prediction hashing before separate local-private scoring.

@@ -1,8 +1,8 @@
 {
   "schema_version": "mgp6-v4.3-frozen-config-index-1.0",
   "release_version": "4.3.0-human-validated-final",
-  "status": "DEV_PREPARATION_ONLY_NOT_FROZEN",
-  "authorized_for_hidden_run": false,
+  "status": "FROZEN_FOR_FINAL_HIDDEN_PREDICTION_GENERATION",
+  "authorized_for_hidden_run": true,
   "configuration": {
     "path": "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json",
     "sha256": "ceb9fd7db7f68ec91bbf366ba26114bb7505672f30e2fd8e50ab6d16ed391b73",
@@ -30,12 +30,19 @@
     "public_dev_metrics": {"accuracy": 0.8555555555555555, "macro_f1": 0.8565764126608312},
     "selection_basis": "Public dev only; it exceeds every completed baseline and required ablation. This is not a hidden-run authorization."
   },
-  "freeze_requirements_remaining": [
-    "Record the selected provider endpoint and exact accessible live model revision.",
-    "Record the post-development code commit and clean-worktree state.",
-    "Freeze prediction schema, evaluator code, prompts, seeds, decoding, retry policy, timeout, and concurrency after dev selection.",
-    "Generate FINAL_HIDDEN_RUN_AUTHORIZATION.json only after all acceptance gates pass."
-  ],
+  "final_hidden_configuration": {
+    "path": "experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json",
+    "sha256": "b3002b75d9669aa58f2768e216877990b2f18afba7383ad475805d1500af8984",
+    "freeze_preparation_commit": "af12517a15c9d9af4bb3bf95f7caee7330e6b243",
+    "ci_run_id": "30189412351",
+    "ci_url": "https://github.com/AliMohammadiiii/KSA-memory-governance/actions/runs/30189412351"
+  },
+  "final_hidden_authorization": {
+    "path": "experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json",
+    "authorized": true,
+    "hidden_run_controls_sha256": "1c1d002fb2cf4842f892b022f5ed1ad91318c3a10c76afad2fb6c378caaf68bf"
+  },
+  "freeze_requirements_remaining": [],
   "hidden_gold_accessed": false,
   "hidden_predictions_generated": false
 }

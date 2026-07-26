@@ -53,13 +53,23 @@ candidate only; neither it nor any ablation is a frozen hidden configuration.
 
 ## Hidden-run authorization
 
-Not generated. `authorized` is not true. Hidden inputs and hidden gold are held
-only in the ignored private boundary, and no hidden model call or hidden scoring
-has occurred.
+Generated and verified. `experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json` freezes
+the selected public-indexed-evidence `live_model_controller` at runtime commit
+`af12517a15c9d9af4bb3bf95f7caee7330e6b243`; GitHub Actions CI run
+[`30189412351`](https://github.com/AliMohammadiiii/KSA-memory-governance/actions/runs/30189412351)
+for that exact SHA completed successfully. It records the release/split facts,
+provider and exact requested model ID, prompt/system-prompt hashes, decoding,
+seed, retry policy, timeout, concurrency, evaluator/runtime hashes, and the
+environment lock.
 
-## Next gate
+`FINAL_HIDDEN_RUN_AUTHORIZATION.json` has `authorized: true` and binds every
+one of those controls. It authorizes exactly one complete hidden prediction
+generation. It does not authorize hidden-gold inspection during generation, and
+it requires closing the model run, validating coverage, and hashing prediction
+files before a separate local-private scoring step.
 
-Freeze the selected public-indexed-evidence controller: record the exact
-accessible provider model revision and final code/worktree state, freeze all
-controls, and generate the authorization audit. Do not open hidden gold before
-finalized hidden prediction files are coverage-validated and hashed.
+## Current gate
+
+`READY_FOR_FINAL_HIDDEN_RUN`. No hidden model call, hidden prediction file, or
+private scoring result exists yet. Hidden inputs and gold remain solely in the
+ignored private boundary.

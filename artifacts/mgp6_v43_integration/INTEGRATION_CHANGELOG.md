@@ -152,3 +152,19 @@ changed.
   Macro-F1 values were no-abstain 0.2398, no-provenance 0.2002, no-typing
   0.1905, and no-lineage 0.1995. The public-evidence controller is selected as
   a development candidate only; configuration freeze is the next gate.
+
+## 2026-07-26 — final hidden controls frozen
+
+- CI run `30189412351` completed successfully for
+  `af12517a15c9d9af4bb3bf95f7caee7330e6b243` (`Gate MGP-6 v4.3 hidden runs on
+  frozen controls`).
+- Generated the tracked, label-free final configuration and authorization.
+  They bind the selected controller's provider/model request, prompts,
+  decoding, seed, retry/timeout/concurrency policy, release/split facts,
+  evaluator/runtime hashes, and environment lock.
+- The authorization has `authorized: true` for exactly one hidden prediction
+  generation. The runner rejects any runtime-control mismatch and cannot score
+  in hidden mode. Hidden-gold access remains prohibited until complete
+  predictions are closed, validated, and hashed.
+- Added a regression test that validates the checked-in freeze artifacts and
+  rejects private/label keys. No hidden model call or private scoring has run.

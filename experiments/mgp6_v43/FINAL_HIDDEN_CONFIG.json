@@ -1,0 +1,96 @@
+{
+  "ci": {
+    "head_sha": "af12517a15c9d9af4bb3bf95f7caee7330e6b243",
+    "run_id": "30189412351",
+    "url": "https://github.com/AliMohammadiiii/KSA-memory-governance/actions/runs/30189412351",
+    "workflow": "CI"
+  },
+  "created_at_utc": "2026-07-26T05:29:42.675914+00:00",
+  "freeze_preparation_commit": "af12517a15c9d9af4bb3bf95f7caee7330e6b243",
+  "freeze_preparation_tracked_worktree": "clean",
+  "gate_results": {
+    "all_frozen_controls_hashed": true,
+    "private_boundary_ignored": true,
+    "release_quality_gates_pass": true,
+    "remote_ci_pass": true,
+    "repository_verification_pass": true,
+    "selected_public_dev_configuration_recorded": true,
+    "tracked_worktree_clean": true
+  },
+  "hidden_input_policy": {
+    "expected_item_count": 540,
+    "location": "ignored local private boundary; not named or hashed in this tracked artifact",
+    "prediction_generation_must_not_open_hidden_gold": true
+  },
+  "hidden_run_controls": {
+    "adapter_spec_hash": "3936aa50de7ed4520ba2b05b6c44dbf62077f9132ec070d6eb71514d5ed966c3",
+    "adapter_version": "ask.mgp6_v43_adapter.v3",
+    "base_url": "https://openrouter.ai/api/v1",
+    "concurrency": 1,
+    "decoding": {
+      "max_new_tokens": 128,
+      "reasoning_effort": "none",
+      "temperature": 0.0
+    },
+    "environment_lock": {
+      "pyproject_sha256": "c5923e5be8a5e4ff7d3ad80b7e61b06488174f68096a782154f6fd7efffbb462",
+      "python": "3.12.12 (main, Oct  9 2025, 11:07:00) [Clang 17.0.0 (clang-1700.4.4.1)]"
+    },
+    "evaluator_version": "ask.eval.mgp6_v43.v1",
+    "input_mode": "private_hidden_inputs_without_gold",
+    "model_id": "qwen/qwen3.5-9b",
+    "prompt_hash": "3ffa2ae8df004a4b04c03eaf17ca39d1a57060da718d4a42ec6f67e1a3158619",
+    "provider": "openrouter",
+    "release_version": "4.3.0-human-validated-final",
+    "retry_policy": {
+      "parse_max_attempts": 2,
+      "transport_max_attempts": 3
+    },
+    "runtime_hashes": {
+      "evaluator_and_adapters": "ae22ad2fb91996f74f48a3849df82999b94165e0f57fe70985b204e091cf909d",
+      "public_scorer": "c59a749804aa7e448196e114d9f4e56a3a170cb9ffe11c825dd6abde5bf32999",
+      "runner": "5b4b9aa46e5a7589d0af84ef0f8339c6da9bf2973746f2affbaa27134652d874"
+    },
+    "seed": 4301,
+    "system": "live_model_controller",
+    "system_prompt_hash": "f802dc83acf2524908ab32c557146aa6bd7cf1c95e5355d3a50a81d177308572",
+    "timeout_s": 120.0
+  },
+  "hidden_run_controls_sha256": "1c1d002fb2cf4842f892b022f5ed1ad91318c3a10c76afad2fb6c378caaf68bf",
+  "provider_route_limit": {
+    "base_url": "https://openrouter.ai/api/v1",
+    "freeze_rule": "The requested model ID must match exactly; abort on any frozen-control mismatch.",
+    "provider": "openrouter",
+    "requested_model_id": "qwen/qwen3.5-9b",
+    "routed_model_revision": "unreported by provider metadata during public dev"
+  },
+  "release_facts": {
+    "item_count": 900,
+    "public_facts_sha256": "4192388e7b43970bd84bd6de450caff5502358452c0318dc8efd358dd17bd5c8",
+    "quality_gates": {
+      "archive_manifests_passed": true,
+      "class_balance_exact": true,
+      "components_not_cut": true,
+      "deterministic_build_passed": true,
+      "domain_component_balance_exact": true,
+      "duplicate_audit_passed": true,
+      "failed_gates": [],
+      "model_field_allowlist_passed": true,
+      "shortcut_audit_passed": true
+    },
+    "split_component_counts": {
+      "dev": 20,
+      "hidden": 60,
+      "train": 20
+    },
+    "split_counts": {
+      "dev": 180,
+      "hidden": 540,
+      "train": 180
+    }
+  },
+  "release_identity": "MGP-6 v4.3.0-human-validated-final",
+  "schema_version": "mgp6-v4.3-final-hidden-config-1.0",
+  "scoring_separation": "This config authorizes prediction generation only. Hash complete predictions before separate local-private scoring.",
+  "status": "FROZEN_FOR_FINAL_HIDDEN_PREDICTION_GENERATION"
+}
