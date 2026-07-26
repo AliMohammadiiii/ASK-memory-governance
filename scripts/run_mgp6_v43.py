@@ -46,6 +46,13 @@ SYSTEMS = MGP6V43_RUNNABLE_SYSTEMS
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_HIDDEN_INPUT_ROOT = REPO_ROOT / ".private/benchmarks/mgp6/v4.3/hidden_inputs"
 FINAL_HIDDEN_RUN_ROOT = REPO_ROOT / "runs/mgp6_v43/final_hidden"
+# Audited one-time bridge for public dev runs that began before provenance-only
+# resume support existed.  This is intentionally a hash allowlist rather than
+# a broad opt-out from runtime integrity checks.  It never applies to hidden
+# inputs and must not be extended without reviewing the generation-code diff.
+PUBLIC_RESUME_COMPATIBLE_PREDECESSOR_RUNNER_HASHES = frozenset(
+    {"af4f8b2dca1ed67832cb0ad50283a7a80cd38f2e2b8b73bb54da3f701c4d5828"}
+)
 DEFAULT_SYSTEM_PROMPTS = {
     "b1": Path("configs/experiments/mgp6_v43/b1_no_memory_prompt.txt"),
     "b2": Path("configs/experiments/mgp6_v43/b2_flat_retrieval_prompt.txt"),
@@ -170,6 +177,73 @@ def _write_manifest(path: Path, manifest: dict[str, Any]) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     temporary.replace(path)
+
+
+def _resume_provenance_if_compatible(
+    previous_manifest: dict[str, Any],
+    current_manifest: dict[str, Any],
+    *,
+    hidden_input: bool,
+) -> dict[str, str] | None:
+    """Validate resume controls and record a safe public provenance-only change.
+
+    Public development runs may be resumed after an unrelated repository commit
+    (for example, a suite-reporting improvement).  The execution code hashes
+    and every operational/model control must still match exactly.  Hidden runs
+    deliberately retain the stricter exact-frozen-config rule.
+    """
+
+    if not previous_manifest:
+        return None
+    immutable_keys = (
+        "release_version",
+        "dataset_sha256",
+        "system",
+        "adapter_spec_hash",
+        "provider",
+        "model_id",
+        "prompt_hash",
+        "seed",
+        "n_selected",
+    )
+    for key in immutable_keys:
+        if previous_manifest.get(key) != current_manifest.get(key):
+            raise SystemExit(f"cannot resume: manifest {key} does not match current run")
+
+    previous_config = previous_manifest.get("run_config")
+    current_config = current_manifest.get("run_config")
+    if not isinstance(previous_config, dict) or not isinstance(current_config, dict):
+        raise SystemExit("cannot resume: manifest has no valid run_config")
+    if previous_config == current_config:
+        return None
+    if hidden_input:
+        raise SystemExit("cannot resume hidden input: manifest run_config does not match frozen run")
+
+    previous_semantic_config = dict(previous_config)
+    current_semantic_config = dict(current_config)
+    previous_commit = previous_semantic_config.pop("code_commit", None)
+    current_commit = current_semantic_config.pop("code_commit", None)
+    if previous_semantic_config != current_semantic_config:
+        raise SystemExit("cannot resume: manifest run_config does not match current run")
+    previous_runtime = previous_manifest.get("runtime_hashes")
+    current_runtime = current_manifest.get("runtime_hashes")
+    if not isinstance(previous_runtime, dict) or not isinstance(current_runtime, dict):
+        raise SystemExit("cannot resume: manifest has no valid runtime hashes")
+    if previous_runtime != current_runtime:
+        predecessor_runner = previous_runtime.get("runner")
+        if (
+            previous_runtime.get("evaluator_and_adapters")
+            != current_runtime.get("evaluator_and_adapters")
+            or predecessor_runner not in PUBLIC_RESUME_COMPATIBLE_PREDECESSOR_RUNNER_HASHES
+        ):
+            raise SystemExit("cannot resume: execution runtime hashes do not match current run")
+    if not isinstance(previous_commit, str) or not isinstance(current_commit, str):
+        raise SystemExit("cannot resume: manifest has no valid code commit provenance")
+    return {
+        "previous_code_commit": previous_commit,
+        "current_code_commit": current_commit,
+        "reason": "public_resume_with_audited_predecessor_runner",
+    }
 
 
 def _openrouter_reasoning_body(reasoning_effort: str | None) -> dict[str, Any] | None:
@@ -391,20 +465,17 @@ def main() -> int:
             f"system={args.system} adapter={adapter_version} prompt_hash={prompt_hash}"
         )
         return 0
-    immutable_resume_keys = (
-        "release_version",
-        "dataset_sha256",
-        "system",
-        "adapter_spec_hash",
-        "provider",
-        "model_id",
-        "prompt_hash",
-        "seed",
-        "run_config_hash",
+    resume_provenance = _resume_provenance_if_compatible(
+        previous_manifest,
+        manifest,
+        hidden_input=args.hidden_input,
     )
-    for key in immutable_resume_keys:
-        if previous_manifest and previous_manifest.get(key) != manifest[key]:
-            raise SystemExit(f"cannot resume: manifest {key} does not match current run")
+    previous_resume_history = previous_manifest.get("resume_history", [])
+    if previous_resume_history and not isinstance(previous_resume_history, list):
+        raise SystemExit("cannot resume: manifest resume_history is invalid")
+    manifest["resume_history"] = list(previous_resume_history)
+    if resume_provenance is not None:
+        manifest["resume_history"].append(resume_provenance)
     predictions_path, raw_path = args.out / "predictions.jsonl", args.out / "raw_responses.jsonl"
     args.out.mkdir(parents=True, exist_ok=True)
     existing_predictions = {

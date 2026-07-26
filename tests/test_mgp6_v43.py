@@ -357,6 +357,48 @@ def test_private_boundary_is_ignored() -> None:
     assert result.returncode == 0
 
 
+def test_public_resume_allows_only_provenance_commit_change_with_same_runtime() -> None:
+    current = {
+        "release_version": "4.3.0-human-validated-final",
+        "dataset_sha256": "dataset",
+        "system": "b1",
+        "adapter_spec_hash": "adapter",
+        "provider": "openrouter",
+        "model_id": "qwen/qwen3.5-9b",
+        "prompt_hash": "prompt",
+        "seed": 4301,
+        "n_selected": 180,
+        "runtime_hashes": {"runner": "current", "evaluator_and_adapters": "evaluator"},
+        "run_config": {"code_commit": "new", "timeout_s": 120.0, "seed": 4301},
+    }
+    previous = {
+        **current,
+        "runtime_hashes": {
+            "runner": next(iter(run_mgp6_v43.PUBLIC_RESUME_COMPATIBLE_PREDECESSOR_RUNNER_HASHES)),
+            "evaluator_and_adapters": "evaluator",
+        },
+        "run_config": {**current["run_config"], "code_commit": "old"},
+    }
+    event = run_mgp6_v43._resume_provenance_if_compatible(
+        previous, current, hidden_input=False
+    )
+    assert event == {
+        "previous_code_commit": "old",
+        "current_code_commit": "new",
+        "reason": "public_resume_with_audited_predecessor_runner",
+    }
+    with pytest.raises(SystemExit, match="hidden input"):
+        run_mgp6_v43._resume_provenance_if_compatible(previous, current, hidden_input=True)
+    unknown_runner = {
+        **previous,
+        "runtime_hashes": {"runner": "unknown", "evaluator_and_adapters": "evaluator"},
+    }
+    with pytest.raises(SystemExit, match="runtime hashes"):
+        run_mgp6_v43._resume_provenance_if_compatible(
+            unknown_runner, current, hidden_input=False
+        )
+
+
 def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     dry_run = subprocess.run(
         [sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--dry-run"],
