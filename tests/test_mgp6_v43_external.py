@@ -19,7 +19,12 @@ from ask.eval.mgp6_v43_external import (
     derive_external_action,
     run_external_record,
 )
-from scripts.run_mgp6_v43_external import REPO_ROOT, _existing_prediction_ids, select_shard_records
+from scripts.run_mgp6_v43_external import (
+    REPO_ROOT,
+    _existing_prediction_ids,
+    _is_fatal_provider_error,
+    select_shard_records,
+)
 from scripts.run_mgp6_v43_external_sharded import merge_shards
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -151,6 +156,11 @@ def test_external_runner_shards_are_deterministic_and_disjoint() -> None:
         "MGP43-C",
         "MGP43-D",
     }
+
+
+def test_external_runner_stops_on_insufficient_provider_credits() -> None:
+    assert _is_fatal_provider_error(RuntimeError("Error code: 402 - Insufficient credits"))
+    assert not _is_fatal_provider_error(RuntimeError("Connection error"))
 
 
 def test_external_shard_merge_requires_and_publishes_exact_coverage(tmp_path: Path) -> None:

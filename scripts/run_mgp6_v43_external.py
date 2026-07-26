@@ -101,6 +101,12 @@ def _write_json(path: Path, value: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def _is_fatal_provider_error(exc: Exception) -> bool:
+    """Return whether retrying later records cannot help this provider failure."""
+    text = str(exc).lower()
+    return "insufficient credits" in text or "error code: 402" in text or "payment_required" in text
+
+
 def _adapter(backend: str):
     module_name, class_name = _ADAPTER_IMPORTS[backend]
     try:
@@ -199,6 +205,10 @@ def main(argv: list[str] | None = None) -> int:
             ) as exc:  # Resume only records whose durable prediction was not written.
                 errors += 1
                 print(f"[{args.backend}] ERROR {record.public_id}: {exc}", file=sys.stderr)
+                if _is_fatal_provider_error(exc):
+                    raise SystemExit(
+                        "provider credits are unavailable; stopping without attempting later records"
+                    ) from exc
             if progress is not None:
                 progress.update(1)
             elif index % 10 == 0 or index == len(todo):
