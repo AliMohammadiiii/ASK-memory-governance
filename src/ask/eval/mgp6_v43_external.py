@@ -86,7 +86,9 @@ def requested_value(record: MGP6V43Record) -> str | None:
     return None
 
 
-def backend_seed_payload(record: MGP6V43Record) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
+def backend_seed_payload(
+    record: MGP6V43Record,
+) -> tuple[list[dict[str, Any]], list[dict[str, str]]]:
     """Convert a public record to the legacy adapters' generic text contract."""
     model_input = record.model_input()
     memory_before = model_input["memory_before"]
@@ -105,7 +107,9 @@ def backend_seed_payload(record: MGP6V43Record) -> tuple[list[dict[str, Any]], l
         if not isinstance(text, str) or not text.strip():
             continue
         speaker = str(turn.get("speaker", "USER")).upper()
-        dialogue.append({"role": "assistant" if speaker == "ASSISTANT" else "user", "content": text})
+        dialogue.append(
+            {"role": "assistant" if speaker == "ASSISTANT" else "user", "content": text}
+        )
     payload = {"records": records, "dialogue": dialogue, "query": model_input["evaluation_query"]}
     assert_model_safe(payload)
     return records, dialogue
@@ -123,14 +127,22 @@ def derive_external_action(
     prior_present = _contains(post_texts, prior_value)
     candidate_present = _contains(post_texts, candidate_value)
     if candidate_value and prior_value and _normalise(candidate_value) == _normalise(prior_value):
-        return DerivedExternalAction("KEEP", "candidate_equals_prior", prior_present, candidate_present)
+        return DerivedExternalAction(
+            "KEEP", "candidate_equals_prior", prior_present, candidate_present
+        )
     if candidate_present and not prior_present:
-        return DerivedExternalAction("SUPERSEDE", "candidate_only", prior_present, candidate_present)
+        return DerivedExternalAction(
+            "SUPERSEDE", "candidate_only", prior_present, candidate_present
+        )
     if prior_present and not candidate_present:
         return DerivedExternalAction("KEEP", "prior_only", prior_present, candidate_present)
     if prior_present and candidate_present:
-        return DerivedExternalAction("ABSTAIN", "dual_active_ambiguous", prior_present, candidate_present)
-    return DerivedExternalAction("ABSTAIN", "state_unavailable_or_candidate_missing", prior_present, candidate_present)
+        return DerivedExternalAction(
+            "ABSTAIN", "dual_active_ambiguous", prior_present, candidate_present
+        )
+    return DerivedExternalAction(
+        "ABSTAIN", "state_unavailable_or_candidate_missing", prior_present, candidate_present
+    )
 
 
 def run_external_record(
@@ -157,7 +169,9 @@ def run_external_record(
             }
         )
     post_texts = [str(value) for value in backend.snapshot() if str(value).strip()]
-    retrieved = [str(value) for value in backend.search(model_input["evaluation_query"], k=retrieval_k)]
+    retrieved = [
+        str(value) for value in backend.search(model_input["evaluation_query"], k=retrieval_k)
+    ]
     standing_value = model_input["memory_before"].get("standing_value")
     prior_value = str(standing_value) if isinstance(standing_value, str) else None
     candidate_value = requested_value(record)

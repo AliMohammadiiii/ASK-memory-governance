@@ -379,9 +379,7 @@ def test_public_resume_allows_only_provenance_commit_change_with_same_runtime() 
         },
         "run_config": {**current["run_config"], "code_commit": "old"},
     }
-    event = run_mgp6_v43._resume_provenance_if_compatible(
-        previous, current, hidden_input=False
-    )
+    event = run_mgp6_v43._resume_provenance_if_compatible(previous, current, hidden_input=False)
     assert event == {
         "previous_code_commit": "old",
         "current_code_commit": "new",
@@ -394,9 +392,7 @@ def test_public_resume_allows_only_provenance_commit_change_with_same_runtime() 
         "runtime_hashes": {"runner": "unknown", "evaluator_and_adapters": "evaluator"},
     }
     with pytest.raises(SystemExit, match="runtime hashes"):
-        run_mgp6_v43._resume_provenance_if_compatible(
-            unknown_runner, current, hidden_input=False
-        )
+        run_mgp6_v43._resume_provenance_if_compatible(unknown_runner, current, hidden_input=False)
 
 
 def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:

@@ -217,7 +217,9 @@ def _resume_provenance_if_compatible(
     if previous_config == current_config:
         return None
     if hidden_input:
-        raise SystemExit("cannot resume hidden input: manifest run_config does not match frozen run")
+        raise SystemExit(
+            "cannot resume hidden input: manifest run_config does not match frozen run"
+        )
 
     previous_semantic_config = dict(previous_config)
     current_semantic_config = dict(current_config)

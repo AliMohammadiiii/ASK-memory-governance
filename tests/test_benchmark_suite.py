@@ -122,6 +122,8 @@ def test_run_offline_and_models_never_select_archival_tasks_by_default() -> None
 
 def test_attempt_reports_are_append_only() -> None:
     root = ROOT / "runs/benchmark_suite/test-attempts"
-    json_path, markdown_path = run_benchmark_suite._attempt_report_paths(root, "20260726T010203000000Z")
+    json_path, markdown_path = run_benchmark_suite._attempt_report_paths(
+        root, "20260726T010203000000Z"
+    )
     assert json_path.name == "SUITE_REPORT_20260726T010203000000Z.json"
     assert markdown_path.name == "SUITE_REPORT_20260726T010203000000Z.md"

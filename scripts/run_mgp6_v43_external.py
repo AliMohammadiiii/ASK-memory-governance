@@ -52,7 +52,9 @@ def _public_input(path: Path) -> Path:
     try:
         resolved.relative_to(public_root)
     except ValueError as exc:
-        raise SystemExit("external v4.3 runner accepts tracked public train/dev input only") from exc
+        raise SystemExit(
+            "external v4.3 runner accepts tracked public train/dev input only"
+        ) from exc
     if resolved.name not in {"train.jsonl", "dev.jsonl"}:
         raise SystemExit("external v4.3 runner accepts only public train.jsonl or dev.jsonl")
     return resolved
@@ -156,7 +158,9 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 _append_jsonl(raw_path, observation)
                 write_prediction_resume_safe(predictions_path, prediction)
-            except Exception as exc:  # Resume only records whose durable prediction was not written.
+            except (
+                Exception
+            ) as exc:  # Resume only records whose durable prediction was not written.
                 errors += 1
                 print(f"[{args.backend}] ERROR {record.public_id}: {exc}", file=sys.stderr)
             if progress is not None:
@@ -175,7 +179,9 @@ def main(argv: list[str] | None = None) -> int:
         adapter.close()
 
     completed = len(load_predictions_allow_partial(predictions_path))
-    print(f"[mgp6-v43-external] backend={args.backend} completed={completed}/{len(records)} errors={errors}")
+    print(
+        f"[mgp6-v43-external] backend={args.backend} completed={completed}/{len(records)} errors={errors}"
+    )
     return 1 if errors else 0
 
 

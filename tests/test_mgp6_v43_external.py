@@ -93,12 +93,14 @@ def test_external_seed_payload_is_model_safe_and_label_free(tmp_path: Path) -> N
 
 
 def test_external_state_mapping_is_explicit_about_ambiguity() -> None:
-    assert derive_external_action(
-        prior_value="old", candidate_value="new", post_texts=["new"]
-    ).action == "SUPERSEDE"
-    assert derive_external_action(
-        prior_value="old", candidate_value="new", post_texts=["old"]
-    ).action == "KEEP"
+    assert (
+        derive_external_action(prior_value="old", candidate_value="new", post_texts=["new"]).action
+        == "SUPERSEDE"
+    )
+    assert (
+        derive_external_action(prior_value="old", candidate_value="new", post_texts=["old"]).action
+        == "KEEP"
+    )
     ambiguous = derive_external_action(
         prior_value="old", candidate_value="new", post_texts=["old and new"]
     )
