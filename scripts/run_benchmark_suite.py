@@ -11,9 +11,11 @@ The command is deliberately conservative:
 * All new logs and reports are written beneath this repository's ignored
   ``runs/`` directory.  The archived workspace is not modified by an audit.
 
-Use ``--run-offline`` for the local v4.3 rules controller plus archival
-readiness/status audit.  Add ``--execute-models`` only after exporting a
-fresh, non-exposed ``OPENROUTER_API_KEY`` in the shell.
+Use ``--run-offline`` for the local v4.3 rules controller.  Add
+``--execute-models`` only after exporting a fresh, non-exposed
+``OPENROUTER_API_KEY`` in the shell.  The archived v3.3.2 workspace is never
+selected by either flag: its readiness audit and legacy ten-view fixture
+execution require separate explicit flags.
 """
 
 from __future__ import annotations
@@ -154,6 +156,7 @@ def build_tasks(
     input_path: Path,
     output_root: Path,
     memory_benchmarks_root: Path,
+    include_archival_v332: bool = False,
 ) -> list[SuiteTask]:
     """Create every supported task without executing or reading release records."""
 
@@ -180,6 +183,9 @@ def build_tasks(
                 description="Generate public-only predictions; the scorer is scheduled after success.",
             )
         )
+
+    if not include_archival_v332:
+        return tasks
 
     harness = memory_benchmarks_root / "harnesses/mgp6_v3_3_2"
     external_python = memory_benchmarks_root / "environments/mgp6-v3.3.2/bin/python"
@@ -547,7 +553,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--run-offline",
         action="store_true",
-        help="Run only the local v4.3 rules controller and v3.3.2 archival audits.",
+        help="Run only the local v4.3 rules controller; never select v3.3.2 tasks.",
     )
     parser.add_argument(
         "--execute-models",
@@ -557,7 +563,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--execute-external-fixtures",
         action="store_true",
-        help="Run archived v3.3.2 fixture suites after both safety opt-ins.",
+        help="Run archived v3.3.2 ten-view fixture suites after both safety opt-ins.",
+    )
+    parser.add_argument(
+        "--audit-archival-v332",
+        action="store_true",
+        help="Run the v3.3.2 readiness/status audit only; never makes model calls.",
     )
     parser.add_argument(
         "--allow-test-only-external-fixture",
@@ -604,6 +615,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         input_path=input_path,
         output_root=output_root,
         memory_benchmarks_root=memory_root,
+        include_archival_v332=(args.audit_archival_v332 or args.execute_external_fixtures),
     )
     existing_v43_predictions = {
         task.task_id: _completed_items(task)
@@ -628,7 +640,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif task.requires_external_fixture_opt_in:
             selected = args.execute_external_fixtures
         else:
-            selected = args.run_offline
+            selected = args.audit_archival_v332 or args.execute_external_fixtures
 
         if not selected:
             reason = "planned"
@@ -692,6 +704,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "run_offline": args.run_offline,
             "execute_models": args.execute_models,
             "execute_external_fixtures": args.execute_external_fixtures,
+            "audit_archival_v332": args.audit_archival_v332,
             "allow_test_only_external_fixture": args.allow_test_only_external_fixture,
             "allow_archive_resume": args.allow_archive_resume,
             "model_id": MODEL_ID,

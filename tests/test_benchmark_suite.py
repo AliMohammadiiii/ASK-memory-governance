@@ -30,7 +30,9 @@ def test_suite_output_guard_requires_ignored_runs_directory(tmp_path: Path) -> N
     )
 
 
-def test_task_plan_covers_every_v43_system_and_never_contains_hidden_flags(tmp_path: Path) -> None:
+def test_default_task_plan_covers_only_v43_systems_and_never_contains_hidden_flags(
+    tmp_path: Path,
+) -> None:
     tasks = run_benchmark_suite.build_tasks(
         python="python",
         input_path=ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl",
@@ -41,6 +43,17 @@ def test_task_plan_covers_every_v43_system_and_never_contains_hidden_flags(tmp_p
     assert {task.task_id.removeprefix("v43:") for task in v43} == set(MGP6V43_RUNNABLE_SYSTEMS)
     assert all("--hidden-input" not in task.command for task in v43)
     assert all("hidden_gold" not in " ".join(task.command) for task in tasks)
+    assert not any(task.family == "memory_benchmarks_v332" for task in tasks)
+
+
+def test_archival_tasks_require_an_explicit_plan_opt_in() -> None:
+    tasks = run_benchmark_suite.build_tasks(
+        python="python",
+        input_path=ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl",
+        output_root=ROOT / "runs/benchmark_suite/test-archival-plan",
+        memory_benchmarks_root=ROOT.parent / "memory_benchmarks",
+        include_archival_v332=True,
+    )
     assert any(task.task_id == "v332:archival-preflight" for task in tasks)
 
 
@@ -78,6 +91,12 @@ def test_v43_tasks_expose_public_prediction_progress_only() -> None:
 
 def test_resume_flag_is_explicit() -> None:
     assert run_benchmark_suite.parse_args(["--resume"]).resume is True
+
+
+def test_run_offline_and_models_never_select_archival_tasks_by_default() -> None:
+    args = run_benchmark_suite.parse_args(["--run-offline", "--execute-models"])
+    assert args.audit_archival_v332 is False
+    assert args.execute_external_fixtures is False
 
 
 def test_attempt_reports_are_append_only() -> None:
