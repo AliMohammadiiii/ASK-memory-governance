@@ -84,14 +84,16 @@ class MemOSAdapter(ExternalAdapter):
             "MOS_EMBEDDER_PROVIDER": os.environ.get("MGP6_MEMOS_EMBEDDER_PROVIDER", "openai"),
             "MOS_EMBEDDER_MODEL": os.environ.get(
                 "MGP6_MEMOS_EMBEDDER_MODEL",
-                "sentence-transformers/all-MiniLM-L6-v2",
+                os.environ.get("MGP6_EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
             ),
             "MOS_EMBEDDER_API_BASE": os.environ.get(
                 "MGP6_MEMOS_EMBEDDER_API_BASE",
-                "http://127.0.0.1:8100/v1",
+                os.environ.get("MGP6_EMBED_BASE_URL", "http://127.0.0.1:8100/v1"),
             ),
             "MOS_EMBEDDER_API_KEY": os.environ.get("MGP6_MEMOS_EMBEDDER_API_KEY", "local"),
-            "EMBEDDING_DIMENSION": os.environ.get("MGP6_MEMOS_EMBEDDING_DIMENSION", "384"),
+            "EMBEDDING_DIMENSION": os.environ.get(
+                "MGP6_MEMOS_EMBEDDING_DIMENSION", os.environ.get("MGP6_EMBED_DIM", "384")
+            ),
             "MOS_RERANKER_BACKEND": os.environ.get("MGP6_MEMOS_RERANKER_BACKEND", "cosine_local"),
         }
         os.environ.update(runtime_config)
@@ -299,6 +301,7 @@ class MemOSAdapter(ExternalAdapter):
             text_mem_type="general_text",
             user_id=self.user_id,
             model_name=chat_model,
+            temperature=0.0,
         )
 
         # The default helper otherwise gives MemReader the OpenAI/OpenRouter
@@ -332,6 +335,7 @@ class MemOSAdapter(ExternalAdapter):
             text_mem_type="general_text",
             user_id=self.user_id,
             model_name=chat_model,
+            temperature=0.0,
             embedder_model=embedder_config["config"]["model_name_or_path"],
             vector_dimension=expected_dimension,
             cube_id=self.mem_cube_id,

@@ -39,18 +39,18 @@ BASE_URL = os.environ.get(
 
 EMBED_URL = os.environ.get(
     "GRAPHITI_EMBED_URL",
-    "http://localhost:8100/v1",
+    os.environ.get("MGP6_EMBED_BASE_URL", "http://localhost:8100/v1"),
 )
 
 EMBED_MODEL = os.environ.get(
     "GRAPHITI_EMBED_MODEL",
-    "sentence-transformers/all-MiniLM-L6-v2",
+    os.environ.get("MGP6_EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
 )
 
 EMBED_DIM = int(
     os.environ.get(
         "GRAPHITI_EMBED_DIM",
-        "384",
+        os.environ.get("MGP6_EMBED_DIM", "384"),
     )
 )
 
@@ -99,6 +99,9 @@ class _NoThinkingCompletions:
         self._inner = inner
 
     async def create(self, *args: Any, **kwargs: Any) -> Any:
+        # Align every external LLM call with the frozen ASK controller's
+        # deterministic decoding policy.
+        kwargs.setdefault("temperature", 0.0)
         extra_body = dict(kwargs.get("extra_body") or {})
 
         chat_template_kwargs = dict(extra_body.get("chat_template_kwargs") or {})

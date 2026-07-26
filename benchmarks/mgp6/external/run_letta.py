@@ -39,10 +39,11 @@ sys.path.insert(0, str(HERE))
 from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
 
 LETTA_URL = os.environ.get("LETTA_BASE_URL", "http://localhost:8283")
+ASK_MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
 # The current Letta Docker image exposes OpenAI-compatible upstream models
 # under the ``openai-proxy/`` provider namespace.  The environment override
 # remains available for a self-hosted Letta deployment with different handles.
-LETTA_MODEL = os.environ.get("LETTA_MODEL", "openai-proxy/qwen/qwen3.5-9b")
+LETTA_MODEL = os.environ.get("LETTA_MODEL", f"openai-proxy/{ASK_MODEL}")
 PERSONA = (
     "I am a personal assistant. I maintain accurate long-term memory "
     "about the user and update it when the user's information changes."
@@ -76,6 +77,10 @@ class LettaAdapter(ExternalAdapter):
         agent = self.client.agents.create(
             name=_letta_agent_name(scenario_id),
             model=LETTA_MODEL,
+            # The OpenRouter-backed model handle is derived from MGP6_MODEL.
+            # Letta owns the agent/tool loop and its provider-side decoding;
+            # that native operation is kept separate from the controller's
+            # final three-way decision contract.
             memory_blocks=[
                 {"label": "persona", "value": PERSONA},
                 {"label": "human", "value": ""},

@@ -39,6 +39,13 @@ sys.path.insert(0, str(HERE))
 from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
 
 MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
+EMBED_MODEL = os.environ.get("MGP6_EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+EMBED_DIM = int(os.environ.get("MGP6_EMBED_DIM", "384"))
+# Native extraction is an internal memory-layer operation, not the final
+# three-way controller decision.  It needs a larger documented budget to emit
+# structured tool output; model identity, endpoint, temperature and embedding
+# remain aligned with ASK.
+MAX_NEW_TOKENS = int(os.environ.get("MGP6_MEM0_MAX_NEW_TOKENS", "800"))
 
 
 class Mem0Adapter(ExternalAdapter):
@@ -89,13 +96,13 @@ class Mem0Adapter(ExternalAdapter):
             "history_db_path": os.path.join(self._tmp, "history.db"),
             "llm": {
                 "provider": "openai",
-                "config": {"model": MODEL, "temperature": 0.0, "max_tokens": 800},
+                "config": {"model": MODEL, "temperature": 0.0, "max_tokens": MAX_NEW_TOKENS},
             },
             "embedder": {
                 "provider": "huggingface",
                 "config": {
-                    "model": "sentence-transformers/all-MiniLM-L6-v2",
-                    "embedding_dims": 384,
+                    "model": EMBED_MODEL,
+                    "embedding_dims": EMBED_DIM,
                 },
             },
             "vector_store": {
@@ -103,7 +110,7 @@ class Mem0Adapter(ExternalAdapter):
                 "config": {
                     "path": self._tmp,
                     "collection_name": "mgp6_ext",
-                    "embedding_model_dims": 384,
+                    "embedding_model_dims": EMBED_DIM,
                     "on_disk": False,
                 },
             },
@@ -168,7 +175,10 @@ class Mem0Adapter(ExternalAdapter):
         return {
             "mem0_version": version,
             "llm_model": MODEL,
-            "embedder": "all-MiniLM-L6-v2",
+            "embedder": EMBED_MODEL,
+            "embedding_dim": EMBED_DIM,
+            "temperature": 0.0,
+            "max_new_tokens": MAX_NEW_TOKENS,
             "vector_store": "qdrant(local)",
             "history_db": "isolated-temp",
             "telemetry": "disabled",

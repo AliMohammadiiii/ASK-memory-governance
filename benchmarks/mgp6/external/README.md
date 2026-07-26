@@ -20,6 +20,24 @@ flagged). Always smoke-test with `--limit 2` first. Outputs both
 (NOOP→ABSTAIN); report both, cite the better as the system's upper bound.
 Mapping + rationale: see the docstring in `common.py`.
 
+### ASK-controller alignment
+
+The public v4.3 wrapper aligns every configurable external backend with the
+frozen ASK controller: OpenRouter Qwen 3.5 9B, temperature zero where the
+backend exposes decoding controls, and the CPU
+`sentence-transformers/all-MiniLM-L6-v2` 384-dimensional embedder.  Set the
+shared values once with `MGP6_MODEL`, `MGP6_BASE_URL`, `MGP6_EMBED_MODEL`,
+`MGP6_EMBED_DIM`, and `MGP6_EMBED_BASE_URL`; Graphiti and MemOS use the shared
+OpenAI-compatible embedding server, while Mem0 loads the same MiniLM weights
+locally.  Letta's evaluated core-memory-block path performs no vector
+retrieval, so its embedding setting is not applicable; its model handle is
+derived as `openai-proxy/$MGP6_MODEL`.
+
+Native write/tool loops are not ASK controller decisions. Their operational
+token budgets remain backend-specific and are recorded in the run metadata;
+forcing the controller's 128-token action limit on them produces truncated
+tool calls and invalidates the backend run.
+
 LongMemEval: `../ask_controller/scripts/run_external_lme.py` reuses these
 adapters with the SAME judge/report machinery as the internal systems.
 
