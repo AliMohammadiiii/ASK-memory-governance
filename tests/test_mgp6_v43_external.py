@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -13,7 +14,7 @@ from ask.eval.mgp6_v43_external import (
     derive_external_action,
     run_external_record,
 )
-from scripts.run_mgp6_v43_external import _existing_prediction_ids
+from scripts.run_mgp6_v43_external import REPO_ROOT, _existing_prediction_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -122,3 +123,7 @@ def test_external_record_uses_public_namespace_and_never_observes_gold(tmp_path:
 
 def test_external_runner_treats_a_fresh_prediction_path_as_empty(tmp_path: Path) -> None:
     assert _existing_prediction_ids(tmp_path / "predictions.jsonl") == set()
+
+
+def test_external_runner_adds_repository_root_for_adapter_imports() -> None:
+    assert str(REPO_ROOT) in sys.path

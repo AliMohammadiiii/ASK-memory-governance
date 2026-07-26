@@ -7,12 +7,15 @@ mem0ai==2.0.11
 qdrant-client>=1.9
 sentence-transformers>=3.0
 
-# Zep/Graphiti (Rasmussen et al., 2025) — embedded Kuzu backend
-graphiti-core==0.29.2
-kuzu==0.11.2
+# Zep/Graphiti (Rasmussen et al., 2025) — FalkorDB service backend
+# The adapter imports FalkorDriver, so the FalkorDB extra is required; Kuzu
+# alone cannot satisfy this runner.
+graphiti-core[falkordb]==0.29.2
 
 # Letta / MemGPT (Packer et al., 2023) — client only; server runs in Docker
 letta-client==1.12.1
 
 # MemOS (Li et al., 2025)
 MemoryOS==2.0.23
+chonkie==1.7.0
+langchain-text-splitters==1.1.2

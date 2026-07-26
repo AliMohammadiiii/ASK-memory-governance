@@ -15,7 +15,7 @@ Setup (once) — requires a local Letta server (Docker):
       letta/letta:latest
     pip install letta-client
     # pick the model handle your server exposes (client.models.list()):
-    export LETTA_MODEL="openai/qwen/qwen3.5-9b"
+    export LETTA_MODEL="openai-proxy/qwen/qwen3.5-9b"
 
 BETA adapter: the letta-client SDK surface moves quickly; ALWAYS smoke-test
 first and, if a call fails, check `client.agents` method names against your
@@ -28,6 +28,7 @@ Smoke test:
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -38,11 +39,19 @@ sys.path.insert(0, str(HERE))
 from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
 
 LETTA_URL = os.environ.get("LETTA_BASE_URL", "http://localhost:8283")
-LETTA_MODEL = os.environ.get("LETTA_MODEL", "openai/qwen/qwen3.5-9b")
+# The current Letta Docker image exposes OpenAI-compatible upstream models
+# under the ``openai-proxy/`` provider namespace.  The environment override
+# remains available for a self-hosted Letta deployment with different handles.
+LETTA_MODEL = os.environ.get("LETTA_MODEL", "openai-proxy/qwen/qwen3.5-9b")
 PERSONA = (
     "I am a personal assistant. I maintain accurate long-term memory "
     "about the user and update it when the user's information changes."
 )
+
+
+def _letta_agent_name(scenario_id: str) -> str:
+    """Build a Letta-valid agent name from the public harness namespace."""
+    return "mgp6-" + re.sub(r"[^a-z0-9 _'-]", "_", scenario_id.lower())
 
 
 class LettaAdapter(ExternalAdapter):
@@ -65,7 +74,7 @@ class LettaAdapter(ExternalAdapter):
             except Exception:  # noqa: BLE001
                 pass
         agent = self.client.agents.create(
-            name=f"mgp6-{scenario_id.lower()}",
+            name=_letta_agent_name(scenario_id),
             model=LETTA_MODEL,
             memory_blocks=[
                 {"label": "persona", "value": PERSONA},

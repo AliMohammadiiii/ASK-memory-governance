@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import re
 import sys
 import time
 from datetime import UTC, datetime, timedelta
@@ -78,6 +79,17 @@ MAX_COROUTINES = int(
 )
 
 T0 = datetime(2026, 1, 1, tzinfo=UTC)
+
+
+def _graphiti_group_id(scenario_id: str) -> str:
+    """Translate the public-run namespace to Graphiti's restricted ID form.
+
+    The v4.3 harness deliberately records ``mgp6-v43:<public_id>`` as its
+    public namespace.  Graphiti accepts only alphanumerics, dashes, and
+    underscores in a group ID, so the adapter uses an equivalent internal
+    spelling while leaving the public audit namespace untouched.
+    """
+    return re.sub(r"[^a-z0-9_-]", "_", scenario_id.lower())
 
 
 class _NoThinkingCompletions:
@@ -254,7 +266,7 @@ class GraphitiAdapter(ExternalAdapter):
     # -- protocol ----------------------------------------------------------
 
     def reset(self, scenario_id: str) -> None:
-        self.group_id = scenario_id.lower()
+        self.group_id = _graphiti_group_id(scenario_id)
         self._episode_i = 0
 
         # Important for Docker/persistent DB:

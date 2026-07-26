@@ -18,7 +18,10 @@ import time
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+REPO_ROOT = Path(__file__).resolve().parents[1]
+for import_root in (REPO_ROOT, REPO_ROOT / "src"):
+    if str(import_root) not in sys.path:
+        sys.path.insert(0, str(import_root))
 
 from ask.eval.mgp6_v43 import (  # noqa: E402
     MGP6V43Prediction,
@@ -35,7 +38,6 @@ from ask.eval.mgp6_v43_external import (  # noqa: E402
     run_external_record,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT = REPO_ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl"
 
 _ADAPTER_IMPORTS = {
@@ -93,10 +95,16 @@ def _adapter(backend: str):
     module_name, class_name = _ADAPTER_IMPORTS[backend]
     try:
         module = importlib.import_module(module_name)
+    except ImportError as exc:
+        raise SystemExit(
+            f"cannot import {backend} adapter ({exc}); install the pinned packages in "
+            "benchmarks/mgp6/external/requirements-external.txt"
+        ) from exc
+    try:
         return getattr(module, class_name)()
     except ImportError as exc:
         raise SystemExit(
-            f"{backend} dependencies are unavailable; install the pinned packages in "
+            f"{backend} dependencies are unavailable ({exc}); install the pinned packages in "
             "benchmarks/mgp6/external/requirements-external.txt and follow its service setup"
         ) from exc
 
@@ -185,7 +193,11 @@ def main(argv: list[str] | None = None) -> int:
             progress.close()
         adapter.close()
 
-    completed = len(load_predictions_allow_partial(predictions_path))
+    # An adapter may fail before producing its first durable prediction (for
+    # example, when its Docker service is unavailable).  That is a legitimate
+    # resumable state, so do not turn the useful per-item error report into a
+    # secondary FileNotFoundError while computing the summary.
+    completed = len(_existing_prediction_ids(predictions_path))
     print(
         f"[mgp6-v43-external] backend={args.backend} completed={completed}/{len(records)} errors={errors}"
     )
