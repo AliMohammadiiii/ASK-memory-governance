@@ -44,6 +44,26 @@ def test_default_task_plan_covers_only_v43_systems_and_never_contains_hidden_fla
     assert all("--hidden-input" not in task.command for task in v43)
     assert all("hidden_gold" not in " ".join(task.command) for task in tasks)
     assert not any(task.family == "memory_benchmarks_v332" for task in tasks)
+    assert not any(task.family == "mgp6_v43_external_public_dev" for task in tasks)
+
+
+def test_external_backends_are_explicit_public_only_opt_in() -> None:
+    tasks = run_benchmark_suite.build_tasks(
+        python="python",
+        input_path=ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl",
+        output_root=ROOT / "runs/benchmark_suite/test-external-plan",
+        memory_benchmarks_root=ROOT.parent / "memory_benchmarks",
+        include_external_backends=True,
+    )
+    external = [task for task in tasks if task.family == "mgp6_v43_external_public_dev"]
+    assert {task.task_id for task in external} == {
+        "v43-external:mem0",
+        "v43-external:graphiti",
+        "v43-external:letta",
+        "v43-external:memos",
+    }
+    assert all(task.expected_items == 180 and task.requires_model for task in external)
+    assert all(".private" not in " ".join(task.command) for task in external)
 
 
 def test_archival_tasks_require_an_explicit_plan_opt_in() -> None:
@@ -97,6 +117,7 @@ def test_run_offline_and_models_never_select_archival_tasks_by_default() -> None
     args = run_benchmark_suite.parse_args(["--run-offline", "--execute-models"])
     assert args.audit_archival_v332 is False
     assert args.execute_external_fixtures is False
+    assert args.execute_external_backends is False
 
 
 def test_attempt_reports_are_append_only() -> None:

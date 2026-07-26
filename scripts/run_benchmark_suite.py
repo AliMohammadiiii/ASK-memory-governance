@@ -42,6 +42,7 @@ if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
 from ask.eval.mgp6_v43 import MGP6V43_RUNNABLE_SYSTEMS, MGP6V43_SUCCESSOR_SYSTEMS  # noqa: E402
+from ask.eval.mgp6_v43_external import EXTERNAL_MGP6V43_BACKENDS  # noqa: E402
 
 DEFAULT_PUBLIC_DEV = REPO_ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "runs/benchmark_suite"
@@ -126,6 +127,22 @@ def _v43_run_command(
     return tuple(command)
 
 
+def _external_v43_run_command(
+    *, python: str, backend: str, input_path: Path, output: Path
+) -> tuple[str, ...]:
+    """Build a public-only command for an optional native memory backend."""
+    return (
+        python,
+        "scripts/run_mgp6_v43_external.py",
+        "--backend",
+        backend,
+        "--input",
+        str(input_path),
+        "--out",
+        str(output),
+    )
+
+
 def _v43_score_command(*, python: str, input_path: Path, output: Path) -> tuple[str, ...]:
     return (
         python,
@@ -157,6 +174,7 @@ def build_tasks(
     output_root: Path,
     memory_benchmarks_root: Path,
     include_archival_v332: bool = False,
+    include_external_backends: bool = False,
 ) -> list[SuiteTask]:
     """Create every supported task without executing or reading release records."""
 
@@ -183,6 +201,31 @@ def build_tasks(
                 description="Generate public-only predictions; the scorer is scheduled after success.",
             )
         )
+
+    if include_external_backends:
+        for backend in EXTERNAL_MGP6V43_BACKENDS:
+            backend_output = output_root / "mgp6_v43_external_public_dev" / backend
+            tasks.append(
+                SuiteTask(
+                    task_id=f"v43-external:{backend}",
+                    family="mgp6_v43_external_public_dev",
+                    classification="external memory backend; public development only",
+                    command=_external_v43_run_command(
+                        python=python,
+                        backend=backend,
+                        input_path=input_path,
+                        output=backend_output,
+                    ),
+                    cwd=REPO_ROOT,
+                    requires_model=True,
+                    expected_items=public_item_count,
+                    progress_path=backend_output / "predictions.jsonl",
+                    description=(
+                        "Native external-store run; derived action is scored after success and "
+                        "must not be reported as a native backend action."
+                    ),
+                )
+            )
 
     if not include_archival_v332:
         return tasks
@@ -561,6 +604,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         help="Execute public v4.3 model systems with OPENROUTER_API_KEY.",
     )
     parser.add_argument(
+        "--execute-external-backends",
+        action="store_true",
+        help=(
+            "Execute Mem0, Graphiti, Letta, and MemOS on public v4.3 input; requires their "
+            "pinned dependencies/services and OPENROUTER_API_KEY."
+        ),
+    )
+    parser.add_argument(
         "--execute-external-fixtures",
         action="store_true",
         help="Run archived v3.3.2 ten-view fixture suites after both safety opt-ins.",
@@ -605,9 +656,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit(
             "--execute-external-fixtures requires --allow-test-only-external-fixture and --allow-archive-resume"
         )
-    if (args.execute_models or args.execute_external_fixtures) and not os.environ.get(
-        "OPENROUTER_API_KEY"
-    ):
+    if (
+        args.execute_models or args.execute_external_backends or args.execute_external_fixtures
+    ) and not os.environ.get("OPENROUTER_API_KEY"):
         raise SystemExit("model execution requires OPENROUTER_API_KEY to be exported in the shell")
 
     tasks = build_tasks(
@@ -616,11 +667,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         output_root=output_root,
         memory_benchmarks_root=memory_root,
         include_archival_v332=(args.audit_archival_v332 or args.execute_external_fixtures),
+        include_external_backends=args.execute_external_backends,
     )
     existing_v43_predictions = {
         task.task_id: _completed_items(task)
         for task in tasks
-        if task.family == "mgp6_v43_public_dev" and _completed_items(task)
+        if task.family in {"mgp6_v43_public_dev", "mgp6_v43_external_public_dev"}
+        and _completed_items(task)
     }
     if existing_v43_predictions and not args.resume:
         detail = ", ".join(
@@ -637,6 +690,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         if task.family == "mgp6_v43_public_dev":
             selected = args.run_offline and task.task_id == "v43:rules_controller"
             selected = selected or (args.execute_models and task.requires_model)
+        elif task.family == "mgp6_v43_external_public_dev":
+            selected = args.execute_external_backends
         elif task.requires_external_fixture_opt_in:
             selected = args.execute_external_fixtures
         else:
@@ -650,7 +705,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 reason = "archived private test-only fixture execution not requested"
             planned_rows[task.task_id] = [_task_row(task, status="planned", note=reason)]
             continue
-        if task.family == "mgp6_v43_public_dev":
+        if task.family in {"mgp6_v43_public_dev", "mgp6_v43_external_public_dev"}:
             selected_v43.append(task)
         else:
             # The v3.3.2 status audit depends on its preflight, and its fixture
@@ -703,6 +758,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "controls": {
             "run_offline": args.run_offline,
             "execute_models": args.execute_models,
+            "execute_external_backends": args.execute_external_backends,
             "execute_external_fixtures": args.execute_external_fixtures,
             "audit_archival_v332": args.audit_archival_v332,
             "allow_test_only_external_fixture": args.allow_test_only_external_fixture,

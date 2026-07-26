@@ -27,3 +27,34 @@ Framework verified end-to-end with a stub adapter against
 `metrics_mgp6.py` (schema-compatible); Mem0/Graphiti adapters are built
 against pinned wheels (2.0.11 / 0.29.2); Letta/MemOS are BETA (SDK surfaces
 move quickly — check the smoke run before launching the corpus).
+
+## MGP-6 v4.3 public-development integration
+
+`scripts/run_mgp6_v43_external.py` drives these same adapters only with the
+public v4.3 model input. It isolates every record under
+`mgp6-v43:<public_id>`, records native write observations and retrieval, then
+emits a **derived action from observable state**. This is not a native action
+reported by any backend. v4.3 has action labels but no reference natural-
+language answer, so native-answer accuracy is deliberately not claimed.
+
+Run one smoke test (public data only):
+
+```bash
+.venv/bin/python scripts/run_mgp6_v43_external.py \
+  --backend mem0 \
+  --input benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl \
+  --out runs/mgp6_v43_external/dev/mem0 \
+  --limit 2
+```
+
+Or add all four backends to the parallel public suite after installing their
+pinned dependencies and starting the required Graphiti/Letta/MemOS services:
+
+```bash
+.venv/bin/python scripts/run_benchmark_suite.py \
+  --execute-external-backends --max-parallel 4 --resume
+```
+
+Neither command accepts hidden input or hidden gold. Score only public train
+or dev results with `scripts/score_mgp6_v43.py`; final hidden evaluation needs
+its separately frozen authorization process.
