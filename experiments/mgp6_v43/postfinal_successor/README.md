@@ -8,11 +8,16 @@ The successor adds an explicit evidence decision order (scope, conditions,
 persistence, and ordered settings) and a public-development-informed,
 high-confidence guard. It contains no public-ID table and no private fields.
 
-Replaying the guard over the recorded public dev model outputs changes 26 of
-180 predictions and scores 1.000 accuracy / 1.000 macro-F1. This is a dev replay,
-not a fresh model run, and must not be presented as confirmatory performance.
-A fresh dev run is still required to verify end-to-end model behavior. Any
-claim beyond public development additionally requires a new independent
+The initial retrospective replay over the historical public dev outputs scored
+1.000 accuracy / 1.000 macro-F1. A subsequent fresh 180-item Qwen generation
+exposed a guard-composition bug: the successor guard replaced rather than
+followed the v3 conservative guard. Commit `e6eab00` fixes that composition.
+Deterministically reapplying the corrected adapter to the sealed fresh model
+responses scores 0.9611 accuracy and 0.9607 macro-F1 with complete coverage.
+The hashes and confusion matrix are recorded in `FRESH_PUBLIC_DEV_RESULT.json`.
+
+This remains a dev-informed public-development result, not confirmatory
+performance. Any claim beyond public development requires a new independent
 component-held-out set; the completed v4.3 hidden set cannot be reused.
 
 Run the fresh public dev candidate with:

@@ -1,0 +1,59 @@
+{
+  "schema_version": "mgp6-v4.3-postfinal-successor-result-1.0",
+  "status": "PUBLIC_DEV_ABOVE_95_VERIFIED",
+  "release_version": "4.3.0-human-validated-final",
+  "scientific_scope": {
+    "split": "public_dev",
+    "development_result_only": true,
+    "dev_informed": true,
+    "hidden_gold_accessed": false,
+    "completed_v43_hidden_run_reused": false,
+    "fresh_independent_holdout_required_for_confirmatory_claim": true
+  },
+  "generation": {
+    "system": "successor_live_model_controller",
+    "provider": "openrouter",
+    "model_id": "qwen/qwen3.5-9b",
+    "code_commit": "df0dd373e269ca5e97e17718e1bb2aa625faf1d1",
+    "tracked_worktree_state": "clean",
+    "prediction_count": 180,
+    "failure_count": 0,
+    "retry_count": 0,
+    "invalid_response_count": 0,
+    "prompt_tokens": 91102,
+    "completion_tokens": 1414,
+    "wall_clock_seconds": 346.015,
+    "raw_responses_sha256": "553fb030ed1f03f19b0ea499b7db999e75ae196d729e3467a7665cfa080aa663",
+    "manifest_sha256": "b216ec8c29836aa0a62ee049ee206114f5b83eccce6f6852f54c534c3bfec3c3"
+  },
+  "guard_replay": {
+    "reason": "The initial successor runner replaced rather than composed the v3 guard; commit e6eab00 fixes the adapter and deterministically reapplies it to the sealed public model responses.",
+    "code_commit": "e6eab00106ac90047933f55c4977dda408e36e27",
+    "tracked_worktree_state": "clean",
+    "model_action_changes": 47,
+    "prediction_count": 180,
+    "prediction_sha256": "46bcbb6b188e6e148cb77b2f4ebaa27ce7fff5eec62b9fe399cf6d743e84d223",
+    "manifest_sha256": "61c703365f844e21bd5d674ed14b363b21ad6a70ad65f124d3e825a8b68e6d25",
+    "metrics_sha256": "e82d4c0edaf93fcb13a3985c2a77cfef18a819040557ce3736ff6b4c15899e"
+  },
+  "metrics": {
+    "n_items": 180,
+    "coverage": 1.0,
+    "accuracy": 0.9611111111111111,
+    "macro_f1": 0.9606929939455758,
+    "selective_accuracy": 0.9741379310344828,
+    "abstention_precision": 0.9375,
+    "abstention_recall": 1.0,
+    "confusion_matrix": {
+      "ABSTAIN": {"ABSTAIN": 60, "KEEP": 0, "SUPERSEDE": 0},
+      "KEEP": {"ABSTAIN": 4, "KEEP": 54, "SUPERSEDE": 2},
+      "SUPERSEDE": {"ABSTAIN": 0, "KEEP": 1, "SUPERSEDE": 59}
+    }
+  },
+  "artifact_paths": {
+    "source_generation": "runs/mgp6_v43/postfinal_successor/dev_qwen35_9b/",
+    "guard_composed_predictions": "runs/mgp6_v43/postfinal_successor/dev_qwen35_9b_guard_composed_replay/predictions.jsonl",
+    "guard_composed_manifest": "runs/mgp6_v43/postfinal_successor/dev_qwen35_9b_guard_composed_replay/run_manifest.json",
+    "public_metrics": "runs/mgp6_v43/postfinal_successor/dev_qwen35_9b_guard_composed_replay/public_dev_metrics.json"
+  }
+}
