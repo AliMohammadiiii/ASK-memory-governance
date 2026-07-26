@@ -34,7 +34,7 @@ from ask.eval.mgp6_v43 import (
     validate_public_release,
     write_prediction_resume_safe,
 )
-from scripts import run_mgp6_v43
+from scripts import freeze_mgp6_v43, run_mgp6_v43
 from scripts.score_mgp6_v43 import score_public_run
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -323,3 +323,47 @@ def test_v43_runner_supports_rule_and_registered_model_systems(tmp_path: Path) -
 def test_v43_runner_openrouter_reasoning_extra_body() -> None:
     assert run_mgp6_v43._openrouter_reasoning_body(None) is None
     assert run_mgp6_v43._openrouter_reasoning_body("none") == {"reasoning": {"effort": "none"}}
+
+
+def test_hidden_run_authorization_binds_every_runtime_control(tmp_path: Path) -> None:
+    adapter_spec = {
+        "adapter_version": "ask.mgp6_v43_adapter.v3",
+        "system": "live_model_controller",
+        "allowed_actions": ("KEEP", "SUPERSEDE", "ABSTAIN"),
+        "recency_turns": 2,
+    }
+    controls = run_mgp6_v43._hidden_run_controls(
+        system="live_model_controller",
+        adapter_spec=adapter_spec,
+        provider="openrouter",
+        model_id="qwen/qwen3.5-9b",
+        base_url="https://openrouter.ai/api/v1",
+        prompt_hash="prompt",
+        system_prompt_hash="system",
+        seed=4301,
+        decoding={"temperature": 0.0, "max_new_tokens": 128, "reasoning_effort": "none"},
+        retry_policy={"transport_max_attempts": 3, "parse_max_attempts": 2},
+        timeout_s=120.0,
+        concurrency=1,
+        environment_lock={"python": "test", "pyproject_sha256": "lock"},
+    )
+    authorization_path = tmp_path / "authorization.json"
+    authorization_path.write_text(
+        json.dumps(
+            {
+                "authorized": True,
+                "hidden_run_controls": controls,
+                "hidden_run_controls_sha256": sha256_value(controls),
+            }
+        ),
+        encoding="utf-8",
+    )
+    run_mgp6_v43._require_hidden_run_authorization(authorization_path, controls)
+    changed = {**controls, "model_id": "different-model"}
+    with pytest.raises(SystemExit, match="do not match"):
+        run_mgp6_v43._require_hidden_run_authorization(authorization_path, changed)
+
+
+def test_freeze_artifacts_reject_private_or_label_keys() -> None:
+    with pytest.raises(SystemExit, match="prohibited"):
+        freeze_mgp6_v43._assert_public_control_artifact({"hidden_gold": "forbidden"})

@@ -41,6 +41,9 @@ from ask.inference.llm import LLMResponse  # noqa: E402
 from ask.inference.openai_compatible import OpenAICompatibleLLM  # noqa: E402
 
 SYSTEMS = MGP6V43_SYSTEMS
+REPO_ROOT = Path(__file__).resolve().parents[1]
+PRIVATE_HIDDEN_INPUT_ROOT = REPO_ROOT / ".private/benchmarks/mgp6/v4.3/hidden_inputs"
+FINAL_HIDDEN_RUN_ROOT = REPO_ROOT / "runs/mgp6_v43/final_hidden"
 DEFAULT_SYSTEM_PROMPTS = {
     "b1": Path("configs/experiments/mgp6_v43/b1_no_memory_prompt.txt"),
     "b2": Path("configs/experiments/mgp6_v43/b2_flat_retrieval_prompt.txt"),
@@ -54,6 +57,79 @@ DEFAULT_SYSTEM_PROMPTS = {
     "ablation_no_typing": Path("configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt"),
     "ablation_no_lineage": Path("configs/experiments/mgp6_v43/ablation_no_lineage_prompt.txt"),
 }
+
+
+def _path_is_within(path: Path, root: Path) -> bool:
+    """Return whether ``path`` resolves beneath ``root`` without reading it."""
+    try:
+        path.resolve().relative_to(root.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def _hidden_run_controls(
+    *,
+    system: str,
+    adapter_spec: dict[str, Any],
+    provider: str,
+    model_id: str,
+    base_url: str,
+    prompt_hash: str,
+    system_prompt_hash: str,
+    seed: int,
+    decoding: dict[str, Any],
+    retry_policy: dict[str, int],
+    timeout_s: float,
+    concurrency: int,
+    environment_lock: dict[str, str],
+) -> dict[str, Any]:
+    """Build the immutable, label-free control surface for a hidden run."""
+    return {
+        "release_version": "4.3.0-human-validated-final",
+        "input_mode": "private_hidden_inputs_without_gold",
+        "system": system,
+        "adapter_version": ADAPTER_VERSION,
+        "adapter_spec_hash": sha256_value(adapter_spec),
+        "provider": provider,
+        "model_id": model_id,
+        "base_url": base_url,
+        "prompt_hash": prompt_hash,
+        "system_prompt_hash": system_prompt_hash,
+        "seed": seed,
+        "decoding": decoding,
+        "retry_policy": retry_policy,
+        "timeout_s": timeout_s,
+        "concurrency": concurrency,
+        "evaluator_version": "ask.eval.mgp6_v43.v1",
+        "runtime_hashes": {
+            "runner": sha256_file(Path(__file__)),
+            "evaluator_and_adapters": sha256_file("src/ask/eval/mgp6_v43.py"),
+            "public_scorer": sha256_file("scripts/score_mgp6_v43.py"),
+        },
+        "environment_lock": environment_lock,
+    }
+
+
+def _require_hidden_run_authorization(
+    authorization_path: Path,
+    controls: dict[str, Any],
+) -> None:
+    """Reject a hidden run unless its authorization binds every control exactly."""
+    try:
+        authorization = json.loads(authorization_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise SystemExit(f"cannot read hidden-run authorization: {authorization_path}") from exc
+    if authorization.get("authorized") is not True:
+        raise SystemExit("hidden run is not authorized")
+    expected = authorization.get("hidden_run_controls")
+    expected_hash = authorization.get("hidden_run_controls_sha256")
+    if not isinstance(expected, dict) or not isinstance(expected_hash, str):
+        raise SystemExit("hidden-run authorization has no valid frozen controls")
+    if sha256_value(expected) != expected_hash:
+        raise SystemExit("hidden-run authorization control hash is invalid")
+    if expected != controls:
+        raise SystemExit("hidden-run controls do not match the frozen authorization")
 
 
 def _repair_instruction(allowed_actions: tuple[str, ...]) -> str:
@@ -133,6 +209,16 @@ def main() -> int:
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-new-tokens", type=int, default=128)
     parser.add_argument("--action", choices=("KEEP", "SUPERSEDE", "ABSTAIN"), help="Deterministic engineering fixture only.")
+    parser.add_argument(
+        "--hidden-input",
+        action="store_true",
+        help="Enable one authorized prediction-only run over ignored private hidden inputs.",
+    )
+    parser.add_argument(
+        "--authorization",
+        type=Path,
+        help="Tracked FINAL_HIDDEN_RUN_AUTHORIZATION.json required with --hidden-input.",
+    )
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -142,7 +228,18 @@ def main() -> int:
         raise SystemExit(
             "--concurrency values other than 1 are not implemented; run separate output directories instead"
         )
-    records = load_public_records(args.input)
+    if args.hidden_input:
+        if args.authorization is None:
+            raise SystemExit("--hidden-input requires --authorization")
+        if args.limit is not None or args.action is not None or args.dry_run:
+            raise SystemExit("hidden runs forbid --limit, --action, and --dry-run")
+        if not _path_is_within(args.input, PRIVATE_HIDDEN_INPUT_ROOT):
+            raise SystemExit("hidden input must be beneath the ignored private hidden-input root")
+        if not _path_is_within(args.out, FINAL_HIDDEN_RUN_ROOT):
+            raise SystemExit("hidden output must be beneath runs/mgp6_v43/final_hidden")
+    elif args.authorization is not None:
+        raise SystemExit("--authorization is valid only with --hidden-input")
+    records = load_public_records(args.input, require_gold=not args.hidden_input)
     if args.limit is not None:
         records = records[: args.limit]
     if not records:
@@ -167,6 +264,34 @@ def main() -> int:
     effective_provider = "local-rule" if args.system == "rules_controller" and args.action is None else args.provider
     effective_model_id = "ask/rules-controller-v43" if args.system == "rules_controller" and args.action is None else args.model_id
     environment_lock = {"python": sys.version, "pyproject_sha256": sha256_file("pyproject.toml")}
+    decoding = {
+        "temperature": args.temperature,
+        "max_new_tokens": args.max_new_tokens,
+        "reasoning_effort": args.reasoning_effort,
+    }
+    retry_policy = {
+        "transport_max_attempts": args.retry_max_attempts,
+        "parse_max_attempts": args.parse_retry_max_attempts,
+    }
+    hidden_run_controls = _hidden_run_controls(
+        system=args.system,
+        adapter_spec=adapter_spec,
+        provider=effective_provider,
+        model_id=effective_model_id,
+        base_url=args.base_url,
+        prompt_hash=prompt_hash,
+        system_prompt_hash=sha256_value(system_prompt),
+        seed=args.seed,
+        decoding=decoding,
+        retry_policy=retry_policy,
+        timeout_s=args.timeout_s,
+        concurrency=args.concurrency,
+        environment_lock=environment_lock,
+    )
+    if args.hidden_input:
+        if not isinstance(args.authorization, Path):
+            raise SystemExit("--hidden-input requires a valid --authorization path")
+        _require_hidden_run_authorization(args.authorization, hidden_run_controls)
     run_config = {
         "release_version": "4.3.0-human-validated-final",
         "dataset_sha256": sha256_file(args.input),
@@ -179,15 +304,8 @@ def main() -> int:
         "prompt_hash": prompt_hash,
         "system_prompt_hash": sha256_value(system_prompt),
         "seed": args.seed,
-        "decoding": {
-            "temperature": args.temperature,
-            "max_new_tokens": args.max_new_tokens,
-            "reasoning_effort": args.reasoning_effort,
-        },
-        "retry_policy": {
-            "transport_max_attempts": args.retry_max_attempts,
-            "parse_max_attempts": args.parse_retry_max_attempts,
-        },
+        "decoding": decoding,
+        "retry_policy": retry_policy,
         "timeout_s": args.timeout_s,
         "concurrency": args.concurrency,
         "recency_turns": args.recency_turns,
@@ -195,6 +313,7 @@ def main() -> int:
         "evaluator_version": "ask.eval.mgp6_v43.v1",
         "code_commit": _git_commit(),
         "environment_lock": environment_lock,
+        "input_mode": "hidden_input" if args.hidden_input else "public_development_or_engineering",
     }
     manifest: dict[str, Any] = {
         "release_version": "4.3.0-human-validated-final",
@@ -227,6 +346,7 @@ def main() -> int:
         "n_selected": len(records),
         "complete": False,
         "hidden_gold_accessed": False,
+        "hidden_run_authorized": args.hidden_input,
         "failure_count": 0,
         "retry_count": 0,
         "invalid_response_count": 0,
