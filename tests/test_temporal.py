@@ -19,17 +19,32 @@ from ask.controller.temporal import (
 
 
 def test_classify_duration_order_relative_and_none() -> None:
-    assert classify_temporal_question(
-        "How many days had passed between the 'Walk for Hunger' event and the 'Coastal Cleanup' event?"
-    ) == "duration_between"
-    assert classify_temporal_question("How many months ago did I book the Airbnb?") == "relative_ago"
-    assert classify_temporal_question("What is the order of the sports events I watched?") == "order"
-    assert classify_temporal_question("Which gift did I buy first, the necklace or the album?") == "order"
-    assert classify_temporal_question(
-        "What new kitchen gadget did I invest in before getting the Air Fryer?"
-    ) == "order"
+    assert (
+        classify_temporal_question(
+            "How many days had passed between the 'Walk for Hunger' event and the 'Coastal Cleanup' event?"
+        )
+        == "duration_between"
+    )
+    assert (
+        classify_temporal_question("How many months ago did I book the Airbnb?") == "relative_ago"
+    )
+    assert (
+        classify_temporal_question("What is the order of the sports events I watched?") == "order"
+    )
+    assert (
+        classify_temporal_question("Which gift did I buy first, the necklace or the album?")
+        == "order"
+    )
+    assert (
+        classify_temporal_question(
+            "What new kitchen gadget did I invest in before getting the Air Fryer?"
+        )
+        == "order"
+    )
     assert classify_temporal_question("What is my favorite coffee?") == "none"
-    assert not is_temporal_question("How long have I been collecting cameras?") or True  # not date-arith
+    assert (
+        not is_temporal_question("How long have I been collecting cameras?") or True
+    )  # not date-arith
 
 
 def test_parse_session_timestamp_longmemeval_form() -> None:
@@ -70,8 +85,14 @@ def test_duration_failures_compute_correctly() -> None:
 def test_order_failure_sorts_correctly() -> None:
     # gpt4_18c2b244: Apr 1 (Walmart) / Apr 10 (Ibotta) / Apr 15 (ShopRite)
     events = [
-        ("2023/04/15 (Sat) 10:00", "I signed up for the rewards program at ShopRite on April 15, 2023."),
-        ("2023/04/01 (Sat) 10:00", "I used a Buy One Get One Free coupon on Luvs diapers at Walmart on April 1, 2023."),
+        (
+            "2023/04/15 (Sat) 10:00",
+            "I signed up for the rewards program at ShopRite on April 15, 2023.",
+        ),
+        (
+            "2023/04/01 (Sat) 10:00",
+            "I used a Buy One Get One Free coupon on Luvs diapers at Walmart on April 1, 2023.",
+        ),
         ("2023/04/10 (Mon) 10:00", "I redeemed $12 cashback from Ibotta on April 10, 2023."),
     ]
     dated = collect_dated_memories(events)

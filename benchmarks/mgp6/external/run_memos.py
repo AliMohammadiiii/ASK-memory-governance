@@ -60,6 +60,7 @@ def _texts_from(items: Any) -> list[str]:
             text = getattr(node, "memory", None)
             if isinstance(text, str) and text.strip():
                 out.append(text.strip())
+
     _walk(items)
     # dedupe, keep order
     seen: set[str] = set()
@@ -79,12 +80,8 @@ class MemOSAdapter(ExternalAdapter):
         # Re-apply benchmark-critical runtime configuration AFTER importing
         # MemOS so a project .env cannot silently override the experiment.
         runtime_config = {
-            "MOS_EMBEDDER_BACKEND": os.environ.get(
-                "MGP6_MEMOS_EMBEDDER_BACKEND", "universal_api"
-            ),
-            "MOS_EMBEDDER_PROVIDER": os.environ.get(
-                "MGP6_MEMOS_EMBEDDER_PROVIDER", "openai"
-            ),
+            "MOS_EMBEDDER_BACKEND": os.environ.get("MGP6_MEMOS_EMBEDDER_BACKEND", "universal_api"),
+            "MOS_EMBEDDER_PROVIDER": os.environ.get("MGP6_MEMOS_EMBEDDER_PROVIDER", "openai"),
             "MOS_EMBEDDER_MODEL": os.environ.get(
                 "MGP6_MEMOS_EMBEDDER_MODEL",
                 "sentence-transformers/all-MiniLM-L6-v2",
@@ -93,15 +90,9 @@ class MemOSAdapter(ExternalAdapter):
                 "MGP6_MEMOS_EMBEDDER_API_BASE",
                 "http://127.0.0.1:8100/v1",
             ),
-            "MOS_EMBEDDER_API_KEY": os.environ.get(
-                "MGP6_MEMOS_EMBEDDER_API_KEY", "local"
-            ),
-            "EMBEDDING_DIMENSION": os.environ.get(
-                "MGP6_MEMOS_EMBEDDING_DIMENSION", "384"
-            ),
-            "MOS_RERANKER_BACKEND": os.environ.get(
-                "MGP6_MEMOS_RERANKER_BACKEND", "cosine_local"
-            ),
+            "MOS_EMBEDDER_API_KEY": os.environ.get("MGP6_MEMOS_EMBEDDER_API_KEY", "local"),
+            "EMBEDDING_DIMENSION": os.environ.get("MGP6_MEMOS_EMBEDDING_DIMENSION", "384"),
+            "MOS_RERANKER_BACKEND": os.environ.get("MGP6_MEMOS_RERANKER_BACKEND", "cosine_local"),
         }
         os.environ.update(runtime_config)
 
@@ -118,9 +109,7 @@ class MemOSAdapter(ExternalAdapter):
         actual_base = str(resolved_cfg.get("base_url") or "").rstrip("/")
 
         if resolved_embedder.get("backend") != "universal_api":
-            raise RuntimeError(
-                f"Unexpected MemOS embedder backend: {resolved_embedder}"
-            )
+            raise RuntimeError(f"Unexpected MemOS embedder backend: {resolved_embedder}")
         if actual_model != expected_model:
             raise RuntimeError(
                 f"MemOS embedder model mismatch: "
@@ -152,17 +141,11 @@ class MemOSAdapter(ExternalAdapter):
 
         if not getattr(QdrantVecDB, "_mgp6_dimension_patch", False):
             _original_qdrant_init = QdrantVecDB.__init__
-            _expected_dimension = int(
-                os.environ["EMBEDDING_DIMENSION"]
-            )
+            _expected_dimension = int(os.environ["EMBEDDING_DIMENSION"])
 
             def _patched_qdrant_init(self, config):
-                original_dimension = getattr(
-                    config, "vector_dimension", None
-                )
-                collection_name = getattr(
-                    config, "collection_name", "<unknown>"
-                )
+                original_dimension = getattr(config, "vector_dimension", None)
+                collection_name = getattr(config, "collection_name", "<unknown>")
 
                 if original_dimension != _expected_dimension:
                     raise RuntimeError(
@@ -179,12 +162,8 @@ class MemOSAdapter(ExternalAdapter):
 
                 # Fail fast if the actual physical collection was not created
                 # with the expected embedding dimensionality.
-                info = self.client.get_collection(
-                    config.collection_name
-                )
-                actual_dimension = (
-                    info.config.params.vectors.size
-                )
+                info = self.client.get_collection(config.collection_name)
+                actual_dimension = info.config.params.vectors.size
 
                 if actual_dimension != _expected_dimension:
                     raise RuntimeError(
@@ -222,9 +201,7 @@ class MemOSAdapter(ExternalAdapter):
 
             def _make_modal_init(original_init):
                 def _patched(self, *args, **kwargs):
-                    requested_base_url = str(
-                        kwargs.get("base_url") or ""
-                    ).rstrip("/")
+                    requested_base_url = str(kwargs.get("base_url") or "").rstrip("/")
 
                     # Preserve the local OpenAI-compatible embedding endpoint.
                     if requested_base_url == embed_base_url:
@@ -240,6 +217,7 @@ class MemOSAdapter(ExternalAdapter):
                         hdrs["Modal-Secret"] = os.getenv("MODAL_SECRET")
                     kwargs["default_headers"] = hdrs
                     return original_init(self, *args, **kwargs)
+
                 return _patched
 
             for _cls in (openai.OpenAI, openai.AsyncOpenAI):
@@ -259,9 +237,7 @@ class MemOSAdapter(ExternalAdapter):
         # Hard physical isolation per benchmark scenario.
         scenario_slug = scenario_id.lower()
 
-        storage_dir = tempfile.mkdtemp(
-            prefix=f"mgp6_memos_{scenario_slug}_"
-        )
+        storage_dir = tempfile.mkdtemp(prefix=f"mgp6_memos_{scenario_slug}_")
         self._scenario_storage_dirs.append(storage_dir)
 
         scenario_memos_dir = Path(storage_dir) / ".memos"
@@ -285,9 +261,7 @@ class MemOSAdapter(ExternalAdapter):
             except Exception:
                 pass
 
-        self.user_id = (
-            f"{scenario_slug}-{uuid.uuid4().hex[:6]}"
-        )
+        self.user_id = f"{scenario_slug}-{uuid.uuid4().hex[:6]}"
 
         # Build MOS and MemCube explicitly.
         #
@@ -316,9 +290,7 @@ class MemOSAdapter(ExternalAdapter):
         )
 
         embedder_config = APIConfig.get_embedder_config()
-        expected_dimension = int(
-            os.environ.get("EMBEDDING_DIMENSION", "384")
-        )
+        expected_dimension = int(os.environ.get("EMBEDDING_DIMENSION", "384"))
 
         # ---------------- MOS config ----------------
         mos_config = get_default_config(
@@ -332,9 +304,7 @@ class MemOSAdapter(ExternalAdapter):
         # The default helper otherwise gives MemReader the OpenAI/OpenRouter
         # embedder. Replace it with the dedicated local MiniLM configuration.
         mos_config_dict = mos_config.model_dump(mode="python")
-        mos_config_dict["mem_reader"]["config"]["embedder"] = (
-            embedder_config
-        )
+        mos_config_dict["mem_reader"]["config"]["embedder"] = embedder_config
 
         # MemOS schema declares chat_chunker as dict[str, Any] but gives it
         # a default of None. The original model can contain None, but dumping
@@ -343,16 +313,12 @@ class MemOSAdapter(ExternalAdapter):
         if mem_reader_cfg.get("chat_chunker") is None:
             mem_reader_cfg["chat_chunker"] = {}
 
-        mos_config = MOSConfig.model_validate(
-            mos_config_dict
-        )
+        mos_config = MOSConfig.model_validate(mos_config_dict)
 
         # Passing an explicit MOSConfig disables MOS auto-cube creation.
         self.mos = self._MOS(mos_config)
 
-        self.mos.create_user(
-            user_id=self.user_id
-        )
+        self.mos.create_user(user_id=self.user_id)
 
         self.mem_cube_id = self.mos.create_cube_for_user(
             cube_name=f"{self.user_id}-cube",
@@ -366,23 +332,15 @@ class MemOSAdapter(ExternalAdapter):
             text_mem_type="general_text",
             user_id=self.user_id,
             model_name=chat_model,
-            embedder_model=embedder_config["config"][
-                "model_name_or_path"
-            ],
+            embedder_model=embedder_config["config"]["model_name_or_path"],
             vector_dimension=expected_dimension,
             cube_id=self.mem_cube_id,
-            collection_name=(
-                f"{scenario_slug.replace('-', '_')}_collection"
-            ),
+            collection_name=(f"{scenario_slug.replace('-', '_')}_collection"),
         )
 
-        cube_config_dict = cube_config.model_dump(
-            mode="python"
-        )
+        cube_config_dict = cube_config.model_dump(mode="python")
 
-        text_mem_cfg = cube_config_dict[
-            "text_mem"
-        ]["config"]
+        text_mem_cfg = cube_config_dict["text_mem"]["config"]
 
         # Explicitly inject the dedicated local embedder into the actual
         # GeneralTextMemory object.
@@ -390,19 +348,11 @@ class MemOSAdapter(ExternalAdapter):
 
         # Keep physical vector-store schema exactly aligned with the actual
         # embedding model.
-        text_mem_cfg[
-            "vector_db"
-        ]["config"]["vector_dimension"] = (
-            expected_dimension
-        )
+        text_mem_cfg["vector_db"]["config"]["vector_dimension"] = expected_dimension
 
-        cube_config = GeneralMemCubeConfig.model_validate(
-            cube_config_dict
-        )
+        cube_config = GeneralMemCubeConfig.model_validate(cube_config_dict)
 
-        scenario_cube = GeneralMemCube(
-            cube_config
-        )
+        scenario_cube = GeneralMemCube(cube_config)
 
         self.mos.register_mem_cube(
             scenario_cube,
@@ -428,10 +378,7 @@ class MemOSAdapter(ExternalAdapter):
         """
         candidates = [
             {"mem_cube_id": self.mem_cube_id},
-            {
-                "writable_cube_ids" if write else "readable_cube_ids":
-                [self.mem_cube_id]
-            },
+            {"writable_cube_ids" if write else "readable_cube_ids": [self.mem_cube_id]},
         ]
 
         last_type_error = None
@@ -449,8 +396,7 @@ class MemOSAdapter(ExternalAdapter):
             f"for {getattr(fn, '__name__', fn)!r}"
         ) from last_type_error
 
-    def seed(self, records: list[dict[str, Any]],
-             dialogue: list[dict[str, str]]) -> None:
+    def seed(self, records: list[dict[str, Any]], dialogue: list[dict[str, str]]) -> None:
         for r in records:
             if r.get("status") == "active" and r.get("text"):
                 self._cube_call(
@@ -516,8 +462,10 @@ class MemOSAdapter(ExternalAdapter):
         return _texts_from(result)[:k]
 
     def meta(self) -> dict[str, Any]:
-        return {"api": "memos.mem_os.main.MOS (env auto-config)",
-                "note": "replaced_old not observable; store-diff mapping only"}
+        return {
+            "api": "memos.mem_os.main.MOS (env auto-config)",
+            "note": "replaced_old not observable; store-diff mapping only",
+        }
 
 
 if __name__ == "__main__":

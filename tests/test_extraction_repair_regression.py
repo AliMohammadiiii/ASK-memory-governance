@@ -28,7 +28,11 @@ _FIXTURE = Path(__file__).parent / "fixtures" / "m4w14_extraction_first_pass.jso
 
 
 def _load_fixture() -> list[dict]:
-    return [json.loads(line) for line in _FIXTURE.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line)
+        for line in _FIXTURE.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
 
 
 def test_missing_flag_with_items_is_recovered_not_rejected() -> None:
@@ -60,7 +64,13 @@ def test_first_pass_no_longer_triggers_repair_for_valid_items() -> None:
     inner = FakeLLM(scripted=deque([first]))
     extractor = Extractor(StructuredLLM(inner), "Current turn: {{ turn | tojson }}")
     output = extractor.extract(
-        {"session_id": "s1", "turn_idx": 2, "role": "user", "content": "I like green tea.", "timestamp": None},
+        {
+            "session_id": "s1",
+            "turn_idx": 2,
+            "role": "user",
+            "content": "I like green tea.",
+            "timestamp": None,
+        },
         (None, None),
     )
     assert [item.text for item in output.items] == ["User prefers green tea."]
@@ -99,7 +109,13 @@ def test_trace_records_parse_path_and_repair_flag(tmp_path) -> None:
         log_path=tmp_path / "trace.jsonl",
     )
     extractor.extract(
-        {"session_id": "s1", "turn_idx": 0, "role": "user", "content": "I like tea.", "timestamp": None},
+        {
+            "session_id": "s1",
+            "turn_idx": 0,
+            "role": "user",
+            "content": "I like tea.",
+            "timestamp": None,
+        },
         (None, None),
     )
     trace = json.loads((tmp_path / "trace.jsonl").read_text(encoding="utf-8").splitlines()[0])

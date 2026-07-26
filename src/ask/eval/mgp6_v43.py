@@ -78,9 +78,7 @@ _ORDINAL_MESSAGE_POSITIONS = {
     "fifth": 5,
     "sixth": 6,
 }
-_ORDINAL_MESSAGE_RE = re.compile(
-    r"\b(first|second|third|fourth|fifth|sixth)\b", re.IGNORECASE
-)
+_ORDINAL_MESSAGE_RE = re.compile(r"\b(first|second|third|fourth|fifth|sixth)\b", re.IGNORECASE)
 _EVIDENCE_MESSAGE_RE = re.compile(
     r"(?:The|A) (first|second|third|fourth|fifth|sixth) message says:\s*(.*?)"
     r"(?=(?:\s+(?:The|A) (?:first|second|third|fourth|fifth|sixth) message says:)|$)",
@@ -191,7 +189,9 @@ def load_public_records(path: str | Path, *, require_gold: bool = True) -> list[
     return sorted(records, key=lambda record: record.public_id)
 
 
-def validate_public_release(train: list[MGP6V43Record], dev: list[MGP6V43Record], facts: Mapping[str, Any]) -> None:
+def validate_public_release(
+    train: list[MGP6V43Record], dev: list[MGP6V43Record], facts: Mapping[str, Any]
+) -> None:
     """Validate public facts without inspecting private component assignments."""
     expected = facts["split_counts"]
     if len(train) != expected["train"] or len(dev) != expected["dev"]:
@@ -282,8 +282,7 @@ def linked_evidence_view(record: MGP6V43Record) -> dict[str, Any]:
     positions = sorted(indexed_positions)
     if len(positions) != 2:
         raise MGP6V43Error(
-            "public evidence index must identify exactly two message positions; "
-            f"found {positions}"
+            f"public evidence index must identify exactly two message positions; found {positions}"
         )
     missing = [position for position in positions if position not in snippets]
     if missing:
@@ -294,8 +293,7 @@ def linked_evidence_view(record: MGP6V43Record) -> dict[str, Any]:
         "memory_before": record.memory_before,
         "requested_value": _requested_value(record),
         "indexed_evidence": [
-            {"message_position": position, "text": snippets[position]}
-            for position in positions
+            {"message_position": position, "text": snippets[position]} for position in positions
         ],
         "evidence_routing": {
             "indexed_message_count": len(positions),
@@ -347,7 +345,9 @@ def apply_live_controller_guard(
     """Resolve a model ABSTAIN only when the public policy has decisive evidence."""
     model_action = validate_system_action("live_model_controller", model_action)
     policy_action, trace = public_evidence_policy_action(record)
-    final_action = policy_action if model_action == "ABSTAIN" and policy_action != "ABSTAIN" else model_action
+    final_action = (
+        policy_action if model_action == "ABSTAIN" and policy_action != "ABSTAIN" else model_action
+    )
     guard_trace = {
         **trace,
         "model_action": model_action,
@@ -391,7 +391,12 @@ def successor_public_evidence_override(
     # A bounded exception followed by the standing value does not update memory.
     elif any(cue in evidence for cue in ("going back to", "returns to", "again lists")):
         action, rule = "KEEP", "explicit_return_to_standing"
-    elif standing and standing in _normalise_value(evidence) and "ordered" in evidence and "usual" in evidence:
+    elif (
+        standing
+        and standing in _normalise_value(evidence)
+        and "ordered" in evidence
+        and "usual" in evidence
+    ):
         action, rule = "KEEP", "standing_value_used_after_scoped_event"
     elif (
         "after encryption is enabled" in evidence
@@ -515,7 +520,7 @@ def build_system_prompt(
         f"{system_prompt.strip()}\n\n"
         f"SYSTEM={system}\n"
         f"Decide exactly one action from {allowed}. "
-        f"Return JSON only: {{\"action\":\"{example}\"}}.\n\n"
+        f'Return JSON only: {{"action":"{example}"}}.\n\n'
         f"INPUT={canonical_json(payload)}"
     )
 
@@ -528,9 +533,7 @@ def build_decision_prompt(record: MGP6V43Record, system_prompt: str) -> str:
 def validate_system_action(system: str, action: str) -> str:
     """Reject a syntactically valid action excluded by a system ablation."""
     if action not in system_allowed_actions(system):
-        raise MGP6V43Error(
-            f"{system} may emit only {system_allowed_actions(system)}; got {action}"
-        )
+        raise MGP6V43Error(f"{system} may emit only {system_allowed_actions(system)}; got {action}")
     return action
 
 
@@ -618,7 +621,9 @@ def parse_action_response(raw_response: str) -> str:
     except json.JSONDecodeError as exc:
         raise MGP6V43Error("response is not an action or JSON action object") from exc
     try:
-        return MGP6V43Prediction.model_validate({"public_id": "MGP43-00000000000000000000", **value}).action
+        return MGP6V43Prediction.model_validate(
+            {"public_id": "MGP43-00000000000000000000", **value}
+        ).action
     except Exception as exc:
         raise MGP6V43Error("response does not contain a valid action") from exc
 
@@ -641,7 +646,9 @@ def load_predictions(path: str | Path, expected_ids: Iterable[str]) -> list[MGP6
     found = set(ids)
     unknown, missing = sorted(found - expected), sorted(expected - found)
     if unknown or missing:
-        raise MGP6V43Error(f"prediction coverage mismatch: unknown={unknown[:10]} missing={missing[:10]}")
+        raise MGP6V43Error(
+            f"prediction coverage mismatch: unknown={unknown[:10]} missing={missing[:10]}"
+        )
     return sorted(predictions, key=lambda prediction: prediction.public_id)
 
 
@@ -682,7 +689,9 @@ def load_predictions_allow_partial(path: str | Path) -> list[MGP6V43Prediction]:
     return records
 
 
-def write_raw_response(path: str | Path, *, public_id: str, raw_response: str, metadata: Mapping[str, Any]) -> None:
+def write_raw_response(
+    path: str | Path, *, public_id: str, raw_response: str, metadata: Mapping[str, Any]
+) -> None:
     """Persist a label-free raw response record with explicit operational accounting."""
     row = {"public_id": public_id, "raw_response": raw_response, **dict(metadata)}
     assert_model_safe(row)
@@ -723,7 +732,8 @@ def score_actions(gold: Mapping[str, str], predictions: Mapping[str, str]) -> di
     return {
         "n_items": n,
         "accuracy": accuracy,
-        "macro_f1": sum(float(per_class[label]["f1"]) for label in VALID_ACTIONS) / len(VALID_ACTIONS),
+        "macro_f1": sum(float(per_class[label]["f1"]) for label in VALID_ACTIONS)
+        / len(VALID_ACTIONS),
         "per_class": per_class,
         "confusion_matrix": confusion,
         "coverage": 1.0,
@@ -731,7 +741,12 @@ def score_actions(gold: Mapping[str, str], predictions: Mapping[str, str]) -> di
 
 
 def cluster_bootstrap(
-    gold: Mapping[str, str], predictions: Mapping[str, str], component_by_id: Mapping[str, str], *, seed: int = 4301, replicates: int = 5000
+    gold: Mapping[str, str],
+    predictions: Mapping[str, str],
+    component_by_id: Mapping[str, str],
+    *,
+    seed: int = 4301,
+    replicates: int = 5000,
 ) -> dict[str, Any]:
     """Component-cluster bootstrap for scoring contexts that have a private map."""
     if set(gold) != set(component_by_id):
@@ -743,9 +758,18 @@ def cluster_bootstrap(
     accuracies: list[float] = []
     macro_f1s: list[float] = []
     for _ in range(replicates):
-        sampled_ids = [public_id for component in (rng.choice(components) for _ in components) for public_id in by_component[component]]
-        sample_gold = {f"{index}:{public_id}": gold[public_id] for index, public_id in enumerate(sampled_ids)}
-        sample_predictions = {f"{index}:{public_id}": predictions[public_id] for index, public_id in enumerate(sampled_ids)}
+        sampled_ids = [
+            public_id
+            for component in (rng.choice(components) for _ in components)
+            for public_id in by_component[component]
+        ]
+        sample_gold = {
+            f"{index}:{public_id}": gold[public_id] for index, public_id in enumerate(sampled_ids)
+        }
+        sample_predictions = {
+            f"{index}:{public_id}": predictions[public_id]
+            for index, public_id in enumerate(sampled_ids)
+        }
         result = score_actions(sample_gold, sample_predictions)
         accuracies.append(result["accuracy"])
         macro_f1s.append(result["macro_f1"])

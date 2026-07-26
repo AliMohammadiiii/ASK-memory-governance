@@ -102,7 +102,9 @@ def _populate_fixture(tmp_path):
         base = m4w15 / "sweep" / f"threshold_{threshold:.2f}"
         _write_json(base / "report.json", {"threshold": threshold})
         _write_jsonl(base / "mgp6" / "controller" / "action_log.jsonl", [_log("s1", "Supersede")])
-        _write_jsonl(base / "longmemeval" / "controller" / "action_log.jsonl", [_log("l1", "Keep", r=0.0)])
+        _write_jsonl(
+            base / "longmemeval" / "controller" / "action_log.jsonl", [_log("l1", "Keep", r=0.0)]
+        )
     mgp6_input = tmp_path / "data" / "mgp6.jsonl"
     _write_jsonl(
         mgp6_input,

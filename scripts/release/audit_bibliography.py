@@ -45,7 +45,9 @@ def parse_entries(text: str) -> list[BibEntry]:
             cursor += 1
         if depth:
             raise ValueError(f"unclosed BibTeX entry beginning at byte {start}")
-        entries.append(BibEntry(match.group(1).lower(), match.group(2), text[body_start : cursor - 1]))
+        entries.append(
+            BibEntry(match.group(1).lower(), match.group(2), text[body_start : cursor - 1])
+        )
         index = cursor
     return entries
 
@@ -58,7 +60,7 @@ def field_value(entry: BibEntry, name: str) -> str | None:
     if cursor >= len(entry.body):
         return None
     opener = entry.body[cursor]
-    if opener not in {'{', '"'}:
+    if opener not in {"{", '"'}:
         end = entry.body.find(",", cursor)
         return entry.body[cursor : end if end >= 0 else None].strip()
     closer = "}" if opener == "{" else '"'
@@ -100,7 +102,9 @@ def latex_sources(entrypoint: Path) -> list[Path]:
                 candidate if candidate.suffix else candidate.with_suffix(".tex")
                 for candidate in candidates
             ]
-            child = next((candidate for candidate in normalized if candidate.is_file()), normalized[0])
+            child = next(
+                (candidate for candidate in normalized if candidate.is_file()), normalized[0]
+            )
             pending.append(child.resolve())
     return sorted(seen)
 

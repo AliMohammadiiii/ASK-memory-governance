@@ -83,7 +83,13 @@ def main() -> int:
     with args.csv.open("w", newline="", encoding="utf-8") as fh:
         writer = csv.DictWriter(
             fh,
-            fieldnames=["system", "n_scenarios", "n_revisions", "n_recoverable", "superseded_recoverability"],
+            fieldnames=[
+                "system",
+                "n_scenarios",
+                "n_revisions",
+                "n_recoverable",
+                "superseded_recoverability",
+            ],
         )
         writer.writeheader()
         for report in systems:

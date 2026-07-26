@@ -128,11 +128,15 @@ def bootstrap_ci(pairs: list[tuple[str, str]], fn, n_boot: int, seed: int) -> li
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gold", type=Path, default=HERE / "data" / "mgp6_v2.jsonl")
-    parser.add_argument("--annotations", type=Path, required=True,
-                        help="annotator labels (CSV or JSONL)")
-    parser.add_argument("--second", type=Path, default=None,
-                        help="optional second annotator file; if given, "
-                             "agreement is annotator-vs-annotator")
+    parser.add_argument(
+        "--annotations", type=Path, required=True, help="annotator labels (CSV or JSONL)"
+    )
+    parser.add_argument(
+        "--second",
+        type=Path,
+        default=None,
+        help="optional second annotator file; if given, agreement is annotator-vs-annotator",
+    )
     parser.add_argument("--label-field", default="annotator_action")
     parser.add_argument("--bootstrap", type=int, default=2000)
     parser.add_argument("--seed", type=int, default=0)
@@ -150,8 +154,11 @@ def main(argv: list[str] | None = None) -> int:
         ref_name = "gold"
 
     common = sorted(set(ann) & set(ref))
-    missing = sorted(set(ann) - set(ref)) + sorted(
-        (set(ref) & set(gold)) - set(ann)) if args.second is None else []
+    missing = (
+        sorted(set(ann) - set(ref)) + sorted((set(ref) & set(gold)) - set(ann))
+        if args.second is None
+        else []
+    )
     if not common:
         raise SystemExit("no overlapping scenario_ids between files")
     pairs = [(ref[sid], ann[sid]) for sid in common]
@@ -174,12 +181,14 @@ def main(argv: list[str] | None = None) -> int:
         "annotator": str(args.annotations),
         "n_items": len(pairs),
         "n_annotated_not_in_reference": len(missing),
-        "raw_agreement": {"value": round(po, 4),
-                          "ci95": bootstrap_ci(pairs, raw_agreement,
-                                               args.bootstrap, args.seed)},
-        "cohen_kappa": {"value": round(kappa, 4),
-                        "ci95": bootstrap_ci(pairs, cohen_kappa,
-                                             args.bootstrap, args.seed + 1)},
+        "raw_agreement": {
+            "value": round(po, 4),
+            "ci95": bootstrap_ci(pairs, raw_agreement, args.bootstrap, args.seed),
+        },
+        "cohen_kappa": {
+            "value": round(kappa, 4),
+            "ci95": bootstrap_ci(pairs, cohen_kappa, args.bootstrap, args.seed + 1),
+        },
         "krippendorff_alpha_nominal": round(alpha, 4),
         "per_type_raw_agreement": {
             t: round(raw_agreement(p), 4) for t, p in sorted(per_type.items())
@@ -195,18 +204,20 @@ def main(argv: list[str] | None = None) -> int:
     for sid in common:
         if ref[sid] != ann[sid]:
             g = gold.get(sid, {})
-            disagreements.append({
-                "scenario_id": sid,
-                "type": g.get("type"),
-                "subtype": g.get("subtype"),
-                "reference_action": ref[sid],
-                "annotator_action": ann[sid],
-                "perturbation_event": g.get("perturbation_event"),
-                "gold_rationale_notes": g.get("rationale_notes"),
-                "annotation_rule_ids": g.get("annotation_rule_ids"),
-                "adjudicated_action": "",   # fill during adjudication
-                "adjudication_notes": "",
-            })
+            disagreements.append(
+                {
+                    "scenario_id": sid,
+                    "type": g.get("type"),
+                    "subtype": g.get("subtype"),
+                    "reference_action": ref[sid],
+                    "annotator_action": ann[sid],
+                    "perturbation_event": g.get("perturbation_event"),
+                    "gold_rationale_notes": g.get("rationale_notes"),
+                    "annotation_rule_ids": g.get("annotation_rule_ids"),
+                    "adjudicated_action": "",  # fill during adjudication
+                    "adjudication_notes": "",
+                }
+            )
     report["n_disagreements"] = len(disagreements)
 
     print(json.dumps(report, indent=2, sort_keys=False))
@@ -214,14 +225,16 @@ def main(argv: list[str] | None = None) -> int:
     if args.out_dir:
         args.out_dir.mkdir(parents=True, exist_ok=True)
         (args.out_dir / "agreement_report.json").write_text(
-            json.dumps(report, indent=2), encoding="utf-8")
+            json.dumps(report, indent=2), encoding="utf-8"
+        )
         with (args.out_dir / "disagreements.jsonl").open("w", encoding="utf-8") as h:
             for d in disagreements:
                 h.write(json.dumps(d, ensure_ascii=False) + "\n")
-        print(f"\n[agreement] report -> {args.out_dir / 'agreement_report.json'}",
-              flush=True)
-        print(f"[agreement] {len(disagreements)} disagreements -> "
-              f"{args.out_dir / 'disagreements.jsonl'} (adjudicate these)")
+        print(f"\n[agreement] report -> {args.out_dir / 'agreement_report.json'}", flush=True)
+        print(
+            f"[agreement] {len(disagreements)} disagreements -> "
+            f"{args.out_dir / 'disagreements.jsonl'} (adjudicate these)"
+        )
     return 0
 
 

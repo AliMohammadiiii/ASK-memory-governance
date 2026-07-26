@@ -117,8 +117,11 @@ def main() -> int:
     p.add_argument("--num-ctx", type=int, default=4096)
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--limit", type=int, default=None)
-    p.add_argument("--resume", action="store_true",
-                   help="Append missing rows when predictions.jsonl already exists.")
+    p.add_argument(
+        "--resume",
+        action="store_true",
+        help="Append missing rows when predictions.jsonl already exists.",
+    )
     p.add_argument(
         "--prior-text",
         default="User prefers coffee in the morning.",
@@ -199,7 +202,10 @@ def main() -> int:
             }
             fh.write(json.dumps(record, ensure_ascii=False, sort_keys=True))
             fh.write("\n")
-            print(f"[{i}/{len(rows)}] {row['turn_id']} gold={gold_label} pred={pred_label}", flush=True)
+            print(
+                f"[{i}/{len(rows)}] {row['turn_id']} gold={gold_label} pred={pred_label}",
+                flush=True,
+            )
 
     _write_confusion(args.out_dir / "confusion.csv", gold, predicted)
     _write_pr_table(args.out_dir / "pr_table.csv", gold, predicted, args.n_bootstrap)

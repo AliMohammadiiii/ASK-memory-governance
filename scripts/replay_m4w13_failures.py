@@ -157,14 +157,21 @@ def coverage(session_id: str, prompt: str) -> tuple[int, int, list[str]]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--slice", type=Path, required=True)
-    ap.add_argument("--run-dir", type=Path, required=True,
-                    help="Recorded controller run dir holding caches + traces "
-                         "(extraction_cache/relation_cache/extraction_trace/"
-                         "relation_trace .jsonl).")
+    ap.add_argument(
+        "--run-dir",
+        type=Path,
+        required=True,
+        help="Recorded controller run dir holding caches + traces "
+        "(extraction_cache/relation_cache/extraction_trace/"
+        "relation_trace .jsonl).",
+    )
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--mode", choices=("improved", "baseline"), default="improved")
-    ap.add_argument("--only-failed", action="store_true",
-                    help="Replay only the 15 questions the recorded run got wrong.")
+    ap.add_argument(
+        "--only-failed",
+        action="store_true",
+        help="Replay only the 15 questions the recorded run got wrong.",
+    )
     ap.add_argument("--session-id", action="append", default=None)
     ap.add_argument("--embedder-device", default="cpu")
     ap.add_argument("--k", type=int, default=10)
@@ -280,8 +287,7 @@ def main() -> int:
         "full_evidence_coverage": sum(
             1
             for r in rows
-            if r["evidence_groups_total"]
-            and r["evidence_groups_hit"] == r["evidence_groups_total"]
+            if r["evidence_groups_total"] and r["evidence_groups_hit"] == r["evidence_groups_total"]
         ),
         "tracked_failed_questions": sum(1 for r in rows if r["evidence_groups_total"]),
         "regression_risk": [

@@ -12,9 +12,7 @@ from ask.memory import MemoryItem, MemoryType, insert_active
 def test_init_creates_tables(db: sqlite3.Connection) -> None:
     names = {
         row["name"]
-        for row in db.execute(
-            "SELECT name FROM sqlite_master WHERE type='table'"
-        ).fetchall()
+        for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
     }
     expected = {
         "memory_items",
@@ -34,9 +32,7 @@ def test_insert_active_roundtrip(db: sqlite3.Connection) -> None:
         confidence=0.9,
     )
     mem_id = insert_active(db, mem)
-    row = db.execute(
-        "SELECT * FROM memory_items WHERE id = ?", (mem_id,)
-    ).fetchone()
+    row = db.execute("SELECT * FROM memory_items WHERE id = ?", (mem_id,)).fetchone()
     assert row["status"] == "active"
     assert row["type"] == "stable_pref"
     assert row["confidence"] == pytest.approx(0.9)

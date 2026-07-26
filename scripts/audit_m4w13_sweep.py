@@ -192,7 +192,9 @@ def render_stage_markdown(report: dict[str, Any]) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("root", type=Path)
-    parser.add_argument("--stages", nargs="+", choices=sorted(STAGE_EXPECTED_ROWS), default=["pilot", "confirm"])
+    parser.add_argument(
+        "--stages", nargs="+", choices=sorted(STAGE_EXPECTED_ROWS), default=["pilot", "confirm"]
+    )
     parser.add_argument("--fail-on-incomplete", action="store_true")
     parser.add_argument("--write-summary", action="store_true")
     args = parser.parse_args()

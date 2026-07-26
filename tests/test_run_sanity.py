@@ -19,7 +19,9 @@ def _report(baseline: str, candidate_types: list, confusion=None) -> dict:
     return {
         "baseline": baseline,
         "confusion_matrix": confusion or _CM,
-        "predictions": [{"candidate_type": ct, "predicted_action": "KEEP"} for ct in candidate_types],
+        "predictions": [
+            {"candidate_type": ct, "predicted_action": "KEEP"} for ct in candidate_types
+        ],
     }
 
 

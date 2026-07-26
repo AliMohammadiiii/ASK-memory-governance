@@ -18,6 +18,7 @@ in ascending original-index order so shard assignment is stable across rebuilds.
 The full corpus_sessions (the retrieval haystack) are preserved unchanged — only
 the SET of question rows is subsetted, so the benchmark itself is untouched.
 """
+
 from __future__ import annotations
 
 import argparse

@@ -154,8 +154,9 @@ def main() -> int:
     p.add_argument("--run", required=True, type=Path)
     p.add_argument("--slice", required=True, type=Path)
     p.add_argument("--out", type=Path, default=None)
-    p.add_argument("--judge-backend", choices=("ollama", "hf", "huggingface", "fake"),
-                   default="ollama")
+    p.add_argument(
+        "--judge-backend", choices=("ollama", "hf", "huggingface", "fake"), default="ollama"
+    )
     p.add_argument("--judge-model", default="phi3.5:3.8b")
     p.add_argument("--ollama-host", default="http://127.0.0.1:11434")
     p.add_argument("--judge-num-ctx", type=int, default=2048)

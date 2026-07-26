@@ -41,8 +41,15 @@ def test_response_dataclass_round_trip() -> None:
     r = f.generate("hello", seed=1, temperature=0.0, max_new_tokens=8)
     assert isinstance(r, LLMResponse)
     d = r.to_dict()
-    assert {"text", "prompt_tokens", "completion_tokens", "latency_ms",
-            "seed", "temperature", "model_id"} <= set(d)
+    assert {
+        "text",
+        "prompt_tokens",
+        "completion_tokens",
+        "latency_ms",
+        "seed",
+        "temperature",
+        "model_id",
+    } <= set(d)
 
 
 # ----------------- Determinism -------------------------- #
@@ -121,8 +128,7 @@ def test_json_extractor_uses_first_balanced_object() -> None:
 def test_generate_json_skips_schema_echo_and_uses_later_valid_object() -> None:
     inner = FakeLLM()
     inner.queue(
-        '{"title":"Extraction","type":"object"}\n'
-        '{"text": "User likes coffee", "confidence": 0.9}'
+        '{"title":"Extraction","type":"object"}\n{"text": "User likes coffee", "confidence": 0.9}'
     )
     s = StructuredLLM(inner)
 

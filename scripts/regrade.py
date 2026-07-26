@@ -81,8 +81,12 @@ def _load_answers(path: Path) -> dict[str, BaselineAnswer]:
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--run", required=True, type=Path,
-                   help="Run directory containing answers.jsonl + judge_cache.jsonl")
+    p.add_argument(
+        "--run",
+        required=True,
+        type=Path,
+        help="Run directory containing answers.jsonl + judge_cache.jsonl",
+    )
     p.add_argument("--slice", required=True, type=Path)
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--seed", type=int, default=0)
@@ -101,8 +105,7 @@ def main() -> int:
         raise SystemExit(f"missing {cache_path}")
 
     by_session = _load_answers(answers_path)
-    print(f"[regrade] loaded {len(by_session)} cached answers from {answers_path}",
-          flush=True)
+    print(f"[regrade] loaded {len(by_session)} cached answers from {answers_path}", flush=True)
 
     # Use the judge_model_id recorded on the existing report so the cache
     # keys still match.
@@ -127,8 +130,7 @@ def main() -> int:
     baseline = _ReplayBaseline(baseline_name, by_session)
 
     sessions = [s for s in iter_longmemeval_s(args.slice) if s.session_id in by_session]
-    print(f"[regrade] regrading {len(sessions)} sessions (judge={judge_model_id})",
-          flush=True)
+    print(f"[regrade] regrading {len(sessions)} sessions (judge={judge_model_id})", flush=True)
 
     report = evaluate_baseline(
         baseline,
@@ -151,20 +153,19 @@ def main() -> int:
             payload["fallback_breakdown"].setdefault(g.competency, 0)
             payload["fallback_breakdown"][g.competency] += 1
 
-    report_path.write_text(json.dumps(payload, indent=2, sort_keys=True),
-                           encoding="utf-8")
+    report_path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
     md_path.write_text(report.summarize_markdown(), encoding="utf-8")
 
     print()
     print("=" * 72, flush=True)
-    print(f"[regrade] overall={report.overall_accuracy*100:.1f}% "
-          f"(95% CI {report.overall_ci_low*100:.1f} – {report.overall_ci_high*100:.1f})",
-          flush=True)
-    print(f"[regrade] fallback grades: {payload['fallback_count']}/{report.n_sessions}",
-          flush=True)
+    print(
+        f"[regrade] overall={report.overall_accuracy * 100:.1f}% "
+        f"(95% CI {report.overall_ci_low * 100:.1f} – {report.overall_ci_high * 100:.1f})",
+        flush=True,
+    )
+    print(f"[regrade] fallback grades: {payload['fallback_count']}/{report.n_sessions}", flush=True)
     if payload["fallback_breakdown"]:
-        print(f"[regrade] fallback by competency: {payload['fallback_breakdown']}",
-              flush=True)
+        print(f"[regrade] fallback by competency: {payload['fallback_breakdown']}", flush=True)
     return 0
 
 

@@ -1,20 +1,29 @@
-# Git push guide
+# Git publication guide
 
-The release archive deliberately contains no `.git` directory and no fabricated
-remote. After extracting the canonical repository package, initialize or attach
-the public repository that you control.
+The generated public archive intentionally contains no `.git` directory and no
+fabricated remote. Validate the extracted repository before publishing:
 
 ```bash
 unzip ask-memory-governance-final.zip
 cd ask-memory-governance
-git init
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+make release-check
+```
+
+Then initialize the public history and attach a repository you control:
+
+```bash
+git init -b main
 git add .
-git commit -m "Initial public release"
-git status
-git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
+git commit -m "Initial public ASK memory governance release"
+export ASK_REPOSITORY_URL='https://your-host.example/owner/repository.git'
+git remote add origin "$ASK_REPOSITORY_URL"
 git push -u origin main
 ```
 
-Before publishing, rotate the API credential previously shared in chat, confirm
-the MGP-6 data-release consent/license, and review `LICENSE-DATA.md`. No repository
-or issue URL is advertised until you supply a real remote.
+Before publication, review `LICENSE-DATA.md`, confirm all required
+redistribution consent, and rotate any credential that has appeared outside a
+secret manager. Add repository and issue URLs to metadata only after the real
+public host exists.

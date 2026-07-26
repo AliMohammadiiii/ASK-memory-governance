@@ -139,8 +139,7 @@ def test_ollama_unreachable_raises_helpful_message() -> None:
     """Pointing at a closed port should raise RuntimeError with `ollama serve` hint."""
     # Port 1 is reserved + nothing listens there; a connect() will fail fast.
     # max_retries=0 so the test isn't slowed by the retry backoff.
-    o = OllamaLLM(model_id="gemma3:4b", host="http://127.0.0.1:1", timeout_s=2.0,
-                  max_retries=0)
+    o = OllamaLLM(model_id="gemma3:4b", host="http://127.0.0.1:1", timeout_s=2.0, max_retries=0)
     with pytest.raises(RuntimeError) as excinfo:
         o.generate("hi", max_new_tokens=4)
     assert "ollama" in str(excinfo.value).lower()
@@ -236,7 +235,7 @@ def test_ollama_default_retry_budget_survives_runner_restart() -> None:
     # 5 retries with backoff_s=2 → 2 + 4 + 8 + 16 + 32 = 62s budget.
     assert o.max_retries >= 5
     # Compute the worst-case wait this contract promises.
-    worst_case = sum(o.backoff_s * (2 ** i) for i in range(o.max_retries))
+    worst_case = sum(o.backoff_s * (2**i) for i in range(o.max_retries))
     assert worst_case >= 60.0, (
         f"retry budget {worst_case:.1f}s < 60s; "
         "Ollama runner restarts can take that long on memory-constrained Macs."

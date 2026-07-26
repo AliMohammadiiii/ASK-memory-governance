@@ -5,7 +5,9 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-_SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "build_relation_dev100_from_research.py"
+_SCRIPT_PATH = (
+    Path(__file__).resolve().parents[1] / "scripts" / "build_relation_dev100_from_research.py"
+)
 _SPEC = importlib.util.spec_from_file_location("build_relation_dev100_from_research", _SCRIPT_PATH)
 assert _SPEC is not None and _SPEC.loader is not None
 builder = importlib.util.module_from_spec(_SPEC)

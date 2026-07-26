@@ -22,9 +22,9 @@ def test_compute_smrr_counts_retrieved_superseded_memory() -> None:
 
 
 def test_mgp6_stale_items_uses_gold_supersession_state() -> None:
-    scenario = {
-        row.scenario_id: row for row in load_mgp6_jsonl("data/mgp6_v1_seed0.jsonl")
-    }["MGP6-T1-01"]
+    scenario = {row.scenario_id: row for row in load_mgp6_jsonl("data/mgp6_v1_seed0.jsonl")}[
+        "MGP6-T1-01"
+    ]
 
     stale = mgp6_stale_items(scenario)
 

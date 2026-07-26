@@ -88,7 +88,9 @@ def test_openmodel_messages_tries_next_key_on_http_error(monkeypatch) -> None:  
         key = dict(req.header_items())["X-api-key"]
         seen_keys.append(key)
         if key == "bad":
-            raise urllib.error.HTTPError(req.full_url, 403, "Forbidden", {}, io.BytesIO(b"disabled"))
+            raise urllib.error.HTTPError(
+                req.full_url, 403, "Forbidden", {}, io.BytesIO(b"disabled")
+            )
         return _Resp(
             {
                 "model": "deepseek-v4-flash-202605",

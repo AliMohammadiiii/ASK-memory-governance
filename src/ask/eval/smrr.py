@@ -73,7 +73,9 @@ def mgp6_stale_items(scenario: Any) -> list[dict[str, Any]]:
     """Return initial MGP-6 memories that gold state no longer keeps active."""
     initial = [_dump(item) for item in getattr(scenario, "initial_memory_state", [])]
     gold = [_dump(item) for item in getattr(scenario, "gold_memory_state", [])]
-    gold_active_ids = {str(item.get("id")) for item in gold if item.get("status", "active") == "active"}
+    gold_active_ids = {
+        str(item.get("id")) for item in gold if item.get("status", "active") == "active"
+    }
     return [item for item in initial if str(item.get("id")) not in gold_active_ids]
 
 
@@ -83,7 +85,5 @@ def _dump(item: Any) -> dict[str, Any]:
     if hasattr(item, "model_dump"):
         return dict(item.model_dump())
     return {
-        key: getattr(item, key)
-        for key in ("id", "text", "status", "type")
-        if hasattr(item, key)
+        key: getattr(item, key) for key in ("id", "text", "status", "type") if hasattr(item, key)
     }

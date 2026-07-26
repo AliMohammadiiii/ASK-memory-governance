@@ -36,8 +36,7 @@ def test_zero_events_has_nonzero_finite_sample_upper_bound() -> None:
         for i in range(10)
     ]
     predictions = {
-        row["scenario_id"]: {"predicted_action": "ABSTAIN", "confidence": 0.9}
-        for row in rows
+        row["scenario_id"]: {"predicted_action": "ABSTAIN", "confidence": 0.9} for row in rows
     }
 
     result = audit_module.prediction_metrics(rows, predictions)

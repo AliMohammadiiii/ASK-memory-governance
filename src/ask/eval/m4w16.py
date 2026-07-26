@@ -64,15 +64,21 @@ def validate_artifacts(
             continue
         report = _read_json(report_path)
         if int(report.get("n_scenarios") or 0) < 60:
-            warnings.append(f"{report_path} has n_scenarios={report.get('n_scenarios')}, expected 60")
+            warnings.append(
+                f"{report_path} has n_scenarios={report.get('n_scenarios')}, expected 60"
+            )
     controller_log = m4w14_root / "controller" / "action_log.jsonl"
     if not controller_log.exists():
         missing.append(str(controller_log))
     sweep_reports = sorted((m4w15_root / "sweep").glob("threshold_*/report.json"))
     if len(sweep_reports) != 21:
-        missing.append(f"{m4w15_root / 'sweep'}/threshold_*/report.json (found {len(sweep_reports)}, expected 21)")
+        missing.append(
+            f"{m4w15_root / 'sweep'}/threshold_*/report.json (found {len(sweep_reports)}, expected 21)"
+        )
     mgp6_logs = sorted((m4w15_root / "sweep").glob("threshold_*/mgp6/controller/action_log.jsonl"))
-    long_logs = sorted((m4w15_root / "sweep").glob("threshold_*/longmemeval/controller/action_log.jsonl"))
+    long_logs = sorted(
+        (m4w15_root / "sweep").glob("threshold_*/longmemeval/controller/action_log.jsonl")
+    )
     if len(mgp6_logs) != 21:
         missing.append(
             f"{m4w15_root / 'sweep'}/threshold_*/mgp6/controller/action_log.jsonl "
@@ -102,7 +108,9 @@ def run_m4w16(
     notes_dir.mkdir(parents=True, exist_ok=True)
     out_dir.mkdir(parents=True, exist_ok=True)
     scenarios = _load_scenarios(mgp6_input)
-    reports = {alias: _read_json(m4w14_root / alias / "mgp6_report.json") for alias in SYSTEM_ALIASES}
+    reports = {
+        alias: _read_json(m4w14_root / alias / "mgp6_report.json") for alias in SYSTEM_ALIASES
+    }
     controller_report = reports["controller"]
     controller_logs = _logs_by_session(_read_jsonl(m4w14_root / "controller" / "action_log.jsonl"))
 
@@ -114,7 +122,9 @@ def run_m4w16(
     (notes_dir / "m4w16_qualitative.md").write_text(qualitative_md, encoding="utf-8")
 
     pattern_audit = audit_patterns(reports)
-    threshold_md = render_threshold_validation_markdown(controller_report, controller_logs, pattern_audit)
+    threshold_md = render_threshold_validation_markdown(
+        controller_report, controller_logs, pattern_audit
+    )
     (notes_dir / "m4w16_threshold_validation.md").write_text(threshold_md, encoding="utf-8")
     (out_dir / "pattern_audit.json").write_text(
         json.dumps(pattern_audit, indent=2, sort_keys=True),
@@ -171,7 +181,9 @@ def render_qualitative_markdown(
         f"- Losses selected: {len(selected_losses)} / {n_each}",
     ]
     if len(selected_wins) < n_each or len(selected_losses) < n_each:
-        lines.append("- Coverage warning: fewer than 10 wins or losses were available in the controller report.")
+        lines.append(
+            "- Coverage warning: fewer than 10 wins or losses were available in the controller report."
+        )
     lines.extend(["", "## Controller Wins"])
     for idx, row in enumerate(selected_wins, start=1):
         lines.extend(_walkthrough_lines(idx, row, controller_logs, scenarios, outcome="win"))
@@ -216,7 +228,9 @@ def audit_patterns(reports: dict[str, dict[str, Any]]) -> dict[str, Any]:
 
     threshold_ordering = controller.get("threshold_ordering") or {}
     per_type_accuracy = {
-        scenario_type: ((controller.get("per_type") or {}).get(scenario_type) or {}).get("action_accuracy")
+        scenario_type: ((controller.get("per_type") or {}).get(scenario_type) or {}).get(
+            "action_accuracy"
+        )
         for scenario_type in MGP6_TYPES
     }
     return {
@@ -227,7 +241,9 @@ def audit_patterns(reports: dict[str, dict[str, Any]]) -> dict[str, Any]:
         "threshold_ordering": threshold_ordering,
         "controller_per_type_accuracy": per_type_accuracy,
         "suspicious": {
-            "controller_always_abstains_on_t5_or_t6": any(item["always_abstain"] for item in t5_t6.values()),
+            "controller_always_abstains_on_t5_or_t6": any(
+                item["always_abstain"] for item in t5_t6.values()
+            ),
             "baseline_always_wins_t4": bool(baseline_always_win_t4),
             "threshold_ordering_refuted": threshold_ordering.get("confirmed") is False,
         },
@@ -299,9 +315,17 @@ def decide_g3(reports: dict[str, dict[str, Any]]) -> dict[str, Any]:
     rows = []
     passing_types = []
     for scenario_type in MGP6_TYPES:
-        controller_score = ((controller.get("per_type") or {}).get(scenario_type) or {}).get("action_accuracy")
-        naive_score = ((naive.get("per_type") or {}).get(scenario_type) or {}).get("action_accuracy")
-        delta = None if controller_score is None or naive_score is None else float(controller_score) - float(naive_score)
+        controller_score = ((controller.get("per_type") or {}).get(scenario_type) or {}).get(
+            "action_accuracy"
+        )
+        naive_score = ((naive.get("per_type") or {}).get(scenario_type) or {}).get(
+            "action_accuracy"
+        )
+        delta = (
+            None
+            if controller_score is None or naive_score is None
+            else float(controller_score) - float(naive_score)
+        )
         passes = delta is not None and delta >= 0.0
         if passes:
             passing_types.append(scenario_type)
@@ -487,7 +511,13 @@ def logistic_regression_comparator(
         train_indices = [idx for idx in indices if idx not in test_indices]
         train = [examples[idx] for idx in train_indices]
         test = [examples[idx] for idx in test_indices]
-        model = _fit_softmax([item["x"] for item in train], [item["y"] for item in train], epochs=epochs, lr=lr, l2=l2)
+        model = _fit_softmax(
+            [item["x"] for item in train],
+            [item["y"] for item in train],
+            epochs=epochs,
+            lr=lr,
+            l2=l2,
+        )
         for item in test:
             pred_action = _predict_softmax(model, item["x"])
             predictions.append((item["scenario_type"], item["y"], pred_action))
@@ -498,7 +528,9 @@ def logistic_regression_comparator(
         subset = [(gold, pred) for typ, gold, pred in predictions if typ == scenario_type]
         per_type[scenario_type] = {
             "n": len(subset),
-            "accuracy": 0.0 if not subset else sum(1 for gold, pred in subset if gold == pred) / len(subset),
+            "accuracy": 0.0
+            if not subset
+            else sum(1 for gold, pred in subset if gold == pred) / len(subset),
         }
     return {
         "n": len(predictions),
@@ -556,7 +588,10 @@ def _classify_error(
     scenario: dict[str, Any],
 ) -> tuple[str, str]:
     if not logs:
-        return "extraction_error", "no action_log row; likely no candidate made it into the decision path"
+        return (
+            "extraction_error",
+            "no action_log row; likely no candidate made it into the decision path",
+        )
     primary = logs[0]
     candidate_text = str(primary.get("candidate_text") or "")
     if not candidate_text or candidate_text.startswith("(no extractable"):
@@ -564,19 +599,29 @@ def _classify_error(
     initial_type = None
     if scenario.get("initial_memory_state"):
         initial_type = scenario["initial_memory_state"][0].get("type")
-    if primary.get("candidate_type") not in {initial_type, None} and pred.get("gold_action") == "SUPERSEDE":
-        return "extraction_error", "candidate type differs from the memory slot needed for supersession"
+    if (
+        primary.get("candidate_type") not in {initial_type, None}
+        and pred.get("gold_action") == "SUPERSEDE"
+    ):
+        return (
+            "extraction_error",
+            "candidate type differs from the memory slot needed for supersession",
+        )
 
     gold = _action(pred.get("gold_action"))
     predicted = _action(pred.get("predicted_action"))
     any_negative_relation = any(float(log.get("feature_r") or 0.0) < 0.0 for log in logs)
     any_high_abs = any(_float(log.get("s_abs")) > _float(log.get("theta_abs")) for log in logs)
     any_sup_ready = any(
-        _float(log.get("s_rev")) > _float(log.get("theta_sup")) and float(log.get("feature_r") or 0.0) < 0.0
+        _float(log.get("s_rev")) > _float(log.get("theta_sup"))
+        and float(log.get("feature_r") or 0.0) < 0.0
         for log in logs
     )
     if gold == "SUPERSEDE" and not any_negative_relation:
-        return "classifier_error", "gold requires supersession but relation feature is not contradictory"
+        return (
+            "classifier_error",
+            "gold requires supersession but relation feature is not contradictory",
+        )
     if gold == "SUPERSEDE" and predicted == "ABSTAIN" and any_high_abs:
         return "action_error", "relation supports supersession but abstain score crossed theta_abs"
     if gold == "SUPERSEDE" and not any_sup_ready:
@@ -591,7 +636,10 @@ def _classify_error(
         return "action_error", "policy committed supersession without a contradictory relation"
     if gold == "KEEP" and predicted == "ABSTAIN":
         return "action_error", "keep case was blocked by abstain threshold"
-    return "action_error", "extractor/classifier evidence was not enough to justify the final action"
+    return (
+        "action_error",
+        "extractor/classifier evidence was not enough to justify the final action",
+    )
 
 
 def _score_check(log: dict[str, Any]) -> dict[str, Any]:
@@ -602,7 +650,10 @@ def _score_check(log: dict[str, Any]) -> dict[str, Any]:
 def _infer_action_from_scores(log: dict[str, Any]) -> str:
     if _float(log.get("s_abs")) > _float(log.get("theta_abs")):
         return "ABSTAIN"
-    if _float(log.get("s_rev")) > _float(log.get("theta_sup")) and _float(log.get("feature_r")) < 0.0:
+    if (
+        _float(log.get("s_rev")) > _float(log.get("theta_sup"))
+        and _float(log.get("feature_r")) < 0.0
+    ):
         return "SUPERSEDE"
     return "KEEP"
 
@@ -615,7 +666,9 @@ def _rationale_legible(log: dict[str, Any]) -> bool:
     return "S_rev" in rationale and "S_abs" in rationale and action in rationale.lower()
 
 
-def _fitted_thresholds_from_logs(logs_by_session: dict[str, list[dict[str, Any]]]) -> dict[str, dict[str, Any]]:
+def _fitted_thresholds_from_logs(
+    logs_by_session: dict[str, list[dict[str, Any]]],
+) -> dict[str, dict[str, Any]]:
     buckets: dict[str, list[float]] = {}
     for logs in logs_by_session.values():
         for row in logs:
@@ -663,7 +716,9 @@ def _fit_softmax(
     for _epoch in range(epochs):
         grad = [[0.0 for _ in range(width)] for _ in labels]
         for row, gold in zip(x, y):
-            probs = _softmax([sum(w * v for w, v in zip(weights[k], row)) for k in range(len(labels))])
+            probs = _softmax(
+                [sum(w * v for w, v in zip(weights[k], row)) for k in range(len(labels))]
+            )
             gold_idx = label_to_idx[gold]
             for k in range(len(labels)):
                 diff = probs[k] - (1.0 if k == gold_idx else 0.0)
@@ -722,7 +777,9 @@ def _read_json(path: Path) -> dict[str, Any]:
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def _action(value: Any) -> str:

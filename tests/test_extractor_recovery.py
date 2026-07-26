@@ -44,10 +44,14 @@ def test_extractor_propagates_failure_when_provider_returns_no_response(tmp_path
 
 
 def test_extractor_falls_back_to_empty_on_schema_echo() -> None:
-    inner = FakeLLM(scripted=deque([
-        '{"title":"ExtractedItem","type":"object","properties":{}}',
-        '{"title":"ExtractedItem","type":"object","properties":{}}',
-    ]))
+    inner = FakeLLM(
+        scripted=deque(
+            [
+                '{"title":"ExtractedItem","type":"object","properties":{}}',
+                '{"title":"ExtractedItem","type":"object","properties":{}}',
+            ]
+        )
+    )
     extractor = Extractor(
         StructuredLLM(inner),
         "Current turn: {{ turn | tojson }}",
@@ -70,18 +74,22 @@ def test_extractor_falls_back_to_empty_on_schema_echo() -> None:
 
 
 def test_extractor_filters_placeholder_and_recovers_degree_fact(tmp_path) -> None:
-    inner = FakeLLM(scripted=deque([
-        (
-            '{"items":[{"text":"one short canonical sentence",'
-            '"type_guess":"stable_pref",'
-            '"evidence_span":{"session_id":"answer_1","turn_idx":4,'
-            '"char_start":0,"char_end":0},'
-            '"extraction_confidence":0.0,'
-            '"negation_marker":false,"hedge_marker":false,'
-            '"polarity_subject":"user"}],'
-            '"no_extractable_content":false,"coverage_note":null}'
+    inner = FakeLLM(
+        scripted=deque(
+            [
+                (
+                    '{"items":[{"text":"one short canonical sentence",'
+                    '"type_guess":"stable_pref",'
+                    '"evidence_span":{"session_id":"answer_1","turn_idx":4,'
+                    '"char_start":0,"char_end":0},'
+                    '"extraction_confidence":0.0,'
+                    '"negation_marker":false,"hedge_marker":false,'
+                    '"polarity_subject":"user"}],'
+                    '"no_extractable_content":false,"coverage_note":null}'
+                )
+            ]
         )
-    ]))
+    )
     extractor = Extractor(
         StructuredLLM(inner),
         "Current turn: {{ turn | tojson }}",
@@ -157,9 +165,9 @@ def test_extractor_salvages_complete_items_from_truncated_json() -> None:
 
 
 def test_extractor_recovers_new_proper_possession_fact() -> None:
-    inner = FakeLLM(scripted=deque([
-        '{"items":[],"no_extractable_content":true,"coverage_note":"empty"}'
-    ]))
+    inner = FakeLLM(
+        scripted=deque(['{"items":[],"no_extractable_content":true,"coverage_note":"empty"}'])
+    )
     extractor = Extractor(
         StructuredLLM(inner),
         "Current turn: {{ turn | tojson }}",

@@ -63,6 +63,6 @@ def test_transient_pref_supersedes_at_lower_threshold() -> None:
     cfg = load_config()
     fv = _fv(c=0.70, e=0.8, f=0.8, r=0.33, rho=math.exp(-30 / 10))
     d_stable = decide(fv, MemoryType.STABLE_PREF, relation_class="contradict", config=cfg)
-    d_trans  = decide(fv, MemoryType.TRANSIENT_PREF, relation_class="contradict", config=cfg)
+    d_trans = decide(fv, MemoryType.TRANSIENT_PREF, relation_class="contradict", config=cfg)
     assert d_stable.action == ControllerAction.KEEP
     assert d_trans.action == ControllerAction.SUPERSEDE

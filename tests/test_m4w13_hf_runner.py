@@ -225,7 +225,9 @@ def test_complete_run_requires_predictions_and_controller_action_log(tmp_path: P
     cmd = [sys.executable, "scripts/run_baseline.py", "--baseline", "controller"]
     expected_rows = 2
     (run_dir / "report.json").write_text(
-        json.dumps({"baseline_name": "controller", "n_sessions": expected_rows, "overall_accuracy": 0.5}),
+        json.dumps(
+            {"baseline_name": "controller", "n_sessions": expected_rows, "overall_accuracy": 0.5}
+        ),
         encoding="utf-8",
     )
     _write_jsonl(run_dir / "answers.jsonl", expected_rows)

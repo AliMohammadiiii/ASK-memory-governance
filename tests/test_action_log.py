@@ -191,6 +191,7 @@ def test_crash_safety_partial_file_parseable_up_to_last_flush(tmp_log_path: Path
         # without going through __exit__'s graceful close.
         w._fp.flush()  # type: ignore[union-attr]
         import os as _os
+
         _os.fsync(w._fp.fileno())  # type: ignore[union-attr]
         w._fp.close()  # type: ignore[union-attr]
         w._fp = None

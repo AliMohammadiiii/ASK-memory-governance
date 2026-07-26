@@ -103,7 +103,9 @@ def _current_ci_record(run_id: str, expected_head: str) -> dict[str, Any]:
 
 def _walk_keys(value: Any) -> set[str]:
     if isinstance(value, dict):
-        return {str(key) for key in value} | set().union(*(_walk_keys(item) for item in value.values()))
+        return {str(key) for key in value} | set().union(
+            *(_walk_keys(item) for item in value.values())
+        )
     if isinstance(value, list):
         return set().union(*(_walk_keys(item) for item in value)) if value else set()
     return set()
@@ -139,8 +141,10 @@ def build_freeze_artifacts(*, ci_run_id: str) -> tuple[dict[str, Any], dict[str,
     head = _git_output("rev-parse", "HEAD")
     ci = _current_ci_record(ci_run_id, head)
     quality_gates = facts.get("quality_gates")
-    if not isinstance(quality_gates, dict) or quality_gates.get("failed_gates") or not all(
-        value is True for key, value in quality_gates.items() if key != "failed_gates"
+    if (
+        not isinstance(quality_gates, dict)
+        or quality_gates.get("failed_gates")
+        or not all(value is True for key, value in quality_gates.items() if key != "failed_gates")
     ):
         raise SystemExit("release quality gates are not all passing")
     if facts.get("release_version") != development.get("release_version"):
@@ -189,7 +193,10 @@ def build_freeze_artifacts(*, ci_run_id: str) -> tuple[dict[str, Any], dict[str,
         ".private/benchmarks/mgp6/v4.3/hidden_gold/sentinel.jsonl",
     )
     private_ignored = all(
-        subprocess.run(["git", "-C", str(REPO), "check-ignore", "-q", sentinel], check=False).returncode == 0
+        subprocess.run(
+            ["git", "-C", str(REPO), "check-ignore", "-q", sentinel], check=False
+        ).returncode
+        == 0
         for sentinel in private_sentinels
     )
     if not private_ignored:
@@ -254,14 +261,22 @@ def build_freeze_artifacts(*, ci_run_id: str) -> tuple[dict[str, Any], dict[str,
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--ci-run-id", required=True, help="Completed successful GitHub Actions run for HEAD.")
+    parser.add_argument(
+        "--ci-run-id", required=True, help="Completed successful GitHub Actions run for HEAD."
+    )
     parser.add_argument("--out-config", type=Path, default=DEFAULT_CONFIG_PATH)
     parser.add_argument("--out-authorization", type=Path, default=DEFAULT_AUTHORIZATION_PATH)
-    parser.add_argument("--check", action="store_true", help="Validate gates without writing artifacts.")
+    parser.add_argument(
+        "--check", action="store_true", help="Validate gates without writing artifacts."
+    )
     args = parser.parse_args()
     frozen_config, authorization = build_freeze_artifacts(ci_run_id=args.ci_run_id)
     if args.check:
-        print(canonical_json({"authorized": authorization["authorized"], "gates": authorization["gate_results"]}))
+        print(
+            canonical_json(
+                {"authorized": authorization["authorized"], "gates": authorization["gate_results"]}
+            )
+        )
         return 0
     _atomic_write_json(args.out_config, frozen_config)
     _atomic_write_json(args.out_authorization, authorization)

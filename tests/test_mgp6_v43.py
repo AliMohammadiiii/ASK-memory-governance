@@ -66,20 +66,28 @@ def test_release_counts_balance_uniqueness_and_determinism(release) -> None:
     assert Counter(row.gold_action for row in train) == Counter(KEEP=60, SUPERSEDE=60, ABSTAIN=60)
     assert Counter(row.gold_action for row in dev) == Counter(KEEP=60, SUPERSEDE=60, ABSTAIN=60)
     assert [row.public_id for row in train] == sorted(row.public_id for row in train)
-    assert [row.public_id for row in train] == [row.public_id for row in load_public_records(PUBLIC / "train.jsonl")]
+    assert [row.public_id for row in train] == [
+        row.public_id for row in load_public_records(PUBLIC / "train.jsonl")
+    ]
 
 
 def test_development_registry_covers_implemented_systems_and_prompt_hashes() -> None:
     config = json.loads(DEV_CONFIG.read_text(encoding="utf-8"))
     assert {entry["id"] for entry in config["systems"]} == set(MGP6V43_SYSTEMS)
-    assert set(config["execution_contract"]["implemented_by_scripts_run_mgp6_v43"]) == set(MGP6V43_SYSTEMS)
+    assert set(config["execution_contract"]["implemented_by_scripts_run_mgp6_v43"]) == set(
+        MGP6V43_SYSTEMS
+    )
     for entry in config["prompt_templates"].values():
         path = ROOT / entry["path"]
         assert hashlib.sha256(path.read_bytes()).hexdigest() == entry["sha256"]
 
 
 def test_component_isolation_contract() -> None:
-    component_to_split = {**{f"t{i}": "train" for i in range(20)}, **{f"d{i}": "dev" for i in range(20)}, **{f"h{i}": "hidden" for i in range(60)}}
+    component_to_split = {
+        **{f"t{i}": "train" for i in range(20)},
+        **{f"d{i}": "dev" for i in range(20)},
+        **{f"h{i}": "hidden" for i in range(60)},
+    }
     validate_component_splits(component_to_split)
     component_to_split["bad"] = "train"
     with pytest.raises(MGP6V43Error):
@@ -91,7 +99,17 @@ def test_model_input_prompt_and_logs_are_label_free(release) -> None:
     payload = record.model_input()
     assert not (set(payload) & PROHIBITED_MODEL_KEYS)
     assert "gold_action" not in build_decision_prompt(record, "system")
-    for key in ("gold_action", "design_target", "source_item_id", "component_id", "private_item_id", "annotator_id", "final_consensus", "human_gold", "hidden_gold"):
+    for key in (
+        "gold_action",
+        "design_target",
+        "source_item_id",
+        "component_id",
+        "private_item_id",
+        "annotator_id",
+        "final_consensus",
+        "human_gold",
+        "hidden_gold",
+    ):
         with pytest.raises(MGP6V43Error):
             assert_model_safe({key: "forbidden"})
 
@@ -135,8 +153,14 @@ def test_live_controller_guard_uses_public_evidence_only() -> None:
             public_id="MGP43-00000000000000000000",
             memory_before={"memory_slot": "setting", "principal": "Ari", "standing_value": "old"},
             dialogue=[
-                {"speaker": "USER", "text": "The index attaches the first and second messages to this setting."},
-                {"speaker": "USER", "text": f"The first message says: {first} The second message says: {second}"},
+                {
+                    "speaker": "USER",
+                    "text": "The index attaches the first and second messages to this setting.",
+                },
+                {
+                    "speaker": "USER",
+                    "text": f"The first message says: {first} The second message says: {second}",
+                },
                 {"speaker": "USER", "text": "The requested value is new."},
             ],
             evaluation_query="Choose KEEP, SUPERSEDE, or ABSTAIN.",
@@ -221,9 +245,7 @@ def test_postfinal_successor_guard_is_public_only_and_not_a_hidden_retry() -> No
     assert composed_trace["prior_guard_action"] == "KEEP"
     assert composed_trace["prior_guard_overrode_model_abstention"] is True
     assert MGP6V43_SUCCESSOR_SYSTEMS == ("successor_live_model_controller",)
-    assert set(MGP6V43_RUNNABLE_SYSTEMS) == set(MGP6V43_SYSTEMS) | set(
-        MGP6V43_SUCCESSOR_SYSTEMS
-    )
+    assert set(MGP6V43_RUNNABLE_SYSTEMS) == set(MGP6V43_SYSTEMS) | set(MGP6V43_SUCCESSOR_SYSTEMS)
     assert adapter_version_for_system("live_model_controller").endswith(".v3")
     assert adapter_version_for_system("successor_live_model_controller").endswith(
         ".v4-postfinal-dev"
@@ -290,7 +312,12 @@ def test_prediction_validation_and_resume_safety(tmp_path: Path, release) -> Non
         write_prediction_resume_safe(path, MGP6V43Prediction(public_id=ids[0], action="ABSTAIN"))
     with pytest.raises(MGP6V43Error, match="missing"):
         load_predictions(path, ids)
-    path.write_text(path.read_text(encoding="utf-8") + json.dumps({"public_id": "MGP43-FFFFFFFFFFFFFFFFFFFF", "action": "KEEP"}) + "\n", encoding="utf-8")
+    path.write_text(
+        path.read_text(encoding="utf-8")
+        + json.dumps({"public_id": "MGP43-FFFFFFFFFFFFFFFFFFFF", "action": "KEEP"})
+        + "\n",
+        encoding="utf-8",
+    )
     with pytest.raises(MGP6V43Error, match="unknown"):
         load_predictions(path, ids)
 
@@ -302,16 +329,19 @@ def test_metric_correctness_and_cluster_bootstrap_reproducibility() -> None:
     assert result["accuracy"] == 0.5
     assert result["confusion_matrix"]["SUPERSEDE"]["KEEP"] == 1
     component_map = {"a": "x", "b": "x", "c": "y", "d": "y"}
-    assert cluster_bootstrap(gold, predictions, component_map, seed=7, replicates=100) == cluster_bootstrap(gold, predictions, component_map, seed=7, replicates=100)
+    assert cluster_bootstrap(
+        gold, predictions, component_map, seed=7, replicates=100
+    ) == cluster_bootstrap(gold, predictions, component_map, seed=7, replicates=100)
 
 
-def test_public_scorer_reports_public_metrics_without_component_map(tmp_path: Path, release) -> None:
+def test_public_scorer_reports_public_metrics_without_component_map(
+    tmp_path: Path, release
+) -> None:
     dev = release[1]
     prediction_path = tmp_path / "predictions.jsonl"
     prediction_path.write_text(
         "".join(
-            json.dumps({"public_id": record.public_id, "action": "KEEP"}) + "\n"
-            for record in dev
+            json.dumps({"public_id": record.public_id, "action": "KEEP"}) + "\n" for record in dev
         ),
         encoding="utf-8",
     )
@@ -328,9 +358,30 @@ def test_private_boundary_is_ignored() -> None:
 
 
 def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
-    dry_run = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--dry-run"], cwd=ROOT, capture_output=True, text=True, check=False)
+    dry_run = subprocess.run(
+        [sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--dry-run"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     assert dry_run.returncode == 0, dry_run.stderr
-    run = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--action", "ABSTAIN", "--out", str(tmp_path / "smoke")], cwd=ROOT, capture_output=True, text=True, check=False)
+    run = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_mgp6_v43.py",
+            "--limit",
+            "2",
+            "--action",
+            "ABSTAIN",
+            "--out",
+            str(tmp_path / "smoke"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     assert run.returncode == 0, run.stderr
     assert len((tmp_path / "smoke/predictions.jsonl").read_text(encoding="utf-8").splitlines()) == 2
     manifest = json.loads((tmp_path / "smoke/run_manifest.json").read_text(encoding="utf-8"))
@@ -340,11 +391,33 @@ def test_v43_runner_dry_run_and_engineering_fixture(tmp_path: Path) -> None:
     assert manifest["run_config_hash"] == sha256_value(manifest["run_config"])
     assert manifest["failure_count"] == 0
     assert manifest["invalid_response_count"] == 0
-    raw_rows = [(json.loads(line)) for line in (tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()]
+    raw_rows = [
+        (json.loads(line))
+        for line in (tmp_path / "smoke/raw_responses.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()
+    ]
     assert {row["valid_action"] for row in raw_rows} == {True}
-    rerun = subprocess.run([sys.executable, "scripts/run_mgp6_v43.py", "--limit", "2", "--action", "ABSTAIN", "--out", str(tmp_path / "smoke")], cwd=ROOT, capture_output=True, text=True, check=False)
+    rerun = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_mgp6_v43.py",
+            "--limit",
+            "2",
+            "--action",
+            "ABSTAIN",
+            "--out",
+            str(tmp_path / "smoke"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     assert rerun.returncode == 0, rerun.stderr
-    assert len((tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()) == 2
+    assert (
+        len((tmp_path / "smoke/raw_responses.jsonl").read_text(encoding="utf-8").splitlines()) == 2
+    )
 
 
 def test_v43_runner_rejects_unimplemented_in_process_concurrency() -> None:
@@ -518,5 +591,7 @@ def test_final_hidden_freeze_artifacts_are_authorized_and_label_free() -> None:
     assert config["hidden_input_policy"]["expected_item_count"] == 540
     assert authorization["authorized"] is True
     assert authorization["hidden_run_controls"] == config["hidden_run_controls"]
-    assert authorization["hidden_run_controls_sha256"] == sha256_value(config["hidden_run_controls"])
+    assert authorization["hidden_run_controls_sha256"] == sha256_value(
+        config["hidden_run_controls"]
+    )
     assert authorization["frozen_config_sha256"] == sha256_value(config)

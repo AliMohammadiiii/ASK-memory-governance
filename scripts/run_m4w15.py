@@ -189,38 +189,63 @@ def main() -> int:
     p.add_argument("--out", type=Path, default=Path("runs/m4w15"))
     p.add_argument("--m4w13-root", type=Path, default=Path("runs/m4w13"))
     p.add_argument("--m4w14-root", type=Path, default=Path("runs/m4w14"))
-    p.add_argument("--longmemeval-slice", type=Path, default=Path("data/longmemeval_s_synthetic.jsonl"))
+    p.add_argument(
+        "--longmemeval-slice", type=Path, default=Path("data/longmemeval_s_synthetic.jsonl")
+    )
     p.add_argument("--mgp6-input", type=Path, default=Path("data/mgp6_v1_seed0.jsonl"))
     p.add_argument("--scorecard-config", type=Path, default=Path("configs/controller_active.yaml"))
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n-bootstrap", type=int, default=1000)
-    p.add_argument("--limit", type=int, default=None,
-                   help="Smoke-run cap. Do not use for acceptance artifacts.")
+    p.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Smoke-run cap. Do not use for acceptance artifacts.",
+    )
     p.add_argument("--ollama-host", default="http://localhost:11434")
     p.add_argument("--ollama-timeout-s", type=float, default=900.0)
     p.add_argument("--judge-timeout-s", type=float, default=900.0)
-    p.add_argument("--embedder-backend", choices=("sentence_transformer", "ollama"),
-                   default="ollama",
-                   help="Retrieval embedding backend for LongMemEval controller sweeps.")
+    p.add_argument(
+        "--embedder-backend",
+        choices=("sentence_transformer", "ollama"),
+        default="ollama",
+        help="Retrieval embedding backend for LongMemEval controller sweeps.",
+    )
     p.add_argument("--embedder-model", default=None)
     p.add_argument("--embedder-timeout-s", type=float, default=None)
     p.add_argument("--embedder-batch-size", type=int, default=16)
-    p.add_argument("--model-profile", choices=("standard", "light", "t4"), default="standard",
-                   help="Use 'light' for 3B/3.8B. Use 't4' for qwen3.5:9b "
-                        "answering, llama3.2 extraction, and phi3.5 judge/classifier.")
+    p.add_argument(
+        "--model-profile",
+        choices=("standard", "light", "t4"),
+        default="standard",
+        help="Use 'light' for 3B/3.8B. Use 't4' for qwen3.5:9b "
+        "answering, llama3.2 extraction, and phi3.5 judge/classifier.",
+    )
     p.add_argument("--answerer-model", default=None)
     p.add_argument("--extractor-model", default=None)
     p.add_argument("--classifier-model", default=None)
     p.add_argument("--judge-model", default=None)
     p.add_argument("--skip-model-check", action="store_true")
-    p.add_argument("--skip-sweep", action="store_true",
-                   help="Only assemble plots/table from existing M4-W15 sweep reports.")
-    p.add_argument("--allow-incomplete", action="store_true",
-                   help="Permit assembly with missing prerequisite cells. Not for acceptance runs.")
-    p.add_argument("--allow-synthetic-longmemeval", action="store_true",
-                   help="Permit the local synthetic LongMemEval slice. Not for acceptance runs.")
-    p.add_argument("--dry-run", action="store_true",
-                   help="Print the full 21-point plan without running or writing outputs.")
+    p.add_argument(
+        "--skip-sweep",
+        action="store_true",
+        help="Only assemble plots/table from existing M4-W15 sweep reports.",
+    )
+    p.add_argument(
+        "--allow-incomplete",
+        action="store_true",
+        help="Permit assembly with missing prerequisite cells. Not for acceptance runs.",
+    )
+    p.add_argument(
+        "--allow-synthetic-longmemeval",
+        action="store_true",
+        help="Permit the local synthetic LongMemEval slice. Not for acceptance runs.",
+    )
+    p.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print the full 21-point plan without running or writing outputs.",
+    )
     args = p.parse_args()
     if args.model_profile == "light":
         args.answerer_model = args.answerer_model or LIGHT_MODELS["answerer"]
@@ -248,7 +273,9 @@ def main() -> int:
             flush=True,
         )
         if not args.dry_run and not args.allow_synthetic_longmemeval:
-            raise SystemExit("Refusing to create M4-W15 acceptance artifacts from a synthetic slice.")
+            raise SystemExit(
+                "Refusing to create M4-W15 acceptance artifacts from a synthetic slice."
+            )
 
     prereqs = validate_prerequisites(args.m4w13_root, args.m4w14_root)
     if not prereqs.ok:
@@ -261,7 +288,10 @@ def main() -> int:
             raise SystemExit("M4-W15 prerequisite artifacts are present but incomplete.")
 
     if args.dry_run:
-        print(f"[m4w15] theta_abs grid: {[f'{value:.2f}' for value in threshold_values()]}", flush=True)
+        print(
+            f"[m4w15] theta_abs grid: {[f'{value:.2f}' for value in threshold_values()]}",
+            flush=True,
+        )
 
     if not args.skip_model_check and not args.dry_run:
         _validate_models(
@@ -279,7 +309,9 @@ def main() -> int:
         for theta in threshold_values():
             threshold_dir = args.out / "sweep" / threshold_dir_name(theta)
             _run(_mgp6_command(args, theta, threshold_dir), cwd=_THIS.parents[1], dry_run=True)
-            _run(_longmemeval_command(args, theta, threshold_dir), cwd=_THIS.parents[1], dry_run=True)
+            _run(
+                _longmemeval_command(args, theta, threshold_dir), cwd=_THIS.parents[1], dry_run=True
+            )
         print(f"[m4w15] would write {args.out / 'rc_at_c_curve.png'}")
         print(f"[m4w15] would write {args.out / 'rc_at_c_curve.pdf'}")
         print("[m4w15] would write NOTES/m4w15_main_table.md")
@@ -302,7 +334,9 @@ def main() -> int:
         "judge_tier": "ollama" if not args.skip_sweep else "assembled_existing_outputs",
         "raw_turn_fallback": False,
         "complete": False,
-        "thesis_use": "no_final_claim" if args.limit is not None else "final_candidate_pending_review",
+        "thesis_use": "no_final_claim"
+        if args.limit is not None
+        else "final_candidate_pending_review",
         "models": {
             "answerer": args.answerer_model,
             "embedder": args.embedder_model,
@@ -326,9 +360,15 @@ def main() -> int:
         for theta in threshold_values():
             threshold_dir = args.out / "sweep" / threshold_dir_name(theta)
             _run(_mgp6_command(args, theta, threshold_dir), cwd=_THIS.parents[1], dry_run=False)
-            _run(_longmemeval_command(args, theta, threshold_dir), cwd=_THIS.parents[1], dry_run=False)
+            _run(
+                _longmemeval_command(args, theta, threshold_dir),
+                cwd=_THIS.parents[1],
+                dry_run=False,
+            )
 
-    reports = _assemble_sweep(args) if not args.skip_sweep else load_threshold_reports(args.out / "sweep")
+    reports = (
+        _assemble_sweep(args) if not args.skip_sweep else load_threshold_reports(args.out / "sweep")
+    )
     if args.skip_sweep:
         plot_rc_curve(
             reports,

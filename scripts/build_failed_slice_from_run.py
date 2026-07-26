@@ -47,18 +47,10 @@ def build_failed_slice(
     judgments_path = _judgments_path(run)
     judgments = _load_jsonl(judgments_path)
     if not judgments:
-        raise ValueError(
-            f"no judgments found in {judgments_path}; cannot build a failed slice"
-        )
-    failed_ids = [
-        str(row["session_id"])
-        for row in judgments
-        if row.get("correct") is False
-    ]
+        raise ValueError(f"no judgments found in {judgments_path}; cannot build a failed slice")
+    failed_ids = [str(row["session_id"]) for row in judgments if row.get("correct") is False]
     judged_ids = {
-        str(row.get("session_id"))
-        for row in judgments
-        if row.get("session_id") is not None
+        str(row.get("session_id")) for row in judgments if row.get("session_id") is not None
     }
     failed_set = set(failed_ids)
 
@@ -97,7 +89,9 @@ def build_failed_slice(
 
     if ids_out is not None:
         ids_out.parent.mkdir(parents=True, exist_ok=True)
-        ids_out.write_text("\n".join(session.session_id for session in sessions) + "\n", encoding="utf-8")
+        ids_out.write_text(
+            "\n".join(session.session_id for session in sessions) + "\n", encoding="utf-8"
+        )
 
     return {
         "source_slice": str(source_slice),

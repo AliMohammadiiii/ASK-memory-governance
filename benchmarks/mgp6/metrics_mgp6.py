@@ -91,9 +91,7 @@ def load_predictions(path: Path) -> dict[str, dict[str, Any]]:
             if scenario_id in predictions:
                 raise ValueError(f"duplicate prediction for {scenario_id}")
             action = canonical_action(payload.get("predicted_action", "INVALID"))
-            payload["predicted_action"] = (
-                action if action in PREDICTION_OUTCOMES else "INVALID"
-            )
+            payload["predicted_action"] = action if action in PREDICTION_OUTCOMES else "INVALID"
             state = payload.get("predicted_memory_state", [])
             payload["predicted_memory_state"] = state if isinstance(state, list) else []
             answer = payload.get("predicted_answer", "")
@@ -125,13 +123,20 @@ def safe_mean(values: list[float]) -> float:
     return sum(values) / len(values) if values else 0.0
 
 
-def rate(pairs: list[Pair], predicate: Callable[[Pair], bool], eligible: Callable[[Pair], bool]) -> float:
+def rate(
+    pairs: list[Pair], predicate: Callable[[Pair], bool], eligible: Callable[[Pair], bool]
+) -> float:
     selected = [pair for pair in pairs if eligible(pair)]
     return safe_mean([1.0 if predicate(pair) else 0.0 for pair in selected])
 
 
 def action_accuracy(pairs: list[Pair]) -> float:
-    return safe_mean([float(canonical_action(g.gold_action) == canonical_action(p["predicted_action"])) for g, p in pairs])
+    return safe_mean(
+        [
+            float(canonical_action(g.gold_action) == canonical_action(p["predicted_action"]))
+            for g, p in pairs
+        ]
+    )
 
 
 def action_precision(pairs: list[Pair], label: str) -> float:
@@ -207,7 +212,10 @@ def gold_state_dicts(gold: MGP6Example) -> list[dict[str, Any]]:
 def artifact_exact(pairs: list[Pair]) -> float:
     return safe_mean(
         [
-            float(normalized_state(p["predicted_memory_state"]) == normalized_state(gold_state_dicts(g)))
+            float(
+                normalized_state(p["predicted_memory_state"])
+                == normalized_state(gold_state_dicts(g))
+            )
             for g, p in pairs
         ]
     )
@@ -216,7 +224,10 @@ def artifact_exact(pairs: list[Pair]) -> float:
 def artifact_semantic(pairs: list[Pair]) -> float:
     return safe_mean(
         [
-            float(active_signature(p["predicted_memory_state"]) == active_signature(gold_state_dicts(g)))
+            float(
+                active_signature(p["predicted_memory_state"])
+                == active_signature(gold_state_dicts(g))
+            )
             for g, p in pairs
         ]
     )
@@ -239,8 +250,14 @@ def over_forgetting(pairs: list[Pair]) -> float:
 def under_forgetting(pairs: list[Pair]) -> float:
     def retained_stale(pair: Pair) -> bool:
         gold, pred = pair
-        active_text = " ".join(text for _, _, text in active_signature(pred["predicted_memory_state"]))
-        stale = [memory_value(r.text).casefold() for r in gold.gold_memory_state if r.status == "superseded"]
+        active_text = " ".join(
+            text for _, _, text in active_signature(pred["predicted_memory_state"])
+        )
+        stale = [
+            memory_value(r.text).casefold()
+            for r in gold.gold_memory_state
+            if r.status == "superseded"
+        ]
         current = {
             canonical_memory_value(r.text) for r in gold.gold_memory_state if r.status == "active"
         }
@@ -269,7 +286,11 @@ def lineage_row(gold: MGP6Example, prediction: dict[str, Any]) -> float:
     state = [record for record in prediction["predicted_memory_state"] if isinstance(record, dict)]
     by_id = {record.get("id"): record for record in state}
     old = [record for record in gold.gold_memory_state if record.status == "superseded"]
-    new = [record for record in gold.gold_memory_state if record.status == "active" and record.supersedes_id]
+    new = [
+        record
+        for record in gold.gold_memory_state
+        if record.status == "active" and record.supersedes_id
+    ]
     if not old or not new:
         return 0.0
     old_gold, new_gold = old[0], new[0]
@@ -314,6 +335,7 @@ def duplicate_write(pairs: list[Pair]) -> float:
 
 def invalid_commit(pairs: list[Pair]) -> float:
     """Legacy MGP-6 metric: commit violation on gold-ABSTAIN examples."""
+
     def committed(pair: Pair) -> bool:
         gold, pred = pair
         if pred["predicted_action"] != "ABSTAIN":
@@ -331,18 +353,14 @@ def invalid_commit(pairs: list[Pair]) -> float:
 
 def invalid_commit_outcome(pairs: list[Pair]) -> float:
     """Rate of explicit INVALID_COMMIT prediction outcomes over all examples."""
-    return safe_mean([
-        float(pred["predicted_action"] == "INVALID_COMMIT")
-        for _, pred in pairs
-    ])
+    return safe_mean([float(pred["predicted_action"] == "INVALID_COMMIT") for _, pred in pairs])
 
 
 def dual_active_outcome(pairs: list[Pair]) -> float:
     """Rate of predictions whose adapter observed old and new as simultaneously active."""
-    return safe_mean([
-        float(bool((pred.get("extras") or {}).get("dual_active")))
-        for _, pred in pairs
-    ])
+    return safe_mean(
+        [float(bool((pred.get("extras") or {}).get("dual_active"))) for _, pred in pairs]
+    )
 
 
 def transient_contamination(pairs: list[Pair]) -> float:
@@ -371,7 +389,9 @@ def judge_rate(pairs: list[Pair], which: str) -> float:
     values: list[float] = []
     for gold, pred in pairs:
         include, exclude = judge_flags(gold, pred["predicted_answer"])
-        values.append(float({"include": include, "exclude": exclude, "both": include and exclude}[which]))
+        values.append(
+            float({"include": include, "exclude": exclude, "both": include and exclude}[which])
+        )
     return safe_mean(values)
 
 
@@ -456,7 +476,9 @@ def metric_report(pairs: list[Pair], bootstrap: int, seed: int) -> dict[str, Any
     metrics: dict[str, Any] = {
         "sample_size": reporter.sample_size(),
         "action_accuracy": reporter.measure(action_accuracy),
-        "macro_f1": reporter.measure(lambda sample: safe_mean([action_f1(sample, a) for a in ACTIONS])),
+        "macro_f1": reporter.measure(
+            lambda sample: safe_mean([action_f1(sample, a) for a in ACTIONS])
+        ),
         "artifact_exact_accuracy": reporter.measure(artifact_exact),
         "artifact_semantic_accuracy": reporter.measure(artifact_semantic),
         "over_forgetting_rate": reporter.measure(over_forgetting),
@@ -464,24 +486,22 @@ def metric_report(pairs: list[Pair], bootstrap: int, seed: int) -> dict[str, Any
         "stale_retrieval_rate": reporter.measure(stale_retrieval),
         "lineage_correctness": reporter.measure(lineage_correctness),
         "transient_contamination_rate": reporter.measure(transient_contamination),
-        "abstention_precision": reporter.measure(lambda sample: action_precision(sample, "ABSTAIN")),
+        "abstention_precision": reporter.measure(
+            lambda sample: action_precision(sample, "ABSTAIN")
+        ),
         "abstention_recall": reporter.measure(lambda sample: action_recall(sample, "ABSTAIN")),
         # Backward-compatible key: commit violation on gold-ABSTAIN cases.
         "invalid_commit_rate": reporter.measure(invalid_commit),
         "abstention_invalid_commit_rate": reporter.measure(invalid_commit),
-
         # Prediction-level invalid governance outcome across the full slice.
-        "invalid_commit_outcome_rate": reporter.measure(
-            invalid_commit_outcome
-        ),
-        "dual_active_rate": reporter.measure(
-            dual_active_outcome
-        ),
-
+        "invalid_commit_outcome_rate": reporter.measure(invalid_commit_outcome),
+        "dual_active_rate": reporter.measure(dual_active_outcome),
         "duplicate_write_rate": reporter.measure(duplicate_write),
         "premise_resistance_rate": reporter.measure(premise_resistance),
         "implicit_application_accuracy": reporter.measure(implicit_application),
-        "fama_presence_absence_conjunction": reporter.measure(lambda sample: judge_rate(sample, "both")),
+        "fama_presence_absence_conjunction": reporter.measure(
+            lambda sample: judge_rate(sample, "both")
+        ),
         "judge_include_rate": reporter.measure(lambda sample: judge_rate(sample, "include")),
         "judge_exclude_rate": reporter.measure(lambda sample: judge_rate(sample, "exclude")),
         "judge_conjunction_rate": reporter.measure(lambda sample: judge_rate(sample, "both")),
@@ -504,10 +524,7 @@ def metric_report(pairs: list[Pair], bootstrap: int, seed: int) -> dict[str, Any
                     sum(
                         1
                         for gold, pred in sample
-                        if (
-                            gold.gold_action == g
-                            and pred["predicted_action"] == p
-                        )
+                        if (gold.gold_action == g and pred["predicted_action"] == p)
                     )
                 )
             )
@@ -578,9 +595,15 @@ def paired_mcnemar(pairs_a: list[Pair], pairs_b: list[Pair]) -> dict[str, Any]:
     if discordant == 0:
         p_value = 1.0
     else:
-        tail = sum(math.comb(discordant, k) for k in range(min(a_only, b_only) + 1)) / (2**discordant)
+        tail = sum(math.comb(discordant, k) for k in range(min(a_only, b_only) + 1)) / (
+            2**discordant
+        )
         p_value = min(1.0, 2 * tail)
-    return {"a_only_correct": a_only, "b_only_correct": b_only, "exact_two_sided_p": round(p_value, 8)}
+    return {
+        "a_only_correct": a_only,
+        "b_only_correct": b_only,
+        "exact_two_sided_p": round(p_value, 8),
+    }
 
 
 def main(argv: list[str] | None = None) -> int:

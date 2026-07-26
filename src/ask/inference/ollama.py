@@ -64,9 +64,9 @@ class OllamaLLM:
     host: str = "http://localhost:11434"
     timeout_s: float = 300.0
     keep_alive: str = "30m"  # keep the model resident across the 50-session loop
-    chat: bool = True        # use /api/chat (applies chat template)
+    chat: bool = True  # use /api/chat (applies chat template)
     system: str | None = None  # optional system prompt for chat mode
-    max_retries: int = 5     # 2+4+8+16+32 = 62s — survives one full runner restart
+    max_retries: int = 5  # 2+4+8+16+32 = 62s — survives one full runner restart
     backoff_s: float = _DEFAULT_BACKOFF_S
     # Override Ollama's default 4096 context. The no-memory baseline never
     # approaches this; halving it cuts the KV-cache footprint by ~50%.
@@ -128,7 +128,7 @@ class OllamaLLM:
                 except Exception:
                     last_error_body = ""
                 if exc.code in _RETRY_HTTP_CODES and attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     print(
                         f"[ollama] {url} returned HTTP {exc.code}; "
                         f"{last_error_body[:240] + '; ' if last_error_body else ''}"
@@ -146,7 +146,7 @@ class OllamaLLM:
                 # fast (likely the daemon really is down).
                 last_exc = exc
                 if attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     print(
                         f"[ollama] {url} unreachable ({exc}); "
                         f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
@@ -159,7 +159,7 @@ class OllamaLLM:
             except TimeoutError as exc:
                 last_exc = exc
                 if attempt < self.max_retries:
-                    delay = self.backoff_s * (2 ** attempt)
+                    delay = self.backoff_s * (2**attempt)
                     print(
                         f"[ollama] {url} timed out after {self.timeout_s:.1f}s; "
                         f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
@@ -176,7 +176,7 @@ class OllamaLLM:
             f"{' Response body: ' + last_error_body if last_error_body else ''} "
             "Is the daemon running? Try `ollama serve`, "
             f"`ollama pull {self.model_id}`, and a quick chat ping: "
-            f"`curl {self.host}/api/chat -d '{{\"model\":\"{self.model_id}\","
+            f'`curl {self.host}/api/chat -d \'{{"model":"{self.model_id}",'
             f'"messages":[{{"role":"user","content":"hi"}}],"stream":false}}\'`'
         ) from last_exc
 

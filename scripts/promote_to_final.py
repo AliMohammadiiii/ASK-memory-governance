@@ -43,9 +43,7 @@ from pathlib import Path
 # Proposal-spec'd profile and dataset; keep in sync with run_mgp6.SPEC_PROFILE
 # and configs/eval_mgp6_final.yaml.
 EXPECTED_PROFILE = "thesis"
-EXPECTED_DATASET_SHA256 = (
-    "12e17af530067f0ec1cefa1131898e2c8bd2414ef20cfc4c37fb936148e65701"
-)
+EXPECTED_DATASET_SHA256 = "12e17af530067f0ec1cefa1131898e2c8bd2414ef20cfc4c37fb936148e65701"
 # Fallback floors if the sanity report predates the threshold block.
 DEFAULT_SPEC_MIN_EXTRACTION_RECALL = 0.90
 DEFAULT_SPEC_MIN_T1_RECALL = 0.90
@@ -59,7 +57,9 @@ def _sha256(path: Path) -> str:
 
 
 def _load_jsonl(path: Path) -> list[dict]:
-    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    return [
+        json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()
+    ]
 
 
 def _predictions(run_root: Path, alias: str) -> dict[str, str]:
@@ -82,16 +82,33 @@ def _paired_bootstrap(controller_ok: list[int], b4_ok: list[int], n_boot: int, s
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--run-root", type=Path, required=True, help="MGP-6 run dir (has manifest.json, b4/, controller/).")
-    ap.add_argument("--mgp6", type=Path, default=Path("data/mgp6_v1_seed0.jsonl"), help="Gold dataset.")
-    ap.add_argument("--recoverability-report", type=Path, default=None,
-                    help="Path to recoverability_report.json (default: <run-root>/recoverability_report.json).")
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument(
+        "--run-root",
+        type=Path,
+        required=True,
+        help="MGP-6 run dir (has manifest.json, b4/, controller/).",
+    )
+    ap.add_argument(
+        "--mgp6", type=Path, default=Path("data/mgp6_v1_seed0.jsonl"), help="Gold dataset."
+    )
+    ap.add_argument(
+        "--recoverability-report",
+        type=Path,
+        default=None,
+        help="Path to recoverability_report.json (default: <run-root>/recoverability_report.json).",
+    )
     ap.add_argument("--expected-dataset-sha", default=EXPECTED_DATASET_SHA256)
     ap.add_argument("--expected-profile", default=EXPECTED_PROFILE)
     ap.add_argument("--n-bootstrap", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--check-only", action="store_true", help="Validate without writing FINAL_OK or mutating manifest.")
+    ap.add_argument(
+        "--check-only",
+        action="store_true",
+        help="Validate without writing FINAL_OK or mutating manifest.",
+    )
     args = ap.parse_args()
 
     run_root: Path = args.run_root
@@ -118,22 +135,30 @@ def main() -> int:
     if not ds_path.is_absolute() and not ds_path.exists():
         ds_path = args.mgp6
     actual_sha = _sha256(ds_path) if ds_path.exists() else "MISSING"
-    check("dataset sha256 matches", actual_sha == args.expected_dataset_sha,
-          f"{actual_sha[:16]}… vs expected {args.expected_dataset_sha[:16]}…")
+    check(
+        "dataset sha256 matches",
+        actual_sha == args.expected_dataset_sha,
+        f"{actual_sha[:16]}… vs expected {args.expected_dataset_sha[:16]}…",
+    )
 
     # 3. complete + sanity_ok
     check("manifest.complete", bool(manifest.get("complete")), str(manifest.get("complete")))
-    check("sanity_ok", bool(manifest.get("sanity_ok")) and bool(sanity.get("ok", manifest.get("sanity_ok"))),
-          f"manifest={manifest.get('sanity_ok')} sanity={sanity.get('ok')}")
+    check(
+        "sanity_ok",
+        bool(manifest.get("sanity_ok")) and bool(sanity.get("ok", manifest.get("sanity_ok"))),
+        f"manifest={manifest.get('sanity_ok')} sanity={sanity.get('ok')}",
+    )
 
     # 3b. full run, not a smoke/limited run. The runner stamps tier=smoke /
     # thesis_use=no_final_claim whenever --limit is set; a limited run must
     # never promote even if its (partial) extraction looks healthy.
     limit = manifest.get("limit")
     tier = manifest.get("tier")
-    check("full run (not smoke/limited)",
-          limit is None and tier in ("final-candidate", "final"),
-          f"limit={limit} tier={tier}")
+    check(
+        "full run (not smoke/limited)",
+        limit is None and tier in ("final-candidate", "final"),
+        f"limit={limit} tier={tier}",
+    )
 
     # thresholds (prefer those recorded by the run; fall back to defaults)
     thr = sanity.get("thresholds", {})
@@ -146,10 +171,16 @@ def main() -> int:
         ps = per_system.get(alias, {})
         rec = ps.get("extraction_recall")
         t1 = ps.get("t1_extraction_recall")
-        check(f"{alias} extraction_recall >= {min_rec:.2f}",
-              rec is not None and rec >= min_rec, f"got {rec}")
-        check(f"{alias} T1 extraction_recall >= {min_t1:.2f}",
-              t1 is not None and t1 >= min_t1, f"got {t1}")
+        check(
+            f"{alias} extraction_recall >= {min_rec:.2f}",
+            rec is not None and rec >= min_rec,
+            f"got {rec}",
+        )
+        check(
+            f"{alias} T1 extraction_recall >= {min_t1:.2f}",
+            t1 is not None and t1 >= min_t1,
+            f"got {t1}",
+        )
 
     # 6. paired bootstrap controller - b4
     gold = {r["scenario_id"]: r["gold_action"] for r in _load_jsonl(args.mgp6)}
@@ -159,8 +190,11 @@ def main() -> int:
     c_ok = [1 if cp.get(s) == gold[s] else 0 for s in sids]
     b_ok = [1 if bp.get(s) == gold[s] else 0 for s in sids]
     obs, lo, hi = _paired_bootstrap(c_ok, b_ok, args.n_bootstrap, args.seed)
-    check("controller > b4 (paired bootstrap CI lower > 0)", lo > 0,
-          f"diff={obs:+.3f} 95%CI=[{lo:+.3f},{hi:+.3f}]")
+    check(
+        "controller > b4 (paired bootstrap CI lower > 0)",
+        lo > 0,
+        f"diff={obs:+.3f} 95%CI=[{lo:+.3f},{hi:+.3f}]",
+    )
 
     # 7. recoverability: controller 1.0, b4 0.0 (both with revisions)
     rec_path = args.recoverability_report or (run_root / "recoverability_report.json")
@@ -173,8 +207,10 @@ def main() -> int:
         b = by_sys.get("b4", by_sys.get("naive_overwrite", {}))
         rec_ok_ctrl = c.get("superseded_recoverability") == 1.0 and (c.get("n_revisions") or 0) > 0
         rec_ok_b4 = b.get("superseded_recoverability") == 0.0 and (b.get("n_revisions") or 0) > 0
-        rec_detail = (f"controller={c.get('superseded_recoverability')} (n={c.get('n_revisions')}), "
-                      f"b4={b.get('superseded_recoverability')} (n={b.get('n_revisions')})")
+        rec_detail = (
+            f"controller={c.get('superseded_recoverability')} (n={c.get('n_revisions')}), "
+            f"b4={b.get('superseded_recoverability')} (n={b.get('n_revisions')})"
+        )
     check("recoverability controller==1.0 & b4==0.0", rec_ok_ctrl and rec_ok_b4, rec_detail)
 
     # --- report ---
@@ -186,7 +222,9 @@ def main() -> int:
     for name, passed, detail in checks:
         print(f"  [{'PASS' if passed else 'FAIL'}] {name:<{width}}  {detail}")
     print("-" * (width + 30))
-    print(f"  RESULT: {'PASS — eligible for FINAL' if all_pass else 'FAIL — NOT eligible for FINAL'}")
+    print(
+        f"  RESULT: {'PASS — eligible for FINAL' if all_pass else 'FAIL — NOT eligible for FINAL'}"
+    )
     print("=" * (width + 30))
 
     if not all_pass:
@@ -205,7 +243,9 @@ def main() -> int:
         "recoverability": rec_detail,
         "checks": [{"name": n, "pass": p, "detail": d} for n, p, d in checks],
     }
-    (run_root / "FINAL_OK.json").write_text(json.dumps(final_ok, indent=2, sort_keys=True), encoding="utf-8")
+    (run_root / "FINAL_OK.json").write_text(
+        json.dumps(final_ok, indent=2, sort_keys=True), encoding="utf-8"
+    )
     manifest["tier"] = "final"
     manifest["run_tier"] = "final"
     manifest["thesis_use"] = "final"

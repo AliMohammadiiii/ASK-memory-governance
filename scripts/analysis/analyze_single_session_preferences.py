@@ -19,6 +19,7 @@ Usage:
         --taxonomy artifacts/single_session_preference_error_taxonomy.json
     python3 scripts/analysis/analyze_single_session_preferences.py --items
 """
+
 from __future__ import annotations
 
 import argparse

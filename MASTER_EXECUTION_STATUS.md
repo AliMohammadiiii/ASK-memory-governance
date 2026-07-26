@@ -1,6 +1,6 @@
 # Master execution status
 
-Updated: 2026-07-15. Statuses: not_started | in_progress | implemented | validated | externally_pending | blocked | invalidated | complete.
+Updated: 2026-07-26. Statuses: not_started | in_progress | implemented | validated | externally_pending | blocked | invalidated | complete.
 
 | # | Workstream | Status | Evidence / gate |
 |---|---|---|---|
@@ -9,7 +9,7 @@ Updated: 2026-07-15. Statuses: not_started | in_progress | implemented | validat
 | A3 | Leakage / degrees-of-freedom audit | complete | `docs/audit/DATA_LEAKAGE_AND_RESEARCHER_DEGREES_OF_FREEDOM.md` |
 | A4 | MGP-6 construct-validity audit | validated | `scripts/analysis/audit_mgp6_validity.py` and `artifacts/analysis/mgp6_validity_audit.{json,md}`; conflict-type-only lookup reaches 1.000 test accuracy, so v2 remains diagnostic |
 | B1 | Canonical repository base | validated | Repository structure, release exclusions, configuration, packaging metadata, and runtime resources validated |
-| B2 | Repo re-validation in current environment | validated | Ruff pass; mypy pass on 60 source files; 472 passed / 11 documented optional skips; strict MGP-6 180/0; repository and bibliography audits pass |
+| B2 | Repo re-validation in current environment | validated | The maintained offline gate is `make check`; the full source-release gate is `make release-check`. Exact dated counts stay in validation reports rather than this status ledger |
 | C1 | ControllerRun reconstruction | complete | `docs/audit/CONTROLLERRUN_RECONSTRUCTION.md`, `CONTROLLERRUN_FAILURE_LEDGER.md`, `BEHAVIOR_TO_CODE_TRACEABILITY.md` |
 | C2 | Single-session preference analysis | complete | 19-item taxonomy; v7 diagnostic 11/30; selected replay 0/19 but non-comparable prompts/contexts; top-up 8/29 with one unresolved (maximum 9/30). Proposed seven-arm correction experiment remains unexecuted and cannot support a claim |
 | D1 | Frozen final evaluation protocol | complete | `FINAL_EVALUATION_PROTOCOL.md`, `FINAL_RUN_MATRIX.yaml`, `FINAL_METRIC_DEFINITIONS.md`, `FINAL_ANALYSIS_PLAN.md`, `configs/release/final.yaml`; freeze hashes regenerated from final bytes |

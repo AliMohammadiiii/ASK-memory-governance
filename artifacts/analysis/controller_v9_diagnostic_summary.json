@@ -1,0 +1,123 @@
+{
+  "artifact": "controller_v9_diagnostic_summary",
+  "created_on": "2026-07-17",
+  "status": "diagnostic_only_pending_frozen_180_item_rerun",
+  "source_run": "runs_local/lme_final_controller_180_providerpool",
+  "source_run_completion": {
+    "completed_items": 180,
+    "expected_items": 180,
+    "completed_shards": 20,
+    "expected_shards": 20,
+    "terminal_crash": false
+  },
+  "raw_result": {
+    "correct": 111,
+    "n": 180,
+    "accuracy": 0.6166666667,
+    "answerable_correct": 102,
+    "answerable_n": 171,
+    "abstention_correct": 9,
+    "abstention_n": 9,
+    "by_competency": [
+      {"competency": "knowledge-update", "correct": 29, "n": 30, "accuracy": 0.9666666667},
+      {"competency": "multi-session", "correct": 21, "n": 30, "accuracy": 0.7},
+      {"competency": "single-session-assistant", "correct": 16, "n": 30, "accuracy": 0.5333333333},
+      {"competency": "single-session-preference", "correct": 9, "n": 30, "accuracy": 0.3},
+      {"competency": "single-session-user", "correct": 25, "n": 30, "accuracy": 0.8333333333},
+      {"competency": "temporal-reasoning", "correct": 11, "n": 30, "accuracy": 0.3666666667}
+    ]
+  },
+  "evaluator_audit": {
+    "bug": "The numeric mismatch guard rejected an otherwise correct prediction whenever any extra numeric token differed, even when a required gold number matched.",
+    "clear_false_negatives": 9,
+    "corrected_minimum_correct": 120,
+    "corrected_minimum_n": 180,
+    "corrected_minimum_accuracy": 0.6666666667,
+    "interpretation": "This is a conservative lower bound, not a replacement final score. The final score must come from the frozen rerun."
+  },
+  "error_decomposition": [
+    {"category": "answer_synthesis_or_preference", "count": 20},
+    {"category": "support_session_not_retrieved", "count": 15},
+    {"category": "support_turn_not_selected", "count": 15},
+    {"category": "refusal_despite_full_support", "count": 14},
+    {"category": "temporal_or_computation", "count": 5}
+  ],
+  "retrieval_audit": {
+    "support_coverage_accuracy": [
+      {"coverage": 0.0, "correct": 0, "n": 10},
+      {"coverage": 0.5, "correct": 1, "n": 5},
+      {"coverage": 0.75, "correct": 0, "n": 1},
+      {"coverage": 1.0, "correct": 110, "n": 164}
+    ],
+    "oracle_support_turn_selected": {"correct": 68, "n": 96, "accuracy": 0.7083333333},
+    "oracle_support_turn_not_selected": {"correct": 9, "n": 42, "accuracy": 0.2142857143},
+    "note": "Support identifiers were used only for post-hoc diagnosis, never as runtime retrieval inputs."
+  },
+  "operational_audit": {
+    "api_call_starts": 31744,
+    "api_call_completions": 31615,
+    "http_429_attempts": 628,
+    "http_429_scope": "free judge route; recovered through the paid fallback policy",
+    "http_200_error_envelopes_code_504": 12,
+    "structured_json_invalid_but_task_passed": 833,
+    "structured_json_repairs": 374,
+    "extraction_valid": 11505,
+    "extraction_total": 11508,
+    "answer_retries": 27,
+    "answer_retries_correct": 10,
+    "unknown_answers": 25,
+    "legitimate_abstentions": 9,
+    "incorrect_unknown_answers": 16
+  },
+  "temporal_computation_audit": [
+    {"intent": "date_diff", "correct": 0, "n": 4},
+    {"intent": "relative", "correct": 5, "n": 11},
+    {"intent": "chronological", "correct": 3, "n": 5},
+    {"intent": "count", "correct": 4, "n": 5},
+    {"intent": "difference", "correct": 3, "n": 3},
+    {"intent": "sum", "correct": 0, "n": 1},
+    {"intent": "ordinal", "correct": 0, "n": 1}
+  ],
+  "v9_changes": [
+    "Retry HTTP-200 OpenRouter error envelopes using their embedded status code.",
+    "Only hard-reject numeric answers when prediction and gold numeric sets are disjoint.",
+    "Use competency-aware whole-turn retrieval for assistant and user questions.",
+    "Use chronological user-session bundles for preference questions.",
+    "Expand the final answer context budget to 40000 estimated tokens with a 65536 model window.",
+    "Keep extraction, relation, final-answer, and answer-contract retry calls on the evaluated Qwen3.5-9B model.",
+    "Normalize temporal actions and require distinct evidence references for date differences.",
+    "Prefer deterministic reconstruction only for high-confidence unambiguous ordinal/date-difference cases.",
+    "Freeze V9 model roles, routing, context, output budget, and candidate counts in the wrapper manifest."
+  ],
+  "bounded_replays": {
+    "scope_note": "The GPT-5-mini replay below is a model-ablation diagnostic only. It is not evidence for, and is not part of, the frozen final Qwen3.5-9B run.",
+    "single_session_assistant": {
+      "method": "Model-ablation diagnostic only: all 30 frozen assistant questions; V9 whole-assistant-turn top-20 retrieval; GPT-5 mini answer; paid Gemma-4-31b-it judge. The final frozen run uses Qwen3.5-9B instead.",
+      "correct": 27,
+      "n": 30,
+      "accuracy": 0.9,
+      "support_session_hits": 30,
+      "failed_session_ids": ["eaca4986", "f523d9fe", "5809eb10"],
+      "failure_mode": "All three returned Unknown. The frozen end-to-end path additionally enables the tested commit-forcing Unknown retry."
+    },
+    "single_session_preference": {
+      "method": "All 30 questions inspected with V9 user-session bundles; no aggregate accuracy is claimed because this exploratory replay was not persisted with a complete formal grade file.",
+      "support_session_hits_at_32000_context": 28,
+      "expected_support_session_hits_at_frozen_40000_context": 29,
+      "status": "qualitative_diagnostic_only"
+    }
+  },
+  "verification": {
+    "pytest": {"passed": 490, "skipped": 11, "failed": 0},
+    "targeted_ruff": "passed",
+    "full_ruff": "blocked_only_by_pre_existing_unrelated_benchmark_file",
+    "shell_syntax": "passed",
+    "python_compile": "passed"
+  },
+  "acceptance_rule": {
+    "target_accuracy": 0.85,
+    "target_correct_at_n_180": 153,
+    "verified": false,
+    "reason": "Only the user's frozen end-to-end 180-item V9 run can verify the target without test-set leakage."
+  }
+}

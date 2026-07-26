@@ -37,7 +37,18 @@ EXPECTED_PROFILE = "thesis"
 EXPECTED_SLICE_SHA256 = "777a8d6fabfd782c05f05267d8af9e7738ad2672dc8626f872209bdc23799831"
 EXPECTED_N_SESSIONS = 50
 # Substrings that mark a small / same-family local judge as DEV evidence.
-DEV_JUDGE_TOKENS = ("3b", "3.8b", "phi3", "phi-3", "gemma", "mini", "1.5b", "0.5b", "qwen2.5-3b", "qwen2.5:3b")
+DEV_JUDGE_TOKENS = (
+    "3b",
+    "3.8b",
+    "phi3",
+    "phi-3",
+    "gemma",
+    "mini",
+    "1.5b",
+    "0.5b",
+    "qwen2.5-3b",
+    "qwen2.5:3b",
+)
 
 
 def _sha256(path: Path) -> str:
@@ -56,14 +67,21 @@ def _is_dev_judge(judge: str | None) -> bool:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--run-root", type=Path, required=True)
-    ap.add_argument("--slice", type=Path, default=None, help="Override slice path (default: manifest.slice).")
+    ap.add_argument(
+        "--slice", type=Path, default=None, help="Override slice path (default: manifest.slice)."
+    )
     ap.add_argument("--expected-slice-sha", default=EXPECTED_SLICE_SHA256)
     ap.add_argument("--expected-profile", default=EXPECTED_PROFILE)
     ap.add_argument("--expected-n-sessions", type=int, default=EXPECTED_N_SESSIONS)
-    ap.add_argument("--allow-dev-judge", action="store_true",
-                    help="Permit a dev judge; result is capped at final-candidate, never final.")
+    ap.add_argument(
+        "--allow-dev-judge",
+        action="store_true",
+        help="Permit a dev judge; result is capped at final-candidate, never final.",
+    )
     ap.add_argument("--check-only", action="store_true")
     args = ap.parse_args()
 
@@ -87,9 +105,11 @@ def main() -> int:
     slice_path = args.slice or Path(manifest.get("slice", ""))
     synthetic = bool(manifest.get("slice_is_synthetic"))
     actual_sha = _sha256(slice_path) if slice_path and slice_path.exists() else "MISSING"
-    check("slice sha matches & not synthetic",
-          actual_sha == args.expected_slice_sha and not synthetic,
-          f"sha={actual_sha[:16]}… synthetic={synthetic}")
+    check(
+        "slice sha matches & not synthetic",
+        actual_sha == args.expected_slice_sha and not synthetic,
+        f"sha={actual_sha[:16]}… synthetic={synthetic}",
+    )
 
     # 3. complete
     check("manifest.complete", bool(manifest.get("complete")), str(manifest.get("complete")))
@@ -100,8 +120,11 @@ def main() -> int:
         summary = _load(summary_path)
         missing = summary.get("missing_systems") or []
         verrs = summary.get("validation_errors") or []
-        check("summary: no missing systems / validation errors",
-              not missing and not verrs, f"missing={missing} errors={verrs}")
+        check(
+            "summary: no missing systems / validation errors",
+            not missing and not verrs,
+            f"missing={missing} errors={verrs}",
+        )
     else:
         check("summary: no missing systems / validation errors", False, "summary.json not found")
 
@@ -121,19 +144,29 @@ def main() -> int:
         acc = rep.get("overall_accuracy")
         ci = (rep.get("overall_ci_low"), rep.get("overall_ci_high"))
         judge_ids.add(str(rep.get("judge_model_id")))
-        ok = (n == args.expected_n_sessions and acc is not None and None not in ci)
+        ok = n == args.expected_n_sessions and acc is not None and None not in ci
         metric_ok = metric_ok and ok
         metric_detail.append(f"{alias}:n={n},acc={acc}")
-    check(f"all systems report n={args.expected_n_sessions} + acc + CI",
-          metric_ok, "; ".join(metric_detail))
+    check(
+        f"all systems report n={args.expected_n_sessions} + acc + CI",
+        metric_ok,
+        "; ".join(metric_detail),
+    )
 
     # 6. judge tier
     judge = sorted(judge_ids)[0] if judge_ids else manifest.get("judge_model")
     dev_judge = _is_dev_judge(judge)
     if dev_judge:
-        check("judge tier (final requires non-dev judge)", args.allow_dev_judge,
-              f"DEV judge {judge!r}; " + ("acknowledged → caps at final-candidate" if args.allow_dev_judge
-                                          else "pass --allow-dev-judge for final-candidate, or upgrade judge for final"))
+        check(
+            "judge tier (final requires non-dev judge)",
+            args.allow_dev_judge,
+            f"DEV judge {judge!r}; "
+            + (
+                "acknowledged → caps at final-candidate"
+                if args.allow_dev_judge
+                else "pass --allow-dev-judge for final-candidate, or upgrade judge for final"
+            ),
+        )
     else:
         check("judge tier (final requires non-dev judge)", True, f"non-dev judge {judge!r}")
 
@@ -146,7 +179,9 @@ def main() -> int:
         print(f"  [{'PASS' if passed else 'FAIL'}] {name:<{width}}  {detail}")
     print("-" * (width + 30))
     target_tier = "final-candidate" if dev_judge else "final"
-    print(f"  RESULT: {('PASS — eligible for ' + target_tier) if all_pass else 'FAIL — NOT eligible'}")
+    print(
+        f"  RESULT: {('PASS — eligible for ' + target_tier) if all_pass else 'FAIL — NOT eligible'}"
+    )
     print("=" * (width + 30))
 
     if not all_pass:

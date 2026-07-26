@@ -84,8 +84,7 @@ def score_public_run(
                 for action in VALID_ACTIONS
             },
             "gold_counts": {
-                action: sum(value == action for value in gold.values())
-                for action in VALID_ACTIONS
+                action: sum(value == action for value in gold.values()) for action in VALID_ACTIONS
             },
             "selective_accuracy": (
                 sum(gold[public_id] == predicted[public_id] for public_id in non_abstained)

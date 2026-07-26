@@ -14,10 +14,13 @@ SPEC.loader.exec_module(audit_module)
 
 
 def test_project_paper_bibliography_passes() -> None:
-    assert audit_module.audit(
-        ROOT / "paper/paper_1/references.bib",
-        ROOT / "paper/paper_1/main.tex",
-    ) == []
+    assert (
+        audit_module.audit(
+            ROOT / "paper/paper_1/references.bib",
+            ROOT / "paper/paper_1/main.tex",
+        )
+        == []
+    )
 
 
 def test_audit_rejects_truncated_author_and_missing_citation(tmp_path: Path) -> None:

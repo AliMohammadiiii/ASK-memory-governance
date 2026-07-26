@@ -55,6 +55,7 @@ from systems.policies import (  # noqa: E402
 # ablated controllers
 # --------------------------------------------------------------------------- #
 
+
 def _commit_best(scenario: dict[str, Any], ev: Evidence) -> dict[str, Any]:
     """Forced-commit fallback used when ABSTAIN is unavailable."""
     if ev.candidate_conflicts:
@@ -69,8 +70,7 @@ def predict_no_abstain(scenario: dict[str, Any]) -> dict[str, Any]:
     ev = read_evidence(scenario)
     if ev is None:
         state = _prior_state(scenario)
-        slot = (scenario.get("initial_memory_state") or [{}])[0].get(
-            "semantic_slot", "")
+        slot = (scenario.get("initial_memory_state") or [{}])[0].get("semantic_slot", "")
         return _pack("KEEP", state, _answer(scenario, state, slot), 0.3)
     # R1/R7 and R6-hedged branches (normally ABSTAIN) -> forced commit
     if ev.third_party_unattributed or ev.laundered_or_noisy or ev.temporary_hedged:
@@ -110,8 +110,7 @@ def predict_no_typing(scenario: dict[str, Any]) -> dict[str, Any]:
         state = _prior_state(scenario)
         return _pack("ABSTAIN", state, _answer(scenario, state, ev.slot), 0.8)
     # R6 disabled: no temporary_clear / temporary_hedged special-casing.
-    if ev.has_candidate and (ev.candidate_conflicts or ev.temporary_clear
-                             or ev.temporary_hedged):
+    if ev.has_candidate and (ev.candidate_conflicts or ev.temporary_clear or ev.temporary_hedged):
         state = _superseded_state(scenario, ev, ev.candidate_value)
         return _pack("SUPERSEDE", state, _answer(scenario, state, ev.slot), 0.7)
     state = _prior_state(scenario)
@@ -149,11 +148,20 @@ VARIANTS: dict[str, Callable[[dict[str, Any]], dict[str, Any]]] = {
 }
 
 HEADLINE = (
-    "action_accuracy", "macro_f1", "abstention_precision", "abstention_recall",
-    "artifact_semantic_accuracy", "lineage_correctness", "over_forgetting_rate",
-    "under_forgetting_rate", "stale_retrieval_rate", "invalid_commit_rate",
-    "transient_contamination_rate", "fama_presence_absence_conjunction",
-    "premise_resistance_rate", "implicit_application_accuracy",
+    "action_accuracy",
+    "macro_f1",
+    "abstention_precision",
+    "abstention_recall",
+    "artifact_semantic_accuracy",
+    "lineage_correctness",
+    "over_forgetting_rate",
+    "under_forgetting_rate",
+    "stale_retrieval_rate",
+    "invalid_commit_rate",
+    "transient_contamination_rate",
+    "fama_presence_absence_conjunction",
+    "premise_resistance_rate",
+    "implicit_application_accuracy",
 )
 
 
@@ -162,8 +170,16 @@ def load_scenarios(path: Path) -> list[dict[str, Any]]:
 
 
 def score(gold: Path, pred: Path, bootstrap: int) -> dict[str, Any]:
-    cmd = [sys.executable, str(HERE / "metrics_mgp6.py"), "--gold", str(gold),
-           "--pred", str(pred), "--bootstrap", str(bootstrap)]
+    cmd = [
+        sys.executable,
+        str(HERE / "metrics_mgp6.py"),
+        "--gold",
+        str(gold),
+        "--pred",
+        str(pred),
+        "--bootstrap",
+        str(bootstrap),
+    ]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         raise RuntimeError(f"metrics failed for {pred}:\n{result.stderr}")
@@ -181,8 +197,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--gold", type=Path, default=HERE / "data" / "mgp6_v2.jsonl")
     parser.add_argument("--out", type=Path, default=HERE / "runs" / "ablations")
     parser.add_argument("--bootstrap", type=int, default=1000)
-    parser.add_argument("--variants", default=",".join(VARIANTS),
-                        help="comma-separated subset of: " + ",".join(VARIANTS))
+    parser.add_argument(
+        "--variants",
+        default=",".join(VARIANTS),
+        help="comma-separated subset of: " + ",".join(VARIANTS),
+    )
     args = parser.parse_args(argv)
 
     scenarios = load_scenarios(args.gold)
@@ -191,10 +210,12 @@ def main(argv: list[str] | None = None) -> int:
     if unknown:
         raise SystemExit(f"unknown variants: {unknown}")
 
-    summary: dict[str, Any] = {"gold": str(args.gold),
-                               "n_scenarios": len(scenarios),
-                               "bootstrap": args.bootstrap,
-                               "variants": {}}
+    summary: dict[str, Any] = {
+        "gold": str(args.gold),
+        "n_scenarios": len(scenarios),
+        "bootstrap": args.bootstrap,
+        "variants": {},
+    }
 
     for name in order:
         out = args.out / name
@@ -207,9 +228,9 @@ def main(argv: list[str] | None = None) -> int:
                 row["scenario_id"] = scenario["scenario_id"]
                 handle.write(json.dumps(row, ensure_ascii=False) + "\n")
         report = score(args.gold, pred_path, args.bootstrap)
-        (out / "report.json").write_text(json.dumps(report, indent=2,
-                                                    sort_keys=True),
-                                         encoding="utf-8")
+        (out / "report.json").write_text(
+            json.dumps(report, indent=2, sort_keys=True), encoding="utf-8"
+        )
         summary["variants"][name] = {
             "full": {k: _point(report["full"].get(k)) for k in HEADLINE},
             "test": {k: _point(report["test"].get(k)) for k in HEADLINE},
@@ -221,24 +242,32 @@ def main(argv: list[str] | None = None) -> int:
         if name == "full":
             continue
         deltas[name] = {
-            k: (round(block["full"][k] - ref[k], 4)
+            k: (
+                round(block["full"][k] - ref[k], 4)
                 if isinstance(block["full"].get(k), (int, float))
-                and isinstance(ref.get(k), (int, float)) else None)
+                and isinstance(ref.get(k), (int, float))
+                else None
+            )
             for k in HEADLINE
         }
     summary["delta_vs_full"] = deltas
 
     args.out.mkdir(parents=True, exist_ok=True)
     (args.out / "ablation_summary.json").write_text(
-        json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+        json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8"
+    )
 
     print(f"\n[ablate] summary -> {args.out / 'ablation_summary.json'}")
     print(f"\n{'variant':<15}" + "".join(f"{k[:18]:>20}" for k in HEADLINE[:5]))
     for name in order:
         row = summary["variants"][name]["full"]
-        print(f"{name:<15}" + "".join(
-            f"{row[k]:>20.3f}" if isinstance(row.get(k), (int, float))
-            else f"{'-':>20}" for k in HEADLINE[:5]))
+        print(
+            f"{name:<15}"
+            + "".join(
+                f"{row[k]:>20.3f}" if isinstance(row.get(k), (int, float)) else f"{'-':>20}"
+                for k in HEADLINE[:5]
+            )
+        )
     return 0
 
 

@@ -73,6 +73,7 @@ def _urlopen(
         return opener.open(request, timeout=timeout)
     return urllib.request.urlopen(request, timeout=timeout)
 
+
 # --------------------------------------------------------------------- #
 # Public Protocol                                                        #
 # --------------------------------------------------------------------- #
@@ -756,9 +757,7 @@ class FakeEmbedder:
     def embed(self, texts: list[str]) -> np.ndarray:
         if not texts:
             return np.zeros((0, self.embedding_dim), dtype=np.float32)
-        out: np.ndarray = np.zeros(
-            (len(texts), self.embedding_dim), dtype=np.float32
-        )
+        out: np.ndarray = np.zeros((len(texts), self.embedding_dim), dtype=np.float32)
         for i, t in enumerate(texts):
             out[i] = _sha256_to_vec(t, self.embedding_dim)
         # L2-normalize — same contract as TurnEmbedder.

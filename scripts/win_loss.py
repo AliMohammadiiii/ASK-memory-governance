@@ -59,9 +59,7 @@ def _load_judgments(path: Path) -> dict[str, dict]:
     return out
 
 
-def _build_matrix(
-    ref: dict[str, dict], new: dict[str, dict]
-) -> dict[str, dict[Cell, list[str]]]:
+def _build_matrix(ref: dict[str, dict], new: dict[str, dict]) -> dict[str, dict[Cell, list[str]]]:
     """`{competency: {Cell: [session_id, ...]}}`. Sessions absent from one
     side are dropped — both runs must have evaluated the same set."""
     matrix: dict[str, dict[Cell, list[str]]] = defaultdict(lambda: defaultdict(list))
@@ -94,8 +92,7 @@ def _render_md(
         "are exactly the disagreement set the §3.5 sanity check spot-checks."
     )
     lines.append("")
-    header = ["Competency", "n", "both-correct", "new-only (gain)",
-              "ref-only (loss)", "both-wrong"]
+    header = ["Competency", "n", "both-correct", "new-only (gain)", "ref-only (loss)", "both-wrong"]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("|---|---:|---:|---:|---:|---:|")
 
@@ -140,10 +137,12 @@ def _render_md(
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--ref", required=True, type=Path,
-                   help="Reference judgments.jsonl (e.g. M1-W2 no_memory)")
-    p.add_argument("--new", required=True, type=Path,
-                   help="New judgments.jsonl (e.g. M1-W3 flat_vector)")
+    p.add_argument(
+        "--ref", required=True, type=Path, help="Reference judgments.jsonl (e.g. M1-W2 no_memory)"
+    )
+    p.add_argument(
+        "--new", required=True, type=Path, help="New judgments.jsonl (e.g. M1-W3 flat_vector)"
+    )
     p.add_argument("--ref-name", default="ref", type=str)
     p.add_argument("--new-name", default="new", type=str)
     args = p.parse_args()
@@ -151,10 +150,15 @@ def main() -> int:
     ref = _load_judgments(args.ref)
     new = _load_judgments(args.new)
     matrix = _build_matrix(ref, new)
-    sys.stdout.write(_render_md(
-        matrix, args.ref, args.new,
-        ref_name=args.ref_name, new_name=args.new_name,
-    ))
+    sys.stdout.write(
+        _render_md(
+            matrix,
+            args.ref,
+            args.new,
+            ref_name=args.ref_name,
+            new_name=args.new_name,
+        )
+    )
     return 0
 
 

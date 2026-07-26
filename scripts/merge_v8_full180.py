@@ -50,13 +50,32 @@ from ask.eval.longmemeval import (  # noqa: E402
     build_eval_report,
 )
 
-ANSWER_FIELDS = ("session_id", "text", "prompt_tokens", "completion_tokens",
-                 "latency_ms", "raw_prompt", "seed", "model_id", "baseline",
-                 "extras")
-GRADE_FIELDS = ("session_id", "competency", "correct", "judge_score",
-                "judge_rationale", "judge_model_id", "predicted", "gold",
-                "prompt_tokens", "completion_tokens", "latency_ms",
-                "used_fallback")
+ANSWER_FIELDS = (
+    "session_id",
+    "text",
+    "prompt_tokens",
+    "completion_tokens",
+    "latency_ms",
+    "raw_prompt",
+    "seed",
+    "model_id",
+    "baseline",
+    "extras",
+)
+GRADE_FIELDS = (
+    "session_id",
+    "competency",
+    "correct",
+    "judge_score",
+    "judge_rationale",
+    "judge_model_id",
+    "predicted",
+    "gold",
+    "prompt_tokens",
+    "completion_tokens",
+    "latency_ms",
+    "used_fallback",
+)
 
 
 def jsonl(path: Path) -> list[dict[str, Any]]:
@@ -70,8 +89,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--replay-run", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--judge-model", default="google/gemma-4-31b-it")
-    parser.add_argument("--judge-base-url",
-                        default="https://openrouter.ai/api/v1")
+    parser.add_argument("--judge-base-url", default="https://openrouter.ai/api/v1")
     parser.add_argument("--n-bootstrap", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--reuse-replay-judgments", action="store_true")
@@ -81,23 +99,27 @@ def main(argv: list[str] | None = None) -> int:
     sessions = {s.session_id: s for s in load_longmemeval_s(args.slice)}
     slice_ids = set(sessions)
 
-    replay_answers = {a["session_id"]: a
-                      for a in jsonl(args.replay_run / "answers.jsonl")}
+    replay_answers = {a["session_id"]: a for a in jsonl(args.replay_run / "answers.jsonl")}
     replay_ids = set(replay_answers)
     topup_needed = slice_ids - replay_ids
 
-    topup_judgments = {j["session_id"]: j
-                       for j in jsonl(args.topup_run / "judgments.jsonl")
-                       if j["session_id"] in topup_needed}
-    topup_answers = {a["session_id"]: a
-                     for a in jsonl(args.topup_run / "answers.jsonl")
-                     if a["session_id"] in topup_needed}
+    topup_judgments = {
+        j["session_id"]: j
+        for j in jsonl(args.topup_run / "judgments.jsonl")
+        if j["session_id"] in topup_needed
+    }
+    topup_answers = {
+        a["session_id"]: a
+        for a in jsonl(args.topup_run / "answers.jsonl")
+        if a["session_id"] in topup_needed
+    }
 
     missing = topup_needed - set(topup_judgments)
     if missing:
         raise SystemExit(
             f"top-up run is missing {len(missing)} required sessions "
-            f"(e.g. {sorted(missing)[:3]}) — resume the top-up run first")
+            f"(e.g. {sorted(missing)[:3]}) — resume the top-up run first"
+        )
     overlap = replay_ids & set(topup_judgments)
     if overlap:
         raise SystemExit(f"overlap between legs: {sorted(overlap)[:5]}")
@@ -107,25 +129,31 @@ def main(argv: list[str] | None = None) -> int:
     # --- replay leg: re-judge stored answers with the protocol judge ------
     if args.reuse_replay_judgments:
         if not args.allow_heterogeneous:
-            raise SystemExit("--reuse-replay-judgments requires "
-                             "--allow-heterogeneous (NOT for the paper)")
-        replay_grades = [j for j in jsonl(args.replay_run / "judgments.jsonl")
-                         if j["session_id"] in slice_ids]
-        print(f"[merge] reusing {len(replay_grades)} replay judgments "
-              f"(heterogeneous judges — preview only)")
+            raise SystemExit(
+                "--reuse-replay-judgments requires --allow-heterogeneous (NOT for the paper)"
+            )
+        replay_grades = [
+            j for j in jsonl(args.replay_run / "judgments.jsonl") if j["session_id"] in slice_ids
+        ]
+        print(
+            f"[merge] reusing {len(replay_grades)} replay judgments "
+            f"(heterogeneous judges — preview only)"
+        )
     else:
         judge_cfg = JudgeBackendConfig(
-            backend="openai_compatible", model_id=args.judge_model,
+            backend="openai_compatible",
+            model_id=args.judge_model,
             openai_base_url=args.judge_base_url,
             openai_api_key_env="OPENROUTER_API_KEY",
-            response_format="json")
+            response_format="json",
+        )
         grader = LongMemEvalGrader(
             judge_llm=build_judge_backend(judge_cfg),
             cache=JudgmentCache(args.out / "judge_cache.jsonl"),
-            seed=args.seed)
+            seed=args.seed,
+        )
         replay_grades = []
-        print(f"[merge] re-judging {len(replay_answers)} replay answers "
-              f"with {args.judge_model}")
+        print(f"[merge] re-judging {len(replay_answers)} replay answers with {args.judge_model}")
         for i, (sid, a) in enumerate(sorted(replay_answers.items()), 1):
             answer = BaselineAnswer(**{k: a[k] for k in ANSWER_FIELDS if k in a})
             grade = grader.grade(answer, sessions[sid])
@@ -140,8 +168,9 @@ def main(argv: list[str] | None = None) -> int:
     ids = Counter(g["session_id"] for g in all_grades)
     dupes = {k: c for k, c in ids.items() if c > 1}
     if dupes or set(ids) != slice_ids:
-        raise SystemExit(f"coverage broken: dupes={sorted(dupes)[:3]} "
-                         f"missing={sorted(slice_ids - set(ids))[:3]}")
+        raise SystemExit(
+            f"coverage broken: dupes={sorted(dupes)[:3]} missing={sorted(slice_ids - set(ids))[:3]}"
+        )
 
     judges = sorted({g["judge_model_id"] for g in all_grades})
     if len(judges) > 1 and not args.allow_heterogeneous:
@@ -154,43 +183,51 @@ def main(argv: list[str] | None = None) -> int:
         for a in all_answers:
             h.write(json.dumps(a, ensure_ascii=False) + "\n")
 
-    grades = [GradeResult(**{k: g[k] for k in GRADE_FIELDS if k in g})
-              for g in all_grades]
+    grades = [GradeResult(**{k: g[k] for k in GRADE_FIELDS if k in g}) for g in all_grades]
     report = build_eval_report(
-        baseline_name="controller", judge_model_id=judges[0],
-        grades=grades, n_bootstrap=args.n_bootstrap,
-        bootstrap_seed=args.seed)
+        baseline_name="controller",
+        judge_model_id=judges[0],
+        grades=grades,
+        n_bootstrap=args.n_bootstrap,
+        bootstrap_seed=args.seed,
+    )
     (args.out / "report.json").write_text(
-        json.dumps(report.to_dict(), indent=2, sort_keys=True),
-        encoding="utf-8")
+        json.dumps(report.to_dict(), indent=2, sort_keys=True), encoding="utf-8"
+    )
 
     answer_models = dict(Counter(a.get("model_id") for a in all_answers))
     manifest = {
         "estimate": "v8_full180_topup_merge",
-        "composition": {"topup_fresh_v8": len(topup_judgments),
-                        "replay_v8_answers": len(replay_answers)},
+        "composition": {
+            "topup_fresh_v8": len(topup_judgments),
+            "replay_v8_answers": len(replay_answers),
+        },
         "judge_models_after_merge": judges,
-        "replay_rejudged_with": (None if args.reuse_replay_judgments
-                                 else args.judge_model),
+        "replay_rejudged_with": (None if args.reuse_replay_judgments else args.judge_model),
         "manual_adjudication_overrides": 0,
         "disclosed_heterogeneity": {
             "answerer_models": answer_models,
-            "note": ("replay leg answers were generated on Modal-served "
-                     "Qwen3.5-9B without the 35B escalation; top-up leg via "
-                     "OpenRouter with escalation. Same base model and code; "
-                     "serving substrate differs for the replay leg. This "
-                     "biases the replay leg conservatively (no escalation)."),
+            "note": (
+                "replay leg answers were generated on Modal-served "
+                "Qwen3.5-9B without the 35B escalation; top-up leg via "
+                "OpenRouter with escalation. Same base model and code; "
+                "serving substrate differs for the replay leg. This "
+                "biases the replay leg conservatively (no escalation)."
+            ),
         },
-        "provenance": {"slice": str(args.slice),
-                       "topup_run": str(args.topup_run),
-                       "replay_run": str(args.replay_run)},
+        "provenance": {
+            "slice": str(args.slice),
+            "topup_run": str(args.topup_run),
+            "replay_run": str(args.replay_run),
+        },
     }
-    (args.out / "manifest.json").write_text(json.dumps(manifest, indent=2),
-                                            encoding="utf-8")
+    (args.out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    print(f"[merge] n={len(grades)}  overall_accuracy="
-          f"{report.overall_accuracy:.4f}  "
-          f"CI=({report.overall_ci_low:.3f},{report.overall_ci_high:.3f})")
+    print(
+        f"[merge] n={len(grades)}  overall_accuracy="
+        f"{report.overall_accuracy:.4f}  "
+        f"CI=({report.overall_ci_low:.3f},{report.overall_ci_high:.3f})"
+    )
     print(f"[merge] judges={judges}")
     print(f"[merge] answer models={answer_models}")
     print(f"[merge] -> {args.out}/report.json (+ manifest.json)")

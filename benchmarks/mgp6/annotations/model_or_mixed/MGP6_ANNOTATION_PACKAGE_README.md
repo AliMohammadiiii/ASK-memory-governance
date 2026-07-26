@@ -27,9 +27,9 @@ This package contains the files generated and used during the annotation and agr
 - `mgp6_consensus_all_test.csv`
 - `mgp6_annotation_agreement_outputs.zip`
 
-## Additional files
-- `independent_annotations_test.csv` — earlier model-produced annotation file.
-- `mgp6_v2(1).jsonl` — source/gold dataset used for comparison.
+## Canonical source
+
+- `../../data/mgp6_v2.jsonl` — source/gold dataset used for comparison.
 
 ## Key human agreement result
 - Test items: 90

@@ -120,7 +120,10 @@ class OpenModelMessagesLLM:
         errors: list[str] = []
         for key_env, api_key in key_candidates:
             if not api_key:
-                print(f"[api-call:key-skip] provider=openmodel key_env={key_env} reason=missing", flush=True)
+                print(
+                    f"[api-call:key-skip] provider=openmodel key_env={key_env} reason=missing",
+                    flush=True,
+                )
                 errors.append(f"{key_env}: missing")
                 continue
             headers = {
@@ -161,7 +164,9 @@ class OpenModelMessagesLLM:
                     flush=True,
                 )
                 errors.append(f"{key_env}: request failed {exc}")
-        raise RuntimeError(f"OpenModel request failed for all API keys at {url}: {' | '.join(errors)}")
+        raise RuntimeError(
+            f"OpenModel request failed for all API keys at {url}: {' | '.join(errors)}"
+        )
 
     def _ordered_key_candidates(self) -> list[tuple[str, str | None]]:
         if self.api_key:

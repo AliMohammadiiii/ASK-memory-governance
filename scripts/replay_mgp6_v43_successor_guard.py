@@ -75,9 +75,7 @@ def _git_commit() -> str:
 
 def _tracked_worktree_state() -> str:
     unstaged = subprocess.run(["git", "diff", "--quiet"], check=False).returncode != 0
-    staged = (
-        subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
-    )
+    staged = subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
     return "dirty" if unstaged or staged else "clean"
 
 
@@ -92,7 +90,9 @@ def main() -> int:
     if not _path_is_within(args.input, PUBLIC_DATA_ROOT):
         raise SystemExit("successor replay input must be a tracked public train/dev file")
     if not _path_is_within(args.out, SUCCESSOR_RUN_ROOT):
-        raise SystemExit("successor replay output must be beneath runs/mgp6_v43/postfinal_successor")
+        raise SystemExit(
+            "successor replay output must be beneath runs/mgp6_v43/postfinal_successor"
+        )
 
     records = load_public_records(args.input, require_gold=True)
     model_actions, response_counts = _load_model_actions(args.raw_responses)
@@ -104,9 +104,7 @@ def main() -> int:
             f"raw-response coverage mismatch: unknown={unknown[:10]} missing={missing[:10]}"
         )
 
-    source_manifest: dict[str, Any] = json.loads(
-        args.source_manifest.read_text(encoding="utf-8")
-    )
+    source_manifest: dict[str, Any] = json.loads(args.source_manifest.read_text(encoding="utf-8"))
     if source_manifest.get("complete") is not True:
         raise MGP6V43Error("source model run is not complete")
     if source_manifest.get("hidden_gold_accessed") is not False:

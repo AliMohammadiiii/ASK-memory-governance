@@ -80,37 +80,40 @@ Return ONLY compact JSON: {"action":"SUPERSEDE|KEEP|ABSTAIN"}"""
 
 def _post(payload: dict[str, Any], retries: int = 4) -> str:
     data = json.dumps(payload).encode("utf-8")
-    headers = {"Authorization": f"Bearer {API_KEY}",
-               "Content-Type": "application/json"}
+    headers = {"Authorization": f"Bearer {API_KEY}", "Content-Type": "application/json"}
     last = ""
     for attempt in range(retries):
         try:
-            req = urllib.request.Request(f"{BASE_URL}/chat/completions",
-                                         data=data, headers=headers)
+            req = urllib.request.Request(f"{BASE_URL}/chat/completions", data=data, headers=headers)
             with urllib.request.urlopen(req, timeout=60) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
             content = body["choices"][0]["message"].get("content")
             if content:
                 return content.strip()
             last = "empty content"
-        except (urllib.error.URLError, KeyError, json.JSONDecodeError,
-                TimeoutError) as exc:
+        except (urllib.error.URLError, KeyError, json.JSONDecodeError, TimeoutError) as exc:
             last = str(exc)
         time.sleep(1.5 * (attempt + 1))
     raise RuntimeError(f"LLM call failed after {retries} tries: {last}")
 
 
 def _chat(messages: list[dict[str, str]], max_tokens: int = 60) -> str:
-    return _post({"model": MODEL, "reasoning": {"enabled": False},
-                  "temperature": 0, "max_tokens": max_tokens,
-                  "messages": messages})
+    return _post(
+        {
+            "model": MODEL,
+            "reasoning": {"enabled": False},
+            "temperature": 0,
+            "max_tokens": max_tokens,
+            "messages": messages,
+        }
+    )
 
 
 def _parse_action(text: str) -> str:
     start, end = text.find("{"), text.rfind("}")
     if start >= 0 and end > start:
         try:
-            action = str(json.loads(text[start:end + 1]).get("action", "")).upper()
+            action = str(json.loads(text[start : end + 1]).get("action", "")).upper()
             if action in ("KEEP", "SUPERSEDE", "ABSTAIN"):
                 return action
         except json.JSONDecodeError:
@@ -123,22 +126,27 @@ def _parse_action(text: str) -> str:
 
 
 def _state_lines(state: list[dict[str, Any]]) -> str:
-    out = [f"- [{r.get('type')}] {r.get('text')} (confidence {r.get('confidence')})"
-           for r in state if r.get("status") == "active"]
+    out = [
+        f"- [{r.get('type')}] {r.get('text')} (confidence {r.get('confidence')})"
+        for r in state
+        if r.get("status") == "active"
+    ]
     return "\n".join(out) or "- (empty)"
 
 
 def _scenario_user_msg(scenario: dict[str, Any]) -> str:
-    prefix = "\n".join(f"{m.get('role')}: {m.get('content')}"
-                       for m in scenario.get("base_dialogue_prefix", []))
+    prefix = "\n".join(
+        f"{m.get('role')}: {m.get('content')}" for m in scenario.get("base_dialogue_prefix", [])
+    )
     prior = _state_lines(scenario.get("initial_memory_state", []))
-    return (f"Earlier dialogue:\n{prefix or '(none)'}\n\n"
-            f"Current memory (active records):\n{prior}\n\n"
-            f"New event:\n{scenario.get('perturbation_event', '')}")
+    return (
+        f"Earlier dialogue:\n{prefix or '(none)'}\n\n"
+        f"Current memory (active records):\n{prior}\n\n"
+        f"New event:\n{scenario.get('perturbation_event', '')}"
+    )
 
 
-def pick_exemplars(rows: list[dict[str, Any]], shots: int, seed: int
-                   ) -> list[dict[str, Any]]:
+def pick_exemplars(rows: list[dict[str, Any]], shots: int, seed: int) -> list[dict[str, Any]]:
     """Balanced exemplars from the train split, deterministic."""
     rng = random.Random(seed)
     train = [r for r in rows if r.get("split") == "train"]
@@ -155,24 +163,26 @@ def pick_exemplars(rows: list[dict[str, Any]], shots: int, seed: int
     return exemplars[:shots] if shots < len(exemplars) else exemplars
 
 
-def build_messages(scenario: dict[str, Any],
-                   exemplars: list[dict[str, Any]]) -> list[dict[str, str]]:
+def build_messages(
+    scenario: dict[str, Any], exemplars: list[dict[str, Any]]
+) -> list[dict[str, str]]:
     messages = [{"role": "system", "content": DECISION_SYSTEM}]
     for ex in exemplars:
         messages.append({"role": "user", "content": _scenario_user_msg(ex)})
-        messages.append({"role": "assistant",
-                         "content": json.dumps({"action": ex["gold_action"]})})
+        messages.append({"role": "assistant", "content": json.dumps({"action": ex["gold_action"]})})
     messages.append({"role": "user", "content": _scenario_user_msg(scenario)})
     return messages
 
 
-def predict(scenario: dict[str, Any],
-            exemplars: list[dict[str, Any]]) -> dict[str, Any]:
+def predict(scenario: dict[str, Any], exemplars: list[dict[str, Any]]) -> dict[str, Any]:
     ev: Evidence | None = read_evidence(scenario)
     action = _parse_action(_chat(build_messages(scenario, exemplars)))
 
-    slot = ev.slot if ev else (scenario.get("initial_memory_state") or
-                               [{}])[0].get("semantic_slot", "")
+    slot = (
+        ev.slot
+        if ev
+        else (scenario.get("initial_memory_state") or [{}])[0].get("semantic_slot", "")
+    )
     if ev is None:
         state: list[dict[str, Any]] = _prior_state(scenario)
     elif action == "SUPERSEDE" and ev.has_candidate:
@@ -185,11 +195,13 @@ def predict(scenario: dict[str, Any],
     else:
         state = _prior_state(scenario)
 
-    return {"scenario_id": scenario["scenario_id"],
-            "predicted_action": action,
-            "predicted_memory_state": state,
-            "predicted_answer": _answer(scenario, state, slot),
-            "confidence": 0.5}
+    return {
+        "scenario_id": scenario["scenario_id"],
+        "predicted_action": action,
+        "predicted_memory_state": state,
+        "predicted_answer": _answer(scenario, state, slot),
+        "confidence": 0.5,
+    }
 
 
 def load_scenarios(path: Path) -> list[dict[str, Any]]:
@@ -213,8 +225,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gold", type=Path, default=HERE / "data" / "mgp6_v2.jsonl")
     parser.add_argument("--mode", choices=("zero", "few"), default="zero")
-    parser.add_argument("--shots", type=int, default=6,
-                        help="few-shot exemplar count (balanced over actions)")
+    parser.add_argument(
+        "--shots", type=int, default=6, help="few-shot exemplar count (balanced over actions)"
+    )
     parser.add_argument("--out", type=Path, default=None)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--split", default="", help="optional: train|dev|test")
@@ -224,14 +237,12 @@ def main(argv: list[str] | None = None) -> int:
     if not API_KEY:
         raise SystemExit("set OPENROUTER_API_KEY (or OPENAI_API_KEY)")
 
-    out = args.out or (HERE / "runs" /
-                       f"llm_decision_{args.mode}" / "controller")
+    out = args.out or (HERE / "runs" / f"llm_decision_{args.mode}" / "controller")
     out.mkdir(parents=True, exist_ok=True)
     pred_path = out / "predictions.jsonl"
 
     rows = load_scenarios(args.gold)
-    exemplars = pick_exemplars(rows, args.shots, args.seed) \
-        if args.mode == "few" else []
+    exemplars = pick_exemplars(rows, args.shots, args.seed) if args.mode == "few" else []
     exemplar_ids = {e["scenario_id"] for e in exemplars}
 
     scenarios = rows
@@ -244,24 +255,32 @@ def main(argv: list[str] | None = None) -> int:
     if args.limit > 0:
         todo = todo[: args.limit]
 
-    meta = {"mode": args.mode, "model": MODEL, "shots": len(exemplars),
-            "exemplar_ids": sorted(exemplar_ids), "seed": args.seed,
-            "split": args.split or "all", "n_eval": len(scenarios)}
-    (out / "baseline_meta.json").write_text(json.dumps(meta, indent=2),
-                                            encoding="utf-8")
+    meta = {
+        "mode": args.mode,
+        "model": MODEL,
+        "shots": len(exemplars),
+        "exemplar_ids": sorted(exemplar_ids),
+        "seed": args.seed,
+        "split": args.split or "all",
+        "n_eval": len(scenarios),
+    }
+    (out / "baseline_meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
-    print(f"[decision-{args.mode}] model={MODEL} shots={len(exemplars)} "
-          f"done={len(have)} todo_now={len(todo)} total={len(scenarios)}")
+    print(
+        f"[decision-{args.mode}] model={MODEL} shots={len(exemplars)} "
+        f"done={len(have)} todo_now={len(todo)} total={len(scenarios)}"
+    )
     if not todo:
         print("[decision] nothing to do (corpus complete for this split)")
         return 0
 
     lock = Lock()
     written = errors = 0
-    with pred_path.open("a", encoding="utf-8") as handle, \
-            ThreadPoolExecutor(max_workers=CONCURRENCY) as pool:
-        futures = {pool.submit(predict, s, exemplars): s["scenario_id"]
-                   for s in todo}
+    with (
+        pred_path.open("a", encoding="utf-8") as handle,
+        ThreadPoolExecutor(max_workers=CONCURRENCY) as pool,
+    ):
+        futures = {pool.submit(predict, s, exemplars): s["scenario_id"] for s in todo}
         for fut in as_completed(futures):
             sid = futures[fut]
             try:

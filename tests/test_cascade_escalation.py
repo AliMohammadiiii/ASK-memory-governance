@@ -22,16 +22,25 @@ def _rel(label: str) -> RelationOutput:
 
 def _cand(conf: float = 0.9, neg: bool = False, hedge: bool = False):
     item = types.SimpleNamespace(
-        text="cand text", type_guess="episodic_fact",
-        extraction_confidence=conf, negation_marker=neg, hedge_marker=hedge,
+        text="cand text",
+        type_guess="episodic_fact",
+        extraction_confidence=conf,
+        negation_marker=neg,
+        hedge_marker=hedge,
     )
     return types.SimpleNamespace(
-        item=item, source_turn="t1", session_id="s1", turn_id="u1", timestamp="2026-01-01",
+        item=item,
+        source_turn="t1",
+        session_id="s1",
+        turn_id="u1",
+        timestamp="2026-01-01",
     )
 
 
 def _prior():
-    return types.SimpleNamespace(text="prior text", type=types.SimpleNamespace(value="episodic_fact"))
+    return types.SimpleNamespace(
+        text="prior text", type=types.SimpleNamespace(value="episodic_fact")
+    )
 
 
 def _bare_orchestrator():
@@ -66,7 +75,7 @@ def test_cascade_escalates_decision_critical_relation(monkeypatch):
     monkeypatch.setattr(O, "classify_relation", fake_classify)
     out = o._classify_relation(_cand(), _prior(), None)
 
-    assert calls == ["PRIMARY", "BIG"]          # escalated
+    assert calls == ["PRIMARY", "BIG"]  # escalated
     assert out.relation_to_prior_state == "contradict"  # 9B verdict wins
     assert o._relation_escalations == 1
     assert o._relation_escalation_eligible == 1
@@ -83,7 +92,7 @@ def test_cascade_keeps_fast_model_on_clean_support(monkeypatch):
     monkeypatch.setattr(O, "classify_relation", fake_classify)
     out = o._classify_relation(_cand(conf=0.95), _prior(), None)
 
-    assert calls == ["PRIMARY"]                 # no escalation
+    assert calls == ["PRIMARY"]  # no escalation
     assert out.relation_to_prior_state == "support"
     assert o._relation_escalations == 0
     assert o._relation_escalation_eligible == 1
@@ -118,6 +127,6 @@ def test_no_escalation_classifier_means_no_cascade(monkeypatch):
     monkeypatch.setattr(O, "classify_relation", fake_classify)
     out = o._classify_relation(_cand(), _prior(), None)
 
-    assert calls == ["PRIMARY"]                 # cascade disabled
+    assert calls == ["PRIMARY"]  # cascade disabled
     assert out.relation_to_prior_state == "supersede"
     assert o._relation_escalations == 0

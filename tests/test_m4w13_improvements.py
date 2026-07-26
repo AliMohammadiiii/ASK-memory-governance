@@ -112,8 +112,7 @@ def test_distinct_day_count_april_workshops() -> None:
             ),
             _ev(
                 "b2",
-                "I learned about it in a 2-day workshop I attended on the 17th "
-                "and 18th of April.",
+                "I learned about it in a 2-day workshop I attended on the 17th and 18th of April.",
                 "2023/05/01 (Mon) 20:24",
             ),
         ],
@@ -279,8 +278,7 @@ def test_gpa_average_pairs_degrees_and_ignores_requirements() -> None:
             ),
             _ev(
                 "h2",
-                "I recently completed my Master's degree in Data Science, "
-                "where my GPA was 3.8.",
+                "I recently completed my Master's degree in Data Science, where my GPA was 3.8.",
                 "2023/05/30 (Tue) 04:37",
             ),
             _ev(

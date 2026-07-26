@@ -50,11 +50,9 @@ def _detect_gpu() -> str:
     """Best-effort GPU detection across torch and macOS."""
     try:
         import torch  # type: ignore[import-not-found]
+
         if torch.cuda.is_available():
-            return (
-                f"{torch.cuda.get_device_name(0)} "
-                f"(cuda devices={torch.cuda.device_count()})"
-            )
+            return f"{torch.cuda.get_device_name(0)} (cuda devices={torch.cuda.device_count()})"
         if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
             return "Apple MPS (metal performance shaders)"
     except ImportError:
@@ -71,21 +69,24 @@ def main() -> int:
     p.add_argument("--prompt-tokens", type=int, default=2000)
     p.add_argument("--max-new-tokens", type=int, default=256)
     p.add_argument("--seed", type=int, default=0)
-    p.add_argument("--out", type=Path,
-                   default=_THIS.parents[1] / "NOTES" / "inference_bench.md")
+    p.add_argument("--out", type=Path, default=_THIS.parents[1] / "NOTES" / "inference_bench.md")
 
     # Backend selection
-    p.add_argument("--ollama", action="store_true",
-                   help="Drive a local Ollama daemon instead of HuggingFace.")
-    p.add_argument("--ollama-model", default="gemma4:e4b",
-                   help="Ollama model tag (default: gemma4:e4b).")
+    p.add_argument(
+        "--ollama", action="store_true", help="Drive a local Ollama daemon instead of HuggingFace."
+    )
+    p.add_argument(
+        "--ollama-model", default="gemma4:e4b", help="Ollama model tag (default: gemma4:e4b)."
+    )
     p.add_argument("--ollama-host", default="http://localhost:11434")
-    p.add_argument("--use-fallback", action="store_true",
-                   help="HF mode only: swap to fallback_model_id.")
+    p.add_argument(
+        "--use-fallback", action="store_true", help="HF mode only: swap to fallback_model_id."
+    )
     args = p.parse_args()
 
     if args.ollama:
         from ask.inference.ollama import OllamaLLM
+
         llm: LLM = OllamaLLM(model_id=args.ollama_model, host=args.ollama_host)
         backend_label = "ollama"
     else:
@@ -102,16 +103,20 @@ def main() -> int:
     # Benchmark
     latencies_ms: list[float] = []
     tokps: list[float] = []
-    print(f"[bench] running {args.n_prompts} prompts of ~{args.prompt_tokens} tokens, "
-          f"max_new_tokens={args.max_new_tokens}")
+    print(
+        f"[bench] running {args.n_prompts} prompts of ~{args.prompt_tokens} tokens, "
+        f"max_new_tokens={args.max_new_tokens}"
+    )
     for i in range(args.n_prompts):
         t0 = time.perf_counter()
         resp = llm.generate(prompt, max_new_tokens=args.max_new_tokens, seed=args.seed + i)
-        elapsed = (time.perf_counter() - t0)
+        elapsed = time.perf_counter() - t0
         latencies_ms.append(elapsed * 1000.0)
         tokps.append(resp.completion_tokens / elapsed if elapsed > 0 else float("inf"))
-        print(f"  [{i:02d}]  {resp.completion_tokens} tok in {elapsed*1000:8.1f} ms  "
-              f"= {tokps[-1]:6.2f} tok/s")
+        print(
+            f"  [{i:02d}]  {resp.completion_tokens} tok in {elapsed * 1000:8.1f} ms  "
+            f"= {tokps[-1]:6.2f} tok/s"
+        )
 
     median_tokps = statistics.median(tokps)
     median_latency = statistics.median(latencies_ms)
@@ -164,7 +169,7 @@ What this bench *does* establish:
 
 Threshold: **≥ 25 tokens/sec sustained on A100 80GB for a 7B model in bf16.**
 
-- Reported median tokens/sec: {s['median_tokens_per_sec']}
+- Reported median tokens/sec: {s["median_tokens_per_sec"]}
 - Pass on A100 80GB: see GPU field above. Non-A100 runs do not constitute
   acceptance under §5.3.
 """
@@ -173,8 +178,8 @@ Threshold: **≥ 25 tokens/sec sustained on A100 80GB for a 7B model in bf16.**
         f"python scripts/bench_inference.py --ollama --ollama-model {args.ollama_model} \\\n"
         f"    --n-prompts {s['n_prompts']} --prompt-tokens {s['prompt_tokens_target']} \\\n"
         f"    --max-new-tokens {s['max_new_tokens']}"
-        if is_ollama else
-        f"python scripts/bench_inference.py --n-prompts {s['n_prompts']} \\\n"
+        if is_ollama
+        else f"python scripts/bench_inference.py --n-prompts {s['n_prompts']} \\\n"
         f"    --prompt-tokens {s['prompt_tokens_target']} \\\n"
         f"    --max-new-tokens {s['max_new_tokens']}"
     )
@@ -182,19 +187,19 @@ Threshold: **≥ 25 tokens/sec sustained on A100 80GB for a 7B model in bf16.**
     return f"""# Inference benchmark — M1-W1 §3.2
 
 **Run:** {bench_label}
-**Backend:** `{s['backend']}`
-**Model:** `{s['model_id']}`
-**GPU/HW:** {s['gpu']}
-**Platform:** {s['platform']} (Python {s['python']})
+**Backend:** `{s["backend"]}`
+**Model:** `{s["model_id"]}`
+**GPU/HW:** {s["gpu"]}
+**Platform:** {s["platform"]} (Python {s["python"]})
 
 | Metric | Value |
 |--------|-------|
-| n_prompts                | {s['n_prompts']} |
-| prompt_tokens (target)   | {s['prompt_tokens_target']} |
-| max_new_tokens           | {s['max_new_tokens']} |
-| **median tokens/sec**    | **{s['median_tokens_per_sec']}** |
-| median latency (ms)      | {s['median_latency_ms']} |
-| p95 latency (ms)         | {s['p95_latency_ms']} |
+| n_prompts                | {s["n_prompts"]} |
+| prompt_tokens (target)   | {s["prompt_tokens_target"]} |
+| max_new_tokens           | {s["max_new_tokens"]} |
+| **median tokens/sec**    | **{s["median_tokens_per_sec"]}** |
+| median latency (ms)      | {s["median_latency_ms"]} |
+| p95 latency (ms)         | {s["p95_latency_ms"]} |
 
 {accept_block}
 ## Reproduction

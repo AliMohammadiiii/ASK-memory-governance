@@ -917,9 +917,7 @@ class ControllerOrchestrator:
                 else ()
             )
             if preference_exclusions:
-                effective_system_prompt += _preference_exclusion_instruction(
-                    preference_exclusions
-                )
+                effective_system_prompt += _preference_exclusion_instruction(preference_exclusions)
             prompt = self._render_prompt(
                 session,
                 answer_retrieved,
@@ -2350,9 +2348,7 @@ class ControllerOrchestrator:
                     score += 0.06
                 if q_tokens and any(
                     stable_identity_re.search(fragment)
-                    and any(
-                        _token_in_text(token, fragment.casefold()) for token in q_tokens
-                    )
+                    and any(_token_in_text(token, fragment.casefold()) for token in q_tokens)
                     for text in identity_texts
                     for fragment in re.split(r"(?<=[.!?])\s+|\n+", text)
                 ):
@@ -4150,8 +4146,10 @@ def _answer_retry_reason(
     )
     if exhausted and not _FINAL_ANSWER_RE.search(raw_text or ""):
         return "truncated"
-    if preference and preference_exclusions and _positive_preference_contains_exclusion(
-        text, preference_exclusions
+    if (
+        preference
+        and preference_exclusions
+        and _positive_preference_contains_exclusion(text, preference_exclusions)
     ):
         return "preference_polarity"
     if preference and _PREFERENCE_ABSTENTION_RE.search(text):

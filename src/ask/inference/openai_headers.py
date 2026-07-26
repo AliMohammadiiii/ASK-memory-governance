@@ -7,7 +7,11 @@ from collections.abc import Mapping
 
 
 def _redacted_env_label(api_key_env: str) -> str:
-    return "<redacted api key value>" if api_key_env.lower().startswith(("sk-", "sk_")) else api_key_env
+    return (
+        "<redacted api key value>"
+        if api_key_env.lower().startswith(("sk-", "sk_"))
+        else api_key_env
+    )
 
 
 def openai_compatible_headers(

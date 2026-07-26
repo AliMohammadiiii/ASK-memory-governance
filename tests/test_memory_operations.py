@@ -45,9 +45,9 @@ def test_insert_n_items_active_count_equals_n_and_ids_monotonic(db: sqlite3.Conn
     ids = [insert_active(db, _mk(f"item-{i}")) for i in range(n)]
 
     # Active count == n.
-    count = db.execute(
-        "SELECT COUNT(*) AS c FROM memory_items WHERE status = 'active'"
-    ).fetchone()["c"]
+    count = db.execute("SELECT COUNT(*) AS c FROM memory_items WHERE status = 'active'").fetchone()[
+        "c"
+    ]
     assert count == n
 
     # Ids monotonically increasing.
@@ -132,14 +132,14 @@ def test_supersede_is_atomic_under_forced_exception(
         supersede(db, new_item=_mk("replacement"), prior_id=a_id)
 
     # Post-state: prior row is STILL active (no flip), no new row exists.
-    after = db.execute(
-        "SELECT COUNT(*) AS c FROM memory_items WHERE status = 'active'"
-    ).fetchone()["c"]
+    after = db.execute("SELECT COUNT(*) AS c FROM memory_items WHERE status = 'active'").fetchone()[
+        "c"
+    ]
     assert after == 1, f"atomicity violated: active count went {before} → {after}"
 
-    a_status = db.execute(
-        "SELECT status FROM memory_items WHERE id = ?", (a_id,)
-    ).fetchone()["status"]
+    a_status = db.execute("SELECT status FROM memory_items WHERE id = ?", (a_id,)).fetchone()[
+        "status"
+    ]
     assert a_status == "active", "atomicity violated: prior row was flipped despite rollback"
 
 
@@ -275,9 +275,7 @@ def test_supersede_evict_flips_status_no_lineage_no_relation(db: sqlite3.Connect
     assert row["status"] == "superseded"
     assert row["supersedes_id"] is None, "FIFO eviction must NOT set supersedes_id"
 
-    rel = db.execute(
-        "SELECT * FROM memory_relations WHERE to_memory_id = ?", (a_id,)
-    ).fetchone()
+    rel = db.execute("SELECT * FROM memory_relations WHERE to_memory_id = ?", (a_id,)).fetchone()
     assert rel is None, "FIFO eviction must NOT write a memory_relations row"
 
     # Lineage walk is single-element: lineage destruction is the point.

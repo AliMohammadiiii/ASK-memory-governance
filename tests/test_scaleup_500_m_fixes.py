@@ -50,9 +50,15 @@ class _ScriptedJudge:
         self._payload = {"correct": correct, "rationale": "scripted"}
         self.calls = 0
 
-    def generate(self, prompt: str, *, max_new_tokens: int = 256,
-                 temperature: float = 0.0, seed: int = 0,
-                 stop: list[str] | None = None) -> LLMResponse:
+    def generate(
+        self,
+        prompt: str,
+        *,
+        max_new_tokens: int = 256,
+        temperature: float = 0.0,
+        seed: int = 0,
+        stop: list[str] | None = None,
+    ) -> LLMResponse:
         self.calls += 1
         return LLMResponse(
             text=json.dumps(self._payload),
@@ -67,15 +73,23 @@ class _ScriptedJudge:
 
 def _answer(sid: str, text: str) -> BaselineAnswer:
     return BaselineAnswer(
-        session_id=sid, text=text, prompt_tokens=10, completion_tokens=2,
-        latency_ms=1.0, raw_prompt="<p>", baseline="b",
+        session_id=sid,
+        text=text,
+        prompt_tokens=10,
+        completion_tokens=2,
+        latency_ms=1.0,
+        raw_prompt="<p>",
+        baseline="b",
     )
 
 
 def _session(sid: str, *, competency: str, gold: str) -> LongMemEvalSession:
     return LongMemEvalSession(
-        session_id=sid, turns=(LongMemEvalTurn(role="user", content="x"),),
-        question="Q?", gold_answer=gold, competency=competency,
+        session_id=sid,
+        turns=(LongMemEvalTurn(role="user", content="x"),),
+        question="Q?",
+        gold_answer=gold,
+        competency=competency,
     )
 
 
@@ -155,8 +169,10 @@ def test_sample_slice_subset_is_exact_size():
 
 
 def test_json_array_input_is_read(tmp_path: Path):
-    arr = [_cleaned_record("q1", "multi-session", "5"),
-           _cleaned_record("q2", "temporal-reasoning", "Monday")]
+    arr = [
+        _cleaned_record("q1", "multi-session", "5"),
+        _cleaned_record("q2", "temporal-reasoning", "Monday"),
+    ]
     p = tmp_path / "release.json"
     p.write_text(json.dumps(arr), encoding="utf-8")  # top-level array shape
     sessions = list(iter_longmemeval_s(p))
@@ -164,8 +180,10 @@ def test_json_array_input_is_read(tmp_path: Path):
 
 
 def test_convert_to_jsonl_roundtrips(tmp_path: Path):
-    arr = [_cleaned_record("q1", "multi-session", "5"),
-           _cleaned_record("q2", "knowledge_update", "tea")]
+    arr = [
+        _cleaned_record("q1", "multi-session", "5"),
+        _cleaned_record("q2", "knowledge_update", "tea"),
+    ]
     src = tmp_path / "release.json"
     src.write_text(json.dumps(arr), encoding="utf-8")
     dst = tmp_path / "release.jsonl"
@@ -200,7 +218,9 @@ def test_currency_prediction_not_false_rejected_by_token_guard():
     """
     judge = _ScriptedJudge(correct=True)
     grader = LongMemEvalGrader(judge_llm=judge)
-    res = grader.grade(_answer("s", "$1300"), _session("s", competency="multi-session", gold="$1,300"))
+    res = grader.grade(
+        _answer("s", "$1300"), _session("s", competency="multi-session", gold="$1,300")
+    )
     assert res.correct is True
     assert "gold-token-guard" not in res.judge_rationale
     assert judge.calls == 1  # the judge was actually consulted (not short-circuited to reject)
@@ -209,7 +229,9 @@ def test_currency_prediction_not_false_rejected_by_token_guard():
 def test_bare_symbol_answer_is_still_wrong_and_degenerate():
     judge = _ScriptedJudge(correct=True)  # even a lenient judge must not save "$"
     grader = LongMemEvalGrader(judge_llm=judge)
-    res = grader.grade(_answer("s", "$"), _session("s", competency="knowledge-update", gold="$400,000"))
+    res = grader.grade(
+        _answer("s", "$"), _session("s", competency="knowledge-update", gold="$400,000")
+    )
     assert res.correct is False  # gold-token-guard correctly rejects the empty-content answer
     assert looks_degenerate_answer("$") is True
 
@@ -240,7 +262,7 @@ def test_answer_needs_retry_fires_on_unknown_empty_and_bare_symbol():
     assert _answer_needs_retry("Unknown") is True
     assert _answer_needs_retry("") is True
     assert _answer_needs_retry("   ") is True
-    assert _answer_needs_retry("$") is True          # the 852ce960 truncation case
+    assert _answer_needs_retry("$") is True  # the 852ce960 truncation case
     assert _answer_needs_retry("...") is True
     # genuine answers do NOT trigger a retry
     assert _answer_needs_retry("3") is False
@@ -257,21 +279,30 @@ def test_build_eval_report_decomposes_answerable_and_abstention():
     judge = _ScriptedJudge(correct=True)
     grader = LongMemEvalGrader(judge_llm=judge)
     grades = [
-        grader.grade(_answer("a", "$1300"), _session("a", competency="multi-session", gold="$1,300")),
-        grader.grade(_answer("b", "$"), _session("b", competency="knowledge-update", gold="$400,000")),
+        grader.grade(
+            _answer("a", "$1300"), _session("a", competency="multi-session", gold="$1,300")
+        ),
+        grader.grade(
+            _answer("b", "$"), _session("b", competency="knowledge-update", gold="$400,000")
+        ),
         grader.grade(
             _answer("c", "Unknown"),
-            _session("c", competency="knowledge-update",
-                     gold="The information provided is not enough. You mentioned X but not Y."),
+            _session(
+                "c",
+                competency="knowledge-update",
+                gold="The information provided is not enough. You mentioned X but not Y.",
+            ),
         ),
     ]
-    report = build_eval_report(baseline_name="b", judge_model_id="j", grades=grades, n_bootstrap=200)
+    report = build_eval_report(
+        baseline_name="b", judge_model_id="j", grades=grades, n_bootstrap=200
+    )
     d = report.to_dict()
     assert d["answerable_n"] == 2
-    assert abs(d["answerable_accuracy"] - 0.5) < 1e-9   # a correct, b wrong
+    assert abs(d["answerable_accuracy"] - 0.5) < 1e-9  # a correct, b wrong
     assert d["abstention_n"] == 1
-    assert d["abstention_accuracy"] == 1.0              # c abstains correctly
-    assert d["n_degenerate_answers"] == 1               # the bare "$"
+    assert d["abstention_accuracy"] == 1.0  # c abstains correctly
+    assert d["n_degenerate_answers"] == 1  # the bare "$"
     # markdown renders the new lines without raising
     md = report.summarize_markdown()
     assert "Answerable-only accuracy" in md

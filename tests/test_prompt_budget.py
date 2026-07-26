@@ -68,9 +68,7 @@ def test_budget_disabled_when_backend_has_no_num_ctx() -> None:
     assert num_ctx is None
     assert budget == 0
     retrieved = _retrieved(20)
-    trimmed, debug = orch._budget_trim_for_answer(
-        _question_session(), retrieved, None, budget
-    )
+    trimmed, debug = orch._budget_trim_for_answer(_question_session(), retrieved, None, budget)
     # No window exposed -> never trim, byte-stable behavior.
     assert trimmed is retrieved
     assert debug["prompt_trimmed"] is False

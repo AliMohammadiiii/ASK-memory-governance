@@ -99,9 +99,7 @@ def main() -> int:
             for report in reports
         ],
         "scenario_rows": [
-            scenario_row
-            for report in reports
-            for scenario_row in report["scenario_rows"]
+            scenario_row for report in reports for scenario_row in report["scenario_rows"]
         ],
     }
 

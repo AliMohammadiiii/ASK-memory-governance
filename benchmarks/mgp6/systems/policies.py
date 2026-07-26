@@ -35,6 +35,7 @@ except ImportError:  # pragma: no cover - allow flat import
 # state construction helpers
 # --------------------------------------------------------------------------- #
 
+
 def _slot_phrase(slot: str) -> str:
     return slot.replace("_", " ")
 
@@ -47,9 +48,7 @@ def _new_id(scenario: dict[str, Any]) -> str:
     return f"{scenario['scenario_id'].lower()}-m2"
 
 
-def _superseded_state(
-    scenario: dict[str, Any], ev: Evidence, value: str
-) -> list[dict[str, Any]]:
+def _superseded_state(scenario: dict[str, Any], ev: Evidence, value: str) -> list[dict[str, Any]]:
     """Retain the prior record as superseded and add one active successor."""
     state = _prior_state(scenario)
     old = next(r for r in state if r.get("status") == "active")
@@ -69,9 +68,7 @@ def _superseded_state(
     return state
 
 
-def _overwrite_state(
-    scenario: dict[str, Any], ev: Evidence, value: str
-) -> list[dict[str, Any]]:
+def _overwrite_state(scenario: dict[str, Any], ev: Evidence, value: str) -> list[dict[str, Any]]:
     """Destructive replace: no superseded record retained (b4 weakness)."""
     old = next(r for r in _prior_state(scenario) if r.get("status") == "active")
     return [
@@ -89,9 +86,7 @@ def _overwrite_state(
     ]
 
 
-def _keep_with_override(
-    scenario: dict[str, Any], ev: Evidence, value: str
-) -> list[dict[str, Any]]:
+def _keep_with_override(scenario: dict[str, Any], ev: Evidence, value: str) -> list[dict[str, Any]]:
     """Preserve the durable record; add the override as a transient_pref."""
     state = _prior_state(scenario)
     state.append(
@@ -113,6 +108,7 @@ def _keep_with_override(
 # --------------------------------------------------------------------------- #
 # answer construction
 # --------------------------------------------------------------------------- #
+
 
 def _durable_active_value(state: list[dict[str, Any]], slot: str) -> str | None:
     """Value the system would recall: active, same-slot, non-transient."""
@@ -160,6 +156,7 @@ def _pack(action: str, state: list[dict[str, Any]], answer: str, conf: float) ->
 # --------------------------------------------------------------------------- #
 # systems
 # --------------------------------------------------------------------------- #
+
 
 def predict_b1(scenario: dict[str, Any]) -> dict[str, Any]:
     """No-memory sanity floor: no stored state, never commits, cannot answer."""

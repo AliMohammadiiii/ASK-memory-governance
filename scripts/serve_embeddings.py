@@ -116,8 +116,10 @@ class _Handler(BaseHTTPRequestHandler):
         except Exception as exc:  # noqa: BLE001
             # Print the full server-side cause (OOM, shape, etc.) so failures
             # are diagnosable from the embed-server terminal, not just a 500.
-            print(f"[embed-server] ERROR on {len(inputs)} inputs: "
-                  f"{type(exc).__name__}: {exc}", flush=True)
+            print(
+                f"[embed-server] ERROR on {len(inputs)} inputs: {type(exc).__name__}: {exc}",
+                flush=True,
+            )
             traceback.print_exc()
             self._send(500, {"error": f"{type(exc).__name__}: {exc}"})
             return
@@ -125,12 +127,15 @@ class _Handler(BaseHTTPRequestHandler):
             {"object": "embedding", "index": i, "embedding": vecs[i].tolist()}
             for i in range(len(inputs))
         ]
-        self._send(200, {
-            "object": "list",
-            "model": req.get("model") or _MODEL_NAME,
-            "data": data,
-            "usage": {"prompt_tokens": 0, "total_tokens": 0},
-        })
+        self._send(
+            200,
+            {
+                "object": "list",
+                "model": req.get("model") or _MODEL_NAME,
+                "data": data,
+                "usage": {"prompt_tokens": 0, "total_tokens": 0},
+            },
+        )
 
     def log_message(self, fmt: str, *args) -> None:  # quieter logs
         return
@@ -145,34 +150,49 @@ def main() -> int:
     p.add_argument("--prompt-name", default=None)
     p.add_argument("--device", default="cuda")
     p.add_argument("--trust-remote-code", action="store_true", default=True)
-    p.add_argument("--batch-size", type=int, default=16,
-                   help="Encode chunk size. Keep modest: a single LongMemEval-M "
-                        "haystack is thousands of turns, and a huge batch spikes "
-                        "GPU activation memory (OOM when vLLM already owns most "
-                        "of the card).")
-    p.add_argument("--max-seq-length", type=int, default=512,
-                   help="Maximum token length for sentence-transformers encoding. "
-                        "Jina v5 is Qwen3-based; long turns can OOM a T4 unless "
-                        "they are truncated.")
+    p.add_argument(
+        "--batch-size",
+        type=int,
+        default=16,
+        help="Encode chunk size. Keep modest: a single LongMemEval-M "
+        "haystack is thousands of turns, and a huge batch spikes "
+        "GPU activation memory (OOM when vLLM already owns most "
+        "of the card).",
+    )
+    p.add_argument(
+        "--max-seq-length",
+        type=int,
+        default=512,
+        help="Maximum token length for sentence-transformers encoding. "
+        "Jina v5 is Qwen3-based; long turns can OOM a T4 unless "
+        "they are truncated.",
+    )
     p.add_argument("--host", default="0.0.0.0")
     p.add_argument("--port", type=int, default=8100)
     args = p.parse_args()
 
     _MODEL_NAME = args.served_name
     _DEVICE_INFO = _torch_device_info(args.device)
-    print(f"[embed-server] torch/device info: {json.dumps(_DEVICE_INFO, sort_keys=True)}",
-          flush=True)
+    print(
+        f"[embed-server] torch/device info: {json.dumps(_DEVICE_INFO, sort_keys=True)}", flush=True
+    )
     if args.device.lower().startswith("cuda") and not _DEVICE_INFO.get("cuda_available"):
         raise SystemExit(
             "[embed-server] requested --device cuda but torch.cuda.is_available() is false. "
             "Use a GPU runtime and install a CUDA-enabled torch build before starting."
         )
-    print(f"[embed-server] loading {args.model} task={args.task} device={args.device} "
-          f"batch_size={args.batch_size}", flush=True)
+    print(
+        f"[embed-server] loading {args.model} task={args.task} device={args.device} "
+        f"batch_size={args.batch_size}",
+        flush=True,
+    )
     _EMBEDDER = TurnEmbedder(
-        model_id=args.model, device=args.device,
-        trust_remote_code=args.trust_remote_code, task=args.task,
-        prompt_name=args.prompt_name, batch_size=args.batch_size,
+        model_id=args.model,
+        device=args.device,
+        trust_remote_code=args.trust_remote_code,
+        task=args.task,
+        prompt_name=args.prompt_name,
+        batch_size=args.batch_size,
     )
     _EMBEDDER._ensure_loaded()
     if args.max_seq_length > 0:

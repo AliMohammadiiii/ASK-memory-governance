@@ -169,8 +169,7 @@ def _write_png(path: Path, points: list[tuple[float, float, str]]) -> None:
         circle(x, y, 5, curve)
 
     raw = b"".join(
-        b"\x00" + bytes(pixels[y * width * 3 : (y + 1) * width * 3])
-        for y in range(height)
+        b"\x00" + bytes(pixels[y * width * 3 : (y + 1) * width * 3]) for y in range(height)
     )
 
     def chunk(kind: bytes, data: bytes) -> bytes:
@@ -202,10 +201,10 @@ def _write_pdf(path: Path, points: list[tuple[float, float, str]]) -> None:
 
     commands = [
         "0.95 0.95 0.95 rg",
-        f"{left} {bottom} {width-left-right} {height-top-bottom} re f",
+        f"{left} {bottom} {width - left - right} {height - top - bottom} re f",
         "0 0 0 RG 1 w",
-        f"{left} {bottom} m {left} {height-top} l S",
-        f"{left} {bottom} m {width-right} {bottom} l S",
+        f"{left} {bottom} m {left} {height - top} l S",
+        f"{left} {bottom} m {width - right} {bottom} l S",
         "0.08 0.37 0.67 RG 1.5 w",
     ]
     coords = [(sx(x), sy(y)) for x, y, _label in points]
@@ -234,7 +233,11 @@ def _write_pdf(path: Path, points: list[tuple[float, float, str]]) -> None:
             f"/Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>"
         ).encode("ascii"),
         b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-        b"<< /Length " + str(len(stream)).encode("ascii") + b" >>\nstream\n" + stream + b"\nendstream",
+        b"<< /Length "
+        + str(len(stream)).encode("ascii")
+        + b" >>\nstream\n"
+        + stream
+        + b"\nendstream",
     ]
     output = bytearray(b"%PDF-1.4\n")
     offsets = []
@@ -242,11 +245,11 @@ def _write_pdf(path: Path, points: list[tuple[float, float, str]]) -> None:
         offsets.append(len(output))
         output.extend(f"{idx} 0 obj\n".encode("ascii") + obj + b"\nendobj\n")
     xref = len(output)
-    output.extend(f"xref\n0 {len(objects)+1}\n0000000000 65535 f \n".encode("ascii"))
+    output.extend(f"xref\n0 {len(objects) + 1}\n0000000000 65535 f \n".encode("ascii"))
     for offset in offsets:
         output.extend(f"{offset:010d} 00000 n \n".encode("ascii"))
     output.extend(
-        f"trailer << /Size {len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode(
+        f"trailer << /Size {len(objects) + 1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF\n".encode(
             "ascii"
         )
     )

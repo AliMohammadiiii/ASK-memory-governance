@@ -80,8 +80,12 @@ def _base_env(args: argparse.Namespace) -> dict[str, str]:
     cpu_total = os.cpu_count() or 1
     workers = max(1, int(getattr(args, "max_workers", 1) or 1))
     per_worker_threads = max(1, cpu_total // workers)
-    for var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS",
-                "NUMEXPR_NUM_THREADS"):
+    for var in (
+        "OMP_NUM_THREADS",
+        "MKL_NUM_THREADS",
+        "OPENBLAS_NUM_THREADS",
+        "NUMEXPR_NUM_THREADS",
+    ):
         env.setdefault(var, str(per_worker_threads))
     # Tight 40GB card with two model copies: fragmentation across long-lived
     # allocations is the usual cause of a late-run CUDA OOM. Expandable segments
@@ -112,8 +116,12 @@ def _log_configuration(args: argparse.Namespace, systems: list[tuple[str, str]])
     _log(f"  controller_retrieval_neighbor_window={args.controller_retrieval_neighbor_window}")
     _log(f"  controller_include_assistant_context={args.controller_include_assistant_context}")
     _log(f"  controller_include_raw_user_context={args.controller_include_raw_user_context}")
-    _log(f"  controller_retrieval_query_augmentation={args.controller_retrieval_query_augmentation}")
-    _log(f"  controller_deterministic_numeric_supersede={args.controller_deterministic_numeric_supersede}")
+    _log(
+        f"  controller_retrieval_query_augmentation={args.controller_retrieval_query_augmentation}"
+    )
+    _log(
+        f"  controller_deterministic_numeric_supersede={args.controller_deterministic_numeric_supersede}"
+    )
     _log(f"  answer_retry_on_unknown={args.answer_retry_on_unknown}")
     _log(f"  controller_prior_top_k={args.controller_prior_top_k}")
     _log(f"  controller_prior_similarity_threshold={args.controller_prior_similarity_threshold}")
@@ -621,10 +629,7 @@ def _run_parallel(
             now = time.monotonic()
             if args.status_s > 0 and now - last_global_status >= args.status_s:
                 last_global_status = now
-                _log(
-                    "status: "
-                    f"running={sorted(running)} pending={[alias for alias, _ in pending]}"
-                )
+                _log(f"status: running={sorted(running)} pending={[alias for alias, _ in pending]}")
                 for job in running.values():
                     _log(_job_status(job, args.out, expected_rows=expected_rows))
             for alias, job in list(running.items()):
@@ -753,33 +758,58 @@ def _write_parallel_manifest(
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--slice", type=Path, default=Path("/content/longmemeval/longmemeval_s_cleaned.json"))
+    p.add_argument(
+        "--slice", type=Path, default=Path("/content/longmemeval/longmemeval_s_cleaned.json")
+    )
     p.add_argument("--out", type=Path, default=Path("runs/m4w13_a100_50"))
     p.add_argument("--systems", default="all")
-    p.add_argument("--limit", type=int, default=None,
-                   help="Optional session cap. The shell wrapper defaults to 50 "
-                        "for development runs; omit this flag for the full slice.")
-    p.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True,
-                   help="Pass --resume to run_baseline so interrupted jobs "
-                        "continue from completed answers/judgments.")
-    p.add_argument("--quality-preset", choices=_QUALITY_PRESETS, default=_QUALITY_PRESET_NONE,
-                   help="Lock an accuracy-first runtime profile. 'max-a10g' "
-                        "forces Qwen2.5-7B fp16, max-workers=1, and controller "
-                        "quality knobs. 'max-a100-40gb' keeps the worker count "
-                        "available for A100 40GB runs.")
-    p.add_argument("--max-workers", type=int, default=2,
-                   help="Number of systems to run at once. Default 2 is the "
-                        "conservative A100 40GB setting for 7B fp16 model copies; "
-                        "raise only after confirming free VRAM.")
+    p.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Optional session cap. The shell wrapper defaults to 50 "
+        "for development runs; omit this flag for the full slice.",
+    )
+    p.add_argument(
+        "--resume",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Pass --resume to run_baseline so interrupted jobs "
+        "continue from completed answers/judgments.",
+    )
+    p.add_argument(
+        "--quality-preset",
+        choices=_QUALITY_PRESETS,
+        default=_QUALITY_PRESET_NONE,
+        help="Lock an accuracy-first runtime profile. 'max-a10g' "
+        "forces Qwen2.5-7B fp16, max-workers=1, and controller "
+        "quality knobs. 'max-a100-40gb' keeps the worker count "
+        "available for A100 40GB runs.",
+    )
+    p.add_argument(
+        "--max-workers",
+        type=int,
+        default=2,
+        help="Number of systems to run at once. Default 2 is the "
+        "conservative A100 40GB setting for 7B fp16 model copies; "
+        "raise only after confirming free VRAM.",
+    )
     p.add_argument("--poll-s", type=float, default=10.0)
-    p.add_argument("--status-s", type=float, default=30.0,
-                   help="Emit per-system row-count status every N seconds. "
-                        "Use 0 to disable status heartbeats.")
+    p.add_argument(
+        "--status-s",
+        type=float,
+        default=30.0,
+        help="Emit per-system row-count status every N seconds. "
+        "Use 0 to disable status heartbeats.",
+    )
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct")
-    p.add_argument("--judge-backend", choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
-                   default="same_as_answerer")
+    p.add_argument(
+        "--judge-backend",
+        choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
+        default="same_as_answerer",
+    )
     p.add_argument("--judge-model", default=None)
     p.add_argument("--extractor-model", default=None)
     p.add_argument("--classifier-model", default=None)
@@ -788,75 +818,125 @@ def main() -> int:
     p.add_argument("--hf-load-in-4bit", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-trust-remote-code", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-max-seq-len", type=int, default=4096)
-    p.add_argument("--hf-enable-thinking", action=argparse.BooleanOptionalAction, default=None,
-                   help="Chat-template thinking switch for reasoning models "
-                        "(Qwen3/Qwen3.5). Use --no-hf-enable-thinking to suppress "
-                        "<think> blocks. Default unset = leave template alone.")
-    p.add_argument("--embedder-backend", choices=("sentence_transformer", "ollama"),
-                   default="sentence_transformer")
+    p.add_argument(
+        "--hf-enable-thinking",
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help="Chat-template thinking switch for reasoning models "
+        "(Qwen3/Qwen3.5). Use --no-hf-enable-thinking to suppress "
+        "<think> blocks. Default unset = leave template alone.",
+    )
+    p.add_argument(
+        "--embedder-backend",
+        choices=("sentence_transformer", "ollama"),
+        default="sentence_transformer",
+    )
     p.add_argument("--embedder-device", default="auto")
-    p.add_argument("--embedder-st-model", default=None,
-                   help="Override the sentence-transformers retrieval model id "
-                        "(e.g. jinaai/jina-embeddings-v5-text-small).")
-    p.add_argument("--embedder-trust-remote-code", action="store_true",
-                   help="trust_remote_code=True for the ST embedder (Jina v5).")
-    p.add_argument("--embedder-task", default=None,
-                   help="encode() task for task-aware embedders (Jina v5: retrieval).")
-    p.add_argument("--embedder-prompt-name", default=None,
-                   help="encode() prompt_name for task-aware embedders (Jina v5).")
+    p.add_argument(
+        "--embedder-st-model",
+        default=None,
+        help="Override the sentence-transformers retrieval model id "
+        "(e.g. jinaai/jina-embeddings-v5-text-small).",
+    )
+    p.add_argument(
+        "--embedder-trust-remote-code",
+        action="store_true",
+        help="trust_remote_code=True for the ST embedder (Jina v5).",
+    )
+    p.add_argument(
+        "--embedder-task",
+        default=None,
+        help="encode() task for task-aware embedders (Jina v5: retrieval).",
+    )
+    p.add_argument(
+        "--embedder-prompt-name",
+        default=None,
+        help="encode() prompt_name for task-aware embedders (Jina v5).",
+    )
     p.add_argument("--fake-embedder", action="store_true")
     p.add_argument("--ollama-host", default="http://127.0.0.1:11434")
     p.add_argument("--judge-timeout-s", type=float, default=1800.0)
     p.add_argument("--embedder-ollama-model", default="llama3.2:3b")
     p.add_argument("--embedder-timeout-s", type=float, default=1800.0)
     p.add_argument("--embedder-batch-size", type=int, default=16)
-    p.add_argument("--retrieval-k", type=int, default=5,
-                   help="Top-k retrieval depth for memory systems. Forwarded "
-                        "to run_baseline.py --k for b2/b3/b4/controller.")
+    p.add_argument(
+        "--retrieval-k",
+        type=int,
+        default=5,
+        help="Top-k retrieval depth for memory systems. Forwarded "
+        "to run_baseline.py --k for b2/b3/b4/controller.",
+    )
     p.add_argument("--controller-progress", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--controller-memory-top-k", type=int, default=32)
-    p.add_argument("--controller-raw-turn-fallback", action=argparse.BooleanOptionalAction,
-                   default=True)
+    p.add_argument(
+        "--controller-raw-turn-fallback", action=argparse.BooleanOptionalAction, default=True
+    )
     p.add_argument("--controller-retrieval-neighbor-window", type=int, default=0)
-    p.add_argument("--controller-include-assistant-context",
-                   action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--controller-include-raw-user-context",
-                   action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--controller-retrieval-query-augmentation",
-                   action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--controller-deterministic-numeric-supersede",
-                   action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--answer-retry-on-unknown", action=argparse.BooleanOptionalAction,
-                   default=False)
+    p.add_argument(
+        "--controller-include-assistant-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    p.add_argument(
+        "--controller-include-raw-user-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    p.add_argument(
+        "--controller-retrieval-query-augmentation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    p.add_argument(
+        "--controller-deterministic-numeric-supersede",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    p.add_argument(
+        "--answer-retry-on-unknown", action=argparse.BooleanOptionalAction, default=False
+    )
     p.add_argument("--controller-prior-top-k", type=int, default=1)
     p.add_argument("--controller-prior-similarity-threshold", type=float, default=0.0)
-    p.add_argument("--controller-temporal-scaffold", action=argparse.BooleanOptionalAction,
-                   default=False)
-    p.add_argument("--controller-computation-answerer", action=argparse.BooleanOptionalAction,
-                   default=False)
+    p.add_argument(
+        "--controller-temporal-scaffold", action=argparse.BooleanOptionalAction, default=False
+    )
+    p.add_argument(
+        "--controller-computation-answerer", action=argparse.BooleanOptionalAction, default=False
+    )
     p.add_argument("--recency-progress", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--recency-memory-top-k", type=int, default=32)
-    p.add_argument("--recency-raw-turn-fallback", action=argparse.BooleanOptionalAction,
-                   default=True)
+    p.add_argument(
+        "--recency-raw-turn-fallback", action=argparse.BooleanOptionalAction, default=True
+    )
     p.add_argument("--extraction-max-new-tokens", type=int, default=192)
     p.add_argument("--relation-max-new-tokens", type=int, default=96)
     p.add_argument("--cuda-visible-devices", default=None)
     p.add_argument("--require-a100", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--no-prefetch", action="store_true")
     p.add_argument("--fail-fast", action=argparse.BooleanOptionalAction, default=True)
-    p.add_argument("--skip-existing-complete", action=argparse.BooleanOptionalAction,
-                   default=True,
-                   help="If <out>/<system>/report.json already exists, skip "
-                        "re-running that system. This makes interrupted A100 "
-                        "runs resumable without paying again for completed "
-                        "systems.")
-    p.add_argument("--clean-incomplete", action="store_true",
-                   help="Archive incomplete or mismatched system output directories "
-                        "before launching. Without this flag, zero-line, missing, "
-                        "or stale artifacts fail fast with an explicit error.")
-    p.add_argument("--stream-logs", action=argparse.BooleanOptionalAction, default=True,
-                   help="Mirror each subprocess log line to notebook stdout with "
-                        "a system prefix while also writing per-system log files.")
+    p.add_argument(
+        "--skip-existing-complete",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="If <out>/<system>/report.json already exists, skip "
+        "re-running that system. This makes interrupted A100 "
+        "runs resumable without paying again for completed "
+        "systems.",
+    )
+    p.add_argument(
+        "--clean-incomplete",
+        action="store_true",
+        help="Archive incomplete or mismatched system output directories "
+        "before launching. Without this flag, zero-line, missing, "
+        "or stale artifacts fail fast with an explicit error.",
+    )
+    p.add_argument(
+        "--stream-logs",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Mirror each subprocess log line to notebook stdout with "
+        "a system prefix while also writing per-system log files.",
+    )
     p.add_argument("--tail-lines-on-failure", type=int, default=120)
     p.add_argument("--zip-out", type=Path, default=None)
     p.add_argument("--no-zip", action="store_true")

@@ -12,7 +12,7 @@ in `MASTER_EXECUTION_STATUS.md` and `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 
 | Task | Priority | Status | Evidence |
 |---|---:|---|---|
-| T-01 environment repair | P0 | complete | `python -m pytest -q` passes; `pyproject.toml` declares `numpy`; `requirements-lock.txt` updated |
+| T-01 environment repair | P0 | complete | `make check` passes; runtime and optional dependencies are declared in `pyproject.toml` |
 | T-02 documentation truth | P0 | complete | `README.md`, `ARTIFACT_MANIFEST.md`, invalid markers under `runs/m4w14` and `runs/m4w15` |
 | T-03 LongMemEval-S B4 + controller | P0 | blocked | `LONGMEMEVAL_B4_TODO.md`; Ollama not serving locally; `FINAL_OK.json` uses `partial_ok` |
 | T-04 valid RC@C replay | P0 | complete | `runs/m4w15_thesis_colab_20260608` regenerated from valid M4-W14 source |
@@ -28,9 +28,10 @@ in `MASTER_EXECUTION_STATUS.md` and `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 
 ## Current Verification
 
-- `python -m pytest -q`: 381 passed, 5 skipped
-- `python -m pytest -q -p no:cov`: 381 passed, 5 skipped
-- `ruff check .`: All checks passed
+- `make check`: maintained fast offline verification gate
+- `make release-check`: maintained complete offline release gate
+- Exact test counts are recorded in dated validation output rather than frozen
+  in this living checklist.
 - `git status --short`: clean before workspace cleanup
 
 ## Evidence Status

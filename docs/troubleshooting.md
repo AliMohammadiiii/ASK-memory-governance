@@ -98,17 +98,19 @@ coverage-aware accuracy of 0.7833 and macro-F1 of 0.7692. The result remains
 
 ## Repository validation reports secrets or absolute paths
 
-Run:
+Run from an activated development environment:
 
 ```bash
-python scripts/validate_repository.py
+make repo-check
 ```
 
 The validator scans tracked and unignored release candidates, not virtual
-environments. Replace active local paths with repository-relative paths or
-`external://` pointers. Historical notes may describe old locations but must not
-enter the public release if they expose private information. Revoke any detected
-credential; redaction alone does not make an exposed key safe again.
+environments. It also verifies required paths, release-version consistency, and
+the absence of known duplicate canonical datasets. Replace active local paths
+with repository-relative paths or `external://` pointers. Historical notes may
+describe old locations but must not enter the public release if they expose
+private information. Revoke any detected credential; redaction alone does not
+make an exposed key safe again.
 
 ## Tests need unavailable external services
 

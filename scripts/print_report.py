@@ -71,12 +71,14 @@ def _render_merged_table(reports: list[tuple[Path, EvalReport]], ci_dp: int = 1)
 
     lines: list[str] = []
     lines.append(f"# Per-competency results — merged across {len(reports)} baselines\n")
-    lines.append(f"- **Reference baseline:** `{ref_report.baseline_name}` "
-                 f"(`{ref_path}`); n={ref_report.n_sessions}, "
-                 f"overall {_format_pct(ref_report.overall_accuracy, ci_dp)}% "
-                 f"(95% CI "
-                 f"{_format_pct(ref_report.overall_ci_low, ci_dp)} – "
-                 f"{_format_pct(ref_report.overall_ci_high, ci_dp)})")
+    lines.append(
+        f"- **Reference baseline:** `{ref_report.baseline_name}` "
+        f"(`{ref_path}`); n={ref_report.n_sessions}, "
+        f"overall {_format_pct(ref_report.overall_accuracy, ci_dp)}% "
+        f"(95% CI "
+        f"{_format_pct(ref_report.overall_ci_low, ci_dp)} – "
+        f"{_format_pct(ref_report.overall_ci_high, ci_dp)})"
+    )
     for path, rep in reports[1:]:
         lines.append(
             f"- **Comparison:** `{rep.baseline_name}` (`{path}`); "
@@ -87,22 +89,28 @@ def _render_merged_table(reports: list[tuple[Path, EvalReport]], ci_dp: int = 1)
             f"{_format_pct(rep.overall_ci_high, ci_dp)})"
         )
     lines.append("")
-    lines.append(f"- **Judge:** `{ref_report.judge_model_id}` "
-                 "(same across baselines per M1-W2 §3.0; cache hits when "
-                 "answer text coincides).")
+    lines.append(
+        f"- **Judge:** `{ref_report.judge_model_id}` "
+        "(same across baselines per M1-W2 §3.0; cache hits when "
+        "answer text coincides)."
+    )
     lines.append("")
 
     # Build the table. One row per (competency, baseline) pair.
-    header = (
-        ["Competency", "Baseline", "n", "Accuracy", "Δ vs. ref", "95% CI",
-         "Avg prompt tokens", "Avg latency (ms)"]
-    )
+    header = [
+        "Competency",
+        "Baseline",
+        "n",
+        "Accuracy",
+        "Δ vs. ref",
+        "95% CI",
+        "Avg prompt tokens",
+        "Avg latency (ms)",
+    ]
     lines.append("| " + " | ".join(header) + " |")
     lines.append("|---|---|---:|---:|---:|---|---:|---:|")
 
-    competencies = sorted(
-        {r.competency for _, rep in reports for r in rep.rows}
-    )
+    competencies = sorted({r.competency for _, rep in reports for r in rep.rows})
     for comp in competencies:
         ref_row = ref_by_comp.get(comp)
         # Reference row first.
@@ -120,9 +128,7 @@ def _render_merged_table(reports: list[tuple[Path, EvalReport]], ci_dp: int = 1)
             row_by_comp = {r.competency: r for r in rep.rows}
             row = row_by_comp.get(comp)
             if row is None:
-                lines.append(
-                    f"| {comp} | {rep.baseline_name} | 0 | — | — | — | — | — |"
-                )
+                lines.append(f"| {comp} | {rep.baseline_name} | 0 | — | — | — | — | — |")
                 continue
             delta = (
                 f"{_format_delta(row.accuracy - ref_row.accuracy, ci_dp)} pp"
@@ -143,11 +149,21 @@ def _render_merged_table(reports: list[tuple[Path, EvalReport]], ci_dp: int = 1)
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("report_json", type=Path, nargs="?", default=None,
-                   help="Single-baseline mode: path to one report.json")
-    p.add_argument("--merge", nargs="+", type=Path, default=None,
-                   help="Merge mode (M1-W3 §3.4): list two or more report.json paths. "
-                        "First is the reference; deltas are computed against it.")
+    p.add_argument(
+        "report_json",
+        type=Path,
+        nargs="?",
+        default=None,
+        help="Single-baseline mode: path to one report.json",
+    )
+    p.add_argument(
+        "--merge",
+        nargs="+",
+        type=Path,
+        default=None,
+        help="Merge mode (M1-W3 §3.4): list two or more report.json paths. "
+        "First is the reference; deltas are computed against it.",
+    )
     p.add_argument("--ci-decimals", type=int, default=1)
     args = p.parse_args()
 
@@ -164,11 +180,12 @@ def main() -> int:
             wall = d.get("wall_clock_seconds")
             slice_path = d.get("slice_path", "?")
             seed = d.get("seed", "?")
-            print(f"- `{rep.baseline_name}` from `{path}`: "
-                  f"wall_clock={wall:.1f}s, slice=`{slice_path}`, seed={seed}"
-                  if wall is not None
-                  else f"- `{rep.baseline_name}` from `{path}`: "
-                       f"slice=`{slice_path}`, seed={seed}")
+            print(
+                f"- `{rep.baseline_name}` from `{path}`: "
+                f"wall_clock={wall:.1f}s, slice=`{slice_path}`, seed={seed}"
+                if wall is not None
+                else f"- `{rep.baseline_name}` from `{path}`: slice=`{slice_path}`, seed={seed}"
+            )
         return 0
 
     if args.report_json is None:
@@ -178,8 +195,10 @@ def main() -> int:
     report = _report_from_dict(d)
     sys.stdout.write(report.summarize_markdown(ci_decimals=args.ci_decimals))
     if "wall_clock_seconds" in d:
-        print(f"\n_Run wall-clock: {d['wall_clock_seconds']:.1f}s. "
-              f"Slice: `{d.get('slice_path', '?')}`. Seed: {d.get('seed', '?')}._\n")
+        print(
+            f"\n_Run wall-clock: {d['wall_clock_seconds']:.1f}s. "
+            f"Slice: `{d.get('slice_path', '?')}`. Seed: {d.get('seed', '?')}._\n"
+        )
     return 0
 
 

@@ -1,105 +1,124 @@
 # ASK Memory Governance
 
-A Git-ready research repository for interpretable, abstention-aware memory governance in long-lived LLM agents. ASK makes explicit **KEEP**, **SUPERSEDE**, and **ABSTAIN** decisions over typed memories with provenance and supersession lineage.
+ASK is an interpretable memory-revision controller for long-lived LLM agents. It
+makes explicit **KEEP**, **SUPERSEDE**, or **ABSTAIN** decisions over typed
+memories and preserves provenance and supersession lineage.
 
-## What is included
+This repository is both a Python package and a research artifact. The maintained
+runtime lives under `src/ask`; benchmark protocols, frozen evidence, paper and
+thesis sources, and historical experiment material are kept in clearly separated
+directories.
 
-- Full ASK controller implementation under `src/ask/`.
-- No-memory, vector, recency, and naive-overwrite baselines.
-- Extraction, relation classification, memory operations, orchestration, and evaluation code.
-- The frozen 180-item MGP-6 v2 diagnostic package under `benchmarks/mgp6/`.
-- Annotation audit artifacts separated into independent-human and model-panel evidence;
-  raw human labels are withheld from the public bundle pending redistribution consent.
-- A verified offline test suite plus scorer-regression tests (see the dated validation report for exact counts).
-- Colab/GPU/API run scripts and resumable experiment tooling.
-- OpenRouter model configuration for Qwen 3.5 9B with one homogeneous Gemma 4 31B judge.
-- Research, thesis, bibliography, figures, and persistent evidence/experiment registries.
-- CI, packaging, security, data-license, and release documentation.
+## Release status
 
-Large historical outputs, local Qdrant/MemOS stores, caches, backups, and third-party LongMemEval data are intentionally excluded from Git.
+- Package version: `0.2.0`
+- Supported Python: 3.11 and 3.12
+- Default verification: offline and credential-free
+- External model and LongMemEval runs: opt-in; data and credentials are not
+  redistributed
+- Scientific scope: MGP-6 v2 is an author-designed diagnostic whose held-out
+  construct-validity gate failed; no final LongMemEval capability result is
+  claimed
 
-## Repository map
+The current scientific interpretation is maintained in
+`docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`. The documentation map and precedence
+rules are in `docs/README.md`.
 
-```text
-.
-├── src/ask/                 # controller, memory, extraction, inference, baselines, evaluation
-├── tests/                   # unit, regression, integration, CLI tests
-├── benchmarks/mgp6/         # MGP-6 v2 data, schema, scorer, adapters, annotations
-├── benchmarks/longmemeval/  # external-data integration contract
-├── configs/                 # active controller, experiments, OpenRouter model config
-├── prompts/                 # extraction and relation prompts
-├── schema/                  # LinkML, SQL, and JSON schema
-├── scripts/                 # experiment, scoring, replay, and validation CLIs
-├── deploy/                  # Colab, Ollama, HF, vLLM, and GPU runners
-├── data/                    # small compatibility fixtures only
-├── docs/                    # architecture, reproducibility, limitations, history, figures
-├── research/                # master prompt, literature review, citation audit
-├── paper/                   # venue-neutral paper workspace
-├── thesis/                  # thesis source and bibliography
-├── artifacts/manifests/     # checksums and external-run manifests
-└── .github/workflows/ci.yml
-```
-
-## Local setup
+## Quick start
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
-make setup
-make repo-check
-make test
-make validate-data
-make build
+python -m pip install -e '.[dev]'
+make check
 ```
 
-Heavy model dependencies are optional:
+The equivalent one-command environment bootstrap is:
 
 ```bash
-pip install -e '.[ml]'
+bash scripts/setup_venv.sh
+source .venv/bin/activate
 ```
 
-## OpenRouter configuration
-
-The repository never embeds credentials. Use a newly authorized key and set it
-only in your shell or secret manager. A prior authorization attempt stopped
-before inference and is not a reusable experiment credential:
+Run the complete offline release gate before publishing:
 
 ```bash
-export OPENROUTER_API_KEY='...'
-cat configs/models/openrouter_qwen_gemma.yaml
+make release-check
 ```
 
-Configured models:
+Heavy and document-generation dependencies are optional:
 
-- Main: `qwen/qwen3.5-9b`
-- Judge: `google/gemma-4-31b-it` (no model fallback in the final freeze)
+```bash
+python -m pip install -e '.[ml]'         # model-backed experiments
+python -m pip install -e '.[schema]'     # schema regeneration
+python -m pip install -e '.[documents]'  # DOCX builders
+```
 
-## Scientific status
+## Repository map
 
-MGP-6 v2 is a six-category, author-designed pilot diagnostic, not an independent
-benchmark. Its held-out split is not construct-valid: a conflict-type-only
-lookup fitted on train and development obtains 1.000 test accuracy, while the
-reference rule policy obtains 0.8889 and the structured LLM policy obtains
-0.9000. The released audit therefore treats the policy results as diagnostic,
-reports family-clustered uncertainty and asymmetric error costs, and makes no
-superiority or population-safety claim. LongMemEval has no eligible final result
-and is excluded from the main manuscript. See
-`artifacts/analysis/mgp6_validity_audit.md`,
-`benchmarks/mgp6/MGP6_V3_INDEPENDENT_PROTOCOL.md`, and
-`docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
+```text
+src/ask/              maintained Python package
+tests/                unit, regression, integration, and release-tooling tests
+benchmarks/           frozen diagnostics and external-data contracts
+configs/              controller, model, experiment, and release configuration
+scripts/              validation, evaluation, analysis, setup, and release CLIs
+deploy/               environment-specific GPU, Colab, Ollama, and vLLM wrappers
+docs/                 maintained guides, audits, history, and canonical figures
+artifacts/            committed machine-readable evidence and manifests
+reports/              dated analytical outputs derived from evidence
+paper/ and thesis/    publication sources, not runtime package contents
+```
 
-## Before pushing
+See `REPOSITORY_TREE.md` for the release-oriented tree and ownership rules.
 
-After creating the public host, add its real repository and issue URLs (no
-placeholder URL is shipped). Record human-annotation redistribution consent if
-the raw labels will be published, complete the independent v3 confirmation
-protocol before making generalization claims, and run:
+## Reproducibility
+
+The offline path requires no secrets or external datasets:
 
 ```bash
 make repo-check
 make test
 make lint
 make typecheck
+make validate-data
 make build
-make paper-audit
 ```
+
+Use `docs/reproducibility.md` for environment and provenance rules and
+`docs/reproduce_results.md` for benchmark-specific commands. Generated runs,
+caches, local databases, compiled publications, and handoff ZIPs are ignored and
+must not be added back to the source tree.
+
+## Hosted runs
+
+The repository never embeds credentials. Export newly authorized credentials
+only in the current shell or a secret manager:
+
+```bash
+export OPENROUTER_API_KEY='...'
+export LONGMEMEVAL_DATA='/absolute/path/to/the/frozen-input.jsonl'
+```
+
+Do not pass secrets as CLI arguments; shell histories and run manifests can
+capture them. The active model configuration is
+`configs/models/openrouter_qwen_gemma.yaml`.
+
+## Release building
+
+`scripts/release/build_final_release.py` builds the private academic handoff and
+a separately sanitized public repository. It reads only Git-tracked public
+candidates and refuses a dirty worktree by default:
+
+```bash
+python scripts/release/build_final_release.py
+```
+
+`--allow-dirty` exists only for local validation builds and should not be used to
+publish a release.
+
+## License and security
+
+Code is MIT-licensed. Dataset and annotation terms are documented separately in
+`LICENSE-DATA.md`. Never commit credentials, private conversations,
+non-redistributable external datasets, participant identities, or local model
+stores. See `SECURITY.md` for reporting and release-safety guidance.

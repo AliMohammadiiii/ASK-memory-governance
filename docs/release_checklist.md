@@ -1,13 +1,34 @@
 # Release checklist
 
-- [x] Remove placeholder repository URLs; add real URLs only after a public host exists.
-- [ ] Obtain a newly authorized API credential (the supplied key returned HTTP 403).
-- [ ] Run `make repo-check`.
-- [ ] Run `make test`, `make lint`, `make typecheck`, and `make build`.
+## Source release
+
+- [ ] Confirm the intended package version matches `pyproject.toml`,
+      `src/ask/__init__.py`, `CITATION.cff`, and `CHANGELOG.md`.
+- [ ] Review `git status --short`; release from a clean worktree.
+- [ ] Run `make release-check` on Python 3.11 or 3.12.
+- [ ] Inspect `git diff --check` and the final staged diff.
+- [ ] Verify the wheel contains `ask/resources/`, `ask/baselines/prompts/`, and
+      `ask/py.typed`.
+- [ ] Confirm no credentials, private conversations, participant identities,
+      external datasets, local paths, caches, databases, or generated handoff
+      bundles are included.
+- [ ] Build the final handoff with
+      `python scripts/release/build_final_release.py`; do not use
+      `--allow-dirty` for publication.
+- [ ] Verify generated manifests and archive checksums from an extracted copy.
+- [ ] Add a real repository URL only after the public host exists.
+
+## Scientific and academic handoff
+
 - [x] License author-created MGP-6 material under CC BY 4.0.
-- [ ] Obtain written consent before adding the independent annotator's raw labels
-      to a public release; until then the public bundle excludes the two raw CSVs.
-- [ ] Verify no LongMemEval or private conversation data is committed.
-- [ ] Freeze code, data, prompt, and config hashes for confirmation runs.
-- [ ] Generate tables from machine-readable reports.
-- [ ] Select official paper and University of Tehran thesis templates.
+- [ ] Obtain written consent before redistributing raw independent-human labels.
+- [ ] Supply the external LongMemEval input and authorized hosted-model access
+      before claiming a homogeneous final run.
+- [ ] Complete the independent MGP-6 v3 confirmation protocol before making
+      generalization claims.
+- [ ] Select the official venue and University of Tehran templates.
+- [ ] Fill administrative placeholders and review private application material
+      outside the public repository.
+
+Unchecked external items are release limitations, not permission to fabricate
+data, credentials, consent, or institutional metadata.

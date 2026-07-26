@@ -29,8 +29,27 @@ REFUSAL_MARKERS = (
 )
 
 STOPWORDS = {
-    "a", "an", "the", "is", "was", "were", "to", "of", "and", "or", "in", "on",
-    "for", "with", "that", "this", "they", "them", "their", "user", "assistant",
+    "a",
+    "an",
+    "the",
+    "is",
+    "was",
+    "were",
+    "to",
+    "of",
+    "and",
+    "or",
+    "in",
+    "on",
+    "for",
+    "with",
+    "that",
+    "this",
+    "they",
+    "them",
+    "their",
+    "user",
+    "assistant",
 }
 
 TOKEN_RE = re.compile(r"\w+")
@@ -92,9 +111,15 @@ def classify_failure(answer: dict[str, Any], judgment: dict[str, Any]) -> str | 
         return CATEGORY_JUDGE_GUARD_ISSUE
 
     action_counts = extras.get("action_counts") or {}
-    total_actions = sum(int(v) for v in action_counts.values()) if isinstance(action_counts, dict) else 0
+    total_actions = (
+        sum(int(v) for v in action_counts.values()) if isinstance(action_counts, dict) else 0
+    )
     n_retrieved = int(extras.get("n_retrieved") or 0)
-    if total_actions == 0 and answer.get("baseline") in {"controller", "naive_overwrite", "recency"}:
+    if total_actions == 0 and answer.get("baseline") in {
+        "controller",
+        "naive_overwrite",
+        "recency",
+    }:
         return CATEGORY_EXTRACTION_MISS
     if n_retrieved == 0:
         return CATEGORY_RETRIEVAL_MISS
@@ -189,8 +214,12 @@ def _render_markdown(report: dict[str, Any]) -> str:
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--run", required=True, type=Path)
-    p.add_argument("--slice", type=Path, default=None,
-                   help="Accepted for workflow symmetry; current analysis uses persisted outputs.")
+    p.add_argument(
+        "--slice",
+        type=Path,
+        default=None,
+        help="Accepted for workflow symmetry; current analysis uses persisted outputs.",
+    )
     p.add_argument("--out", type=Path, default=None)
     args = p.parse_args()
 

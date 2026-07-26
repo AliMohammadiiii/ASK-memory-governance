@@ -225,7 +225,9 @@ def select_top_configs(
     if not scored:
         detail = "\n".join(f"  - {error}" for error in invalid[:12])
         suffix = f"\nInvalid candidates:\n{detail}" if detail else ""
-        raise SystemExit(f"no valid complete {stage} controller reports found under {root / stage}{suffix}")
+        raise SystemExit(
+            f"no valid complete {stage} controller reports found under {root / stage}{suffix}"
+        )
     scored.sort(key=lambda row: (-row[0], row[1], -row[2], config_slug(row[3])))
     return [row[3] for row in scored[:n]]
 
@@ -340,11 +342,17 @@ def _stage_summary(
             validation_errors.extend(validation.errors)
             validation_warnings.extend(validation.warnings)
         controller_validation = next(
-            (validation for validation, system in zip(system_validations, systems) if system == "controller"),
+            (
+                validation
+                for validation, system in zip(system_validations, systems)
+                if system == "controller"
+            ),
             system_validations[0] if system_validations else None,
         )
         report = controller_validation.report if controller_validation else None
-        complete = all(validation.ok for validation in system_validations) and bool(system_validations)
+        complete = all(validation.ok for validation in system_validations) and bool(
+            system_validations
+        )
         if complete and "controller" in systems:
             controller_runs[slug] = run.out_dir / "controller"
         if report is None:
@@ -394,14 +402,18 @@ def _stage_summary(
             str(row["config_slug"]),
         )
     )
-    matrix = correctness_matrix(controller_runs) if controller_runs else {
-        "configs": [],
-        "matrix": [],
-        "all_right": [],
-        "all_wrong": [],
-        "disagreements": [],
-        "identical_correctness": True,
-    }
+    matrix = (
+        correctness_matrix(controller_runs)
+        if controller_runs
+        else {
+            "configs": [],
+            "matrix": [],
+            "all_right": [],
+            "all_wrong": [],
+            "disagreements": [],
+            "identical_correctness": True,
+        }
+    )
     summary = {
         "stage": stage,
         "expected_rows": expected_rows,
@@ -475,39 +487,57 @@ def _stage_summary(
 
 def main() -> int:
     p = argparse.ArgumentParser()
-    p.add_argument("--slice", type=Path, default=Path("/content/longmemeval/longmemeval_s_cleaned.json"))
+    p.add_argument(
+        "--slice", type=Path, default=Path("/content/longmemeval/longmemeval_s_cleaned.json")
+    )
     p.add_argument("--out", type=Path, default=Path("runs/m4w13_a10g_sweep"))
     p.add_argument("--stage", choices=("pilot", "confirm", "final"), required=True)
     p.add_argument("--pilot-limit", type=int, default=12)
     p.add_argument("--confirm-limit", type=int, default=50)
     p.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--status-s", type=float, default=30.0)
-    p.add_argument("--quality-preset", choices=_QUALITY_PRESETS, default=_QUALITY_PRESET_NONE,
-                   help="Lock an accuracy-first runtime profile. 'max-a10g' "
-                        "runs a single fixed controller quality config and "
-                        "passes the preset through to the HF runner.")
+    p.add_argument(
+        "--quality-preset",
+        choices=_QUALITY_PRESETS,
+        default=_QUALITY_PRESET_NONE,
+        help="Lock an accuracy-first runtime profile. 'max-a10g' "
+        "runs a single fixed controller quality config and "
+        "passes the preset through to the HF runner.",
+    )
     p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct")
-    p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"),
-                   default="float16")
-    p.add_argument("--judge-backend", choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
-                   default="same_as_answerer")
+    p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
+    p.add_argument(
+        "--judge-backend",
+        choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
+        default="same_as_answerer",
+    )
     p.add_argument("--judge-model", default=None)
     p.add_argument("--extractor-model", default=None)
     p.add_argument("--classifier-model", default=None)
     p.add_argument("--hf-load-in-4bit", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-trust-remote-code", action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--embedder-backend", choices=("sentence_transformer", "ollama"),
-                   default="sentence_transformer")
+    p.add_argument(
+        "--embedder-backend",
+        choices=("sentence_transformer", "ollama"),
+        default="sentence_transformer",
+    )
     p.add_argument("--embedder-device", default="auto")
-    p.add_argument("--controller-include-assistant-context",
-                   action=argparse.BooleanOptionalAction, default=False)
-    p.add_argument("--answer-retry-on-unknown", action=argparse.BooleanOptionalAction,
-                   default=False)
+    p.add_argument(
+        "--controller-include-assistant-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+    )
+    p.add_argument(
+        "--answer-retry-on-unknown", action=argparse.BooleanOptionalAction, default=False
+    )
     p.add_argument("--controller-prior-top-k", type=int, default=1)
     p.add_argument("--no-prefetch", action="store_true")
-    p.add_argument("--clean-incomplete", action="store_true",
-                   help="Archive incomplete run directories before rerunning. "
-                        "Without this, stale zero-line or mismatched artifacts fail fast.")
+    p.add_argument(
+        "--clean-incomplete",
+        action="store_true",
+        help="Archive incomplete run directories before rerunning. "
+        "Without this, stale zero-line or mismatched artifacts fail fast.",
+    )
     p.add_argument("--no-zip", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     args = p.parse_args()

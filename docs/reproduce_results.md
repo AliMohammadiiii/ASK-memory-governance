@@ -1,74 +1,63 @@
-# Reproduce Results
+# Reproduce results
 
-## Environment
+This page lists supported reproduction entry points. It does not promote a dated
+run beyond the status assigned by the scientific source of truth.
 
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -U pip
-pip install -e '.[dev]'
-python -m pytest -q
-ruff check .
-```
-
-Observed on 2026-07-07:
-
-- `python -m pytest -q`: 381 passed, 5 skipped
-- `python -m pytest -q -p no:cov`: 381 passed, 5 skipped
-- `ruff check .`: All checks passed
-
-Install `.[ml]` only for model-backed benchmark runs.
-
-## Accepted MGP-6 Evidence
-
-Valid run: `runs/m4w14_thesis_colab_20260608`.
-
-Report files:
-
-- `runs/m4w14_thesis_colab_20260608/controller/mgp6_report.json`
-- `runs/m4w14_thesis_colab_20260608/b4/mgp6_report.json`
-- `runs/m4w14_thesis_colab_20260608/recoverability_report.json`
-- `runs/m4w14_thesis_colab_20260608/smrr_report.json`
-
-Summary:
-
-- controller action accuracy: 0.617
-- naive-overwrite action accuracy: 0.517
-- paired CI on the difference includes 0
-- lineage recoverability: controller 1.0 vs naive-overwrite 0.0
-
-Invalid runs retained for provenance only:
-
-- `runs/m4w14`
-- `runs/m4w15`
-
-Reason: invalid pre-fix runs; extraction bug caused 46/60 scenarios to be lost.
-
-## RC@C
-
-Valid replay: `runs/m4w15_thesis_colab_20260608`.
-
-Regeneration command:
+## Offline repository verification
 
 ```bash
 source .venv/bin/activate
-python scripts/evaluate_rc_at_c_mgp6.py \
-  --run-root runs/m4w14_thesis_colab_20260608 \
-  --out runs/m4w15_thesis_colab_20260608 \
-  --n-bootstrap 1000 \
-  --seed 0
+make release-check
 ```
 
-The regenerated metric sweep matched the existing `rc_at_c_sweep.csv`; metadata
-timestamps were refreshed.
+For a quick iteration loop, use `make check`.
 
-## LongMemEval-S 50
+## MGP-6 v2 diagnostic
 
-Accepted partial evidence:
+Validate the canonical 180-item source:
 
-- B1 no-memory: `artifacts/m4w13_50_llama/runs(2).zip`, 18%
-- B2 flat-vector: `artifacts/m4w13_50_llama/runs(2).zip`, 38%
-- B3 recency: `artifacts/m4w13_50_llama/runs(3).zip`, 22%
+```bash
+make validate-data
+```
 
-B4 naive-overwrite and controller are missing. See `LONGMEMEVAL_B4_TODO.md` for
-the exact continuation command and required inputs.
+Inspect the maintained runner and scorer without network access:
+
+```bash
+python scripts/run_mgp6.py --systems no_memory --limit 1 --dry-run
+python benchmarks/mgp6/metrics_mgp6.py --help
+```
+
+MGP-6 v2 results are diagnostic. Conflict type alone predicts the gold action on
+the held-out split, so these commands reproduce measurements on the released
+generator, not a population capability estimate. See
+`audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
+
+## MGP-6 v4.3 integration
+
+Public train/dev validation and dry-run commands are documented in
+`../experiments/mgp6_v43/README.md` and
+`benchmarks/mgp6/v4.3/README.md`. Hidden input is intentionally unavailable to
+post-final successor development, and the runner rejects attempts to combine
+that system with hidden input.
+
+## LongMemEval
+
+LongMemEval data is not redistributed. A valid run requires the frozen external
+input, an authorized provider credential, and the exact commands in
+`../FINAL_RUN_MATRIX.yaml`:
+
+```bash
+export LONGMEMEVAL_DATA='/absolute/path/to/the-frozen-input.jsonl'
+export OPENROUTER_API_KEY='...'
+bash scripts/evaluation/run_longmemeval_final.sh --smoke
+```
+
+No final eligible LongMemEval result ships with this release. Historical runs
+and failure replays remain diagnostic, incomplete, invalid, or externally
+pending as classified in `audit/CLAIM_ELIGIBILITY.md`.
+
+## Machine-readable sources
+
+Use the ledgers and manifests under `../artifacts/` when regenerating tables.
+Human-readable reports under `../reports/` are dated outputs; do not hand-edit a
+number in a report without regenerating it from its machine-readable source.

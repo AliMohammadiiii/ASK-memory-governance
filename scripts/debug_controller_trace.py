@@ -15,6 +15,7 @@ Usage:
 
 Send the full stdout back for diagnosis; the raw trace files are not required.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -63,11 +64,11 @@ def extraction_summary(d: Path) -> None:
                 if len(examples_q) < 8:
                     examples_q.append(t[:80])
     total_items = sum(n_items)
-    print(f"  empty extractions          : {empty}/{len(rows)} ({empty/len(rows):.0%})")
+    print(f"  empty extractions          : {empty}/{len(rows)} ({empty / len(rows):.0%})")
     print(f"  total items extracted      : {total_items}")
     print(f"  items-per-call distribution: {dict(sorted(Counter(n_items).items()))}")
     print(f"  confidence distribution    : {dict(sorted(Counter(confs).items()))}")
-    pct = f" ({questionish/total_items:.0%})" if total_items else ""
+    pct = f" ({questionish / total_items:.0%})" if total_items else ""
     print(f"  OVER-EXTRACTION (question/request-shaped items): {questionish}/{total_items}{pct}")
     for t in examples_q:
         print(f"     ! {t!r}")
@@ -77,7 +78,9 @@ def relation_summary(d: Path) -> None:
     rows = load(d / "relation_trace.jsonl")
     section(f"RELATION  ({len(rows)} classifications)")
     if not rows:
-        print("  (no relation_trace.jsonl — controller found no priors, so SUPERSEDE is impossible)")
+        print(
+            "  (no relation_trace.jsonl — controller found no priors, so SUPERSEDE is impossible)"
+        )
         return
     stage1 = Counter(r.get("raw_stage1_label") for r in rows)
     final = Counter((r.get("output") or {}).get("relation_to_prior_state") for r in rows)
@@ -96,12 +99,18 @@ def action_summary(d: Path) -> None:
         print("  (no action_log.jsonl)")
         return
     print(f"  action distribution        : {dict(Counter(r.get('action') for r in rows))}")
-    keep_prior = [r for r in rows if r.get("action") == "Keep" and r.get("prior_memory_id") is not None]
+    keep_prior = [
+        r for r in rows if r.get("action") == "Keep" and r.get("prior_memory_id") is not None
+    ]
     dropped = [r for r in keep_prior if r.get("resulting_memory_id") is None]
-    print(f"  KEEP w/ prior              : {len(keep_prior)}  "
-          f"(of which DROPPED, not committed: {len(dropped)})")
-    print("  NOTE: action_log rows are keyed by the *ingested memory session*, "
-          "not the query session — do not join on session_id.")
+    print(
+        f"  KEEP w/ prior              : {len(keep_prior)}  "
+        f"(of which DROPPED, not committed: {len(dropped)})"
+    )
+    print(
+        "  NOTE: action_log rows are keyed by the *ingested memory session*, "
+        "not the query session — do not join on session_id."
+    )
 
 
 def failure_taxonomy(d: Path, n: int) -> None:
@@ -135,7 +144,9 @@ def failure_taxonomy(d: Path, n: int) -> None:
         print(f"    GOLD     : {j.get('gold')!r}")
         print(f"    PREDICTED: {j.get('predicted')!r}")
         print(f"    judge    : {(j.get('judge_rationale') or '')[:150]}")
-        print(f"    retrieval: n={ex.get('n_retrieved')} sessions={ex.get('retrieval_session_ids')}")
+        print(
+            f"    retrieval: n={ex.get('n_retrieved')} sessions={ex.get('retrieval_session_ids')}"
+        )
         print(f"    bucket   : {bucket(j)}")
 
 

@@ -39,8 +39,10 @@ from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
 
 LETTA_URL = os.environ.get("LETTA_BASE_URL", "http://localhost:8283")
 LETTA_MODEL = os.environ.get("LETTA_MODEL", "openai/qwen/qwen3.5-9b")
-PERSONA = ("I am a personal assistant. I maintain accurate long-term memory "
-           "about the user and update it when the user's information changes.")
+PERSONA = (
+    "I am a personal assistant. I maintain accurate long-term memory "
+    "about the user and update it when the user's information changes."
+)
 
 
 class LettaAdapter(ExternalAdapter):
@@ -51,8 +53,7 @@ class LettaAdapter(ExternalAdapter):
         try:
             from letta_client import Letta
         except ImportError as exc:
-            raise SystemExit("letta-client not installed: "
-                             "pip install letta-client") from exc
+            raise SystemExit("letta-client not installed: pip install letta-client") from exc
         self.client = Letta(base_url=LETTA_URL)
         self.agent_id: str | None = None
 
@@ -84,22 +85,18 @@ class LettaAdapter(ExternalAdapter):
         return [
             f"{b.label}: {b.value}"
             for b in blocks
-            if getattr(b, "label", "") not in excluded_labels
-            and getattr(b, "value", "")
+            if getattr(b, "label", "") not in excluded_labels and getattr(b, "value", "")
         ]
 
-    def seed(self, records: list[dict[str, Any]],
-             dialogue: list[dict[str, str]]) -> None:
-        facts = "\n".join(r.get("text", "") for r in records
-                          if r.get("status") == "active" and r.get("text"))
-        dlg = "\n".join(f"{m.get('role')}: {m.get('content')}"
-                        for m in dialogue if m.get("content"))
-        human = f"Known user facts:\n{facts}"
-        context = (
-            f"Earlier dialogue:\n{dlg}"
-            if dlg
-            else "Earlier dialogue: (none)"
+    def seed(self, records: list[dict[str, Any]], dialogue: list[dict[str, str]]) -> None:
+        facts = "\n".join(
+            r.get("text", "") for r in records if r.get("status") == "active" and r.get("text")
         )
+        dlg = "\n".join(
+            f"{m.get('role')}: {m.get('content')}" for m in dialogue if m.get("content")
+        )
+        human = f"Known user facts:\n{facts}"
+        context = f"Earlier dialogue:\n{dlg}" if dlg else "Earlier dialogue: (none)"
 
         self.client.agents.blocks.update(
             block_label="human",
@@ -114,8 +111,8 @@ class LettaAdapter(ExternalAdapter):
 
     def _send(self, text: str) -> Any:
         return self.client.agents.messages.create(
-            agent_id=self.agent_id,
-            messages=[{"role": "user", "content": text}])
+            agent_id=self.agent_id, messages=[{"role": "user", "content": text}]
+        )
 
     def write(self, text: str) -> WriteObservation:
         response = self._send(text)
@@ -149,9 +146,11 @@ class LettaAdapter(ExternalAdapter):
             )
             for t in tool_calls
         )
-        return WriteObservation(replaced_old=replaced,
-                                committed_new=replaced or appended,
-                                raw={"tool_calls": tool_calls})
+        return WriteObservation(
+            replaced_old=replaced,
+            committed_new=replaced or appended,
+            raw={"tool_calls": tool_calls},
+        )
 
     def snapshot(self) -> list[str]:
         return self._blocks_text()
@@ -176,8 +175,11 @@ class LettaAdapter(ExternalAdapter):
                 pass
 
     def meta(self) -> dict[str, Any]:
-        return {"letta_url": LETTA_URL, "letta_model": LETTA_MODEL,
-                "note": "native agent answers; answer model = letta agent"}
+        return {
+            "letta_url": LETTA_URL,
+            "letta_model": LETTA_MODEL,
+            "note": "native agent answers; answer model = letta agent",
+        }
 
 
 if __name__ == "__main__":

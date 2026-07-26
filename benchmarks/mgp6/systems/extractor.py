@@ -117,7 +117,9 @@ def _slot_phrases(slot: str) -> list[str]:
     """Surface phrasings of a snake_case slot, longest first."""
     base = slot.replace("_", " ").strip()
     phrases = {base}
-    trimmed = re.sub(r"\s+(preference|date|time|style|mode|channel|format|unit|scheme)$", "", base).strip()
+    trimmed = re.sub(
+        r"\s+(preference|date|time|style|mode|channel|format|unit|scheme)$", "", base
+    ).strip()
     if trimmed:
         phrases.add(trimmed)
     phrases.add(re.sub(r"\s+preference$", "", base).strip())
@@ -141,11 +143,7 @@ def extract_value(
     # 1) slot-anchored: "<slot phrase> (is|=|over to|to|:) VALUE <tail>"
     if slot:
         for phrase in _slot_phrases(slot):
-            pat = (
-                re.escape(phrase)
-                + r"\s*(?:is|are|=|over to|:|to)\s+(?P<v>.+?)"
-                + _TAIL
-            )
+            pat = re.escape(phrase) + r"\s*(?:is|are|=|over to|:|to)\s+(?P<v>.+?)" + _TAIL
             m = re.search(pat, text, re.I)
             if m and (v := _clean(m.group("v"))):
                 return v
@@ -193,10 +191,7 @@ class Evidence:
 
     @property
     def candidate_conflicts(self) -> bool:
-        return (
-            self.has_candidate
-            and self.candidate_value.casefold() != self.prior_value.casefold()
-        )
+        return self.has_candidate and self.candidate_value.casefold() != self.prior_value.casefold()
 
 
 def active_prior(initial_memory_state: list[dict[str, Any]]) -> dict[str, Any] | None:

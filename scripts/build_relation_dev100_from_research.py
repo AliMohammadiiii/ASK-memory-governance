@@ -130,7 +130,10 @@ def _build_dnli_rows(seed: int, per_label: int) -> list[dict[str, Any]]:
     buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
     offset = 0
     page_size = 100
-    while min((len(buckets[label]) for label in ("support", "contradict", "unclear")), default=0) < per_label:
+    while (
+        min((len(buckets[label]) for label in ("support", "contradict", "unclear")), default=0)
+        < per_label
+    ):
         rows = _dnli_page("train", offset, page_size)
         if not rows:
             break
@@ -301,7 +304,9 @@ def _write_meta(path: Path, rows: list[dict[str, Any]], seed: int) -> None:
             "unclear": "DialogueNLI neutral pairs",
         },
     }
-    path.write_text(json.dumps(meta, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    path.write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def build(seed: int) -> list[dict[str, Any]]:
@@ -342,7 +347,9 @@ def main(argv: list[str] | None = None) -> int:
     _write_jsonl(args.out, rows)
     _write_meta(args.meta_out, rows, args.seed)
     counts = Counter(row["gold_label"]["relation_to_prior_state"] for row in rows)
-    print(json.dumps({"out": str(args.out), "n": len(rows), "label_counts": counts}, sort_keys=True))
+    print(
+        json.dumps({"out": str(args.out), "n": len(rows), "label_counts": counts}, sort_keys=True)
+    )
     return 0
 
 

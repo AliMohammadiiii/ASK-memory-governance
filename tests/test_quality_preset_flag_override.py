@@ -90,9 +90,7 @@ def test_explicitly_set_dests_recognizes_no_form_and_default_value() -> None:
         action=argparse.BooleanOptionalAction,
         default=False,
     )
-    parser.add_argument(
-        "--controller-retrieval-neighbor-window", type=int, default=0
-    )
+    parser.add_argument("--controller-retrieval-neighbor-window", type=int, default=0)
     parser.add_argument("--k", type=int, default=5)
 
     seen = _explicitly_set_dests(

@@ -36,6 +36,7 @@ Usage
     python3 scripts/evaluation/evaluate_single_session_preferences.py \
         --judgments path/to/judgments.jsonl --json
 """
+
 from __future__ import annotations
 
 import argparse

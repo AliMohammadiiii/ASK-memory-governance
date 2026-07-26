@@ -1,0 +1,81 @@
+{
+  "artifact": "controller_v10_preflight_diagnostic",
+  "created_on": "2026-07-18",
+  "status": "diagnostic_only_pending_fresh_180_item_v10_run",
+  "source_run": "runs_local/lme_final_controller_v9_qwen_180",
+  "source_completion": {
+    "completed_items": 80,
+    "expected_items": 180,
+    "correct": 61,
+    "accuracy": 0.7625,
+    "stop_reason": "OpenRouter HTTP 402 insufficient credits",
+    "code_crash_before_credit_failure": false
+  },
+  "operational_audit": {
+    "http_429_log_events": 376,
+    "judge_models_used": {
+      "google/gemma-4-31b-it:free": 23,
+      "google/gemma-4-31b-it": 57
+    },
+    "judge_model_fallback_rows": 57,
+    "interpretation": "The free-primary judge policy was rate-limited and produced a mixed-judge partial run. V10 pins the paid route as the only judge and fails a shard instead of changing models."
+  },
+  "incorrect_by_competency": {
+    "single-session-preference": 9,
+    "multi-session": 3,
+    "single-session-assistant": 2,
+    "single-session-user": 2,
+    "temporal-reasoning": 2,
+    "knowledge-update": 1
+  },
+  "answer_context_support_coverage_for_19_errors": {
+    "full": 17,
+    "partial": 1,
+    "none": 1,
+    "interpretation": "Most failures were evidence binding, synthesis, temporal interpretation, or exact-value rendering errors rather than gross support-session recall failures."
+  },
+  "v10_repairs": [
+    "Turn-first role-specific candidate search followed by bounded chronological dialogue expansion.",
+    "Separate session limits: 12 for assistant/user and 18 for preference, instead of V9's 40 preference bundles.",
+    "Preference contrast, stable-identity, profession, goal, and negative-constraint binding.",
+    "Focused synonym queries and action normalization for buy/purchase/got/own/acquired, occupation, battery, reading, decisions, and competitions.",
+    "Explicit event dates override discussion timestamps; relative-time matching binds the requested action.",
+    "Historical before/previous questions use the immediately preceding state when both states are present.",
+    "Latest accepted assistant decision overrides earlier proposals.",
+    "Exact deterministic labeled sums and exact scalar rendering without unsupported qualifiers.",
+    "Output-limit detection retries with a concise FINAL-only contract.",
+    "HTTP 402 is fatal at request and shard levels; stale fatal markers from older log attempts are ignored."
+  ],
+  "offline_retrieval_checks": {
+    "uses_gold_support_ids_at_runtime": false,
+    "support_ids_usage": "post-hoc coverage measurement only",
+    "preference_error_support_ranks_with_18_session_limit": {
+      "09d032c9": 3,
+      "0edc2aef": 2,
+      "1a1907b4": 1,
+      "1c0ddc50": 10,
+      "32260d93": 17,
+      "35a27287": 1,
+      "57f827a0": 10,
+      "75832dbd": 13,
+      "75f70248": 8
+    },
+    "single_session_user_5d3d2817_support_rank": 12,
+    "temporal_6e984302_purchase_turn_candidate_rank": 63,
+    "temporal_6e984302_candidate_context_chars": 69184,
+    "preference_32260d93_context_chars": 38201,
+    "preference_75832dbd_context_chars": 51196,
+    "interpretation": "Every observed missing/low-ranked support session now enters the bounded pre-answer pool while remaining below the frozen 40000-token answer-context cap."
+  },
+  "model_policy": {
+    "controller_model_for_extraction_relation_answer_retry": "qwen/qwen3.5-9b",
+    "judge_primary": "google/gemma-4-31b-it",
+    "judge_model_fallback": null
+  },
+  "acceptance": {
+    "target_accuracy": 0.85,
+    "required_correct_at_n_180": 153,
+    "verified": false,
+    "reason": "Only a fresh complete V10 180-item run can verify the target. The interrupted V9 directory must not be resumed under changed code."
+  }
+}

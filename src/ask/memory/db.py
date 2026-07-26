@@ -10,9 +10,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-_SCHEMA_FILE = (
-    Path(__file__).resolve().parents[1] / "resources" / "schema" / "schema.sql"
-)
+_SCHEMA_FILE = Path(__file__).resolve().parents[1] / "resources" / "schema" / "schema.sql"
 
 
 def _enable_fk(conn: sqlite3.Connection) -> None:
@@ -31,8 +29,6 @@ def init_schema(conn: sqlite3.Connection, schema_path: Path | None = None) -> No
     """Apply schema/generated/schema.sql to `conn`. Idempotent (CREATE TABLE IF NOT EXISTS)."""
     p = Path(schema_path) if schema_path else _SCHEMA_FILE
     if not p.exists():
-        raise FileNotFoundError(
-            f"Schema file not found at {p}. Run `make schema` to regenerate."
-        )
+        raise FileNotFoundError(f"Schema file not found at {p}. Run `make schema` to regenerate.")
     ddl = p.read_text(encoding="utf-8")
     conn.executescript(ddl)

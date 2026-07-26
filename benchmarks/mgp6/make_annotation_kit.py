@@ -37,8 +37,7 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 
-BLIND_FIELDS = ("scenario_id", "base_dialogue_prefix", "initial_memory_state",
-                "perturbation_event")
+BLIND_FIELDS = ("scenario_id", "base_dialogue_prefix", "initial_memory_state", "perturbation_event")
 
 INSTRUCTIONS = """# MGP-6 v2 Blind Annotation Instructions
 
@@ -91,18 +90,17 @@ def flatten_memory(state: list[dict[str, Any]]) -> str:
     lines = []
     for r in state:
         if r.get("status") == "active":
-            lines.append(f"[{r.get('type')}] {r.get('text')} "
-                         f"(confidence {r.get('confidence')})")
+            lines.append(f"[{r.get('type')}] {r.get('text')} (confidence {r.get('confidence')})")
     return "\n".join(lines) or "(empty)"
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gold", type=Path, default=HERE / "data" / "mgp6_v2.jsonl")
-    parser.add_argument("--split", default="test",
-                        help="test|train|dev|all (default: test)")
-    parser.add_argument("--per-type", type=int, default=0,
-                        help="stratified subsample: n per T1..T6 (0 = all)")
+    parser.add_argument("--split", default="test", help="test|train|dev|all (default: test)")
+    parser.add_argument(
+        "--per-type", type=int, default=0, help="stratified subsample: n per T1..T6 (0 = all)"
+    )
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--out-dir", type=Path, default=HERE / "annotation_kit_test")
     args = parser.parse_args(argv)
@@ -131,31 +129,51 @@ def main(argv: list[str] | None = None) -> int:
     blind_path = args.out_dir / "blind_scenarios.jsonl"
     with blind_path.open("w", encoding="utf-8") as handle:
         for r in rows:
-            handle.write(json.dumps({k: r[k] for k in BLIND_FIELDS},
-                                    ensure_ascii=False) + "\n")
+            handle.write(json.dumps({k: r[k] for k in BLIND_FIELDS}, ensure_ascii=False) + "\n")
 
     sheet_path = args.out_dir / "annotation_sheet.csv"
     with sheet_path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.writer(handle)
-        writer.writerow(["item_no", "scenario_id", "earlier_dialogue",
-                         "current_memory", "new_event", "annotator_action",
-                         "annotator_value", "annotator_confidence",
-                         "annotator_notes"])
+        writer.writerow(
+            [
+                "item_no",
+                "scenario_id",
+                "earlier_dialogue",
+                "current_memory",
+                "new_event",
+                "annotator_action",
+                "annotator_value",
+                "annotator_confidence",
+                "annotator_notes",
+            ]
+        )
         for i, r in enumerate(rows, 1):
-            writer.writerow([i, r["scenario_id"],
-                             flatten_dialogue(r["base_dialogue_prefix"]),
-                             flatten_memory(r["initial_memory_state"]),
-                             r["perturbation_event"], "", "", "", ""])
+            writer.writerow(
+                [
+                    i,
+                    r["scenario_id"],
+                    flatten_dialogue(r["base_dialogue_prefix"]),
+                    flatten_memory(r["initial_memory_state"]),
+                    r["perturbation_event"],
+                    "",
+                    "",
+                    "",
+                    "",
+                ]
+            )
 
     (args.out_dir / "INSTRUCTIONS.md").write_text(INSTRUCTIONS, encoding="utf-8")
 
     from collections import Counter
+
     splits = Counter(r.get("split") for r in rows)
     print(f"[kit] {len(rows)} blind items -> {args.out_dir}")
     print(f"[kit] splits: {dict(splits)}")
     print("[kit] files: blind_scenarios.jsonl, annotation_sheet.csv, INSTRUCTIONS.md")
-    print("[kit] give the annotator: annotation_sheet.csv + INSTRUCTIONS.md + "
-          "annotation_manual_v2.md (nothing else)")
+    print(
+        "[kit] give the annotator: annotation_sheet.csv + INSTRUCTIONS.md + "
+        "annotation_manual_v2.md (nothing else)"
+    )
     return 0
 
 

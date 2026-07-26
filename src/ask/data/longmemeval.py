@@ -250,11 +250,7 @@ def _normalize_cleaned_record(raw: dict, line_no: int) -> LongMemEvalSession:
         session_id = str(raw["question_id"])
         competency = canonical_competency(str(raw["question_type"]))
         question = str(raw["question"])
-        question_date = (
-            str(raw["question_date"])
-            if raw.get("question_date") is not None
-            else None
-        )
+        question_date = str(raw["question_date"]) if raw.get("question_date") is not None else None
         gold_answer = str(raw["answer"])
         supporting = tuple(str(sid) for sid in raw.get("answer_session_ids") or ())
         haystack_ids = [str(sid) for sid in raw.get("haystack_session_ids") or ()]
@@ -272,8 +268,7 @@ def _normalize_cleaned_record(raw: dict, line_no: int) -> LongMemEvalSession:
     for idx, (support_id, turns_raw) in enumerate(zip(haystack_ids, haystack_sessions)):
         default_timestamp = str(haystack_dates[idx]) if idx < len(haystack_dates) else None
         turns = tuple(
-            _normalize_turn(turn, default_timestamp=default_timestamp)
-            for turn in turns_raw
+            _normalize_turn(turn, default_timestamp=default_timestamp) for turn in turns_raw
         )
         corpus_sessions.append(LongMemEvalCorpusSession(session_id=support_id, turns=turns))
 
@@ -305,24 +300,15 @@ def _normalize_record(raw: dict, line_no: int) -> LongMemEvalSession:
             raise TypeError("turns must be a list or tuple")
         turns = tuple(_normalize_turn(t) for t in turns_raw)
         question = str(raw["question"]) if "question" in raw else str(raw["query"])
-        question_date = (
-            str(raw["question_date"])
-            if raw.get("question_date") is not None
-            else None
+        question_date = str(raw["question_date"]) if raw.get("question_date") is not None else None
+        gold_answer = str(raw.get("gold_answer") or raw.get("answer") or raw.get("gold"))
+        competency = canonical_competency(
+            str(raw.get("competency") or raw.get("category") or raw.get("question_type"))
         )
-        gold_answer = str(
-            raw.get("gold_answer") or raw.get("answer") or raw.get("gold")
-        )
-        competency = canonical_competency(str(
-            raw.get("competency")
-            or raw.get("category")
-            or raw.get("question_type")
-        ))
         supporting = raw.get("supporting_session_ids") or raw.get("evidence_sessions") or ()
         supporting_tuple = tuple(str(s) for s in supporting)
         corpus_sessions = tuple(
-            _normalize_corpus_session(s, line_no)
-            for s in raw.get("corpus_sessions", ())
+            _normalize_corpus_session(s, line_no) for s in raw.get("corpus_sessions", ())
         )
     except (KeyError, TypeError, ValueError) as exc:
         raise ValueError(f"line {line_no}: malformed LongMemEval record ({exc})") from exc
@@ -552,9 +538,7 @@ def sample_slice(
             if overflow == 0:
                 break
     if overflow > 0:
-        raise ValueError(
-            "cannot fit n sessions across buckets with given floors and pool sizes"
-        )
+        raise ValueError("cannot fit n sessions across buckets with given floors and pool sizes")
 
     # Materialize the slice.
     selected: list[LongMemEvalSession] = []

@@ -62,8 +62,8 @@ def test_s_rev_crosses_threshold_at_r_0_67() -> None:
     tc = config.for_type("stable_pref")
     fv_low = _fv(c=0.88, e=1.0, f=0.83, r=0.33, rho=math.exp(-60 / 40))
     fv_high = _fv(c=0.88, e=1.0, f=0.83, r=0.67, rho=math.exp(-60 / 40))
-    assert s_rev(fv_low, tc) < tc.theta_sup          # ≈ 0.744
-    assert s_rev(fv_high, tc) >= tc.theta_sup        # ≈ 0.777
+    assert s_rev(fv_low, tc) < tc.theta_sup  # ≈ 0.744
+    assert s_rev(fv_high, tc) >= tc.theta_sup  # ≈ 0.777
 
 
 def test_s_abs_ambiguity_peaks_at_c_half() -> None:

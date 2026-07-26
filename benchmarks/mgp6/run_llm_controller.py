@@ -83,9 +83,7 @@ def _post(payload: dict[str, Any], retries: int = 4) -> str:
     last = ""
     for attempt in range(retries):
         try:
-            req = urllib.request.Request(
-                f"{BASE_URL}/chat/completions", data=data, headers=headers
-            )
+            req = urllib.request.Request(f"{BASE_URL}/chat/completions", data=data, headers=headers)
             with urllib.request.urlopen(req, timeout=60) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
             msg = body["choices"][0]["message"]
@@ -135,8 +133,7 @@ def _state_lines(state: list[dict[str, Any]]) -> str:
 def predict(scenario: dict[str, Any]) -> dict[str, Any]:
     ev: Evidence | None = read_evidence(scenario)
     prefix = "\n".join(
-        f"{m.get('role')}: {m.get('content')}"
-        for m in scenario.get("base_dialogue_prefix", [])
+        f"{m.get('role')}: {m.get('content')}" for m in scenario.get("base_dialogue_prefix", [])
     )
     prior = _state_lines(scenario.get("initial_memory_state", []))
     slot = ev.slot if ev else scenario.get("initial_memory_state", [{}])[0].get("semantic_slot", "")
@@ -145,7 +142,7 @@ def predict(scenario: dict[str, Any]) -> dict[str, Any]:
         f"Slot in question: {slot}\n\n"
         f"Earlier dialogue:\n{prefix or '(none)'}\n\n"
         f"Current memory (active records):\n{prior}\n\n"
-        f"New event:\n{scenario.get('perturbation_event','')}"
+        f"New event:\n{scenario.get('perturbation_event', '')}"
     )
     decision = _parse_json(_chat(WRITE_SYSTEM, write_user, 120))
     action = str(decision.get("action", "")).upper()
@@ -170,10 +167,7 @@ def predict(scenario: dict[str, Any]) -> dict[str, Any]:
 
     # Answer stage: reveal the query, answer from the committed active state.
     active = _state_lines(state)
-    answer_user = (
-        f"ACTIVE memory:\n{active}\n\n"
-        f"Question: {scenario.get('evaluation_query','')}"
-    )
+    answer_user = f"ACTIVE memory:\n{active}\n\nQuestion: {scenario.get('evaluation_query', '')}"
     answer = _chat(ANSWER_SYSTEM, answer_user, 120)
 
     return {
@@ -206,7 +200,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gold", type=Path, default=HERE / "data" / "mgp6_v2.jsonl")
     parser.add_argument("--out", type=Path, default=HERE / "runs" / "llm_qwen35_9b" / "controller")
-    parser.add_argument("--limit", type=int, default=0, help="max NEW scenarios this call (0 = all)")
+    parser.add_argument(
+        "--limit", type=int, default=0, help="max NEW scenarios this call (0 = all)"
+    )
     parser.add_argument("--split", default="", help="optional split filter: train|dev|test")
     args = parser.parse_args(argv)
 
@@ -231,9 +227,10 @@ def main(argv: list[str] | None = None) -> int:
     lock = Lock()
     written = 0
     errors = 0
-    with pred_path.open("a", encoding="utf-8") as handle, ThreadPoolExecutor(
-        max_workers=CONCURRENCY
-    ) as pool:
+    with (
+        pred_path.open("a", encoding="utf-8") as handle,
+        ThreadPoolExecutor(max_workers=CONCURRENCY) as pool,
+    ):
         futures = {pool.submit(predict, s): s["scenario_id"] for s in todo}
         for fut in as_completed(futures):
             sid = futures[fut]

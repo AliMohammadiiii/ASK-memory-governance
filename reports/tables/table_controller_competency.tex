@@ -1,0 +1,14 @@
+\begin{tabular}{@{}l r r r r@{}}
+\toprule
+Competency & $n$ & accuracy (95\% CI) & prompt tok. & latency (s) \\
+\midrule
+knowledge-update & 30 & 96.7\% [90.0, 100.0] & 29729 & 1029 \\
+single-session-assistant & 30 & 96.7\% [90.0, 100.0] & 21874 & 542 \\
+single-session-user & 30 & 83.3\% [70.0, 96.7] & 9838 & 756 \\
+multi-session & 30 & 63.3\% [46.7, 80.0] & 29693 & 959 \\
+temporal-reasoning & 30 & 63.3\% [46.7, 80.0] & 35484 & 897 \\
+single-session-preference & 30 & 53.3\% [36.7, 70.0] & 9131 & 672 \\
+\midrule
+\textbf{Overall} & 180 & \textbf{76.1\%} [70.0, 82.2] & -- & -- \\
+\bottomrule
+\end{tabular}

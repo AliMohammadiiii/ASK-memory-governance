@@ -1,25 +1,36 @@
 # Project state
 
-**Repository status:** Git-ready canonical source tree assembled on 2026-07-12.
+Updated: 2026-07-26.
 
-## Completed
+## Repository status
 
-- Full ASK implementation, scripts, tests, configs, prompts, and schemas restored.
-- MGP-6 v2 dataset, benchmark code, adapters, and annotations integrated.
-- Repository pollution removed.
-- Scorer canonicalization defect patched with regression tests.
-- OpenRouter Qwen/Gemma configuration added without embedding credentials.
-- CI and public repository files added.
+The maintained package, tests, benchmark contracts, release tooling, and
+documentation are organized for an offline source release. Generated handoff
+bundles and local experiment outputs are excluded from the repository boundary.
 
-## Validation target
+## Validation contract
 
-- Offline test suite: **420 passed, 14 skipped**.
-- MGP-6 v2 strict schema validation: **180 examples, 0 errors**.
-- Package build: validated with a no-dependency wheel build.
-- Repository structure/secret scan: passed.
+`make check` is the fast offline development gate. `make release-check` is the
+complete offline source-release gate and is mirrored by CI on Python 3.11 and
+3.12. Exact results belong in dated validation reports; this page intentionally
+does not freeze a test count that will become stale after the next regression
+test.
 
-## Open blockers
+## Scientific status
 
-- Fresh hosted-model confirmation experiments require network access and a rotated API credential.
-- LongMemEval data is external and must be supplied locally.
-- Official venue and institutional thesis templates must be selected before submission builds.
+- MGP-6 v2 remains an author-designed diagnostic; its construct-validity gate
+  failed because conflict type alone predicts the held-out gold action.
+- MGP-6 v3 independent confirmation is designed but not yet executed.
+- A homogeneous final LongMemEval result remains externally pending.
+- Historical failure replays, incomplete runs, and heterogeneous judge
+  constructions are not promoted to final capability results.
+
+The authoritative interpretation is
+`docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
+
+## External blockers
+
+- authorized hosted-model access and non-redistributed LongMemEval input;
+- independent writers, annotators, and adjudication for MGP-6 v3;
+- official venue and University of Tehran templates and administrative facts;
+- real public repository metadata and redistribution consent where required.

@@ -239,7 +239,9 @@ def _extract_candidates(ctx: RunContext, scenario: MGP6Scenario) -> list[Candida
         seed=ctx.seed,
     )
     return [
-        Candidate(item=item, source_turn=scenario.perturbation_event, timestamp=_PERTURBATION_TIMESTAMP)
+        Candidate(
+            item=item, source_turn=scenario.perturbation_event, timestamp=_PERTURBATION_TIMESTAMP
+        )
         for item in output.items
     ]
 
@@ -390,7 +392,9 @@ def _numeric_id(value: str | None) -> int | None:
     return int(digits) if digits else None
 
 
-def _run_non_updating(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
+def _run_non_updating(
+    ctx: RunContext, scenario: MGP6Scenario
+) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
     state = _initial_state(scenario)
     _write_action(
         ctx,
@@ -403,7 +407,9 @@ def _run_non_updating(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dic
     return state, ["KEEP"], scenario.initial_memory_state[0].type, None
 
 
-def _run_recency(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
+def _run_recency(
+    ctx: RunContext, scenario: MGP6Scenario
+) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
     state = _initial_state(scenario)
     candidates = _extract_candidates(ctx, scenario)
     if not candidates:
@@ -433,7 +439,9 @@ def _run_recency(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str
     return state, actions, candidates[0].item.type_guess, None
 
 
-def _run_naive(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
+def _run_naive(
+    ctx: RunContext, scenario: MGP6Scenario
+) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
     state = _initial_state(scenario)
     candidates = _extract_candidates(ctx, scenario)
     if not candidates:
@@ -478,7 +486,9 @@ def _run_naive(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str, 
     return state, actions, candidates[0].item.type_guess, None
 
 
-def _run_controller(ctx: RunContext, scenario: MGP6Scenario) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
+def _run_controller(
+    ctx: RunContext, scenario: MGP6Scenario
+) -> tuple[list[dict[str, Any]], list[str], str | None, float | None]:
     state = _initial_state(scenario)
     candidates = _extract_candidates(ctx, scenario)
     if not candidates:
@@ -696,11 +706,15 @@ def main() -> int:
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--ollama-host", default="http://localhost:11434")
     p.add_argument("--ollama-timeout-s", type=float, default=900.0)
-    p.add_argument("--model-profile", choices=("standard", "light", "t4", "thesis"), default="standard",
-                   help="Use 'light' for 3B/3.8B. Use 't4' for llama3.2 "
-                        "extraction and phi3.5 classify/judge. Use 'thesis' for the "
-                        "proposal-spec'd 7-8B model (llama3:8b) -- the ONLY profile "
-                        "whose runs may be promoted to final thesis numbers.")
+    p.add_argument(
+        "--model-profile",
+        choices=("standard", "light", "t4", "thesis"),
+        default="standard",
+        help="Use 'light' for 3B/3.8B. Use 't4' for llama3.2 "
+        "extraction and phi3.5 classify/judge. Use 'thesis' for the "
+        "proposal-spec'd 7-8B model (llama3:8b) -- the ONLY profile "
+        "whose runs may be promoted to final thesis numbers.",
+    )
     p.add_argument("--extractor-model", default=None)
     p.add_argument("--classifier-model", default=None)
     p.add_argument("--judge-model", default=None)
@@ -709,16 +723,27 @@ def main() -> int:
     # the 8B-model T1 over-abstention (recall 0.30) seen in runs/m4w14_thesis.
     # Revert with --extraction-prompt prompts/extraction_v_final.j2 if needed.
     p.add_argument("--extraction-prompt", type=Path, default=Path("prompts/extraction_v_final2.j2"))
-    p.add_argument("--relation-stage1-prompt", type=Path, default=Path("prompts/relation_stage1_v0.j2"))
-    p.add_argument("--relation-stage2-prompt", type=Path, default=Path("prompts/relation_stage2_v0.j2"))
+    p.add_argument(
+        "--relation-stage1-prompt", type=Path, default=Path("prompts/relation_stage1_v0.j2")
+    )
+    p.add_argument(
+        "--relation-stage2-prompt", type=Path, default=Path("prompts/relation_stage2_v0.j2")
+    )
     p.add_argument("--scorecard-config", type=Path, default=Path("configs/controller_active.yaml"))
-    p.add_argument("--theta-abs", type=float, default=None,
-                   help="Override every controller theta_abs threshold for RC@C sweeps.")
+    p.add_argument(
+        "--theta-abs",
+        type=float,
+        default=None,
+        help="Override every controller theta_abs threshold for RC@C sweeps.",
+    )
     p.add_argument("--extraction-max-new-tokens", type=int, default=512)
     p.add_argument("--relation-max-new-tokens", type=int, default=128)
     p.add_argument("--dry-run", action="store_true")
-    p.add_argument("--fail-on-sanity", action="store_true",
-                   help="Exit non-zero if run-level sanity checks flag a likely pipeline bug.")
+    p.add_argument(
+        "--fail-on-sanity",
+        action="store_true",
+        help="Exit non-zero if run-level sanity checks flag a likely pipeline bug.",
+    )
     p.add_argument("--note-path", type=Path, default=Path("NOTES/m4w14_mgp6_results.md"))
     args = p.parse_args()
     if args.model_profile == "light":
@@ -761,7 +786,7 @@ def main() -> int:
     # Any other profile is `development` and CANNOT be promoted to final by
     # scripts/promote_to_final.py. This makes the runs/m4w14 mislabel
     # (a 3B `light` run auto-stamped final-candidate) structurally impossible.
-    is_spec_full = (args.limit is None and args.model_profile == SPEC_PROFILE)
+    is_spec_full = args.limit is None and args.model_profile == SPEC_PROFILE
     if args.limit is not None:
         run_tier = "smoke"
         thesis_use = "no_final_claim"
@@ -845,7 +870,10 @@ def main() -> int:
         if args.fail_on_sanity:
             return 2
     else:
-        print("[mgp6] sanity checks passed (extraction recall + distinct confusion matrices).", flush=True)
+        print(
+            "[mgp6] sanity checks passed (extraction recall + distinct confusion matrices).",
+            flush=True,
+        )
     return 0
 
 

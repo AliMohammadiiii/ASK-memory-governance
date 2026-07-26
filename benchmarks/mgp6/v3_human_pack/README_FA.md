@@ -21,7 +21,20 @@
 - `03_ADJUDICATOR_INSTRUCTIONS_FA.md`: دستورالعمل داور چهارم و حل اختلاف.
 - `04_PARTICIPANT_CONSENT_FA.md`: فرم رضایت، حریم خصوصی و اجازه بازتوزیع.
 - `forms/`: الگوهای CSV برای تحویل و ثبت ممیزی.
-- `dist/`: نسخه‌های DOCX و PDF قابل ارسال.
+- `a11y_reports/`: گزارش‌های ماشینی آخرین ممیزی دسترس‌پذیری.
+- `dist/`: خروجی محلی و تولیدی DOCX؛ در Git نگهداری نمی‌شود.
+
+## ساخت خروجی DOCX
+
+از ریشه مخزن اجرا کنید:
+
+```bash
+python3 -m pip install -e '.[documents]'
+python3 benchmarks/mgp6/v3_human_pack/build_human_pack_docx.py
+```
+
+خروجی‌ها در `dist/` ساخته می‌شوند. فایل‌های preview، PDF و ZIP خروجی build
+هستند و نباید به source tree برگردند.
 
 ## مواردی که پیش از ارسال باید تکمیل شوند
 

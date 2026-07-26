@@ -118,9 +118,7 @@ def required_jsonl_files(
 ) -> tuple[str, ...]:
     names = list(REQUIRED_JSONL_FILES)
     should_require_action = (
-        action_log_required(alias, baseline)
-        if require_action_log is None
-        else require_action_log
+        action_log_required(alias, baseline) if require_action_log is None else require_action_log
     )
     if should_require_action:
         names.append("action_log.jsonl")
@@ -166,7 +164,9 @@ def telemetry(run_dir: Path) -> dict[str, Any]:
         "stale_retrieval_count": stale,
         "smrr": None if retrieved == 0 else stale / retrieved,
         "current_session_leakage_count": leakage,
-        "mean_prompt_tokens": None if not prompt_tokens else sum(prompt_tokens) / len(prompt_tokens),
+        "mean_prompt_tokens": None
+        if not prompt_tokens
+        else sum(prompt_tokens) / len(prompt_tokens),
         "mean_latency_ms": None if not latencies else sum(latencies) / len(latencies),
     }
 
@@ -342,10 +342,7 @@ def correctness_matrix(config_runs: dict[str, Path]) -> dict[str, Any]:
     all_wrong = []
     disagreements = []
     for session_id in sorted(questions):
-        row = {
-            config: values.get(session_id)
-            for config, values in sorted(per_config.items())
-        }
+        row = {config: values.get(session_id) for config, values in sorted(per_config.items())}
         present = [value for value in row.values() if value is not None]
         matrix.append({"session_id": session_id, "correct": row})
         if present and all(present):

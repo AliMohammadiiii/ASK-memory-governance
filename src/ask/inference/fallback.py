@@ -58,8 +58,7 @@ class FallbackLLM:
             if meta.get("gate_pass", True):
                 return response
             errors.append(
-                f"{getattr(llm, 'model_id', '?')}: gate failed "
-                f"{meta.get('validation_errors', '')}"
+                f"{getattr(llm, 'model_id', '?')}: gate failed {meta.get('validation_errors', '')}"
             )
         if last_response is not None:
             return last_response

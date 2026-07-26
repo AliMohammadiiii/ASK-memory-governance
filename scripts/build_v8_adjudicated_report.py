@@ -178,7 +178,9 @@ def esc(value: Any) -> str:
     )
 
 
-def bar_chart(path: Path, *, title: str, labels: list[str], values: list[float], colors: list[str]) -> None:
+def bar_chart(
+    path: Path, *, title: str, labels: list[str], values: list[float], colors: list[str]
+) -> None:
     width, height = 1120, 650
     left, top, bottom, right = 95, 90, 155, 30
     plot_w, plot_h = width - left - right, height - top - bottom
@@ -187,20 +189,30 @@ def bar_chart(path: Path, *, title: str, labels: list[str], values: list[float],
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
-        f'<text x="{width/2}" y="38" text-anchor="middle" font-family="Arial" font-size="25" font-weight="700">{esc(title)}</text>',
+        f'<text x="{width / 2}" y="38" text-anchor="middle" font-family="Arial" font-size="25" font-weight="700">{esc(title)}</text>',
     ]
     for tick in range(0, 101, 20):
         y = top + plot_h * (1 - tick / 100)
-        parts.append(f'<line x1="{left}" x2="{left+plot_w}" y1="{y:.1f}" y2="{y:.1f}" stroke="#d8dee9"/>')
-        parts.append(f'<text x="{left-12}" y="{y+5:.1f}" text-anchor="end" font-family="Arial" font-size="15">{tick}%</text>')
+        parts.append(
+            f'<line x1="{left}" x2="{left + plot_w}" y1="{y:.1f}" y2="{y:.1f}" stroke="#d8dee9"/>'
+        )
+        parts.append(
+            f'<text x="{left - 12}" y="{y + 5:.1f}" text-anchor="end" font-family="Arial" font-size="15">{tick}%</text>'
+        )
     for idx, (label, value, color) in enumerate(zip(labels, values, colors, strict=True)):
         x = left + gap * (idx + 0.5) - bar_w / 2
         bar_h = plot_h * value
         y = top + plot_h - bar_h
-        parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{bar_h:.1f}" rx="4" fill="{color}"/>')
-        parts.append(f'<text x="{x+bar_w/2:.1f}" y="{y-9:.1f}" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700">{value*100:.1f}</text>')
-        parts.append(f'<text x="{x+bar_w/2:.1f}" y="{top+plot_h+24:.1f}" text-anchor="end" transform="rotate(-28 {x+bar_w/2:.1f} {top+plot_h+24:.1f})" font-family="Arial" font-size="15">{esc(label)}</text>')
-    parts.append('</svg>')
+        parts.append(
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w:.1f}" height="{bar_h:.1f}" rx="4" fill="{color}"/>'
+        )
+        parts.append(
+            f'<text x="{x + bar_w / 2:.1f}" y="{y - 9:.1f}" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700">{value * 100:.1f}</text>'
+        )
+        parts.append(
+            f'<text x="{x + bar_w / 2:.1f}" y="{top + plot_h + 24:.1f}" text-anchor="end" transform="rotate(-28 {x + bar_w / 2:.1f} {top + plot_h + 24:.1f})" font-family="Arial" font-size="15">{esc(label)}</text>'
+        )
+    parts.append("</svg>")
     path.write_text("\n".join(parts), encoding="utf-8")
 
 
@@ -219,17 +231,23 @@ def grouped_chart(
     parts = [
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">',
         '<rect width="100%" height="100%" fill="white"/>',
-        f'<text x="{width/2}" y="38" text-anchor="middle" font-family="Arial" font-size="25" font-weight="700">{esc(title)}</text>',
+        f'<text x="{width / 2}" y="38" text-anchor="middle" font-family="Arial" font-size="25" font-weight="700">{esc(title)}</text>',
     ]
     legend_x = left
     for name, _, color in series:
         parts.append(f'<rect x="{legend_x}" y="55" width="18" height="18" fill="{color}"/>')
-        parts.append(f'<text x="{legend_x+25}" y="70" font-family="Arial" font-size="15">{esc(name)}</text>')
+        parts.append(
+            f'<text x="{legend_x + 25}" y="70" font-family="Arial" font-size="15">{esc(name)}</text>'
+        )
         legend_x += 220
     for tick in range(0, 101, 20):
         y = top + plot_h * (1 - tick / 100)
-        parts.append(f'<line x1="{left}" x2="{left+plot_w}" y1="{y:.1f}" y2="{y:.1f}" stroke="#d8dee9"/>')
-        parts.append(f'<text x="{left-12}" y="{y+5:.1f}" text-anchor="end" font-family="Arial" font-size="15">{tick}%</text>')
+        parts.append(
+            f'<line x1="{left}" x2="{left + plot_w}" y1="{y:.1f}" y2="{y:.1f}" stroke="#d8dee9"/>'
+        )
+        parts.append(
+            f'<text x="{left - 12}" y="{y + 5:.1f}" text-anchor="end" font-family="Arial" font-size="15">{tick}%</text>'
+        )
     for group_idx, group in enumerate(groups):
         center = left + group_w * (group_idx + 0.5)
         total_w = bar_w * len(series)
@@ -238,9 +256,13 @@ def grouped_chart(
             x = center - total_w / 2 + series_idx * bar_w
             bar_h = plot_h * value
             y = top + plot_h - bar_h
-            parts.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w-3:.1f}" height="{bar_h:.1f}" fill="{color}"/>')
-        parts.append(f'<text x="{center:.1f}" y="{top+plot_h+27:.1f}" text-anchor="end" transform="rotate(-25 {center:.1f} {top+plot_h+27:.1f})" font-family="Arial" font-size="15">{esc(group)}</text>')
-    parts.append('</svg>')
+            parts.append(
+                f'<rect x="{x:.1f}" y="{y:.1f}" width="{bar_w - 3:.1f}" height="{bar_h:.1f}" fill="{color}"/>'
+            )
+        parts.append(
+            f'<text x="{center:.1f}" y="{top + plot_h + 27:.1f}" text-anchor="end" transform="rotate(-25 {center:.1f} {top + plot_h + 27:.1f})" font-family="Arial" font-size="15">{esc(group)}</text>'
+        )
+    parts.append("</svg>")
     path.write_text("\n".join(parts), encoding="utf-8")
 
 
@@ -294,12 +316,14 @@ def main() -> None:
     replay_machine = index_unique(replay_machine_rows, label="replay judgments")
     failed_ids = {sid for sid, row in base.items() if not bool(row["correct"])}
     if len(base) != 180 or len(replay_machine) != 70:
-        raise ValueError(f"expected base=180 and replay=70; got {len(base)} and {len(replay_machine)}")
+        raise ValueError(
+            f"expected base=180 and replay=70; got {len(base)} and {len(replay_machine)}"
+        )
     if failed_ids != set(replay_machine):
         raise ValueError(
             "replay IDs are not exactly the base failures: "
-            f"missing={sorted(failed_ids-set(replay_machine))}, "
-            f"extra={sorted(set(replay_machine)-failed_ids)}"
+            f"missing={sorted(failed_ids - set(replay_machine))}, "
+            f"extra={sorted(set(replay_machine) - failed_ids)}"
         )
     if not set(OVERRIDES) <= set(replay_machine):
         raise ValueError("an adjudication override is absent from the replay")
@@ -320,27 +344,36 @@ def main() -> None:
     # Replace session-level answer/prediction artifacts as well as judgments.
     for artifact in ("answers.jsonl", "predictions.jsonl"):
         base_artifact_rows = read_jsonl(base_ctl / artifact)
-        replay_artifact = index_unique(read_jsonl(replay_ctl / artifact), label=f"replay {artifact}")
+        replay_artifact = index_unique(
+            read_jsonl(replay_ctl / artifact), label=f"replay {artifact}"
+        )
         merged_artifact = [
-            dict(replay_artifact.get(str(row["session_id"]), row))
-            for row in base_artifact_rows
+            dict(replay_artifact.get(str(row["session_id"]), row)) for row in base_artifact_rows
         ]
         if len(index_unique(merged_artifact, label=f"merged {artifact}")) != 180:
             raise ValueError(f"{artifact} did not merge to 180 unique sessions")
         write_jsonl(final_dir / artifact, merged_artifact)
 
-    raw_report = grades_report(merged_raw, judge="Qwen3.5-9B replay; Gemma-4-31B retained successes")
+    raw_report = grades_report(
+        merged_raw, judge="Qwen3.5-9B replay; Gemma-4-31B retained successes"
+    )
     final_report = grades_report(
         merged_final,
         judge="machine judgments plus four documented Codex/GPT-5 semantic adjudications",
     )
-    (raw_dir / "report.json").write_text(json.dumps(raw_report, indent=2, sort_keys=True), encoding="utf-8")
-    (final_dir / "report.json").write_text(json.dumps(final_report, indent=2, sort_keys=True), encoding="utf-8")
+    (raw_dir / "report.json").write_text(
+        json.dumps(raw_report, indent=2, sort_keys=True), encoding="utf-8"
+    )
+    (final_dir / "report.json").write_text(
+        json.dumps(final_report, indent=2, sort_keys=True), encoding="utf-8"
+    )
 
     base_reports: dict[str, dict[str, Any]] = {}
     baseline_rows: dict[str, dict[str, dict[str, Any]]] = {}
     for system in ("b1", "b2", "b3", "b4"):
-        base_reports[system] = json.loads((args.base_run / system / "report.json").read_text(encoding="utf-8"))
+        base_reports[system] = json.loads(
+            (args.base_run / system / "report.json").read_text(encoding="utf-8")
+        )
         baseline_rows[system] = index_unique(
             read_jsonl(args.base_run / system / "judgments.jsonl"), label=system
         )
@@ -351,7 +384,8 @@ def main() -> None:
     for system in ("b1", "b2", "b3", "b4"):
         ci = stratified_paired_bootstrap_difference(merged_final_idx, baseline_rows[system])
         comparisons[system] = {
-            "accuracy_difference": final_report["overall_accuracy"] - base_reports[system]["overall_accuracy"],
+            "accuracy_difference": final_report["overall_accuracy"]
+            - base_reports[system]["overall_accuracy"],
             "paired_stratified_bootstrap_95ci": list(ci),
             "mcnemar": exact_mcnemar(
                 {sid: bool(row["correct"]) for sid, row in merged_final_idx.items()},
@@ -371,7 +405,9 @@ def main() -> None:
         }
 
     machine_labels = [bool(row["correct"]) for row in replay_machine_rows]
-    human_labels = [bool(replay_adjudicated[str(row["session_id"])]["correct"]) for row in replay_machine_rows]
+    human_labels = [
+        bool(replay_adjudicated[str(row["session_id"])]["correct"]) for row in replay_machine_rows
+    ]
     replay_stats = {
         "n": 70,
         "machine_correct": sum(machine_labels),
@@ -379,7 +415,8 @@ def main() -> None:
         "machine_accuracy": sum(machine_labels) / len(machine_labels),
         "adjudicated_accuracy": sum(human_labels) / len(human_labels),
         "n_overrides": len(OVERRIDES),
-        "agreement": sum(a == b for a, b in zip(machine_labels, human_labels, strict=True)) / len(machine_labels),
+        "agreement": sum(a == b for a, b in zip(machine_labels, human_labels, strict=True))
+        / len(machine_labels),
         "cohen_kappa": cohen_kappa(machine_labels, human_labels),
         "override_session_ids": sorted(OVERRIDES),
     }
@@ -407,19 +444,48 @@ def main() -> None:
         },
         "mgp6": json.loads(args.mgp6_comparison.read_text(encoding="utf-8")),
     }
-    (args.output / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
-    write_audit_csv(args.output / "adjudication_audit.csv", list(replay_adjudicated.values()), dataset)
-    write_jsonl(args.output / "adjudication_overrides.jsonl", [replay_adjudicated[sid] for sid in sorted(OVERRIDES)])
+    (args.output / "summary.json").write_text(
+        json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8"
+    )
+    write_audit_csv(
+        args.output / "adjudication_audit.csv", list(replay_adjudicated.values()), dataset
+    )
+    write_jsonl(
+        args.output / "adjudication_overrides.jsonl",
+        [replay_adjudicated[sid] for sid in sorted(OVERRIDES)],
+    )
 
     table_rows = []
     for key in ("b1", "b2", "b3", "b4"):
         report = base_reports[key]
-        table_rows.append((SYSTEM_LABELS[key], report["overall_accuracy"], report["overall_ci_low"], report["overall_ci_high"]))
+        table_rows.append(
+            (
+                SYSTEM_LABELS[key],
+                report["overall_accuracy"],
+                report["overall_ci_low"],
+                report["overall_ci_high"],
+            )
+        )
     table_rows.extend(
         [
-            (SYSTEM_LABELS["controller_v7"], v7_report["overall_accuracy"], v7_report["overall_ci_low"], v7_report["overall_ci_high"]),
-            (SYSTEM_LABELS["controller_raw"], raw_report["overall_accuracy"], raw_report["overall_ci_low"], raw_report["overall_ci_high"]),
-            (SYSTEM_LABELS["controller_final"], final_report["overall_accuracy"], final_report["overall_ci_low"], final_report["overall_ci_high"]),
+            (
+                SYSTEM_LABELS["controller_v7"],
+                v7_report["overall_accuracy"],
+                v7_report["overall_ci_low"],
+                v7_report["overall_ci_high"],
+            ),
+            (
+                SYSTEM_LABELS["controller_raw"],
+                raw_report["overall_accuracy"],
+                raw_report["overall_ci_low"],
+                raw_report["overall_ci_high"],
+            ),
+            (
+                SYSTEM_LABELS["controller_final"],
+                final_report["overall_accuracy"],
+                final_report["overall_ci_low"],
+                final_report["overall_ci_high"],
+            ),
         ]
     )
     result_lines = [
@@ -428,13 +494,15 @@ def main() -> None:
         "| System | Accuracy | Stratified bootstrap 95% CI |",
         "|---|---:|---:|",
     ]
-    result_lines.extend(f"| {name} | {acc:.3f} | [{lo:.3f}, {hi:.3f}] |" for name, acc, lo, hi in table_rows)
+    result_lines.extend(
+        f"| {name} | {acc:.3f} | [{lo:.3f}, {hi:.3f}] |" for name, acc, lo, hi in table_rows
+    )
     result_lines.extend(
         [
             "",
             f"- Exact ID integrity: 70 replay IDs = 70 v7 controller failure IDs: `{failed_ids == set(replay_machine)}`.",
-            f"- Raw replay repairs: {sum(machine_labels)}/70 ({sum(machine_labels)/70:.1%}).",
-            f"- Adjudicated replay repairs: {sum(human_labels)}/70 ({sum(human_labels)/70:.1%}).",
+            f"- Raw replay repairs: {sum(machine_labels)}/70 ({sum(machine_labels) / 70:.1%}).",
+            f"- Adjudicated replay repairs: {sum(human_labels)}/70 ({sum(human_labels) / 70:.1%}).",
             f"- Final controller: {sum(bool(row['correct']) for row in merged_final)}/180 ({final_report['overall_accuracy']:.1%}).",
             f"- Replay-judge vs independent Codex adjudicator agreement: {replay_stats['agreement']:.1%}; Cohen's kappa = {replay_stats['cohen_kappa']:.3f}.",
             "- Four overrides are recorded in `adjudication_overrides.jsonl` and the complete 70-row ledger is `adjudication_audit.csv`.",
@@ -541,7 +609,9 @@ def main() -> None:
             "figures/mgp6_governance.pdf",
         ],
     }
-    (args.output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    (args.output / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8"
+    )
 
 
 if __name__ == "__main__":

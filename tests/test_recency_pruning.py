@@ -611,14 +611,10 @@ def test_per_question_reset_does_not_leak_across_questions(tmp_path: Path) -> No
     llm = _RecordingLLM()
 
     q1_prior = _make_session_with_n_user_turns("q1-prior", 3)
-    q1_session = _session(
-        "q1", [("user", "x")], "q1?", supporting=("q1-prior",)
-    )
+    q1_session = _session("q1", [("user", "x")], "q1?", supporting=("q1-prior",))
 
     q2_prior = _make_session_with_n_user_turns("q2-prior", 4)
-    q2_session = _session(
-        "q2", [("user", "y")], "q2?", supporting=("q2-prior",)
-    )
+    q2_session = _session("q2", [("user", "y")], "q2?", supporting=("q2-prior",))
 
     log_path = tmp_path / "log.jsonl"
     bl = _build_baseline(

@@ -71,7 +71,9 @@ def test_embedding_dim_probes_when_accessor_unusable() -> None:
 
     emb = TurnEmbedder(
         model_id="jinaai/jina-embeddings-v5-text-small",
-        device="cpu", trust_remote_code=True, task="retrieval",
+        device="cpu",
+        trust_remote_code=True,
+        task="retrieval",
     )
     emb._model = _FakeJina()  # inject, skip real load
     assert emb.embedding_dim == 1024

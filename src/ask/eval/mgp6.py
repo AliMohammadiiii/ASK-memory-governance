@@ -115,17 +115,29 @@ def compute_report(
         "baseline": baseline,
         "n_scenarios": n,
         "action_accuracy": _rate(rows, lambda r: r.correct_action),
-        "action_accuracy_ci": _ci(rows, lambda sample: _rate(sample, lambda r: r.correct_action), n_bootstrap, seed),
+        "action_accuracy_ci": _ci(
+            rows, lambda sample: _rate(sample, lambda r: r.correct_action), n_bootstrap, seed
+        ),
         "state_accuracy": _rate(rows, lambda r: r.state_correct),
-        "state_accuracy_ci": _ci(rows, lambda sample: _rate(sample, lambda r: r.state_correct), n_bootstrap, seed + 1),
+        "state_accuracy_ci": _ci(
+            rows, lambda sample: _rate(sample, lambda r: r.state_correct), n_bootstrap, seed + 1
+        ),
         "over_forgetting_rate": _rate(rows, lambda r: r.over_forgetting),
-        "over_forgetting_ci": _ci(rows, lambda sample: _rate(sample, lambda r: r.over_forgetting), n_bootstrap, seed + 2),
+        "over_forgetting_ci": _ci(
+            rows, lambda sample: _rate(sample, lambda r: r.over_forgetting), n_bootstrap, seed + 2
+        ),
         "under_forgetting_rate": _rate(rows, lambda r: r.under_forgetting),
-        "under_forgetting_ci": _ci(rows, lambda sample: _rate(sample, lambda r: r.under_forgetting), n_bootstrap, seed + 3),
+        "under_forgetting_ci": _ci(
+            rows, lambda sample: _rate(sample, lambda r: r.under_forgetting), n_bootstrap, seed + 3
+        ),
         "confusion_matrix": confusion,
         "per_action": _per_action(rows, n_bootstrap=n_bootstrap, seed=seed + 10),
-        "per_type": _per_group(rows, key=lambda r: r.scenario_type, n_bootstrap=n_bootstrap, seed=seed + 20),
-        "per_initial_memory_type": _per_group(rows, key=lambda r: r.initial_memory_type, n_bootstrap=n_bootstrap, seed=seed + 30),
+        "per_type": _per_group(
+            rows, key=lambda r: r.scenario_type, n_bootstrap=n_bootstrap, seed=seed + 20
+        ),
+        "per_initial_memory_type": _per_group(
+            rows, key=lambda r: r.initial_memory_type, n_bootstrap=n_bootstrap, seed=seed + 30
+        ),
         "threshold_ordering": _threshold_ordering(rows),
         "predictions": [r.to_dict() for r in rows],
     }
@@ -147,19 +159,14 @@ def _per_action(
 ) -> dict[str, dict[str, Any]]:
     out: dict[str, dict[str, Any]] = {}
     for idx, action in enumerate(ACTIONS):
-        def precision_metric(
-            sample: list[MGP6Prediction], current_action: str = action
-        ) -> float:
+
+        def precision_metric(sample: list[MGP6Prediction], current_action: str = action) -> float:
             return _precision(sample, current_action)
 
-        def recall_metric(
-            sample: list[MGP6Prediction], current_action: str = action
-        ) -> float:
+        def recall_metric(sample: list[MGP6Prediction], current_action: str = action) -> float:
             return _recall(sample, current_action)
 
-        def f1_metric(
-            sample: list[MGP6Prediction], current_action: str = action
-        ) -> float:
+        def f1_metric(sample: list[MGP6Prediction], current_action: str = action) -> float:
             return _f1(sample, current_action)
 
         out[action] = {
@@ -191,7 +198,12 @@ def _per_group(
         out[group_key] = {
             "n": len(bucket),
             "action_accuracy": _rate(bucket, lambda r: r.correct_action),
-            "action_accuracy_ci": _ci(bucket, lambda sample: _rate(sample, lambda r: r.correct_action), n_bootstrap, seed + idx * 4),
+            "action_accuracy_ci": _ci(
+                bucket,
+                lambda sample: _rate(sample, lambda r: r.correct_action),
+                n_bootstrap,
+                seed + idx * 4,
+            ),
             "state_accuracy": _rate(bucket, lambda r: r.state_correct),
             "over_forgetting_rate": _rate(bucket, lambda r: r.over_forgetting),
             "under_forgetting_rate": _rate(bucket, lambda r: r.under_forgetting),
@@ -310,15 +322,23 @@ def _has_new_active(memory_state: list[dict[str, Any]], prior_id: str) -> bool:
 
 def _gold_has_new_active(scenario: MGP6Scenario) -> bool:
     prior_id = scenario.initial_memory_state[0].id
-    return any(item.id != prior_id and item.status == "active" for item in scenario.gold_memory_state)
+    return any(
+        item.id != prior_id and item.status == "active" for item in scenario.gold_memory_state
+    )
 
 
 def _over_forgetting(scenario: MGP6Scenario, memory_state: list[dict[str, Any]]) -> bool:
-    return _gold_prior_status(scenario) == "active" and _prior_status(scenario, memory_state) != "active"
+    return (
+        _gold_prior_status(scenario) == "active"
+        and _prior_status(scenario, memory_state) != "active"
+    )
 
 
 def _under_forgetting(scenario: MGP6Scenario, memory_state: list[dict[str, Any]]) -> bool:
-    return _gold_prior_status(scenario) != "active" and _prior_status(scenario, memory_state) == "active"
+    return (
+        _gold_prior_status(scenario) != "active"
+        and _prior_status(scenario, memory_state) == "active"
+    )
 
 
 def _state_correct(

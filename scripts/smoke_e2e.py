@@ -85,10 +85,7 @@ def run_smoke(
     conn = connect(db_path)
     init_schema(conn)
 
-    candidate_text = (
-        f"[smoke] question={session.question!r} "
-        f"answer={resp.text[:200]!r}"
-    )
+    candidate_text = f"[smoke] question={session.question!r} answer={resp.text[:200]!r}"
     mem_id = insert_active(
         conn,
         MemoryItem(
@@ -111,8 +108,15 @@ def run_smoke(
         rationale="[smoke] plumbing test — no controller logic invoked",
         prior_memory_id=None,
         resulting_memory_id=mem_id,
-        feature_c=None, feature_e=None, feature_f=None, feature_r=None, feature_rho=None,
-        s_rev=None, s_abs=None, theta_sup=None, theta_abs=None,
+        feature_c=None,
+        feature_e=None,
+        feature_f=None,
+        feature_r=None,
+        feature_rho=None,
+        s_rev=None,
+        s_abs=None,
+        theta_sup=None,
+        theta_abs=None,
     )
     log_path.parent.mkdir(parents=True, exist_ok=True)
     if log_path.exists():
@@ -121,9 +125,7 @@ def run_smoke(
         w.write(entry)
 
     # 5) Read everything back.
-    rows = conn.execute(
-        "SELECT id, type, text, status FROM memory_items"
-    ).fetchall()
+    rows = conn.execute("SELECT id, type, text, status FROM memory_items").fetchall()
     log_lines = log_path.read_text(encoding="utf-8").splitlines()
     conn.close()
 
@@ -145,26 +147,43 @@ def main() -> int:
     p.add_argument("--slice", required=True, type=Path)
     p.add_argument("--session-id", required=True)
     p.add_argument("--db", required=True, type=Path)
-    p.add_argument("--log", type=Path, default=None,
-                   help="Path to action_log JSONL (default: alongside the DB)")
-    p.add_argument("--fake", action="store_true",
-                   help="Use the deterministic FakeLLM. Hermetic, no GPU/network.")
-    p.add_argument("--ollama", action="store_true",
-                   help="Use a local Ollama daemon. Pair with --ollama-model.")
-    p.add_argument("--ollama-model", default="gemma3:4b",
-                   help="Ollama model tag, e.g. gemma3:4b or qwen2.5:7b-instruct.")
-    p.add_argument("--ollama-host", default="http://localhost:11434",
-                   help="Ollama daemon URL (default: http://localhost:11434).")
+    p.add_argument(
+        "--log",
+        type=Path,
+        default=None,
+        help="Path to action_log JSONL (default: alongside the DB)",
+    )
+    p.add_argument(
+        "--fake",
+        action="store_true",
+        help="Use the deterministic FakeLLM. Hermetic, no GPU/network.",
+    )
+    p.add_argument(
+        "--ollama", action="store_true", help="Use a local Ollama daemon. Pair with --ollama-model."
+    )
+    p.add_argument(
+        "--ollama-model",
+        default="gemma3:4b",
+        help="Ollama model tag, e.g. gemma3:4b or qwen2.5:7b-instruct.",
+    )
+    p.add_argument(
+        "--ollama-host",
+        default="http://localhost:11434",
+        help="Ollama daemon URL (default: http://localhost:11434).",
+    )
     args = p.parse_args()
 
     if args.fake:
         from ask.inference.fake import FakeLLM
+
         llm: LLM = FakeLLM()
     elif args.ollama:
         from ask.inference.ollama import OllamaLLM
+
         llm = OllamaLLM(model_id=args.ollama_model, host=args.ollama_host)
     else:
         from ask.inference.llm import build_llm
+
         llm = build_llm()
 
     log_path = args.log or args.db.with_suffix(".action_log.jsonl")

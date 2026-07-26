@@ -24,9 +24,7 @@ def _item(text: str, confidence: float) -> ExtractedItem:
     return ExtractedItem(
         text=text,
         type_guess="episodic_fact",
-        evidence_span=EvidenceSpan(
-            session_id="s1", turn_idx=2, char_start=0, char_end=len(text)
-        ),
+        evidence_span=EvidenceSpan(session_id="s1", turn_idx=2, char_start=0, char_end=len(text)),
         extraction_confidence=confidence,
         negation_marker=False,
         hedge_marker=False,

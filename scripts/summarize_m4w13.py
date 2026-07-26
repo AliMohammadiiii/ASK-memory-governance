@@ -188,7 +188,7 @@ def main() -> int:
         "--systems",
         default=None,
         help="Override manifest systems for merged multi-device outputs. "
-             "Accepts all, b1, controller, or comma lists such as b1,controller.",
+        "Accepts all, b1, controller, or comma lists such as b1,controller.",
     )
     p.add_argument("--json-out", type=Path, default=None)
     p.add_argument("--md-out", type=Path, default=None)
@@ -213,9 +213,7 @@ def main() -> int:
             reasons.append("validation errors: " + "; ".join(summary["validation_errors"]))
         if summary["warnings"]:
             reasons.append("warnings: " + "; ".join(summary["warnings"]))
-        raise SystemExit(
-            "incomplete M4-W13 run: " + " | ".join(reasons)
-        )
+        raise SystemExit("incomplete M4-W13 run: " + " | ".join(reasons))
     return 0
 
 

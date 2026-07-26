@@ -58,7 +58,9 @@ DEFAULT_SYSTEM_PROMPTS = {
         "configs/experiments/mgp6_v43/successor_live_model_controller_prompt.txt"
     ),
     "ablation_no_abstain": Path("configs/experiments/mgp6_v43/ablation_no_abstain_prompt.txt"),
-    "ablation_no_provenance": Path("configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt"),
+    "ablation_no_provenance": Path(
+        "configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt"
+    ),
     "ablation_no_typing": Path("configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt"),
     "ablation_no_lineage": Path("configs/experiments/mgp6_v43/ablation_no_lineage_prompt.txt"),
 }
@@ -141,7 +143,7 @@ def _repair_instruction(allowed_actions: tuple[str, ...]) -> str:
     example = allowed_actions[0]
     return (
         "The previous response was rejected because it was not exactly one valid "
-        f"MGP-6 v4.3 action. Return JSON only, with no prose: {{\"action\":\"{example}\"}}. "
+        f'MGP-6 v4.3 action. Return JSON only, with no prose: {{"action":"{example}"}}. '
         f"The action must be one of {', '.join(allowed_actions)}."
     )
 
@@ -152,7 +154,9 @@ def _git_commit() -> str:
 
 def _tracked_worktree_state() -> str:
     unstaged_dirty = subprocess.run(["git", "diff", "--quiet"], check=False).returncode != 0
-    staged_dirty = subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
+    staged_dirty = (
+        subprocess.run(["git", "diff", "--cached", "--quiet"], check=False).returncode != 0
+    )
     return "dirty" if unstaged_dirty or staged_dirty else "clean"
 
 
@@ -174,7 +178,9 @@ def _openrouter_reasoning_body(reasoning_effort: str | None) -> dict[str, Any] |
     return {"reasoning": {"effort": reasoning_effort}}
 
 
-def _raw_metadata(*, response: LLMResponse, parse_attempt: int, valid_action: bool, error: str | None = None) -> dict[str, Any]:
+def _raw_metadata(
+    *, response: LLMResponse, parse_attempt: int, valid_action: bool, error: str | None = None
+) -> dict[str, Any]:
     metadata = dict(response.metadata)
     metadata.pop("raw_response", None)
     metadata.update(
@@ -195,7 +201,9 @@ def _raw_metadata(*, response: LLMResponse, parse_attempt: int, valid_action: bo
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", type=Path, default=Path("benchmarks/mgp6/mgp6_v4_3/public/train.jsonl"))
+    parser.add_argument(
+        "--input", type=Path, default=Path("benchmarks/mgp6/mgp6_v4_3/public/train.jsonl")
+    )
     parser.add_argument("--out", type=Path, default=Path("runs/mgp6_v43/smoke"))
     parser.add_argument("--system", choices=SYSTEMS, default="decision_zero_shot")
     parser.add_argument("--limit", type=int)
@@ -208,12 +216,18 @@ def main() -> int:
     parser.add_argument("--concurrency", type=int, default=1)
     parser.add_argument("--retry-max-attempts", type=int, default=3)
     parser.add_argument("--parse-retry-max-attempts", type=int, default=2)
-    parser.add_argument("--reasoning-effort", choices=("none", "minimal", "low", "medium", "high"), default=None)
+    parser.add_argument(
+        "--reasoning-effort", choices=("none", "minimal", "low", "medium", "high"), default=None
+    )
     parser.add_argument("--system-prompt", type=Path)
     parser.add_argument("--recency-turns", type=int, default=2)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--max-new-tokens", type=int, default=128)
-    parser.add_argument("--action", choices=("KEEP", "SUPERSEDE", "ABSTAIN"), help="Deterministic engineering fixture only.")
+    parser.add_argument(
+        "--action",
+        choices=("KEEP", "SUPERSEDE", "ABSTAIN"),
+        help="Deterministic engineering fixture only.",
+    )
     parser.add_argument(
         "--hidden-input",
         action="store_true",
@@ -272,8 +286,14 @@ def main() -> int:
             previous_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
             raise SystemExit(f"cannot resume with invalid manifest: {manifest_path}") from exc
-    effective_provider = "local-rule" if args.system == "rules_controller" and args.action is None else args.provider
-    effective_model_id = "ask/rules-controller-v43" if args.system == "rules_controller" and args.action is None else args.model_id
+    effective_provider = (
+        "local-rule" if args.system == "rules_controller" and args.action is None else args.provider
+    )
+    effective_model_id = (
+        "ask/rules-controller-v43"
+        if args.system == "rules_controller" and args.action is None
+        else args.model_id
+    )
     environment_lock = {"python": sys.version, "pyproject_sha256": sha256_file("pyproject.toml")}
     decoding = {
         "temperature": args.temperature,
@@ -389,7 +409,9 @@ def main() -> int:
     args.out.mkdir(parents=True, exist_ok=True)
     existing_predictions = {
         prediction.public_id: prediction
-        for prediction in (load_predictions_allow_partial(predictions_path) if predictions_path.exists() else [])
+        for prediction in (
+            load_predictions_allow_partial(predictions_path) if predictions_path.exists() else []
+        )
     }
     if args.action is not None:
         validate_system_action(args.system, args.action)
@@ -397,7 +419,9 @@ def main() -> int:
     llm = None
     if static_action is None and args.system in MODEL_BACKED_SYSTEMS:
         if args.provider == "fixture":
-            raise SystemExit("a real system requires a non-fixture provider, or --action for an engineering fixture")
+            raise SystemExit(
+                "a real system requires a non-fixture provider, or --action for an engineering fixture"
+            )
         llm = OpenAICompatibleLLM(
             model_id=args.model_id,
             base_url=args.base_url,
@@ -492,7 +516,12 @@ def main() -> int:
                             public_id=record.public_id,
                             raw_response=raw,
                             metadata={
-                                **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=False, error=str(exc)),
+                                **_raw_metadata(
+                                    response=response,
+                                    parse_attempt=parse_attempt,
+                                    valid_action=False,
+                                    error=str(exc),
+                                ),
                                 "adapter_version": adapter_version,
                                 "system": args.system,
                             },
@@ -512,7 +541,9 @@ def main() -> int:
                         public_id=record.public_id,
                         raw_response=raw,
                         metadata={
-                            **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=True),
+                            **_raw_metadata(
+                                response=response, parse_attempt=parse_attempt, valid_action=True
+                            ),
                             "adapter_version": adapter_version,
                             "system": args.system,
                             "model_action": model_action,
@@ -522,7 +553,10 @@ def main() -> int:
                     break
                 if action is None:
                     raise MGP6V43Error("response did not yield a valid action") from last_error
-            write_prediction_resume_safe(predictions_path, MGP6V43Prediction.model_validate({"public_id": record.public_id, "action": action}))
+            write_prediction_resume_safe(
+                predictions_path,
+                MGP6V43Prediction.model_validate({"public_id": record.public_id, "action": action}),
+            )
         except Exception:
             failures += 1
             manifest.update(
@@ -534,13 +568,29 @@ def main() -> int:
                     "invalid_response_count": invalid_responses,
                     "prompt_tokens": prompt_tokens,
                     "completion_tokens": completion_tokens,
-                    "prediction_count": len(load_predictions_allow_partial(predictions_path) if predictions_path.exists() else []),
+                    "prediction_count": len(
+                        load_predictions_allow_partial(predictions_path)
+                        if predictions_path.exists()
+                        else []
+                    ),
                 }
             )
             _write_manifest(manifest_path, manifest)
             raise
     predictions = load_predictions(predictions_path, (record.public_id for record in records))
-    manifest.update({"complete": True, "prediction_sha256": sha256_file(predictions_path), "wall_clock_seconds": round(time.perf_counter() - started, 3), "failure_count": failures, "retry_count": retries, "invalid_response_count": invalid_responses, "prompt_tokens": prompt_tokens, "completion_tokens": completion_tokens, "prediction_count": len(predictions)})
+    manifest.update(
+        {
+            "complete": True,
+            "prediction_sha256": sha256_file(predictions_path),
+            "wall_clock_seconds": round(time.perf_counter() - started, 3),
+            "failure_count": failures,
+            "retry_count": retries,
+            "invalid_response_count": invalid_responses,
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "prediction_count": len(predictions),
+        }
+    )
     _write_manifest(manifest_path, manifest)
     print(f"[mgp6-v43] wrote {predictions_path} ({len(predictions)} predictions)")
     return 0

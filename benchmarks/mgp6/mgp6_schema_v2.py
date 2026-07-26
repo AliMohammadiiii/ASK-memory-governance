@@ -174,7 +174,9 @@ class MGP6Example(BaseModel):
                     continue
                 target = state_by_id.get(record.supersedes_id)
                 if target is None:
-                    raise ValueError(f"dangling supersedes_id in {state_name}: {record.supersedes_id}")
+                    raise ValueError(
+                        f"dangling supersedes_id in {state_name}: {record.supersedes_id}"
+                    )
                 if target.status != "superseded" or target.id == record.id:
                     raise ValueError(
                         f"{state_name} supersedes_id must target a different superseded record"
@@ -222,18 +224,24 @@ class MGP6Example(BaseModel):
         gold_active = {r.id: r for r in active}
         if self.gold_action == "SUPERSEDE":
             replaced = [
-                r for r in self.gold_memory_state if r.id in initial_active and r.status == "superseded"
+                r
+                for r in self.gold_memory_state
+                if r.id in initial_active and r.status == "superseded"
             ]
             successors = [r for r in active if r.supersedes_id in initial_active]
             if len(replaced) != 1 or len(successors) != 1:
-                raise ValueError("SUPERSEDE requires exactly one retained predecessor and one successor")
+                raise ValueError(
+                    "SUPERSEDE requires exactly one retained predecessor and one successor"
+                )
             predecessor = replaced[0]
             initial_predecessor = initial_active[predecessor.id]
             if predecessor.model_copy(update={"status": "active"}) != initial_predecessor:
                 raise ValueError("SUPERSEDE may change only the predecessor status")
             successor = successors[0]
             if successor.supersedes_id != predecessor.id or successor.type != predecessor.type:
-                raise ValueError("SUPERSEDE successor must replace the retained same-type predecessor")
+                raise ValueError(
+                    "SUPERSEDE successor must replace the retained same-type predecessor"
+                )
             if memory_value(successor.text).casefold() == memory_value(predecessor.text).casefold():
                 raise ValueError("SUPERSEDE successor must contain a different value")
         elif self.gold_action == "KEEP":

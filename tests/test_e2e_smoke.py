@@ -40,7 +40,9 @@ def _two_session_fixture(tmp_path: Path) -> Path:
         LongMemEvalSession(
             session_id="lme-s-test-B",
             turns=(
-                LongMemEvalTurn(role="user", content="Actually, I don't like coffee anymore. I switched to tea."),
+                LongMemEvalTurn(
+                    role="user", content="Actually, I don't like coffee anymore. I switched to tea."
+                ),
                 LongMemEvalTurn(role="assistant", content="Understood, tea now."),
             ),
             question="Does the user still like coffee?",

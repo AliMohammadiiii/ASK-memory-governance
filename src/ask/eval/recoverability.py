@@ -30,7 +30,9 @@ class RecoverabilityResult:
 
     @property
     def recoverable(self) -> bool:
-        return self.revision_occurred and self.superseded_record_present and self.lineage_edge_present
+        return (
+            self.revision_occurred and self.superseded_record_present and self.lineage_edge_present
+        )
 
 
 def recoverability_for_scenario(

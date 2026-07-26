@@ -54,18 +54,20 @@ class Mem0Adapter(ExternalAdapter):
         except ImportError as exc:
             raise SystemExit(
                 "mem0 not installed: pip install 'mem0ai==2.0.11' "
-                "qdrant-client sentence-transformers") from exc
-        
+                "qdrant-client sentence-transformers"
+            ) from exc
+
         modal_url = os.environ.get("MODAL_ENDPOINT_URL")
         if modal_url:
             import openai
+
             modal_base_url = f"{modal_url.rstrip('/')}/v1"
-            
+
             def make_patched_init(original_init):
                 def patched_init(self, *args, **kwargs):
                     kwargs["base_url"] = modal_base_url
                     kwargs["api_key"] = "dummy"
-                    
+
                     default_headers = kwargs.get("default_headers") or {}
                     m_key = os.getenv("MODAL_KEY")
                     m_secret = os.getenv("MODAL_SECRET")
@@ -74,8 +76,9 @@ class Mem0Adapter(ExternalAdapter):
                     if m_secret:
                         default_headers["Modal-Secret"] = m_secret
                     kwargs["default_headers"] = default_headers
-                    
+
                     original_init(self, *args, **kwargs)
+
                 return patched_init
 
             for client_cls in (openai.OpenAI, openai.AsyncOpenAI):
@@ -84,17 +87,26 @@ class Mem0Adapter(ExternalAdapter):
         self._tmp = tempfile.mkdtemp(prefix="mgp6_mem0_")
         config = {
             "history_db_path": os.path.join(self._tmp, "history.db"),
-            "llm": {"provider": "openai",
-                    "config": {"model": MODEL, "temperature": 0.0,
-                               "max_tokens": 800}},
-            "embedder": {"provider": "huggingface",
-                         "config": {"model": "sentence-transformers/all-MiniLM-L6-v2",
-                                    "embedding_dims": 384}},
-            "vector_store": {"provider": "qdrant",
-                             "config": {"path": self._tmp,
-                                        "collection_name": "mgp6_ext",
-                                        "embedding_model_dims": 384,
-                                        "on_disk": False}},
+            "llm": {
+                "provider": "openai",
+                "config": {"model": MODEL, "temperature": 0.0, "max_tokens": 800},
+            },
+            "embedder": {
+                "provider": "huggingface",
+                "config": {
+                    "model": "sentence-transformers/all-MiniLM-L6-v2",
+                    "embedding_dims": 384,
+                },
+            },
+            "vector_store": {
+                "provider": "qdrant",
+                "config": {
+                    "path": self._tmp,
+                    "collection_name": "mgp6_ext",
+                    "embedding_model_dims": 384,
+                    "on_disk": False,
+                },
+            },
         }
         self.memory = Memory.from_config(config)
         self.user_id = "unset"
@@ -107,28 +119,31 @@ class Mem0Adapter(ExternalAdapter):
         except Exception:  # noqa: BLE001 - fresh user has nothing to delete
             pass
 
-    def seed(self, records: list[dict[str, Any]],
-             dialogue: list[dict[str, str]]) -> None:
-        facts = [r.get("text", "") for r in records
-                 if r.get("status") == "active" and r.get("text")]
+    def seed(self, records: list[dict[str, Any]], dialogue: list[dict[str, str]]) -> None:
+        facts = [
+            r.get("text", "") for r in records if r.get("status") == "active" and r.get("text")
+        ]
         if facts:
             # infer=False installs the prior state verbatim (ground truth).
-            self.memory.add([{"role": "user", "content": t} for t in facts],
-                            user_id=self.user_id, infer=False)
-        turns = [{"role": m.get("role", "user"), "content": m.get("content", "")}
-                 for m in dialogue if m.get("content")]
+            self.memory.add(
+                [{"role": "user", "content": t} for t in facts], user_id=self.user_id, infer=False
+            )
+        turns = [
+            {"role": m.get("role", "user"), "content": m.get("content", "")}
+            for m in dialogue
+            if m.get("content")
+        ]
         if turns:
             self.memory.add(turns, user_id=self.user_id, infer=False)
 
     def write(self, text: str) -> WriteObservation:
-        res = self.memory.add([{"role": "user", "content": text}],
-                              user_id=self.user_id, infer=True)
-        events = [str(r.get("event", "")).upper()
-                  for r in (res or {}).get("results", [])]
+        res = self.memory.add([{"role": "user", "content": text}], user_id=self.user_id, infer=True)
+        events = [str(r.get("event", "")).upper() for r in (res or {}).get("results", [])]
         return WriteObservation(
             replaced_old=any(e in ("UPDATE", "DELETE") for e in events),
             committed_new=any(e in ("ADD", "UPDATE") for e in events),
-            raw={"events": events})
+            raw={"events": events},
+        )
 
     def snapshot(self) -> list[str]:
         res = self.memory.get_all(filters={"user_id": self.user_id})
@@ -146,12 +161,18 @@ class Mem0Adapter(ExternalAdapter):
     def meta(self) -> dict[str, Any]:
         try:
             import mem0
+
             version = getattr(mem0, "__version__", "unknown")
         except ImportError:
             version = "unknown"
-        return {"mem0_version": version, "llm_model": MODEL,
-                "embedder": "all-MiniLM-L6-v2", "vector_store": "qdrant(local)",
-                "history_db": "isolated-temp", "telemetry": "disabled"}
+        return {
+            "mem0_version": version,
+            "llm_model": MODEL,
+            "embedder": "all-MiniLM-L6-v2",
+            "vector_store": "qdrant(local)",
+            "history_db": "isolated-temp",
+            "telemetry": "disabled",
+        }
 
 
 if __name__ == "__main__":

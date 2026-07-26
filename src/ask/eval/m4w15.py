@@ -93,7 +93,9 @@ def validate_prerequisites(
             report = _read_json(mgp6_report)
             n_scenarios = int(report.get("n_scenarios") or 0)
             if n_scenarios < expected_mgp6_n:
-                warnings.append(f"{mgp6_report} has n_scenarios={n_scenarios}, expected {expected_mgp6_n}")
+                warnings.append(
+                    f"{mgp6_report} has n_scenarios={n_scenarios}, expected {expected_mgp6_n}"
+                )
     return PrerequisiteStatus(tuple(missing), tuple(warnings))
 
 
@@ -204,7 +206,9 @@ def plot_rc_curve(
     ax.plot(xs, ys, marker="o", linewidth=1.8)
     for x, y, theta in zip(xs, ys, labels):
         if theta in {0.0, 0.5, 1.0}:
-            ax.annotate(f"{theta:.2f}", (x, y), textcoords="offset points", xytext=(4, 5), fontsize=8)
+            ax.annotate(
+                f"{theta:.2f}", (x, y), textcoords="offset points", xytext=(4, 5), fontsize=8
+            )
     ax.set_xlabel("Coverage (non-abstain fraction)")
     ax.set_ylabel("Revision correctness on committed set")
     ax.set_title("M4-W15 RC@C Sweep")
@@ -253,7 +257,9 @@ def collect_main_table_rows(
     for idx, alias in enumerate(SYSTEM_ALIASES):
         row: dict[str, str] = {"System": SYSTEM_LABELS[alias]}
         row.update(_longmemeval_cells(m4w13_root / alias / "report.json"))
-        row["SMRR"] = _format_cell(*_smrr_cell(m4w13_root / alias, n_bootstrap=n_bootstrap, seed=seed + idx))
+        row["SMRR"] = _format_cell(
+            *_smrr_cell(m4w13_root / alias, n_bootstrap=n_bootstrap, seed=seed + idx)
+        )
         row.update(_mgp6_cells(m4w14_root / alias / "mgp6_report.json"))
         rows.append(row)
     return rows
@@ -317,13 +323,21 @@ def _mgp6_cells(report_path: Path) -> dict[str, str]:
     action_ci = report.get("action_accuracy_ci") or [None, None]
     over_ci = report.get("over_forgetting_ci") or [None, None]
     under_ci = report.get("under_forgetting_ci") or [None, None]
-    cells["Revision correctness"] = _format_cell(report.get("action_accuracy"), action_ci[0], action_ci[1])
-    cells["Over-forgetting"] = _format_cell(report.get("over_forgetting_rate"), over_ci[0], over_ci[1])
-    cells["Under-forgetting"] = _format_cell(report.get("under_forgetting_rate"), under_ci[0], under_ci[1])
+    cells["Revision correctness"] = _format_cell(
+        report.get("action_accuracy"), action_ci[0], action_ci[1]
+    )
+    cells["Over-forgetting"] = _format_cell(
+        report.get("over_forgetting_rate"), over_ci[0], over_ci[1]
+    )
+    cells["Under-forgetting"] = _format_cell(
+        report.get("under_forgetting_rate"), under_ci[0], under_ci[1]
+    )
     return cells
 
 
-def _smrr_cell(run_dir: Path, *, n_bootstrap: int, seed: int) -> tuple[float | None, float | None, float | None]:
+def _smrr_cell(
+    run_dir: Path, *, n_bootstrap: int, seed: int
+) -> tuple[float | None, float | None, float | None]:
     rows = _read_jsonl(run_dir / "predictions.jsonl")
     if not rows:
         rows = _read_jsonl(run_dir / "answers.jsonl")
@@ -332,7 +346,9 @@ def _smrr_cell(run_dir: Path, *, n_bootstrap: int, seed: int) -> tuple[float | N
         extras = row.get("extras") or {}
         if extras.get("smrr_status") == "not_computed_longmemeval_lacks_gold_supersession":
             continue
-        denominator = int(extras.get("smrr_denominator", len(extras.get("retrieval_session_ids") or [])) or 0)
+        denominator = int(
+            extras.get("smrr_denominator", len(extras.get("retrieval_session_ids") or [])) or 0
+        )
         stale = int(extras.get("stale_retrieval_count") or 0)
         pairs.append((stale, denominator))
     denominator_total = sum(denominator for _stale, denominator in pairs)
@@ -379,7 +395,9 @@ def _format_cell(
     value_f = float(value)
     low_f = value_f if ci_low is None else float(ci_low)
     high_f = value_f if ci_high is None else float(ci_high)
-    return f"{value_f * 100:.{decimals}f}% [{low_f * 100:.{decimals}f}%, {high_f * 100:.{decimals}f}%]"
+    return (
+        f"{value_f * 100:.{decimals}f}% [{low_f * 100:.{decimals}f}%, {high_f * 100:.{decimals}f}%]"
+    )
 
 
 def _bootstrap_mean_ci(values: list[bool], *, n_bootstrap: int, seed: int) -> tuple[float, float]:
@@ -426,7 +444,7 @@ def _infer_threshold(threshold_dir: Path) -> float:
     name = threshold_dir.name
     if not name.startswith(prefix):
         raise ValueError(f"cannot infer threshold from directory name: {threshold_dir}")
-    return float(name[len(prefix):])
+    return float(name[len(prefix) :])
 
 
 def _first_existing(paths: Iterable[Path], *, required: bool = True) -> Path | None:

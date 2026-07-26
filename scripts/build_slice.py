@@ -50,12 +50,17 @@ def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--in", dest="src", required=True, type=Path)
     p.add_argument(
-        "--out", dest="dst", required=True, type=Path,
+        "--out",
+        dest="dst",
+        required=True,
+        type=Path,
         help="Output JSONL; default convention: data/slices/longmemeval_s_<n>_seed<seed>.jsonl",
     )
-    p.add_argument("--n", default="50",
-                   help="Slice size, or 'all'/'full'/0 for the entire release "
-                        "(no sampling). Default 50.")
+    p.add_argument(
+        "--n",
+        default="50",
+        help="Slice size, or 'all'/'full'/0 for the entire release (no sampling). Default 50.",
+    )
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
 
@@ -68,8 +73,7 @@ def main() -> int:
         try:
             n = int(args.n)
         except ValueError:
-            print(f"ERROR: --n must be an integer or 'all'; got {args.n!r}",
-                  file=sys.stderr)
+            print(f"ERROR: --n must be an integer or 'all'; got {args.n!r}", file=sys.stderr)
             return 2
     else:
         n = -1  # resolved to the full pool size after loading

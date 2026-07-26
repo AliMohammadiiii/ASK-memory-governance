@@ -1,22 +1,60 @@
 # Reproducibility
 
+## Supported environment
+
+ASK supports CPython 3.11 and 3.12. Start from a clean checkout:
+
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
-make setup
-make repo-check
-make test
-make validate-data
-make build
+python -m pip install --upgrade pip
+python -m pip install -e '.[dev]'
 ```
 
-For OpenRouter-backed experiments:
+`bash scripts/setup_venv.sh` performs the same bootstrap without deleting an
+existing environment. Model, schema, and document tooling are optional extras
+and are not needed for the offline verification gate.
+
+## Verification gates
+
+The fast offline gate is:
 
 ```bash
-cp .env.example .env
-# Set a rotated OPENROUTER_API_KEY in your shell or secret manager.
-export OPENROUTER_API_KEY='...'
-cat configs/models/openrouter_qwen_gemma.yaml
+make check
 ```
 
-Do not pass secrets as CLI arguments because shell histories and run manifests may capture them. Record model identifiers, prompt hashes, code commit, dataset checksum, seed, and scorer version for every run.
+Before a source release, run:
+
+```bash
+make release-check
+```
+
+The release gate covers repository metadata and secret scanning, lint, supported
+type checking, bytecode compilation, shell syntax, the complete test suite,
+strict MGP-6 v2 data validation, package build, and bibliography audit. Network
+or non-redistributed data is not silently fetched.
+
+## Run provenance
+
+Every model-backed run must record:
+
+- Git commit and dirty-state flag;
+- exact input and configuration hashes;
+- requested and actual model/judge identifiers;
+- provider and fallback policy;
+- prompt or prompt-bundle hash;
+- random seed and scorer version;
+- prediction coverage, failures, retries, and invalid responses.
+
+Do not pass credentials on the command line. Keep external datasets outside the
+repository and record checksums rather than machine-local paths or raw data.
+
+## Release reproducibility
+
+The release builder includes only Git-tracked public candidates and requires a
+clean worktree. Generated repositories include a file manifest with size and
+SHA-256 for every included file. `--allow-dirty` is limited to local validation
+and must not be used for a published artifact.
+
+Benchmark-specific commands and evidence eligibility are documented in
+`reproduce_results.md`.

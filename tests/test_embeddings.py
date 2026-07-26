@@ -132,7 +132,9 @@ def test_ollama_embedder_uses_api_embed_and_normalizes(monkeypatch) -> None:
     assert calls[0][2]["input"] == ["alpha", "beta"]
 
 
-def test_openai_compatible_embedder_uses_v1_embeddings_and_normalizes(monkeypatch, tmp_path) -> None:
+def test_openai_compatible_embedder_uses_v1_embeddings_and_normalizes(
+    monkeypatch, tmp_path
+) -> None:
     calls = []
 
     class _Response:
@@ -182,7 +184,9 @@ def test_openai_compatible_embedder_uses_v1_embeddings_and_normalizes(monkeypatc
     assert calls[0][3]["model"] == "auto"
     assert calls[0][3]["input"] == ["alpha", "beta"]
 
-    rows = [json.loads(line) for line in (tmp_path / "embedding_calls.jsonl").read_text().splitlines()]
+    rows = [
+        json.loads(line) for line in (tmp_path / "embedding_calls.jsonl").read_text().splitlines()
+    ]
     assert rows[0]["n_texts"] == 2
     assert rows[0]["embedding_dim"] == 3
 
@@ -291,12 +295,8 @@ def test_openai_compatible_embedder_bypasses_proxy_for_loopback(monkeypatch) -> 
     def forbidden_urlopen(*_args, **_kwargs):
         raise AssertionError("loopback request used the system-proxy opener")
 
-    monkeypatch.setattr(
-        "ask.baselines.embeddings.urllib.request.build_opener", fake_build_opener
-    )
-    monkeypatch.setattr(
-        "ask.baselines.embeddings.urllib.request.urlopen", forbidden_urlopen
-    )
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.build_opener", fake_build_opener)
+    monkeypatch.setattr("ask.baselines.embeddings.urllib.request.urlopen", forbidden_urlopen)
 
     e = OpenAICompatibleEmbedder(
         model_id="minilm",

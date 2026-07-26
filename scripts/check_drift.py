@@ -61,8 +61,7 @@ def _check_pair(archived: Path, current: Path) -> tuple[str, list[str], bool]:
         if not ok:
             any_drift = True
         out.append(
-            f"| {comp} | {a_pct:.1f}% | {c_pct:.1f}% | "
-            f"{delta:+.1f} | {'✓' if ok else '✗'} |"
+            f"| {comp} | {a_pct:.1f}% | {c_pct:.1f}% | {delta:+.1f} | {'✓' if ok else '✗'} |"
         )
 
     a_overall = a.get("overall_accuracy", 0.0) * 100
@@ -88,22 +87,27 @@ def main() -> int:
         required=True,
         type=Path,
         metavar=("ARCHIVED.json", "CURRENT.json"),
-        help="A pair of (archived, current) report.json paths. Repeat for "
-             "multiple baselines.",
+        help="A pair of (archived, current) report.json paths. Repeat for multiple baselines.",
     )
-    p.add_argument("--tolerance-pp", type=float, default=_TOLERANCE_PP,
-                   help="Drift tolerance in percentage points; default 1.0.")
+    p.add_argument(
+        "--tolerance-pp",
+        type=float,
+        default=_TOLERANCE_PP,
+        help="Drift tolerance in percentage points; default 1.0.",
+    )
     args = p.parse_args()
 
     print("# M1-W4 evaluator-drift report")
     print()
     print(f"Tolerance: ±{args.tolerance_pp:.1f} pp on per-competency accuracy.")
     print()
-    print("§3.4 acceptance: re-runs of W2 and W3 baselines drift from "
-          "the archived numbers by less than ±1pp. Larger drift means the "
-          "evaluator was modified between weeks and earlier numbers are no "
-          "longer comparable. Document the offending row(s) below; the "
-          "Gate G1 decision must reflect this.")
+    print(
+        "§3.4 acceptance: re-runs of W2 and W3 baselines drift from "
+        "the archived numbers by less than ±1pp. Larger drift means the "
+        "evaluator was modified between weeks and earlier numbers are no "
+        "longer comparable. Document the offending row(s) below; the "
+        "Gate G1 decision must reflect this."
+    )
     print()
 
     any_overall_drift = False
@@ -123,15 +127,19 @@ def main() -> int:
     print("---")
     if any_overall_drift:
         print()
-        print("**Verdict: drift detected** — at least one row exceeds the "
-              "±1pp tolerance. The G1 gate decision must record this and "
-              "either (a) explain the drift (a fix to the evaluator), or "
-              "(b) re-run the prior weeks before merging the table.")
+        print(
+            "**Verdict: drift detected** — at least one row exceeds the "
+            "±1pp tolerance. The G1 gate decision must record this and "
+            "either (a) explain the drift (a fix to the evaluator), or "
+            "(b) re-run the prior weeks before merging the table."
+        )
         return 2
     print()
-    print("**Verdict: no drift** — all per-competency accuracies match "
-          "their archived counterparts within ±1pp. Cross-week comparisons "
-          "in NOTES/m1w4_results.md are valid.")
+    print(
+        "**Verdict: no drift** — all per-competency accuracies match "
+        "their archived counterparts within ±1pp. Cross-week comparisons "
+        "in NOTES/m1w4_results.md are valid."
+    )
     return 0
 
 

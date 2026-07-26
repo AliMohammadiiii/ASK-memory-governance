@@ -290,9 +290,7 @@ class FlatVectorBaseline:
                 "retrieval_scores": [r.score for r in retrieved],
                 "retrieval_session_ids": [r.item.session_id for r in retrieved],
                 "retrieval_turn_idxs": [r.item.turn_idx for r in retrieved],
-                "embedder_model_id": getattr(
-                    self.store.embedder, "model_id", "unknown-embedder"
-                ),
+                "embedder_model_id": getattr(self.store.embedder, "model_id", "unknown-embedder"),
                 "memory_session_ids": list(memory_ids),
                 "unresolved_memory_ids": unresolved,
                 "supporting_session_ids": list(session.supporting_session_ids),

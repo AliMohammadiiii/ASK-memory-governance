@@ -83,9 +83,7 @@ def test_build_failed_slice_fails_loudly_on_disjoint_slice_and_run(tmp_path: Pat
     _write_judgments(run_dir, [{"session_id": "x", "correct": False}])
 
     with pytest.raises(ValueError, match="share no session IDs"):
-        build_failed_slice(
-            source_slice=source, run=run_dir, out=tmp_path / "failed.jsonl"
-        )
+        build_failed_slice(source_slice=source, run=run_dir, out=tmp_path / "failed.jsonl")
 
 
 def test_build_failed_slice_fails_loudly_when_no_judgments_found(tmp_path: Path) -> None:
@@ -117,6 +115,4 @@ def test_build_failed_slice_fails_when_failures_absent_from_slice(tmp_path: Path
         ],
     )
     with pytest.raises(ValueError, match="refusing to write an empty failed slice"):
-        build_failed_slice(
-            source_slice=source, run=run_dir, out=tmp_path / "failed.jsonl"
-        )
+        build_failed_slice(source_slice=source, run=run_dir, out=tmp_path / "failed.jsonl")

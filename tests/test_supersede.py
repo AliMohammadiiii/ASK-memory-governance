@@ -26,13 +26,17 @@ def test_supersede_marks_prior_inactive_and_links_lineage(db: sqlite3.Connection
         prior_id=old,
     )
 
-    assert db.execute(
-        "SELECT status FROM memory_items WHERE id = ?", (old,)
-    ).fetchone()["status"] == "superseded"
+    assert (
+        db.execute("SELECT status FROM memory_items WHERE id = ?", (old,)).fetchone()["status"]
+        == "superseded"
+    )
 
-    assert db.execute(
-        "SELECT status, supersedes_id FROM memory_items WHERE id = ?", (new,)
-    ).fetchone()["supersedes_id"] == old
+    assert (
+        db.execute(
+            "SELECT status, supersedes_id FROM memory_items WHERE id = ?", (new,)
+        ).fetchone()["supersedes_id"]
+        == old
+    )
 
     rel = db.execute(
         """SELECT relation FROM memory_relations
@@ -47,9 +51,7 @@ def test_retrieve_active_excludes_superseded(db: sqlite3.Connection) -> None:
         db,
         MemoryItem(id=None, type=MemoryType.STABLE_PREF, text="likes coffee", confidence=0.9),
     )
-    b_item = MemoryItem(
-        id=None, type=MemoryType.STABLE_PREF, text="drinks tea", confidence=0.85
-    )
+    b_item = MemoryItem(id=None, type=MemoryType.STABLE_PREF, text="drinks tea", confidence=0.85)
     supersede(db, new_item=b_item, prior_id=a)
 
     active = retrieve_active(db)
@@ -69,7 +71,7 @@ def test_supersede_is_atomic_on_bad_prior(db: sqlite3.Connection) -> None:
         type=MemoryType.STABLE_PREF,
         text="x",
         confidence=0.9,
-        supersedes_id=12345,   # will conflict with prior_id arg
+        supersedes_id=12345,  # will conflict with prior_id arg
     )
     with pytest.raises(ValueError):
         supersede(db, new_item=bad_new, prior_id=999)

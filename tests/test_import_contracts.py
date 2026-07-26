@@ -30,9 +30,7 @@ def test_pipeline_and_naive_overwrite_public_imports_are_order_independent() -> 
     # the contract under test is import-order independence, not installation.
     env = dict(os.environ)
     src_root = str(Path(ask.__file__).resolve().parents[1])
-    env["PYTHONPATH"] = os.pathsep.join(
-        p for p in (src_root, env.get("PYTHONPATH")) if p
-    )
+    env["PYTHONPATH"] = os.pathsep.join(p for p in (src_root, env.get("PYTHONPATH")) if p)
     result = subprocess.run(
         [sys.executable, "-c", code],
         check=False,

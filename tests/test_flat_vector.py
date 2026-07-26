@@ -188,9 +188,7 @@ def test_retrieved_memory_block_contains_top_k_turns_by_cosine_similarity() -> N
     # Similarity is exactly 1.0 (same string → same hash → same vector).
     assert extras["retrieval_scores"][0] == pytest.approx(1.0, abs=1e-5)
     # Scores are descending.
-    assert extras["retrieval_scores"] == sorted(
-        extras["retrieval_scores"], reverse=True
-    )
+    assert extras["retrieval_scores"] == sorted(extras["retrieval_scores"], reverse=True)
 
 
 def test_no_current_session_leakage_in_retrieved_block() -> None:
@@ -331,9 +329,7 @@ def test_cleaned_schema_indexes_haystack_not_oracle_answer_ids() -> None:
 def test_determinism_same_session_same_seed() -> None:
     """End-to-end: same session + same seed → identical answer text + extras."""
     llm = _RecordingLLM(response_text="deterministic answer.")
-    other_session = _session(
-        "sess-prior", [("user", "prior content")], "unused"
-    )
+    other_session = _session("sess-prior", [("user", "prior content")], "unused")
     current_session = _session(
         "sess-now",
         [("user", "current content")],
@@ -410,9 +406,7 @@ def test_per_question_reset_does_not_leak_across_questions() -> None:
     """Indexing question N must not leave question N's items visible to question N+1."""
     llm = _RecordingLLM()
     leak_canary = "Q1_PRIOR_LEAK_CANARY"
-    other_q1 = _session(
-        "sess-q1-prior", [("user", leak_canary)], "unused"
-    )
+    other_q1 = _session("sess-q1-prior", [("user", leak_canary)], "unused")
     q1 = _session(
         "sess-q1",
         [("user", "current")],

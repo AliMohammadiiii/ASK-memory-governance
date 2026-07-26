@@ -48,9 +48,7 @@ class _UnavailableLLM:
 
 
 def test_relation_classifier_propagates_no_response_provider_failure() -> None:
-    classifier = RelationClassifier(
-        StructuredLLM(_UnavailableLLM()), STAGE1, STAGE2
-    )
+    classifier = RelationClassifier(StructuredLLM(_UnavailableLLM()), STAGE1, STAGE2)
 
     with pytest.raises(RuntimeError, match="HTTP 402"):
         classifier.classify(_candidate(), _prior())
@@ -95,10 +93,14 @@ def test_now_instead_update_maps_to_supersede() -> None:
 
 
 def test_timestamp_override_maps_newer_contradiction_to_supersede(tmp_path) -> None:
-    inner = FakeLLM(scripted=deque([
-        '{"logical_relation":"contradict","rationale":"coffee vs tea"}',
-        '{"temporal":"unknown","same_subject":true,"rationale":"ignored timestamps"}',
-    ]))
+    inner = FakeLLM(
+        scripted=deque(
+            [
+                '{"logical_relation":"contradict","rationale":"coffee vs tea"}',
+                '{"temporal":"unknown","same_subject":true,"rationale":"ignored timestamps"}',
+            ]
+        )
+    )
     log_path = tmp_path / "relation_trace.jsonl"
     clf = RelationClassifier(
         StructuredLLM(inner),

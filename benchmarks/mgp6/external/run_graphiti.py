@@ -80,7 +80,6 @@ MAX_COROUTINES = int(
 T0 = datetime(2026, 1, 1, tzinfo=UTC)
 
 
-
 class _NoThinkingCompletions:
     """Inject non-thinking mode into every chat completion."""
 
@@ -90,9 +89,7 @@ class _NoThinkingCompletions:
     async def create(self, *args: Any, **kwargs: Any) -> Any:
         extra_body = dict(kwargs.get("extra_body") or {})
 
-        chat_template_kwargs = dict(
-            extra_body.get("chat_template_kwargs") or {}
-        )
+        chat_template_kwargs = dict(extra_body.get("chat_template_kwargs") or {})
         chat_template_kwargs["enable_thinking"] = False
 
         extra_body["reasoning"] = {"enabled": False}
@@ -104,9 +101,7 @@ class _NoThinkingCompletions:
 
 class _NoThinkingChat:
     def __init__(self, inner: Any) -> None:
-        self.completions = _NoThinkingCompletions(
-            inner.completions
-        )
+        self.completions = _NoThinkingCompletions(inner.completions)
 
 
 class NoThinkingOpenAIClientProxy:
@@ -130,10 +125,7 @@ class PassthroughCrossEncoder(CrossEncoderClient):
     ) -> list[tuple[str, float]]:
         del query
         n = len(passages)
-        return [
-            (passage, float(n - i))
-            for i, passage in enumerate(passages)
-        ]
+        return [(passage, float(n - i)) for i, passage in enumerate(passages)]
 
 
 class GraphitiAdapter(ExternalAdapter):
@@ -185,9 +177,7 @@ class GraphitiAdapter(ExternalAdapter):
 
         # Qwen3.5 thinks by default. Graphiti extraction does not need
         # long chain-of-thought; force direct structured responses.
-        llm_openai_client = NoThinkingOpenAIClientProxy(
-            llm_openai_client
-        )
+        llm_openai_client = NoThinkingOpenAIClientProxy(llm_openai_client)
 
         llm = OpenAIGenericClient(
             config=LLMConfig(
@@ -243,9 +233,7 @@ class GraphitiAdapter(ExternalAdapter):
             max_coroutines=MAX_COROUTINES,
         )
 
-        self._run(
-            self.graphiti.build_indices_and_constraints()
-        )
+        self._run(self.graphiti.build_indices_and_constraints())
 
         self.group_id = "unset"
         self._episode_i = 0
@@ -283,10 +271,7 @@ class GraphitiAdapter(ExternalAdapter):
             )
         )
 
-        print(
-            f"[graphiti-timing] reset={time.perf_counter() - t0:.2f}s "
-            f"group={self.group_id}"
-        )
+        print(f"[graphiti-timing] reset={time.perf_counter() - t0:.2f}s group={self.group_id}")
 
     def _add(
         self,
@@ -301,28 +286,16 @@ class GraphitiAdapter(ExternalAdapter):
 
         result = self._run(
             self.graphiti.add_episode(
-                name=(
-                    f"{self.group_id}-ep"
-                    f"{self._episode_i}"
-                ),
+                name=(f"{self.group_id}-ep{self._episode_i}"),
                 episode_body=body,
                 source_description=desc,
-                reference_time=(
-                    T0
-                    + timedelta(
-                        days=self._episode_i
-                    )
-                ),
+                reference_time=(T0 + timedelta(days=self._episode_i)),
                 source=EpisodeType.message,
                 group_id=self.group_id,
             )
         )
 
-        print(
-            "[graphiti-timing] "
-            f"add_episode[{self._episode_i}]="
-            f"{time.perf_counter() - t0:.2f}s"
-        )
+        print(f"[graphiti-timing] add_episode[{self._episode_i}]={time.perf_counter() - t0:.2f}s")
 
         return result
 
@@ -331,19 +304,12 @@ class GraphitiAdapter(ExternalAdapter):
         records: list[dict[str, Any]],
         dialogue: list[dict[str, str]],
     ) -> None:
-        lines = [
-            f"user: {m.get('content', '')}"
-            for m in dialogue
-            if m.get("content")
-        ]
+        lines = [f"user: {m.get('content', '')}" for m in dialogue if m.get("content")]
 
         lines += [
             f"user: {r.get('text', '')}"
             for r in records
-            if (
-                r.get("status") == "active"
-                and r.get("text")
-            )
+            if (r.get("status") == "active" and r.get("text"))
         ]
 
         if lines:
@@ -370,11 +336,7 @@ class GraphitiAdapter(ExternalAdapter):
             or []
         )
 
-        print(
-            "[graphiti-timing] "
-            f"search={time.perf_counter() - t0:.2f}s "
-            f"k={k}"
-        )
+        print(f"[graphiti-timing] search={time.perf_counter() - t0:.2f}s k={k}")
 
         return result
 
@@ -382,10 +344,7 @@ class GraphitiAdapter(ExternalAdapter):
         self,
         text: str,
     ) -> WriteObservation:
-        before = {
-            e.uuid: e.invalid_at
-            for e in self._edges(text)
-        }
+        before = {e.uuid: e.invalid_at for e in self._edges(text)}
 
         result = self._add(
             f"user: {text}",
@@ -395,12 +354,7 @@ class GraphitiAdapter(ExternalAdapter):
         after_edges = self._edges(text)
 
         newly_invalidated = [
-            e
-            for e in after_edges
-            if (
-                e.invalid_at is not None
-                and before.get(e.uuid) is None
-            )
+            e for e in after_edges if (e.invalid_at is not None and before.get(e.uuid) is None)
         ]
 
         new_edges = (
@@ -413,19 +367,11 @@ class GraphitiAdapter(ExternalAdapter):
         )
 
         return WriteObservation(
-            replaced_old=bool(
-                newly_invalidated
-            ),
-            committed_new=bool(
-                new_edges
-            ),
+            replaced_old=bool(newly_invalidated),
+            committed_new=bool(new_edges),
             raw={
-                "n_new_edges": len(
-                    new_edges
-                ),
-                "n_newly_invalidated": len(
-                    newly_invalidated
-                ),
+                "n_new_edges": len(new_edges),
+                "n_newly_invalidated": len(newly_invalidated),
             },
         )
 
@@ -437,10 +383,7 @@ class GraphitiAdapter(ExternalAdapter):
             "user preference fact value",
             k=40,
         ):
-            if (
-                e.invalid_at is None
-                and e.fact not in seen
-            ):
+            if e.invalid_at is None and e.fact not in seen:
                 seen.add(e.fact)
                 texts.append(e.fact)
 
@@ -457,15 +400,9 @@ class GraphitiAdapter(ExternalAdapter):
             query,
             k=k * 3,
         ):
-            status = (
-                " [outdated]"
-                if e.invalid_at is not None
-                else ""
-            )
+            status = " [outdated]" if e.invalid_at is not None else ""
 
-            out.append(
-                f"{e.fact}{status}"
-            )
+            out.append(f"{e.fact}{status}")
 
             if len(out) >= k:
                 break
@@ -474,9 +411,7 @@ class GraphitiAdapter(ExternalAdapter):
 
     def close(self) -> None:
         try:
-            self._run(
-                self.graphiti.close()
-            )
+            self._run(self.graphiti.close())
         except Exception as exc:  # noqa: BLE001
             print(
                 "[graphiti] close warning:",
@@ -503,8 +438,4 @@ class GraphitiAdapter(ExternalAdapter):
 
 
 if __name__ == "__main__":
-    raise SystemExit(
-        run_external(
-            GraphitiAdapter
-        )
-    )
+    raise SystemExit(run_external(GraphitiAdapter))

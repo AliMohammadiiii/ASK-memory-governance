@@ -99,7 +99,9 @@ def majority_label(labels: Iterable[str]) -> str:
     return min(ACTIONS, key=lambda label: (-counts[label], ACTIONS.index(label)))
 
 
-def fit_lookup(rows: list[dict[str, Any]], fields: tuple[str, ...]) -> tuple[dict[tuple[str, ...], str], str]:
+def fit_lookup(
+    rows: list[dict[str, Any]], fields: tuple[str, ...]
+) -> tuple[dict[tuple[str, ...], str], str]:
     groups: dict[tuple[str, ...], list[str]] = defaultdict(list)
     for row in rows:
         key = tuple(str(row.get(field)) for field in fields)
@@ -113,7 +115,9 @@ def evaluate_lookup(
     train: list[dict[str, Any]], test: list[dict[str, Any]], fields: tuple[str, ...]
 ) -> dict[str, Any]:
     lookup, fallback = fit_lookup(train, fields)
-    predicted = [lookup.get(tuple(str(row.get(field)) for field in fields), fallback) for row in test]
+    predicted = [
+        lookup.get(tuple(str(row.get(field)) for field in fields), fallback) for row in test
+    ]
     gold = [row["gold_action"] for row in test]
     return {
         "features": list(fields),
@@ -161,7 +165,9 @@ def cluster_bootstrap(
     for _ in range(samples):
         sampled = [rng.choice(keys) for _ in keys]
         sampled_ids = [scenario_id for key in sampled for scenario_id in clusters[key]]
-        item_weighted.append(sum(values[scenario_id] for scenario_id in sampled_ids) / len(sampled_ids))
+        item_weighted.append(
+            sum(values[scenario_id] for scenario_id in sampled_ids) / len(sampled_ids)
+        )
         cluster_macro.append(
             sum(
                 sum(values[scenario_id] for scenario_id in clusters[key]) / len(clusters[key])
@@ -179,13 +185,21 @@ def cluster_bootstrap(
     }
 
 
-def prediction_metrics(rows: list[dict[str, Any]], predictions: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def prediction_metrics(
+    rows: list[dict[str, Any]], predictions: dict[str, dict[str, Any]]
+) -> dict[str, Any]:
     missing = [row["scenario_id"] for row in rows if row["scenario_id"] not in predictions]
-    predicted = [predictions.get(row["scenario_id"], {}).get("predicted_action", "INVALID") for row in rows]
+    predicted = [
+        predictions.get(row["scenario_id"], {}).get("predicted_action", "INVALID") for row in rows
+    ]
     gold = [row["gold_action"] for row in rows]
-    false_commits = sum(g == "ABSTAIN" and p != "ABSTAIN" for g, p in zip(gold, predicted, strict=True))
+    false_commits = sum(
+        g == "ABSTAIN" and p != "ABSTAIN" for g, p in zip(gold, predicted, strict=True)
+    )
     abstain_n = sum(g == "ABSTAIN" for g in gold)
-    missed_updates = sum(g == "SUPERSEDE" and p != "SUPERSEDE" for g, p in zip(gold, predicted, strict=True))
+    missed_updates = sum(
+        g == "SUPERSEDE" and p != "SUPERSEDE" for g, p in zip(gold, predicted, strict=True)
+    )
     update_n = sum(g == "SUPERSEDE" for g in gold)
     unnecessary_abstentions = sum(
         g != "ABSTAIN" and p == "ABSTAIN" for g, p in zip(gold, predicted, strict=True)
@@ -201,7 +215,9 @@ def prediction_metrics(rows: list[dict[str, Any]], predictions: dict[str, dict[s
         "false_commit_count": [false_commits, abstain_n],
         "missed_update_rate": missed_updates / update_n if update_n else None,
         "missed_update_count": [missed_updates, update_n],
-        "unnecessary_abstention_rate": unnecessary_abstentions / non_abstain_n if non_abstain_n else None,
+        "unnecessary_abstention_rate": unnecessary_abstentions / non_abstain_n
+        if non_abstain_n
+        else None,
         "unnecessary_abstention_count": [unnecessary_abstentions, non_abstain_n],
         "per_action_f1": {label: f1_for(gold, predicted, label) for label in ACTIONS},
     }
@@ -212,12 +228,19 @@ def prediction_metrics(rows: list[dict[str, Any]], predictions: dict[str, dict[s
     if all(isinstance(value, (int, float)) for value in confidences):
         conf = [float(value) for value in confidences]
         correct = [float(g == p) for g, p in zip(gold, predicted, strict=True)]
-        result["top_label_brier"] = sum((c - y) ** 2 for c, y in zip(conf, correct, strict=True)) / len(rows)
+        result["top_label_brier"] = sum(
+            (c - y) ** 2 for c, y in zip(conf, correct, strict=True)
+        ) / len(rows)
         bins: list[dict[str, Any]] = []
         ece = 0.0
         for index in range(10):
             low, high = index / 10, (index + 1) / 10
-            members = [i for i, value in enumerate(conf) if low <= value <= high if index == 9 or value < high]
+            members = [
+                i
+                for i, value in enumerate(conf)
+                if low <= value <= high
+                if index == 9 or value < high
+            ]
             if not members:
                 continue
             mean_confidence = sum(conf[i] for i in members) / len(members)
@@ -240,12 +263,19 @@ def prediction_metrics(rows: list[dict[str, Any]], predictions: dict[str, dict[s
             selected = ordered[:count]
             selected_accuracy = sum(correct[i] for i in selected) / count
             result["risk_coverage"].append(
-                {"coverage": coverage, "n": count, "accuracy": selected_accuracy, "risk": 1 - selected_accuracy}
+                {
+                    "coverage": coverage,
+                    "n": count,
+                    "accuracy": selected_accuracy,
+                    "risk": 1 - selected_accuracy,
+                }
             )
     return result
 
 
-def expected_cost(rows: list[dict[str, Any]], predictions: dict[str, dict[str, Any]]) -> dict[str, float]:
+def expected_cost(
+    rows: list[dict[str, Any]], predictions: dict[str, dict[str, Any]]
+) -> dict[str, float]:
     regimes = {
         "balanced": {"false_commit": 1.0, "missed_update": 1.0, "other": 1.0},
         "commit_averse": {"false_commit": 5.0, "missed_update": 1.0, "other": 2.0},
@@ -257,7 +287,13 @@ def expected_cost(rows: list[dict[str, Any]], predictions: dict[str, dict[str, A
         predicted = predictions.get(row["scenario_id"], {}).get("predicted_action", "INVALID")
         if gold == predicted:
             continue
-        error = "false_commit" if gold == "ABSTAIN" and predicted != "ABSTAIN" else "missed_update" if gold == "SUPERSEDE" else "other"
+        error = (
+            "false_commit"
+            if gold == "ABSTAIN" and predicted != "ABSTAIN"
+            else "missed_update"
+            if gold == "SUPERSEDE"
+            else "other"
+        )
         for name, costs in regimes.items():
             totals[name] += costs[error]
     return {name: total / len(rows) for name, total in totals.items()}
@@ -308,7 +344,13 @@ def audit(
             "conditional_entropy_bits": cond,
             "normalized_information_gain": 1 - cond / action_entropy if action_entropy else 0.0,
             "full_distribution": {
-                value: dict(sorted(Counter(row["gold_action"] for row in rows if str(row.get(field)) == value).items()))
+                value: dict(
+                    sorted(
+                        Counter(
+                            row["gold_action"] for row in rows if str(row.get(field)) == value
+                        ).items()
+                    )
+                )
                 for value in sorted({str(row.get(field)) for row in rows})
             },
             "train_dev_lookup": evaluate_lookup(train_dev, test, (field,)),
@@ -326,7 +368,9 @@ def audit(
     for offset, (name, values) in enumerate(predictions.items()):
         test_metrics = prediction_metrics(test, values)
         correctness = {
-            row["scenario_id"]: float(values.get(row["scenario_id"], {}).get("predicted_action") == row["gold_action"])
+            row["scenario_id"]: float(
+                values.get(row["scenario_id"], {}).get("predicted_action") == row["gold_action"]
+            )
             for row in test
         }
         test_metrics["template_family_bootstrap"] = cluster_bootstrap(
@@ -344,7 +388,10 @@ def audit(
             seed=seed + 100 + offset,
         )
         test_metrics["expected_cost"] = expected_cost(test, values)
-        systems[name] = {"source": str(prediction_paths[name].relative_to(ROOT)), "test": test_metrics}
+        systems[name] = {
+            "source": str(prediction_paths[name].relative_to(ROOT)),
+            "test": test_metrics,
+        }
 
     paired: dict[str, Any] = {}
     if "rule" in predictions and "llm_structured" in predictions:
@@ -364,7 +411,9 @@ def audit(
         "split_counts": dict(sorted(Counter(row["split"] for row in rows).items())),
         "action_counts": dict(sorted(Counter(row["gold_action"] for row in rows).items())),
         "template_families": len({row["template_family_id"] for row in rows}),
-        "minimal_pair_groups": len({row["minimal_pair_group_id"] for row in rows if row.get("minimal_pair_group_id")}),
+        "minimal_pair_groups": len(
+            {row["minimal_pair_group_id"] for row in rows if row.get("minimal_pair_group_id")}
+        ),
         "shortcut_audit": shortcut,
         "systems": systems,
         "paired_cluster_bootstrap": paired,
@@ -457,7 +506,9 @@ def main(argv: list[str] | None = None) -> int:
     args.markdown_out.parent.mkdir(parents=True, exist_ok=True)
     args.json_out.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     args.markdown_out.write_text(markdown(report), encoding="utf-8")
-    print(json.dumps({"json": str(args.json_out), "markdown": str(args.markdown_out)}, sort_keys=True))
+    print(
+        json.dumps({"json": str(args.json_out), "markdown": str(args.markdown_out)}, sort_keys=True)
+    )
     return 0
 
 

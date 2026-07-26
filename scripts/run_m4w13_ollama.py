@@ -104,9 +104,7 @@ THESIS_MODEL_ROLES = ModelRoles(
 SPEC_PROFILE = "thesis"
 
 
-def _explicitly_set_dests(
-    parser: argparse.ArgumentParser, argv: list[str]
-) -> set[str]:
+def _explicitly_set_dests(parser: argparse.ArgumentParser, argv: list[str]) -> set[str]:
     """Return the dest names whose option strings appear in ``argv``.
 
     Used so a quality preset overrides only the knobs the user did NOT pass.
@@ -130,9 +128,7 @@ def _explicitly_set_dests(
     return seen
 
 
-def _apply_t4_quality(
-    args: argparse.Namespace, explicit: set[str] | None = None
-) -> None:
+def _apply_t4_quality(args: argparse.Namespace, explicit: set[str] | None = None) -> None:
     """Enable the validated accuracy knobs at T4-affordable levels.
 
     Only knobs the user did NOT pass explicitly are overridden, so an explicit
@@ -198,8 +194,7 @@ def _validate_models(host: str, models: list[str]) -> None:
     missing = sorted(set(models) - installed)
     if missing:
         raise SystemExit(
-            "Ollama is reachable, but these requested models are missing: "
-            + ", ".join(missing)
+            "Ollama is reachable, but these requested models are missing: " + ", ".join(missing)
         )
 
 
@@ -338,9 +333,7 @@ def _command_for(
             ]
         )
         if args.controller_memory_top_k is not None:
-            cmd.extend(
-                ["--controller-memory-top-k", str(args.controller_memory_top_k)]
-            )
+            cmd.extend(["--controller-memory-top-k", str(args.controller_memory_top_k)])
         if args.controller_progress:
             cmd.append("--controller-progress")
         if args.controller_include_assistant_context:
@@ -451,8 +444,7 @@ def _start_shard(
     )
     job.stream_thread.start()
     print(
-        f"[m4w13] {baseline_alias}: launched shard {index} pid={process.pid} "
-        f"log={log_path}",
+        f"[m4w13] {baseline_alias}: launched shard {index} pid={process.pid} log={log_path}",
         flush=True,
     )
     return job
@@ -516,8 +508,7 @@ def _wait_for_shards(
                     continue
                 failures.append((index, rc, job.log_path))
                 print(
-                    f"[m4w13] {baseline_alias}: shard {index} FAILED rc={rc} "
-                    f"log={job.log_path}",
+                    f"[m4w13] {baseline_alias}: shard {index} FAILED rc={rc} log={job.log_path}",
                     flush=True,
                 )
                 _log_tail(job.log_path, lines=tail_lines_on_failure)
@@ -531,8 +522,7 @@ def _wait_for_shards(
         raise
     if failures:
         details = ", ".join(
-            f"shard {index} rc={rc} log={log_path}"
-            for index, rc, log_path in failures
+            f"shard {index} rc={rc} log={log_path}" for index, rc, log_path in failures
         )
         raise RuntimeError(f"{baseline_alias}: shard failure: {details}")
 
@@ -627,7 +617,7 @@ def _write_manifest(
     # (proposal Risk 13) traps at the same time.
     synthetic = _is_synthetic_slice(args.slice)
     dataset_family = _dataset_family(args.slice, getattr(args, "dataset", "auto"))
-    is_spec_full = (args.limit is None and args.model_profile == SPEC_PROFILE and not synthetic)
+    is_spec_full = args.limit is None and args.model_profile == SPEC_PROFILE and not synthetic
     if args.limit is not None:
         tier = "smoke"
         thesis_use = "no_final_claim"
@@ -711,127 +701,219 @@ def _mark_manifest_complete(root: Path) -> None:
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--slice", type=Path, default=Path("data/longmemeval_s_synthetic.jsonl"))
-    p.add_argument("--dataset", choices=("auto", "s", "m", "synthetic"), default="auto",
-                   help="Dataset family for manifest provenance. 'auto' infers S "
-                        "vs M from the slice filename; set explicitly for "
-                        "non-standard slice names so an M run is never labeled S.")
+    p.add_argument(
+        "--dataset",
+        choices=("auto", "s", "m", "synthetic"),
+        default="auto",
+        help="Dataset family for manifest provenance. 'auto' infers S "
+        "vs M from the slice filename; set explicitly for "
+        "non-standard slice names so an M run is never labeled S.",
+    )
     p.add_argument("--out", type=Path, default=Path("runs/m4w13"))
     p.add_argument("--ollama-host", default="http://localhost:11434")
     p.add_argument("--ollama-timeout-s", type=float, default=900.0)
     p.add_argument("--judge-timeout-s", type=float, default=900.0)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n-bootstrap", type=int, default=1000)
-    p.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True,
-                   help="Resume interrupted per-shard run_baseline outputs from "
-                        "answers.jsonl/judgments.jsonl instead of truncating.")
+    p.add_argument(
+        "--resume",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Resume interrupted per-shard run_baseline outputs from "
+        "answers.jsonl/judgments.jsonl instead of truncating.",
+    )
     p.add_argument("--limit", type=int, default=None)
-    p.add_argument("--quality-preset", choices=_QUALITY_PRESETS, default=_QUALITY_PRESET_NONE,
-                   help="'max-a10g' is only supported by the HF/A10G runners; "
-                        "this Ollama runner rejects it to avoid ambiguous "
-                        "quality numbers.")
-    p.add_argument("--systems", default="all",
-                   help="Comma-separated aliases/baselines to run, e.g. "
-                        "'b1', 'b2', 'controller', or 'all'.")
+    p.add_argument(
+        "--quality-preset",
+        choices=_QUALITY_PRESETS,
+        default=_QUALITY_PRESET_NONE,
+        help="'max-a10g' is only supported by the HF/A10G runners; "
+        "this Ollama runner rejects it to avoid ambiguous "
+        "quality numbers.",
+    )
+    p.add_argument(
+        "--systems",
+        default="all",
+        help="Comma-separated aliases/baselines to run, e.g. 'b1', 'b2', 'controller', or 'all'.",
+    )
     p.add_argument("--embedder-device", default="cpu")
-    p.add_argument("--embedder-backend", choices=("sentence_transformer", "ollama"),
-                   default="ollama",
-                   help="Retrieval embedding backend. Default ollama avoids local HF/ST crashes.")
-    p.add_argument("--embedder-model", default=None,
-                   help="Ollama model tag for retrieval embeddings. Defaults to the profile embedder.")
-    p.add_argument("--embedder-timeout-s", type=float, default=None,
-                   help="HTTP timeout for Ollama embedding calls. Defaults to --ollama-timeout-s.")
+    p.add_argument(
+        "--embedder-backend",
+        choices=("sentence_transformer", "ollama"),
+        default="ollama",
+        help="Retrieval embedding backend. Default ollama avoids local HF/ST crashes.",
+    )
+    p.add_argument(
+        "--embedder-model",
+        default=None,
+        help="Ollama model tag for retrieval embeddings. Defaults to the profile embedder.",
+    )
+    p.add_argument(
+        "--embedder-timeout-s",
+        type=float,
+        default=None,
+        help="HTTP timeout for Ollama embedding calls. Defaults to --ollama-timeout-s.",
+    )
     p.add_argument("--embedder-batch-size", type=int, default=16)
     p.add_argument("--fake-embedder", action="store_true")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--model-sweep", action="store_true")
-    p.add_argument("--model-profile", choices=("standard", "light", "t4", "thesis"), default="standard",
-                   help="Use 'light' for 3B/3.8B. Use 't4' for qwen3.5:9b "
-                        "answering, llama3.2 extraction, and phi3.5 judge/classifier.")
+    p.add_argument(
+        "--model-profile",
+        choices=("standard", "light", "t4", "thesis"),
+        default="standard",
+        help="Use 'light' for 3B/3.8B. Use 't4' for qwen3.5:9b "
+        "answering, llama3.2 extraction, and phi3.5 judge/classifier.",
+    )
     p.add_argument("--answerer-model", default=None)
     p.add_argument("--judge-model", default=None)
     p.add_argument("--recency-extractor-model", default=None)
     p.add_argument("--extractor-model", default=None)
     p.add_argument("--classifier-model", default=None)
-    p.add_argument("--controller-progress", action=argparse.BooleanOptionalAction, default=True,
-                   help="Emit heartbeat logs for B4/controller inner work. "
-                        "Enabled by default for Colab visibility; pass "
-                        "--no-controller-progress for quieter logs.")
-    p.add_argument("--recency-memory-top-k", type=int, default=32,
-                   help="Prefilter cap for B3 LLM extraction: embed all allowed "
-                        "haystack user turns and only extract the top-k most "
-                        "question-relevant. Without it B3 extracts every haystack "
-                        "turn sequentially (minutes/example). Pass 0 or a negative "
-                        "value via the underlying flag to disable; matches the "
-                        "HF/A10G run paths.")
-    p.add_argument("--controller-memory-top-k", type=int, default=32,
-                   help="Prefilter cap for B4/controller LLM extraction, mirroring "
-                        "--recency-memory-top-k.")
-    p.add_argument("--controller-include-assistant-context",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="Add raw assistant turns to the controller/B4 retrieval pool "
-                        "so assistant-stated answers (~32%% of the LongMemEval slice) "
-                        "are reachable. Default off; validated runs are unchanged.")
-    p.add_argument("--answer-retry-on-unknown", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="Retry B4/controller answer generation once when the first "
-                        "answer is exactly 'Unknown' and retrieved evidence is non-empty.")
-    p.add_argument("--controller-prior-top-k", type=int, default=1,
-                   help="Semantic same-type prior candidates for B4/controller. "
-                        "Default 1 preserves newest-prior behavior.")
-    p.add_argument("--controller-prior-similarity-threshold", type=float, default=0.0,
-                   help="Minimum cosine similarity for a semantic prior to be sent to "
-                        "the relation classifier (only used when "
-                        "--controller-prior-top-k > 1). Priors below it are treated as "
-                        "independent without an LLM call, bounding per-question latency "
-                        "on a T4. 0.0 (default) preserves current behavior.")
-    p.add_argument("--controller-retrieval-neighbor-window", type=int, default=0,
-                   help="For B4/controller, append active memories within +/-N turn "
-                        "indices of each retrieved hit to the answer prompt.")
-    p.add_argument("--controller-temporal-scaffold", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="Append parsed event dates + a reference 'today' to temporal "
-                        "questions (additive; never overrides the model). On in --quality t4.")
-    p.add_argument("--controller-computation-answerer", action=argparse.BooleanOptionalAction,
-                   default=False,
-                   help="Run deterministic date/numeric/list solvers before the "
-                        "controller answer LLM. On in --quality t4.")
-    p.add_argument("--controller-include-raw-user-context",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="Add raw USER turn chunks from the allowed memory corpus to "
-                        "the retrieval pool (recall safety net for facts the "
-                        "extraction prefilter never selected). On in --quality t4.")
-    p.add_argument("--controller-retrieval-query-augmentation",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="Additive retrieval passes for aggregation/temporal "
-                        "questions (widened query, per-entity queries, calendar "
-                        "window). On in --quality t4.")
-    p.add_argument("--controller-deterministic-numeric-supersede",
-                   action=argparse.BooleanOptionalAction, default=False,
-                   help="Route same-slot numeric conflicts directly to Supersede "
-                        "without the relation LLM. On in --quality t4.")
-    p.add_argument("--k", type=int, default=5,
-                   help="Shared retrieval top-k for the answer prompt across all "
-                        "systems. Kept equal across systems for a controlled "
-                        "comparison (matches the max-a10g preset philosophy).")
-    p.add_argument("--ollama-num-ctx", type=int, default=8192,
-                   help="Answerer context window. Must exceed the answer prompt size "
-                        "or Ollama truncates the prompt and returns a single token. "
-                        "The t4 quality profile raises this to 16384 because assistant "
-                        "context + k=10 + neighbor window can produce ~8k-token prompts.")
-    p.add_argument("--quality", choices=("none", "t4"), default="none",
-                   help="'t4' enables the validated accuracy knobs at T4-affordable "
-                        "levels: assistant context, answer-retry, semantic prior "
-                        "top-k=3 with a 0.45 similarity gate, retrieval k=10, and a "
-                        "+/-1 neighbor window. Explicit flags still override it.")
-    p.add_argument("--session-workers", type=int, default=1,
-                   help="Parallel session shards per system (A100 speedup). >1 runs "
-                        "N independent run_baseline processes over disjoint round-robin "
-                        "session subsets, then merges. Per-session grades are identical "
-                        "to serial. Start Ollama with OLLAMA_NUM_PARALLEL>=N so the "
-                        "server actually serves the concurrent requests.")
-    p.add_argument("--tail-lines-on-failure", type=int, default=160,
-                   help="When a session shard fails, print this many lines from "
-                        "that shard's log and stop the remaining shards.")
+    p.add_argument(
+        "--controller-progress",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="Emit heartbeat logs for B4/controller inner work. "
+        "Enabled by default for Colab visibility; pass "
+        "--no-controller-progress for quieter logs.",
+    )
+    p.add_argument(
+        "--recency-memory-top-k",
+        type=int,
+        default=32,
+        help="Prefilter cap for B3 LLM extraction: embed all allowed "
+        "haystack user turns and only extract the top-k most "
+        "question-relevant. Without it B3 extracts every haystack "
+        "turn sequentially (minutes/example). Pass 0 or a negative "
+        "value via the underlying flag to disable; matches the "
+        "HF/A10G run paths.",
+    )
+    p.add_argument(
+        "--controller-memory-top-k",
+        type=int,
+        default=32,
+        help="Prefilter cap for B4/controller LLM extraction, mirroring --recency-memory-top-k.",
+    )
+    p.add_argument(
+        "--controller-include-assistant-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Add raw assistant turns to the controller/B4 retrieval pool "
+        "so assistant-stated answers (~32%% of the LongMemEval slice) "
+        "are reachable. Default off; validated runs are unchanged.",
+    )
+    p.add_argument(
+        "--answer-retry-on-unknown",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Retry B4/controller answer generation once when the first "
+        "answer is exactly 'Unknown' and retrieved evidence is non-empty.",
+    )
+    p.add_argument(
+        "--controller-prior-top-k",
+        type=int,
+        default=1,
+        help="Semantic same-type prior candidates for B4/controller. "
+        "Default 1 preserves newest-prior behavior.",
+    )
+    p.add_argument(
+        "--controller-prior-similarity-threshold",
+        type=float,
+        default=0.0,
+        help="Minimum cosine similarity for a semantic prior to be sent to "
+        "the relation classifier (only used when "
+        "--controller-prior-top-k > 1). Priors below it are treated as "
+        "independent without an LLM call, bounding per-question latency "
+        "on a T4. 0.0 (default) preserves current behavior.",
+    )
+    p.add_argument(
+        "--controller-retrieval-neighbor-window",
+        type=int,
+        default=0,
+        help="For B4/controller, append active memories within +/-N turn "
+        "indices of each retrieved hit to the answer prompt.",
+    )
+    p.add_argument(
+        "--controller-temporal-scaffold",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Append parsed event dates + a reference 'today' to temporal "
+        "questions (additive; never overrides the model). On in --quality t4.",
+    )
+    p.add_argument(
+        "--controller-computation-answerer",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Run deterministic date/numeric/list solvers before the "
+        "controller answer LLM. On in --quality t4.",
+    )
+    p.add_argument(
+        "--controller-include-raw-user-context",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Add raw USER turn chunks from the allowed memory corpus to "
+        "the retrieval pool (recall safety net for facts the "
+        "extraction prefilter never selected). On in --quality t4.",
+    )
+    p.add_argument(
+        "--controller-retrieval-query-augmentation",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Additive retrieval passes for aggregation/temporal "
+        "questions (widened query, per-entity queries, calendar "
+        "window). On in --quality t4.",
+    )
+    p.add_argument(
+        "--controller-deterministic-numeric-supersede",
+        action=argparse.BooleanOptionalAction,
+        default=False,
+        help="Route same-slot numeric conflicts directly to Supersede "
+        "without the relation LLM. On in --quality t4.",
+    )
+    p.add_argument(
+        "--k",
+        type=int,
+        default=5,
+        help="Shared retrieval top-k for the answer prompt across all "
+        "systems. Kept equal across systems for a controlled "
+        "comparison (matches the max-a10g preset philosophy).",
+    )
+    p.add_argument(
+        "--ollama-num-ctx",
+        type=int,
+        default=8192,
+        help="Answerer context window. Must exceed the answer prompt size "
+        "or Ollama truncates the prompt and returns a single token. "
+        "The t4 quality profile raises this to 16384 because assistant "
+        "context + k=10 + neighbor window can produce ~8k-token prompts.",
+    )
+    p.add_argument(
+        "--quality",
+        choices=("none", "t4"),
+        default="none",
+        help="'t4' enables the validated accuracy knobs at T4-affordable "
+        "levels: assistant context, answer-retry, semantic prior "
+        "top-k=3 with a 0.45 similarity gate, retrieval k=10, and a "
+        "+/-1 neighbor window. Explicit flags still override it.",
+    )
+    p.add_argument(
+        "--session-workers",
+        type=int,
+        default=1,
+        help="Parallel session shards per system (A100 speedup). >1 runs "
+        "N independent run_baseline processes over disjoint round-robin "
+        "session subsets, then merges. Per-session grades are identical "
+        "to serial. Start Ollama with OLLAMA_NUM_PARALLEL>=N so the "
+        "server actually serves the concurrent requests.",
+    )
+    p.add_argument(
+        "--tail-lines-on-failure",
+        type=int,
+        default=160,
+        help="When a session shard fails, print this many lines from "
+        "that shard's log and stop the remaining shards.",
+    )
     argv = sys.argv[1:]
     args = p.parse_args(argv)
     _apply_t4_quality(args, _explicitly_set_dests(p, argv))

@@ -79,11 +79,7 @@ def _ambiguity(c: float) -> float:
 def s_rev(fv: FeatureVector, tc: TypeConfig) -> float:
     """Weighted Supersede score for a given feature vector and type config."""
     return (
-        tc.alpha   * fv.c
-        + tc.beta  * fv.e
-        + tc.gamma * fv.f
-        + tc.delta * fv.r
-        - tc.epsilon * fv.rho
+        tc.alpha * fv.c + tc.beta * fv.e + tc.gamma * fv.f + tc.delta * fv.r - tc.epsilon * fv.rho
     )
 
 

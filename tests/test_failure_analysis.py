@@ -59,8 +59,7 @@ def test_failure_analysis_classifies_actionable_buckets(tmp_path: Path) -> None:
         },
     ]
     judgments = [
-        {"session_id": row["session_id"], "correct": False, "gold": "blue"}
-        for row in answers
+        {"session_id": row["session_id"], "correct": False, "gold": "blue"} for row in answers
     ]
     _write_jsonl(run_dir / "answers.jsonl", answers)
     _write_jsonl(run_dir / "judgments.jsonl", judgments)

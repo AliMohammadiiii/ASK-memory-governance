@@ -42,11 +42,9 @@ PUBLIC_EXCLUDED_FILES = {
     "benchmarks/mgp6/annotations/human/human_vs_author_disagreements.csv",
     "benchmarks/mgp6/annotations/model_or_mixed/geminiPro.csv",
     "benchmarks/mgp6/annotations/model_or_mixed/gptSolHigh.csv",
-    "benchmarks/mgp6/annotations/model_or_mixed/independent_annotations_test.csv",
     "benchmarks/mgp6/annotations/model_or_mixed/kimi.csv",
     "benchmarks/mgp6/annotations/model_or_mixed/mgp6_consensus_all_test.csv",
     "benchmarks/mgp6/annotations/model_or_mixed/mgp6_disagreements_for_adjudication.csv",
-    "benchmarks/mgp6/annotations/model_or_mixed/mgp6_v2(1).jsonl",
     "benchmarks/mgp6/annotations/model_or_mixed/mgp6_v2_test_blind_annotation.jsonl",
     "benchmarks/mgp6/annotations/model_or_mixed/z.csv",
 }
@@ -96,6 +94,7 @@ def copy_tree(source: Path, target: Path, *, exclude_parts: set[str] | None = No
 
 
 def public_candidates() -> list[Path]:
+    """Return only Git-tracked files eligible for the public repository."""
     listed = subprocess.check_output(
         [
             "git",
@@ -103,8 +102,6 @@ def public_candidates() -> list[Path]:
             str(ROOT),
             "ls-files",
             "--cached",
-            "--others",
-            "--exclude-standard",
             "-z",
         ]
     )
@@ -137,6 +134,28 @@ def public_candidates() -> list[Path]:
             continue
         candidates.append(path)
     return sorted(candidates)
+
+
+def ensure_clean_worktree(*, allow_dirty: bool) -> None:
+    """Refuse an ambiguous release unless the caller explicitly opts out."""
+    if allow_dirty:
+        return
+    status = subprocess.check_output(
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "status",
+            "--porcelain=v1",
+            "--untracked-files=normal",
+        ],
+        text=True,
+    ).strip()
+    if status:
+        raise SystemExit(
+            "release build requires a clean worktree; commit or stash changes, "
+            "or pass --allow-dirty for a local non-release validation build"
+        )
 
 
 def build_public_repository(target: Path) -> dict[str, int]:
@@ -320,6 +339,7 @@ def assemble_presentation(stage: Path) -> None:
         copy_file(ROOT / "presentation" / name, presentation / name)
     copy_tree(ROOT / "presentation/speaker_notes", presentation / "speaker_notes")
     copy_tree(ROOT / "presentation/figures", presentation / "figures")
+    copy_tree(ROOT / "docs/figures", presentation / "figures/canonical")
     copy_file(ROOT / "presentation/REHEARSAL_GUIDE.md", presentation / "REHEARSAL_GUIDE.md")
 
 
@@ -391,8 +411,14 @@ def main() -> int:
         action="store_true",
         help="replace only the generated final_release directory",
     )
+    parser.add_argument(
+        "--allow-dirty",
+        action="store_true",
+        help="allow a local validation build from modified tracked files",
+    )
     args = parser.parse_args()
 
+    ensure_clean_worktree(allow_dirty=args.allow_dirty)
     if OUT.exists() and not args.replace:
         raise SystemExit(f"{OUT} exists; pass --replace to rebuild the generated release")
     safely_remove_generated(STAGE)

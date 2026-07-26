@@ -36,8 +36,11 @@ def main() -> int:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--max-new-tokens", type=int, default=512)
     p.add_argument("--num-ctx", type=int, default=8192)
-    p.add_argument("--json-format", action="store_true",
-                   help="Ask Ollama to constrain the response to a JSON object.")
+    p.add_argument(
+        "--json-format",
+        action="store_true",
+        help="Ask Ollama to constrain the response to a JSON object.",
+    )
     p.add_argument("--limit", type=int, default=None)
     args = p.parse_args()
 

@@ -310,20 +310,21 @@ def build_snapshot(candidate: Any, prior: Any, classifier: Any | None = None) ->
         rho=rho(candidate),
     )
 
+
 # --- explicitness: lexical cues from §I.5.5 worked example ------------------ #
 
 # Cues from proposal §I.5.5. Max-match wins, so compound phrases (1.0) dominate
 # single-token hedges (0.2–0.8) when both fire.
 _EXPLICITNESS_CUES: list[tuple[str, float]] = [
-    (r"\bi used to\b.*?\bbut now\b",          1.0),
-    (r"\bi no longer\b",                      1.0),
+    (r"\bi used to\b.*?\bbut now\b", 1.0),
+    (r"\bi no longer\b", 1.0),
     # "I actually don't like coffee anymore" — proposal's worked example.
     # Matches any don't/doesn't/do not .* anymore, with optional hedges in between.
-    (r"\b(?:don'?t|doesn'?t|do not|does not)\b.*?\banymore\b",   1.0),
-    (r"\bactually\b",                         0.8),
-    (r"\bnever mind\b",                       0.3),
-    (r"\bmaybe\b",                            0.2),
-    (r"\bhmm\b",                              0.2),
+    (r"\b(?:don'?t|doesn'?t|do not|does not)\b.*?\banymore\b", 1.0),
+    (r"\bactually\b", 0.8),
+    (r"\bnever mind\b", 0.3),
+    (r"\bmaybe\b", 0.2),
+    (r"\bhmm\b", 0.2),
 ]
 
 

@@ -172,7 +172,9 @@ def test_slice_jsonl_round_trips_cleaned_corpus_sessions(tmp_path: Path) -> None
         "answer_session_ids": ["answer-session"],
         "haystack_dates": ["2023/05/30 (Tue) 10:00"],
         "haystack_session_ids": ["answer-session"],
-        "haystack_sessions": [[{"role": "user", "content": "I graduated with Business Administration."}]],
+        "haystack_sessions": [
+            [{"role": "user", "content": "I graduated with Business Administration."}]
+        ],
     }
     p.write_text(json.dumps([rec]), encoding="utf-8")
     source = list(iter_longmemeval_s(p))

@@ -63,7 +63,11 @@ def test_feature_e_combines_span_specificity_and_recency() -> None:
         "evidence_span": {"char_start": 10, "char_end": 90},
         "timestamp": "2026-05-21T10:00:00Z",
     }
-    prior = {"text": "User prefers coffee.", "type": "stable_pref", "timestamp": "2025-01-01T00:00:00Z"}
+    prior = {
+        "text": "User prefers coffee.",
+        "type": "stable_pref",
+        "timestamp": "2025-01-01T00:00:00Z",
+    }
 
     assert e(candidate, prior) == pytest.approx(1.0)
 

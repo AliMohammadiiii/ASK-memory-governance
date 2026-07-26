@@ -61,6 +61,14 @@ tensorboard/
 checkpoints/
 *.log
 
+# Generated handoff bundles (source artifacts stay in their canonical directories)
+/Ali_Mohammadi_MGP6_v*_Final/
+/Ali_Mohammadi_MGP6_v*_Final.zip
+/deliverables/
+/releases/MGP6_v3.3.1/
+/benchmarks/mgp6/v3_human_pack/_render*/
+/benchmarks/mgp6/v3_human_pack/Archive.zip
+
 # Editors / OS
 .DS_Store
 .idea/

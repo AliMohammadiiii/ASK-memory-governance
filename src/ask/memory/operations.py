@@ -175,9 +175,7 @@ def supersede_evict(conn: sqlite3.Connection, prior_id: int) -> None:
         RuntimeError: if `prior_id` does not exist or is already
             superseded — the M1-W4 §3.1 concurrency-friendliness check.
     """
-    row = conn.execute(
-        "SELECT status FROM memory_items WHERE id = ?", (prior_id,)
-    ).fetchone()
+    row = conn.execute("SELECT status FROM memory_items WHERE id = ?", (prior_id,)).fetchone()
     if row is None:
         raise RuntimeError(f"supersede_evict: prior_id={prior_id} does not exist")
     if row["status"] != MemoryStatus.ACTIVE.value:
@@ -223,9 +221,7 @@ def get_by_id(conn: sqlite3.Connection, item_id: int) -> MemoryItem | None:
     Returns None if no such row exists. Used by `get_lineage` and by
     `qualitative.find_eviction_of_truth` (M1-W4 §3.5).
     """
-    row = conn.execute(
-        "SELECT * FROM memory_items WHERE id = ?", (item_id,)
-    ).fetchone()
+    row = conn.execute("SELECT * FROM memory_items WHERE id = ?", (item_id,)).fetchone()
     if row is None:
         return None
     return _row_to_item(row)
@@ -254,9 +250,7 @@ def get_lineage(conn: sqlite3.Connection, item_id: int) -> list[MemoryItem]:
             # would loop forever otherwise. The schema's REFERENCES
             # constraint prevents this in practice but the walk should
             # still terminate.
-            raise RuntimeError(
-                f"get_lineage: cycle detected at id={cur_id} (chain={seen})"
-            )
+            raise RuntimeError(f"get_lineage: cycle detected at id={cur_id} (chain={seen})")
         seen.add(cur_id)
         item = get_by_id(conn, cur_id)
         if item is None:

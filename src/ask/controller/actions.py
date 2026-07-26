@@ -27,12 +27,12 @@ def decide(
 ) -> Decision:
     """Apply the action rule:
 
-        if S_abs ≥ θ_abs OR relation_class == "unclear":
-            action = Abstain
-        elif S_rev ≥ θ_sup(type):
-            action = Supersede
-        else:
-            action = Keep
+    if S_abs ≥ θ_abs OR relation_class == "unclear":
+        action = Abstain
+    elif S_rev ≥ θ_sup(type):
+        action = Supersede
+    else:
+        action = Keep
     """
     tc = config.for_type(memory_type.value)
     ac = config.abstain
@@ -49,9 +49,7 @@ def decide(
         )
     elif score_rev >= tc.theta_sup:
         action = ControllerAction.SUPERSEDE
-        why = (
-            f"Supersede: S_rev={score_rev:.3f} ≥ θ_sup({memory_type.value})={tc.theta_sup:.2f}"
-        )
+        why = f"Supersede: S_rev={score_rev:.3f} ≥ θ_sup({memory_type.value})={tc.theta_sup:.2f}"
     else:
         action = ControllerAction.KEEP
         why = (

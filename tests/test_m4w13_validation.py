@@ -49,12 +49,10 @@ def _write_run(run_dir: Path, correctness: list[bool]) -> None:
         encoding="utf-8",
     )
     answer_rows = [
-        {"session_id": f"s{i}", "text": "answer", "extras": {"n_retrieved": 1}}
-        for i in range(n)
+        {"session_id": f"s{i}", "text": "answer", "extras": {"n_retrieved": 1}} for i in range(n)
     ]
     judgment_rows = [
-        {"session_id": f"s{i}", "correct": value}
-        for i, value in enumerate(correctness)
+        {"session_id": f"s{i}", "correct": value} for i, value in enumerate(correctness)
     ]
     _write_jsonl(run_dir / "answers.jsonl", answer_rows)
     _write_jsonl(run_dir / "predictions.jsonl", answer_rows)

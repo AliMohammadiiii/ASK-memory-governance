@@ -29,10 +29,7 @@ QUERY_COUNTS = {
     "premise_resistance": 45,
     "implicit_application": 27,
 }
-PER_TYPE_SPLITS = {
-    type_name: {"train": 10, "dev": 5, "test": 15}
-    for type_name in TYPE_COUNTS
-}
+PER_TYPE_SPLITS = {type_name: {"train": 10, "dev": 5, "test": 15} for type_name in TYPE_COUNTS}
 T5_SPLIT_ACTIONS = {
     "train": {"KEEP": 8, "ABSTAIN": 2},
     "dev": {"KEEP": 4, "ABSTAIN": 1},
@@ -155,7 +152,9 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
         old = [record for record in row.gold_memory_state if record.status == "superseded"]
         successor = [record for record in active if record.supersedes_id]
         if not old or not successor:
-            add_error(errors, "SUPERSEDE requires old superseded and successor active records", line)
+            add_error(
+                errors, "SUPERSEDE requires old superseded and successor active records", line
+            )
         for record in old:
             stale = memory_value(record.text)
             if not regex_matches(row.forbidden_answer_patterns, stale):
@@ -205,7 +204,9 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
             add_error(errors, "premise-resistance answer does not reject the false premise", line)
     if row.query_mode == "implicit_application":
         if regex_matches(row.forbidden_answer_patterns, row.expected_answer):
-            add_error(errors, "implicit-application answer names a forbidden old/candidate value", line)
+            add_error(
+                errors, "implicit-application answer names a forbidden old/candidate value", line
+            )
         if regex_matches(row.judge_spec.include, row.evaluation_query):
             add_error(errors, "implicit-application query reveals the active value", line)
         if regex_matches(row.forbidden_answer_patterns, row.evaluation_query):
@@ -251,9 +252,13 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
     models = [row for _, row in rows]
     expect_equal(errors, "row count", len(models), 180)
     expect_equal(errors, "type counts", dict(Counter(r.type for r in models)), TYPE_COUNTS)
-    expect_equal(errors, "action counts", dict(Counter(r.gold_action for r in models)), ACTION_COUNTS)
+    expect_equal(
+        errors, "action counts", dict(Counter(r.gold_action for r in models)), ACTION_COUNTS
+    )
     expect_equal(errors, "split counts", dict(Counter(r.split for r in models)), SPLIT_COUNTS)
-    expect_equal(errors, "query-mode counts", dict(Counter(r.query_mode for r in models)), QUERY_COUNTS)
+    expect_equal(
+        errors, "query-mode counts", dict(Counter(r.query_mode for r in models)), QUERY_COUNTS
+    )
 
     ids = [row.scenario_id for row in models]
     if len(ids) != len(set(ids)):
@@ -318,7 +323,9 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
         source_old = [r for r in source.gold_memory_state if r.status == "superseded"]
         source_new = [r for r in source.gold_memory_state if r.status == "active"]
         partner_active = [
-            r for r in partner.gold_memory_state if r.status == "active" and r.type != "transient_pref"
+            r
+            for r in partner.gold_memory_state
+            if r.status == "active" and r.type != "transient_pref"
         ]
         if not source_old or not source_new or not partner_active:
             add_error(errors, f"{pair_id} lacks values required for contrast validation")
@@ -337,7 +344,9 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
             row for row in models if row.type == type_name and row.subtype == "implicit_conflict"
         ]
         if len(implicit) != 10:
-            add_error(errors, f"{type_name} needs exactly 10 implicit conflicts, got {len(implicit)}")
+            add_error(
+                errors, f"{type_name} needs exactly 10 implicit conflicts, got {len(implicit)}"
+            )
         paired = 0
         for source in implicit:
             if not source.minimal_pair_group_id:
@@ -351,7 +360,9 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
             ):
                 paired += 1
         if paired != 6:
-            add_error(errors, f"{type_name} needs exactly 6 paired implicit conflicts, got {paired}")
+            add_error(
+                errors, f"{type_name} needs exactly 6 paired implicit conflicts, got {paired}"
+            )
 
     seen_content: set[tuple[str, str, str]] = set()
     seen_events: set[str] = set()

@@ -21,8 +21,11 @@ def main() -> int:
     p.add_argument("--notes-dir", type=Path, default=Path("NOTES"))
     p.add_argument("--out", type=Path, default=Path("runs/m4w16"))
     p.add_argument("--run-logreg-on-fail", action="store_true")
-    p.add_argument("--check-only", action="store_true",
-                   help="Validate prerequisites and print status without writing M4-W16 outputs.")
+    p.add_argument(
+        "--check-only",
+        action="store_true",
+        help="Validate prerequisites and print status without writing M4-W16 outputs.",
+    )
     args = p.parse_args()
 
     status = validate_artifacts(

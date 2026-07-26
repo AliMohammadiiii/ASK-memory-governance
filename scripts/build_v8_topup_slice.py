@@ -31,13 +31,16 @@ def jsonl(path: Path):
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--slice", type=Path, required=True)
-    parser.add_argument("--replay-run", type=Path, required=True,
-                        help="replay system dir containing judgments.jsonl")
+    parser.add_argument(
+        "--replay-run",
+        type=Path,
+        required=True,
+        help="replay system dir containing judgments.jsonl",
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
 
-    replay_ids = {r["session_id"]
-                  for r in jsonl(args.replay_run / "judgments.jsonl")}
+    replay_ids = {r["session_id"] for r in jsonl(args.replay_run / "judgments.jsonl")}
     slice_rows = list(jsonl(args.slice))
     slice_ids = {r["session_id"] for r in slice_rows}
 
