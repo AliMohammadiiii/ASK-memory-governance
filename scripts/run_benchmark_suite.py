@@ -23,6 +23,8 @@ import json
 import os
 import subprocess
 import sys
+import threading
+import time
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -57,6 +59,8 @@ class SuiteTask:
     cwd: Path
     requires_model: bool = False
     requires_external_fixture_opt_in: bool = False
+    expected_items: int | None = None
+    progress_path: Path | None = None
     description: str = ""
 
 
@@ -137,6 +141,13 @@ def _v43_score_command(*, python: str, input_path: Path, output: Path) -> tuple[
     )
 
 
+def _jsonl_record_count(path: Path) -> int:
+    """Count non-empty JSONL rows without loading their content into the report."""
+
+    with path.open(encoding="utf-8") as handle:
+        return sum(1 for line in handle if line.strip())
+
+
 def build_tasks(
     *,
     python: str,
@@ -146,6 +157,7 @@ def build_tasks(
 ) -> list[SuiteTask]:
     """Create every supported task without executing or reading release records."""
 
+    public_item_count = _jsonl_record_count(input_path)
     tasks: list[SuiteTask] = []
     for system in MGP6V43_RUNNABLE_SYSTEMS:
         system_output = output_root / "mgp6_v43_public_dev" / system
@@ -163,6 +175,8 @@ def build_tasks(
                 ),
                 cwd=REPO_ROOT,
                 requires_model=system != "rules_controller",
+                expected_items=public_item_count,
+                progress_path=system_output / "predictions.jsonl",
                 description="Generate public-only predictions; the scorer is scheduled after success.",
             )
         )
@@ -271,30 +285,150 @@ def _task_row(task: SuiteTask, *, status: str, note: str = "", **extra: Any) -> 
     }
 
 
-def _run_task(task: SuiteTask, *, output_root: Path) -> dict[str, Any]:
+def _format_seconds(value: float | None) -> str:
+    if value is None:
+        return "—"
+    rounded = max(0, round(value))
+    minutes, seconds = divmod(rounded, 60)
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours:d}:{minutes:02d}:{seconds:02d}" if hours else f"{minutes:d}:{seconds:02d}"
+
+
+class SuiteProgress:
+    """Thread-safe terminal progress bars plus a machine-readable event log."""
+
+    def __init__(self, *, output_root: Path, enabled: bool) -> None:
+        self._lock = threading.Lock()
+        self._event_path = output_root / "progress.jsonl"
+        self._event_path.parent.mkdir(parents=True, exist_ok=True)
+        self._enabled = enabled and sys.stderr.isatty()
+        self._bars: dict[str, Any] = {}
+        self._next_position = 0
+        if self._enabled:
+            from tqdm import tqdm
+
+            self._tqdm = tqdm
+        else:
+            self._tqdm = None
+
+    def _event(self, task: SuiteTask, *, state: str, completed: int, elapsed_s: float) -> None:
+        total = task.expected_items
+        eta_s = (total - completed) * elapsed_s / completed if total and completed else None
+        event = {
+            "timestamp_utc": datetime.now(UTC).isoformat(),
+            "task_id": task.task_id,
+            "state": state,
+            "completed": completed,
+            "total": total,
+            "percent": round(100 * completed / total, 2) if total else None,
+            "elapsed_seconds": round(elapsed_s, 3),
+            "eta_seconds": round(eta_s, 3) if eta_s is not None else None,
+        }
+        with self._event_path.open("a", encoding="utf-8") as handle:
+            handle.write(json.dumps(event, sort_keys=True) + "\n")
+
+    def start(self, task: SuiteTask) -> None:
+        with self._lock:
+            if task.expected_items is not None and self._tqdm is not None:
+                self._bars[task.task_id] = self._tqdm(
+                    total=task.expected_items,
+                    desc=task.task_id,
+                    unit="item",
+                    dynamic_ncols=True,
+                    position=self._next_position,
+                    leave=True,
+                )
+                self._next_position += 1
+            self._event(task, state="started", completed=0, elapsed_s=0.0)
+
+    def update(self, task: SuiteTask, *, completed: int, elapsed_s: float) -> None:
+        with self._lock:
+            bar = self._bars.get(task.task_id)
+            if bar is not None:
+                bar.n = min(completed, task.expected_items or completed)
+                total = task.expected_items
+                eta_s = (total - completed) * elapsed_s / completed if total and completed else None
+                bar.set_postfix_str(f"ETA {_format_seconds(eta_s)}")
+                bar.refresh()
+            self._event(task, state="running", completed=completed, elapsed_s=elapsed_s)
+
+    def finish(self, task: SuiteTask, *, completed: int, elapsed_s: float, status: str) -> None:
+        with self._lock:
+            bar = self._bars.get(task.task_id)
+            if bar is not None:
+                bar.n = min(completed, task.expected_items or completed)
+                bar.set_postfix_str(status)
+                bar.refresh()
+                bar.close()
+            self._event(task, state=status, completed=completed, elapsed_s=elapsed_s)
+
+
+def _completed_items(task: SuiteTask) -> int:
+    if task.progress_path is None or not task.progress_path.is_file():
+        return 0
+    return _jsonl_record_count(task.progress_path)
+
+
+def _run_task(
+    task: SuiteTask,
+    *,
+    output_root: Path,
+    progress: SuiteProgress,
+    refresh_s: float,
+) -> dict[str, Any]:
     log_root = output_root / "logs" / task.task_id.replace(":", "__")
     log_root.mkdir(parents=True, exist_ok=True)
-    completed = subprocess.run(
-        task.command,
-        cwd=task.cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    (log_root / "stdout.log").write_text(completed.stdout, encoding="utf-8")
-    (log_root / "stderr.log").write_text(completed.stderr, encoding="utf-8")
+    stdout_path, stderr_path = log_root / "stdout.log", log_root / "stderr.log"
+    started = time.monotonic()
+    progress.start(task)
+    completed_items = _completed_items(task)
+    returncode = 1
+    try:
+        with (
+            stdout_path.open("w", encoding="utf-8") as stdout,
+            stderr_path.open("w", encoding="utf-8") as stderr,
+        ):
+            process = subprocess.Popen(
+                task.command, cwd=task.cwd, stdout=stdout, stderr=stderr, text=True
+            )
+            while process.poll() is None:
+                completed_items = _completed_items(task)
+                progress.update(
+                    task, completed=completed_items, elapsed_s=time.monotonic() - started
+                )
+                time.sleep(refresh_s)
+            returncode = process.wait()
+    except OSError as exc:
+        stderr_path.write_text(f"unable to start task: {exc}\n", encoding="utf-8")
+    elapsed_s = time.monotonic() - started
+    completed_items = _completed_items(task)
+    status = "completed" if returncode == 0 else "failed"
+    progress.finish(task, completed=completed_items, elapsed_s=elapsed_s, status=status)
     return _task_row(
         task,
-        status="completed" if completed.returncode == 0 else "failed",
-        note=f"exit={completed.returncode}; logs={log_root.relative_to(output_root)}",
-        returncode=completed.returncode,
-        stdout_log=str(log_root / "stdout.log"),
-        stderr_log=str(log_root / "stderr.log"),
+        status=status,
+        note=(
+            f"exit={returncode}; completed={completed_items}/{task.expected_items or 'n/a'}; "
+            f"elapsed={_format_seconds(elapsed_s)}; logs={log_root.relative_to(output_root)}"
+        ),
+        returncode=returncode,
+        elapsed_seconds=round(elapsed_s, 3),
+        completed_items=completed_items,
+        expected_items=task.expected_items,
+        stdout_log=str(stdout_path),
+        stderr_log=str(stderr_path),
     )
 
 
 def _append_v43_score(
-    rows: list[dict[str, Any]], *, task: SuiteTask, python: str, input_path: Path, output_root: Path
+    rows: list[dict[str, Any]],
+    *,
+    task: SuiteTask,
+    python: str,
+    input_path: Path,
+    output_root: Path,
+    progress: SuiteProgress,
+    refresh_s: float,
 ) -> None:
     if rows[-1]["status"] != "completed":
         return
@@ -308,7 +442,12 @@ def _append_v43_score(
         cwd=REPO_ROOT,
         description="Scores public dev labels only.",
     )
-    score_row = _run_task(score_task, output_root=output_root)
+    score_row = _run_task(
+        score_task,
+        output_root=output_root,
+        progress=progress,
+        refresh_s=refresh_s,
+    )
     metrics_path = prediction_root / "public_dev_metrics.json"
     if score_row["status"] == "completed" and metrics_path.is_file():
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
@@ -321,13 +460,25 @@ def _append_v43_score(
 
 
 def _run_v43_task_and_score(
-    task: SuiteTask, *, python: str, input_path: Path, output_root: Path
+    task: SuiteTask,
+    *,
+    python: str,
+    input_path: Path,
+    output_root: Path,
+    progress: SuiteProgress,
+    refresh_s: float,
 ) -> list[dict[str, Any]]:
     """Run one independent public-v4.3 system and its public scorer."""
 
-    rows = [_run_task(task, output_root=output_root)]
+    rows = [_run_task(task, output_root=output_root, progress=progress, refresh_s=refresh_s)]
     _append_v43_score(
-        rows, task=task, python=python, input_path=input_path, output_root=output_root
+        rows,
+        task=task,
+        python=python,
+        input_path=input_path,
+        output_root=output_root,
+        progress=progress,
+        refresh_s=refresh_s,
     )
     return rows
 
@@ -343,6 +494,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         type=int,
         default=4,
         help="Maximum concurrently executing independent public v4.3 systems (1-8; default: 4).",
+    )
+    parser.add_argument(
+        "--progress-refresh-s",
+        type=float,
+        default=1.0,
+        help="Progress refresh interval in seconds (default: 1.0).",
+    )
+    parser.add_argument(
+        "--no-progress",
+        action="store_true",
+        help="Disable terminal progress bars; progress.jsonl is still written.",
     )
     parser.add_argument(
         "--memory-benchmarks-root", type=Path, default=DEFAULT_MEMORY_BENCHMARKS_ROOT
@@ -388,6 +550,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit(f"memory_benchmarks root does not exist: {memory_root}")
     if not 1 <= args.max_parallel <= 8:
         raise SystemExit("--max-parallel must be between 1 and 8")
+    if args.progress_refresh_s <= 0:
+        raise SystemExit("--progress-refresh-s must be positive")
     if args.execute_external_fixtures and not (
         args.allow_test_only_external_fixture and args.allow_archive_resume
     ):
@@ -434,6 +598,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             selected_serial.append(task)
 
     completed_rows: dict[str, list[dict[str, Any]]] = {}
+    progress = SuiteProgress(output_root=output_root, enabled=not args.no_progress)
     if selected_v43:
         with ThreadPoolExecutor(max_workers=min(args.max_parallel, len(selected_v43))) as executor:
             futures = {
@@ -443,6 +608,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     python=args.python,
                     input_path=input_path,
                     output_root=output_root,
+                    progress=progress,
+                    refresh_s=args.progress_refresh_s,
                 ): task
                 for task in selected_v43
             }
@@ -450,7 +617,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                 task = futures[future]
                 completed_rows[task.task_id] = future.result()
     for task in selected_serial:
-        completed_rows[task.task_id] = [_run_task(task, output_root=output_root)]
+        completed_rows[task.task_id] = [
+            _run_task(
+                task,
+                output_root=output_root,
+                progress=progress,
+                refresh_s=args.progress_refresh_s,
+            )
+        ]
 
     rows: list[dict[str, Any]] = []
     for task in tasks:
@@ -472,6 +646,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "allow_archive_resume": args.allow_archive_resume,
             "model_id": MODEL_ID,
             "max_parallel": args.max_parallel,
+            "progress_refresh_seconds": args.progress_refresh_s,
         },
         "tasks": rows,
     }

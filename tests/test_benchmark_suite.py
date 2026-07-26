@@ -59,3 +59,18 @@ def test_parallelism_is_bounded_and_defaults_to_four_workers() -> None:
     assert run_benchmark_suite.parse_args([]).max_parallel == 4
     with pytest.raises(SystemExit, match="between 1 and 8"):
         run_benchmark_suite.main(["--max-parallel", "9"])
+
+
+def test_v43_tasks_expose_public_prediction_progress_only() -> None:
+    tasks = run_benchmark_suite.build_tasks(
+        python="python",
+        input_path=ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl",
+        output_root=ROOT / "runs/benchmark_suite/test-progress",
+        memory_benchmarks_root=ROOT.parent / "memory_benchmarks",
+    )
+    v43 = [task for task in tasks if task.family == "mgp6_v43_public_dev"]
+    assert {task.expected_items for task in v43} == {180}
+    assert all(
+        task.progress_path and task.progress_path.name == "predictions.jsonl" for task in v43
+    )
+    assert all(".private" not in str(task.progress_path) for task in v43)
