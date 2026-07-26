@@ -81,6 +81,16 @@ def _existing_prediction_ids(path: Path) -> set[str]:
     return {row.public_id for row in load_predictions_allow_partial(path)}
 
 
+def select_shard_records(records: list[Any], *, shard_count: int, shard_index: int) -> list[Any]:
+    """Return a deterministic, disjoint public-ID shard of already-loaded records."""
+    if shard_count < 1:
+        raise ValueError("shard_count must be at least one")
+    if not 0 <= shard_index < shard_count:
+        raise ValueError("shard_index must satisfy 0 <= shard_index < shard_count")
+    ordered = sorted(records, key=lambda record: record.public_id)
+    return ordered[shard_index::shard_count]
+
+
 def _write_json(path: Path, value: dict[str, Any]) -> None:
     temporary = path.with_suffix(f"{path.suffix}.tmp")
     with temporary.open("w", encoding="utf-8") as handle:
@@ -116,6 +126,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--limit", type=int, default=0, help="maximum new records (0 = all)")
     parser.add_argument("--retrieval-k", type=int, default=5)
+    parser.add_argument("--shard-count", type=int, default=1)
+    parser.add_argument("--shard-index", type=int, default=0)
     parser.add_argument("--no-progress", action="store_true")
     return parser.parse_args(argv)
 
@@ -124,9 +136,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     if args.limit < 0 or args.retrieval_k < 1:
         raise SystemExit("--limit must be non-negative and --retrieval-k must be positive")
+    if args.shard_count < 1 or not 0 <= args.shard_index < args.shard_count:
+        raise SystemExit("--shard-index must satisfy 0 <= index < --shard-count")
     input_path = _public_input(args.input)
     out = args.out.resolve()
-    records = load_public_records(input_path, require_gold=False)
+    all_records = load_public_records(input_path, require_gold=False)
+    records = select_shard_records(
+        all_records, shard_count=args.shard_count, shard_index=args.shard_index
+    )
     predictions_path = out / "predictions.jsonl"
     existing = _existing_prediction_ids(predictions_path)
     todo = [record for record in records if record.public_id not in existing]
@@ -141,6 +158,10 @@ def main(argv: list[str] | None = None) -> int:
         "backend": args.backend,
         "input": str(input_path),
         "dataset_sha256": sha256_file(input_path),
+        "total_public_records": len(all_records),
+        "shard_count": args.shard_count,
+        "shard_index": args.shard_index,
+        "shard_public_ids_sha256": sha256_value([record.public_id for record in records]),
         "derivation_version": EXTERNAL_DERIVATION_VERSION,
         "retrieval_k": args.retrieval_k,
         "code_commit": _git_commit(),

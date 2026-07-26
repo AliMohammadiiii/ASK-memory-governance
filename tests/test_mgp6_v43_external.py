@@ -5,16 +5,22 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
-from ask.eval.mgp6_v43 import PROHIBITED_MODEL_KEYS, load_public_records
+from ask.eval.mgp6_v43 import (
+    PROHIBITED_MODEL_KEYS,
+    load_predictions_allow_partial,
+    load_public_records,
+)
 from ask.eval.mgp6_v43_external import (
     EXTERNAL_DERIVATION_VERSION,
     backend_seed_payload,
     derive_external_action,
     run_external_record,
 )
-from scripts.run_mgp6_v43_external import REPO_ROOT, _existing_prediction_ids
+from scripts.run_mgp6_v43_external import REPO_ROOT, _existing_prediction_ids, select_shard_records
+from scripts.run_mgp6_v43_external_sharded import merge_shards
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -127,3 +133,66 @@ def test_external_runner_treats_a_fresh_prediction_path_as_empty(tmp_path: Path)
 
 def test_external_runner_adds_repository_root_for_adapter_imports() -> None:
     assert str(REPO_ROOT) in sys.path
+
+
+def test_external_runner_shards_are_deterministic_and_disjoint() -> None:
+    records = [
+        SimpleNamespace(public_id=value) for value in ("MGP43-C", "MGP43-A", "MGP43-D", "MGP43-B")
+    ]
+    shards = [select_shard_records(records, shard_count=3, shard_index=index) for index in range(3)]
+    assert [[record.public_id for record in shard] for shard in shards] == [
+        ["MGP43-A", "MGP43-D"],
+        ["MGP43-B"],
+        ["MGP43-C"],
+    ]
+    assert {record.public_id for shard in shards for record in shard} == {
+        "MGP43-A",
+        "MGP43-B",
+        "MGP43-C",
+        "MGP43-D",
+    }
+
+
+def test_external_shard_merge_requires_and_publishes_exact_coverage(tmp_path: Path) -> None:
+    source_rows = (
+        (ROOT / "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl")
+        .read_text(encoding="utf-8")
+        .splitlines()[:3]
+    )
+    input_path = tmp_path / "public.jsonl"
+    input_path.write_text("\n".join(source_rows) + "\n", encoding="utf-8")
+    records = load_public_records(input_path, require_gold=False)
+    shards_root = tmp_path / "_shards"
+    for index in range(2):
+        shard = shards_root / f"shard-{index:02d}"
+        shard.mkdir(parents=True)
+        selected = select_shard_records(records, shard_count=2, shard_index=index)
+        (shard / "predictions.jsonl").write_text(
+            "".join(
+                json.dumps({"public_id": record.public_id, "action": "KEEP"}) + "\n"
+                for record in selected
+            ),
+            encoding="utf-8",
+        )
+        (shard / "external_observations.jsonl").write_text(
+            "".join(
+                json.dumps(
+                    {
+                        "public_id": record.public_id,
+                        "derived_action": "KEEP",
+                        "native_writes": [],
+                    }
+                )
+                + "\n"
+                for record in selected
+            ),
+            encoding="utf-8",
+        )
+    out = tmp_path / "merged"
+    out.mkdir()
+    merge_shards(input_path=input_path, shards_root=shards_root, out=out, shard_count=2)
+    assert [
+        row.public_id for row in load_predictions_allow_partial(out / "predictions.jsonl")
+    ] == sorted(record.public_id for record in records)
+    manifest = json.loads((out / "run_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["prediction_count"] == 3
