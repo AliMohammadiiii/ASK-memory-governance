@@ -24,6 +24,7 @@ import os
 import subprocess
 import sys
 from collections.abc import Sequence
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -319,12 +320,30 @@ def _append_v43_score(
     rows.append(score_row)
 
 
+def _run_v43_task_and_score(
+    task: SuiteTask, *, python: str, input_path: Path, output_root: Path
+) -> list[dict[str, Any]]:
+    """Run one independent public-v4.3 system and its public scorer."""
+
+    rows = [_run_task(task, output_root=output_root)]
+    _append_v43_score(
+        rows, task=task, python=python, input_path=input_path, output_root=output_root
+    )
+    return rows
+
+
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, default=DEFAULT_PUBLIC_DEV)
     parser.add_argument("--out", type=Path)
     parser.add_argument("--run-id")
     parser.add_argument("--python", default=sys.executable)
+    parser.add_argument(
+        "--max-parallel",
+        type=int,
+        default=4,
+        help="Maximum concurrently executing independent public v4.3 systems (1-8; default: 4).",
+    )
     parser.add_argument(
         "--memory-benchmarks-root", type=Path, default=DEFAULT_MEMORY_BENCHMARKS_ROOT
     )
@@ -367,6 +386,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     memory_root = args.memory_benchmarks_root.resolve()
     if not memory_root.is_dir():
         raise SystemExit(f"memory_benchmarks root does not exist: {memory_root}")
+    if not 1 <= args.max_parallel <= 8:
+        raise SystemExit("--max-parallel must be between 1 and 8")
     if args.execute_external_fixtures and not (
         args.allow_test_only_external_fixture and args.allow_archive_resume
     ):
@@ -384,7 +405,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         output_root=output_root,
         memory_benchmarks_root=memory_root,
     )
-    rows: list[dict[str, Any]] = []
+    planned_rows: dict[str, list[dict[str, Any]]] = {}
+    selected_v43: list[SuiteTask] = []
+    selected_serial: list[SuiteTask] = []
     for task in tasks:
         if task.family == "mgp6_v43_public_dev":
             selected = args.run_offline and task.task_id == "v43:rules_controller"
@@ -400,14 +423,38 @@ def main(argv: Sequence[str] | None = None) -> int:
                 reason = "model execution not requested"
             elif task.requires_external_fixture_opt_in:
                 reason = "archived private test-only fixture execution not requested"
-            rows.append(_task_row(task, status="planned", note=reason))
+            planned_rows[task.task_id] = [_task_row(task, status="planned", note=reason)]
             continue
-        row = _run_task(task, output_root=output_root)
-        rows.append(row)
         if task.family == "mgp6_v43_public_dev":
-            _append_v43_score(
-                rows, task=task, python=args.python, input_path=input_path, output_root=output_root
-            )
+            selected_v43.append(task)
+        else:
+            # The v3.3.2 status audit depends on its preflight, and its fixture
+            # Make targets share archival output roots.  Their own Makefile
+            # parallelizes independent native competitors where it is safe.
+            selected_serial.append(task)
+
+    completed_rows: dict[str, list[dict[str, Any]]] = {}
+    if selected_v43:
+        with ThreadPoolExecutor(max_workers=min(args.max_parallel, len(selected_v43))) as executor:
+            futures = {
+                executor.submit(
+                    _run_v43_task_and_score,
+                    task,
+                    python=args.python,
+                    input_path=input_path,
+                    output_root=output_root,
+                ): task
+                for task in selected_v43
+            }
+            for future in as_completed(futures):
+                task = futures[future]
+                completed_rows[task.task_id] = future.result()
+    for task in selected_serial:
+        completed_rows[task.task_id] = [_run_task(task, output_root=output_root)]
+
+    rows: list[dict[str, Any]] = []
+    for task in tasks:
+        rows.extend(planned_rows.get(task.task_id, completed_rows.get(task.task_id, [])))
 
     report = {
         "schema_version": "benchmark-suite-report-v1",
@@ -424,6 +471,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "allow_test_only_external_fixture": args.allow_test_only_external_fixture,
             "allow_archive_resume": args.allow_archive_resume,
             "model_id": MODEL_ID,
+            "max_parallel": args.max_parallel,
         },
         "tasks": rows,
     }
