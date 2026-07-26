@@ -38,7 +38,7 @@ from ask.eval.mgp6_v43 import (
     validate_public_release,
     write_prediction_resume_safe,
 )
-from scripts import freeze_mgp6_v43, run_mgp6_v43
+from scripts import freeze_mgp6_v43, replay_mgp6_v43_successor_guard, run_mgp6_v43
 from scripts.score_mgp6_v43 import score_public_run
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -210,6 +210,16 @@ def test_postfinal_successor_guard_is_public_only_and_not_a_hidden_retry() -> No
     assert apply_successor_controller_guard(unmet_condition, "SUPERSEDE")[0] == "KEEP"
     assert apply_successor_controller_guard(durable_change, "KEEP")[0] == "SUPERSEDE"
     assert apply_successor_controller_guard(undecided, "ABSTAIN")[0] == "ABSTAIN"
+    prior_guard_record = record(
+        first="The current official record lists old.",
+        second="An informal note mentions new.",
+    )
+    composed_action, composed_trace = apply_successor_controller_guard(
+        prior_guard_record, "ABSTAIN"
+    )
+    assert composed_action == "KEEP"
+    assert composed_trace["prior_guard_action"] == "KEEP"
+    assert composed_trace["prior_guard_overrode_model_abstention"] is True
     assert MGP6V43_SUCCESSOR_SYSTEMS == ("successor_live_model_controller",)
     assert set(MGP6V43_RUNNABLE_SYSTEMS) == set(MGP6V43_SYSTEMS) | set(
         MGP6V43_SUCCESSOR_SYSTEMS
@@ -415,6 +425,37 @@ def test_postfinal_successor_runner_rejects_hidden_input(tmp_path: Path) -> None
     )
     assert run.returncode != 0
     assert "restricted to public train/dev" in run.stderr
+    assert not (tmp_path / "never-created").exists()
+
+
+def test_successor_guard_replay_rejects_nonpublic_input_before_read(tmp_path: Path) -> None:
+    private_input = ROOT / ".private/benchmarks/mgp6/v4.3/hidden_inputs/never-read.jsonl"
+    assert replay_mgp6_v43_successor_guard._path_is_within(
+        PUBLIC / "dev.jsonl", replay_mgp6_v43_successor_guard.PUBLIC_DATA_ROOT
+    )
+    assert not replay_mgp6_v43_successor_guard._path_is_within(
+        private_input, replay_mgp6_v43_successor_guard.PUBLIC_DATA_ROOT
+    )
+    run = subprocess.run(
+        [
+            sys.executable,
+            "scripts/replay_mgp6_v43_successor_guard.py",
+            "--input",
+            str(private_input),
+            "--raw-responses",
+            str(tmp_path / "never-read-raw.jsonl"),
+            "--source-manifest",
+            str(tmp_path / "never-read-manifest.json"),
+            "--out",
+            str(tmp_path / "never-created"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode != 0
+    assert "must be a tracked public train/dev file" in run.stderr
     assert not (tmp_path / "never-created").exists()
 
 

@@ -432,13 +432,17 @@ def successor_public_evidence_override(
 def apply_successor_controller_guard(
     record: MGP6V43Record, model_action: str
 ) -> tuple[str, dict[str, Any]]:
-    """Apply the public-development successor guard to a model action."""
+    """Compose the v3 conservative guard with the post-final public guard."""
     model_action = validate_system_action("successor_live_model_controller", model_action)
+    prior_guard_action, prior_trace = apply_live_controller_guard(record, model_action)
     override_action, trace = successor_public_evidence_override(record)
-    final_action = override_action or model_action
+    final_action = override_action or prior_guard_action
     guard_trace = {
         **trace,
         "model_action": model_action,
+        "prior_guard_action": prior_guard_action,
+        "prior_guard_rule": prior_trace["rule"],
+        "prior_guard_overrode_model_abstention": prior_trace["overrode_model_abstention"],
         "final_action": final_action,
         "overrode_model_action": final_action != model_action,
     }
