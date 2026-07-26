@@ -91,7 +91,14 @@ def test_external_fixture_requires_two_explicit_acknowledgements() -> None:
 def test_parallelism_is_bounded_and_defaults_to_four_workers() -> None:
     assert run_benchmark_suite.parse_args([]).max_parallel == 4
     with pytest.raises(SystemExit, match="between 1 and 8"):
-        run_benchmark_suite.main(["--max-parallel", "9"])
+        run_benchmark_suite.main(
+            [
+                "--max-parallel",
+                "9",
+                "--memory-benchmarks-root",
+                str(ROOT / "missing-memory-benchmarks"),
+            ]
+        )
 
 
 def test_v43_tasks_expose_public_prediction_progress_only() -> None:

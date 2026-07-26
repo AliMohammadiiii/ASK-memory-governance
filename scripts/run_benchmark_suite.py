@@ -644,8 +644,6 @@ def main(argv: Sequence[str] | None = None) -> int:
     attempt_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
     output_root = _require_suite_output(args.out or DEFAULT_OUTPUT_ROOT / run_id)
     memory_root = args.memory_benchmarks_root.resolve()
-    if not memory_root.is_dir():
-        raise SystemExit(f"memory_benchmarks root does not exist: {memory_root}")
     if not 1 <= args.max_parallel <= 8:
         raise SystemExit("--max-parallel must be between 1 and 8")
     if args.progress_refresh_s <= 0:
@@ -656,6 +654,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit(
             "--execute-external-fixtures requires --allow-test-only-external-fixture and --allow-archive-resume"
         )
+    if (args.audit_archival_v332 or args.execute_external_fixtures) and not memory_root.is_dir():
+        raise SystemExit(f"memory_benchmarks root does not exist: {memory_root}")
     if (
         args.execute_models or args.execute_external_backends or args.execute_external_fixtures
     ) and not os.environ.get("OPENROUTER_API_KEY"):
