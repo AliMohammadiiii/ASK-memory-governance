@@ -12,12 +12,16 @@ from pathlib import Path
 import pytest
 
 from ask.eval.mgp6_v43 import (
+    MGP6V43_RUNNABLE_SYSTEMS,
+    MGP6V43_SUCCESSOR_SYSTEMS,
     MGP6V43_SYSTEMS,
     PROHIBITED_MODEL_KEYS,
     MGP6V43Error,
     MGP6V43Prediction,
     MGP6V43Record,
+    adapter_version_for_system,
     apply_live_controller_guard,
+    apply_successor_controller_guard,
     assert_model_safe,
     build_decision_prompt,
     cluster_bootstrap,
@@ -160,6 +164,61 @@ def test_live_controller_guard_uses_public_evidence_only() -> None:
     assert unchanged == "SUPERSEDE"
     assert unchanged_trace["overrode_model_abstention"] is False
     assert_model_safe(trace)
+
+
+def test_postfinal_successor_guard_is_public_only_and_not_a_hidden_retry() -> None:
+    def record(*, first: str, second: str, standing: str = "old") -> MGP6V43Record:
+        return MGP6V43Record(
+            public_id="MGP43-00000000000000000000",
+            memory_before={
+                "memory_slot": "setting",
+                "principal": "Ari",
+                "standing_value": standing,
+            },
+            dialogue=[
+                {
+                    "speaker": "USER",
+                    "text": "The index attaches the first and second messages to this setting.",
+                },
+                {
+                    "speaker": "USER",
+                    "text": f"The first message says: {first} The second message says: {second}",
+                },
+                {"speaker": "USER", "text": "The requested value is new."},
+            ],
+            evaluation_query="Choose KEEP, SUPERSEDE, or ABSTAIN.",
+        )
+
+    unresolved = record(
+        first="The repair notice has no closing date.",
+        second="There is no later work-location instruction.",
+    )
+    unmet_condition = record(
+        first="The policy permits new after encryption is enabled.",
+        second="Encryption is disabled, and the entry remains old.",
+    )
+    durable_change = record(
+        first="Ari signed a recurring authorization that names new.",
+        second="The authorization is stored with the current records.",
+    )
+    undecided = record(
+        first="A colleague mentioned new.",
+        second="The old record is not present in this excerpt.",
+    )
+
+    assert apply_successor_controller_guard(unresolved, "KEEP")[0] == "ABSTAIN"
+    assert apply_successor_controller_guard(unmet_condition, "SUPERSEDE")[0] == "KEEP"
+    assert apply_successor_controller_guard(durable_change, "KEEP")[0] == "SUPERSEDE"
+    assert apply_successor_controller_guard(undecided, "ABSTAIN")[0] == "ABSTAIN"
+    assert MGP6V43_SUCCESSOR_SYSTEMS == ("successor_live_model_controller",)
+    assert set(MGP6V43_RUNNABLE_SYSTEMS) == set(MGP6V43_SYSTEMS) | set(
+        MGP6V43_SUCCESSOR_SYSTEMS
+    )
+    assert adapter_version_for_system("live_model_controller").endswith(".v3")
+    assert adapter_version_for_system("successor_live_model_controller").endswith(
+        ".v4-postfinal-dev"
+    )
+    assert_model_safe(model_input_for_system(unresolved, "successor_live_model_controller"))
 
 
 def _keys(value: object) -> set[str]:
@@ -320,6 +379,43 @@ def test_v43_runner_supports_rule_and_registered_model_systems(tmp_path: Path) -
         check=False,
     )
     assert b1.returncode == 0, b1.stderr
+    successor = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_mgp6_v43.py",
+            "--system",
+            "successor_live_model_controller",
+            "--dry-run",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert successor.returncode == 0, successor.stderr
+
+
+def test_postfinal_successor_runner_rejects_hidden_input(tmp_path: Path) -> None:
+    run = subprocess.run(
+        [
+            sys.executable,
+            "scripts/run_mgp6_v43.py",
+            "--system",
+            "successor_live_model_controller",
+            "--hidden-input",
+            "--input",
+            ".private/benchmarks/mgp6/v4.3/hidden_inputs/never-read.jsonl",
+            "--out",
+            str(tmp_path / "never-created"),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode != 0
+    assert "restricted to public train/dev" in run.stderr
+    assert not (tmp_path / "never-created").exists()
 
 
 def test_v43_runner_openrouter_reasoning_extra_body() -> None:

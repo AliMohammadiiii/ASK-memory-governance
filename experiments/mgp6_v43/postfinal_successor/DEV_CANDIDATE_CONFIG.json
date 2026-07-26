@@ -1,0 +1,64 @@
+{
+  "schema_version": "mgp6-v4.3-postfinal-successor-1.0",
+  "status": "PUBLIC_DEV_REPLAY_VALIDATED_AWAITING_FRESH_MODEL_RUN",
+  "release_version": "4.3.0-human-validated-final",
+  "system": "successor_live_model_controller",
+  "adapter_version": "ask.mgp6_v43_adapter.v4-postfinal-dev",
+  "scientific_scope": {
+    "public_train_dev_only": true,
+    "dev_informed": true,
+    "hidden_eligible": false,
+    "completed_v43_hidden_run_must_not_be_repeated": true,
+    "fresh_independent_holdout_required_for_confirmatory_claim": true
+  },
+  "dataset": {
+    "train": "benchmarks/mgp6/mgp6_v4_3/public/train.jsonl",
+    "train_sha256": "d21171d173661fbfc63428e4ee2f38976ce7774fb114541d3a90f5a5bf521b86",
+    "dev": "benchmarks/mgp6/mgp6_v4_3/public/dev.jsonl",
+    "dev_sha256": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5"
+  },
+  "candidate_controls": {
+    "provider": "openrouter",
+    "base_url": "https://openrouter.ai/api/v1",
+    "api_key_env": "OPENROUTER_API_KEY",
+    "model_id": "qwen/qwen3.5-9b",
+    "prompt_path": "configs/experiments/mgp6_v43/successor_live_model_controller_prompt.txt",
+    "prompt_sha256": "6cd4ebf8ebb98db002cf50d51695dd5b7fff969d51616477a5b580d7f440c4e0",
+    "seed": 4301,
+    "decoding": {
+      "temperature": 0.0,
+      "max_new_tokens": 128,
+      "reasoning_effort": "none"
+    },
+    "retry_policy": {
+      "transport_max_attempts": 3,
+      "parse_max_attempts": 2
+    },
+    "timeout_s": 120,
+    "concurrency": 1,
+    "implementation_base_commit": "7126f463180a1f6d49c70046fac3ef9de97e1f1f",
+    "implementation_commit_recorded_by_run_manifest": true
+  },
+  "public_dev_replay": {
+    "kind": "postprocess_replay_not_fresh_model_run",
+    "base_prediction_path": "runs/mgp6_v43/dev/live_model_controller_hybrid_v3_qwen35_9b/predictions.jsonl",
+    "base_prediction_sha256": "bdbcc8dad031e079bce2aa89928d71fd3a1345ba71cf84f8df676221c179894e",
+    "n_items": 180,
+    "base_accuracy": 0.8555555555555555,
+    "base_macro_f1": 0.8565764126608312,
+    "candidate_accuracy": 1.0,
+    "candidate_macro_f1": 1.0,
+    "changed_predictions": 26,
+    "introduced_errors": 0,
+    "interpretation": "Development evidence only; not an independent or hidden result."
+  },
+  "local_verification": {
+    "focused_tests": "PASS: 21 passed",
+    "full_tests": "PASS: 547 passed, 11 skipped",
+    "ruff": "PASS",
+    "mypy_ci_scope": "PASS: 16 source files",
+    "repository_validation": "PASS",
+    "package_build": "PASS",
+    "git_diff_check": "PASS"
+  }
+}

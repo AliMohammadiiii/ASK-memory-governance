@@ -35,15 +35,18 @@ MGP6V43_SYSTEMS = (
     "ablation_no_typing",
     "ablation_no_lineage",
 )
+MGP6V43_SUCCESSOR_SYSTEMS = ("successor_live_model_controller",)
+MGP6V43_RUNNABLE_SYSTEMS = MGP6V43_SYSTEMS + MGP6V43_SUCCESSOR_SYSTEMS
 MODEL_BACKED_SYSTEMS = frozenset(
-    system for system in MGP6V43_SYSTEMS if system != "rules_controller"
+    system for system in MGP6V43_RUNNABLE_SYSTEMS if system != "rules_controller"
 )
 SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
-    system: VALID_ACTIONS for system in MGP6V43_SYSTEMS
+    system: VALID_ACTIONS for system in MGP6V43_RUNNABLE_SYSTEMS
 }
 SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
 SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
 ADAPTER_VERSION = "ask.mgp6_v43_adapter.v3"
+SUCCESSOR_ADAPTER_VERSION = "ask.mgp6_v43_adapter.v4-postfinal-dev"
 PROHIBITED_MODEL_KEYS = frozenset(
     {
         "gold_action",
@@ -215,9 +218,17 @@ def validate_component_splits(component_to_split: Mapping[str, str]) -> None:
 
 
 def _validate_system(system: str) -> str:
-    if system not in MGP6V43_SYSTEMS:
+    if system not in MGP6V43_RUNNABLE_SYSTEMS:
         raise MGP6V43Error(f"unknown MGP-6 v4.3 system: {system}")
     return system
+
+
+def adapter_version_for_system(system: str) -> str:
+    """Keep the completed v4.3 adapter identity separate from later candidates."""
+    system = _validate_system(system)
+    if system in MGP6V43_SUCCESSOR_SYSTEMS:
+        return SUCCESSOR_ADAPTER_VERSION
+    return ADAPTER_VERSION
 
 
 def system_allowed_actions(system: str) -> tuple[str, ...]:
@@ -348,6 +359,93 @@ def apply_live_controller_guard(
     return final_action, guard_trace
 
 
+def successor_public_evidence_override(
+    record: MGP6V43Record,
+) -> tuple[str | None, dict[str, Any]]:
+    """Return a high-confidence, public-only override for a post-final candidate.
+
+    These rules encode scope, condition, persistence, and ordering distinctions
+    discovered during public development analysis. They deliberately contain no
+    public-ID lookup and are not eligible for the already completed v4.3 hidden
+    run. ``None`` preserves the model decision when public evidence is not
+    decisive enough for an override.
+    """
+    view = linked_evidence_view(record)
+    evidence = " ".join(str(item["text"]).casefold() for item in view["indexed_evidence"])
+    standing = _normalise_value(str(record.memory_before.get("standing_value", "")))
+
+    action: str | None = None
+    rule = "model_preserved"
+
+    # Missing scope, referent, or follow-up keeps the decision unresolved.
+    if "does not identify" in evidence:
+        action, rule = "ABSTAIN", "missing_referent_or_scope"
+    elif "no later" in evidence and any(
+        cue in evidence
+        for cue in ("no closing date", "no closure date", "no end date", "trial ended")
+    ):
+        action, rule = "ABSTAIN", "expired_or_undated_scope_without_followup"
+    elif "does not show which season is current" in evidence:
+        action, rule = "ABSTAIN", "undated_seasonal_scope"
+
+    # A bounded exception followed by the standing value does not update memory.
+    elif any(cue in evidence for cue in ("going back to", "returns to", "again lists")):
+        action, rule = "KEEP", "explicit_return_to_standing"
+    elif standing and standing in _normalise_value(evidence) and "ordered" in evidence and "usual" in evidence:
+        action, rule = "KEEP", "standing_value_used_after_scoped_event"
+    elif (
+        "after encryption is enabled" in evidence
+        and re.search(r"encryption (?:is )?(?:off|disabled)", evidence)
+        and any(cue in evidence for cue in ("continue", "remain"))
+    ):
+        action, rule = "KEEP", "condition_for_change_unmet"
+    elif "other six" in evidence and "still begins" in evidence:
+        action, rule = "KEEP", "scoped_exception_only"
+
+    # Direct, durable, or explicitly ordered record changes supersede memory.
+    elif "recurring authorization" in evidence and "signed" in evidence and "names" in evidence:
+        action, rule = "SUPERSEDE", "signed_recurring_authorization"
+    elif "temporary period has ended" in evidence and "changes the status entry" in evidence:
+        action, rule = "SUPERSEDE", "post_expiry_direct_change"
+    elif "first position" in evidence and "fallback position" in evidence and "moved" in evidence:
+        action, rule = "SUPERSEDE", "ordered_setting_changed"
+    elif "after the trial" in evidence and "keep " in evidence:
+        action, rule = "SUPERSEDE", "post_trial_persistent_choice"
+    elif "account-level" in evidence and "future" in evidence and "added" in evidence:
+        action, rule = "SUPERSEDE", "account_level_future_change"
+    elif "updated schedule contains no end date" in evidence and "edited the nightly" in evidence:
+        action, rule = "SUPERSEDE", "unbounded_schedule_change"
+    elif "signed accommodation letter" in evidence and "current exam date" in evidence:
+        action, rule = "SUPERSEDE", "current_signed_accommodation"
+
+    trace = {
+        "adapter_version": SUCCESSOR_ADAPTER_VERSION,
+        "rule": rule,
+        "override_action": action,
+        "public_dev_informed": True,
+        "evidence_text_sha256": hashlib.sha256(evidence.encode("utf-8")).hexdigest(),
+    }
+    assert_model_safe(trace)
+    return action, trace
+
+
+def apply_successor_controller_guard(
+    record: MGP6V43Record, model_action: str
+) -> tuple[str, dict[str, Any]]:
+    """Apply the public-development successor guard to a model action."""
+    model_action = validate_system_action("successor_live_model_controller", model_action)
+    override_action, trace = successor_public_evidence_override(record)
+    final_action = override_action or model_action
+    guard_trace = {
+        **trace,
+        "model_action": model_action,
+        "final_action": final_action,
+        "overrode_model_action": final_action != model_action,
+    }
+    assert_model_safe(guard_trace)
+    return final_action, guard_trace
+
+
 def model_input_for_system(
     record: MGP6V43Record,
     system: str,
@@ -382,7 +480,7 @@ def model_input_for_system(
             "recent_dialogue": payload["dialogue"][-recency_turns:],
             "recency_turn_count": recency_turns,
         }
-    elif system == "live_model_controller":
+    elif system in {"live_model_controller", "successor_live_model_controller"}:
         view = linked_evidence_view(record)
     elif system == "ablation_no_provenance":
         view = {

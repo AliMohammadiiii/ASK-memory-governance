@@ -18,12 +18,14 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ask.eval.mgp6_v43 import (  # noqa: E402
-    ADAPTER_VERSION,
-    MGP6V43_SYSTEMS,
+    MGP6V43_RUNNABLE_SYSTEMS,
+    MGP6V43_SUCCESSOR_SYSTEMS,
     MODEL_BACKED_SYSTEMS,
     MGP6V43Error,
     MGP6V43Prediction,
+    adapter_version_for_system,
     apply_live_controller_guard,
+    apply_successor_controller_guard,
     build_system_prompt,
     load_predictions,
     load_predictions_allow_partial,
@@ -40,7 +42,7 @@ from ask.eval.mgp6_v43 import (  # noqa: E402
 from ask.inference.llm import LLMResponse  # noqa: E402
 from ask.inference.openai_compatible import OpenAICompatibleLLM  # noqa: E402
 
-SYSTEMS = MGP6V43_SYSTEMS
+SYSTEMS = MGP6V43_RUNNABLE_SYSTEMS
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRIVATE_HIDDEN_INPUT_ROOT = REPO_ROOT / ".private/benchmarks/mgp6/v4.3/hidden_inputs"
 FINAL_HIDDEN_RUN_ROOT = REPO_ROOT / "runs/mgp6_v43/final_hidden"
@@ -52,6 +54,9 @@ DEFAULT_SYSTEM_PROMPTS = {
     "decision_zero_shot": Path("configs/experiments/mgp6_v43/decision_system_prompt.txt"),
     "rules_controller": Path("configs/experiments/mgp6_v43/rules_controller_prompt.txt"),
     "live_model_controller": Path("configs/experiments/mgp6_v43/live_model_controller_prompt.txt"),
+    "successor_live_model_controller": Path(
+        "configs/experiments/mgp6_v43/successor_live_model_controller_prompt.txt"
+    ),
     "ablation_no_abstain": Path("configs/experiments/mgp6_v43/ablation_no_abstain_prompt.txt"),
     "ablation_no_provenance": Path("configs/experiments/mgp6_v43/ablation_no_provenance_prompt.txt"),
     "ablation_no_typing": Path("configs/experiments/mgp6_v43/ablation_no_typing_prompt.txt"),
@@ -89,7 +94,7 @@ def _hidden_run_controls(
         "release_version": "4.3.0-human-validated-final",
         "input_mode": "private_hidden_inputs_without_gold",
         "system": system,
-        "adapter_version": ADAPTER_VERSION,
+        "adapter_version": adapter_version_for_system(system),
         "adapter_spec_hash": sha256_value(adapter_spec),
         "provider": provider,
         "model_id": model_id,
@@ -229,6 +234,11 @@ def main() -> int:
             "--concurrency values other than 1 are not implemented; run separate output directories instead"
         )
     if args.hidden_input:
+        if args.system in MGP6V43_SUCCESSOR_SYSTEMS:
+            raise SystemExit(
+                "post-final successor systems are restricted to public train/dev; "
+                "the completed v4.3 hidden run cannot be repeated"
+            )
         if args.authorization is None:
             raise SystemExit("--hidden-input requires --authorization")
         if args.limit is not None or args.action is not None or args.dry_run:
@@ -244,11 +254,12 @@ def main() -> int:
         records = records[: args.limit]
     if not records:
         raise SystemExit("no public records selected")
+    adapter_version = adapter_version_for_system(args.system)
     system_prompt_path = args.system_prompt or DEFAULT_SYSTEM_PROMPTS[args.system]
     system_prompt = system_prompt_path.read_text(encoding="utf-8")
     allowed_actions = system_allowed_actions(args.system)
     adapter_spec = {
-        "adapter_version": ADAPTER_VERSION,
+        "adapter_version": adapter_version,
         "system": args.system,
         "allowed_actions": allowed_actions,
         "recency_turns": args.recency_turns,
@@ -320,7 +331,7 @@ def main() -> int:
         "dataset_path": str(args.input),
         "dataset_sha256": run_config["dataset_sha256"],
         "system": args.system,
-        "adapter_version": ADAPTER_VERSION,
+        "adapter_version": adapter_version,
         "adapter_spec": adapter_spec,
         "adapter_spec_hash": run_config["adapter_spec_hash"],
         "provider": effective_provider,
@@ -357,7 +368,7 @@ def main() -> int:
     if args.dry_run:
         print(
             f"[mgp6-v43] public input={args.input} n={len(records)} "
-            f"system={args.system} adapter={ADAPTER_VERSION} prompt_hash={prompt_hash}"
+            f"system={args.system} adapter={adapter_version} prompt_hash={prompt_hash}"
         )
         return 0
     immutable_resume_keys = (
@@ -430,7 +441,7 @@ def main() -> int:
                         "retry_count": 0,
                         "prompt_tokens": 0,
                         "completion_tokens": 0,
-                        "adapter_version": ADAPTER_VERSION,
+                        "adapter_version": adapter_version,
                         "system": args.system,
                     },
                 )
@@ -449,7 +460,7 @@ def main() -> int:
                         "retry_count": 0,
                         "prompt_tokens": 0,
                         "completion_tokens": 0,
-                        "adapter_version": ADAPTER_VERSION,
+                        "adapter_version": adapter_version,
                         "system": args.system,
                         "rule_trace": rule_trace,
                     },
@@ -482,7 +493,7 @@ def main() -> int:
                             raw_response=raw,
                             metadata={
                                 **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=False, error=str(exc)),
-                                "adapter_version": ADAPTER_VERSION,
+                                "adapter_version": adapter_version,
                                 "system": args.system,
                             },
                         )
@@ -494,13 +505,15 @@ def main() -> int:
                     guard_trace: dict[str, Any] | None = None
                     if args.system == "live_model_controller":
                         action, guard_trace = apply_live_controller_guard(record, action)
+                    elif args.system == "successor_live_model_controller":
+                        action, guard_trace = apply_successor_controller_guard(record, action)
                     write_raw_response(
                         raw_path,
                         public_id=record.public_id,
                         raw_response=raw,
                         metadata={
                             **_raw_metadata(response=response, parse_attempt=parse_attempt, valid_action=True),
-                            "adapter_version": ADAPTER_VERSION,
+                            "adapter_version": adapter_version,
                             "system": args.system,
                             "model_action": model_action,
                             "guard_trace": guard_trace,
