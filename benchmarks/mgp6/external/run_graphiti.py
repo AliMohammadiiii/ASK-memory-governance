@@ -183,7 +183,7 @@ class GraphitiAdapter(ExternalAdapter):
         if llm_headers:
             llm_kwargs["default_headers"] = llm_headers
 
-        llm_openai_client = openai.AsyncOpenAI(
+        llm_openai_client: Any = openai.AsyncOpenAI(
             **llm_kwargs,
         )
 

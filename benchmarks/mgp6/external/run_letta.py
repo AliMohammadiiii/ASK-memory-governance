@@ -89,13 +89,25 @@ class LettaAdapter(ExternalAdapter):
         self.agent_id = agent.id
 
     def _blocks_text(self) -> list[str]:
-        blocks = self.client.agents.blocks.list(agent_id=self.agent_id)
+        blocks = self.client.agents.blocks.list(agent_id=self._require_agent_id())
         excluded_labels = {"persona", "context"}
-        return [
-            f"{b.label}: {b.value}"
-            for b in blocks
-            if getattr(b, "label", "") not in excluded_labels and getattr(b, "value", "")
-        ]
+        texts: list[str] = []
+        for block in blocks:
+            label = getattr(block, "label", None)
+            value = getattr(block, "value", None)
+            if (
+                isinstance(label, str)
+                and label not in excluded_labels
+                and isinstance(value, str)
+                and value
+            ):
+                texts.append(f"{label}: {value}")
+        return texts
+
+    def _require_agent_id(self) -> str:
+        if not self.agent_id:
+            raise RuntimeError("Letta agent is not initialized; call reset() first")
+        return self.agent_id
 
     def seed(self, records: list[dict[str, Any]], dialogue: list[dict[str, str]]) -> None:
         facts = "\n".join(
@@ -109,18 +121,18 @@ class LettaAdapter(ExternalAdapter):
 
         self.client.agents.blocks.update(
             block_label="human",
-            agent_id=self.agent_id,
+            agent_id=self._require_agent_id(),
             value=human,
         )
         self.client.agents.blocks.update(
             block_label="context",
-            agent_id=self.agent_id,
+            agent_id=self._require_agent_id(),
             value=context,
         )
 
     def _send(self, text: str) -> Any:
         return self.client.agents.messages.create(
-            agent_id=self.agent_id, messages=[{"role": "user", "content": text}]
+            agent_id=self._require_agent_id(), messages=[{"role": "user", "content": text}]
         )
 
     def write(self, text: str) -> WriteObservation:
