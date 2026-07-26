@@ -72,6 +72,13 @@ def _append_jsonl(path: Path, value: dict[str, Any]) -> None:
         os.fsync(handle.fileno())
 
 
+def _existing_prediction_ids(path: Path) -> set[str]:
+    """Return completed IDs, treating a fresh output directory as empty."""
+    if not path.exists():
+        return set()
+    return {row.public_id for row in load_predictions_allow_partial(path)}
+
+
 def _write_json(path: Path, value: dict[str, Any]) -> None:
     temporary = path.with_suffix(f"{path.suffix}.tmp")
     with temporary.open("w", encoding="utf-8") as handle:
@@ -113,7 +120,7 @@ def main(argv: list[str] | None = None) -> int:
     out = args.out.resolve()
     records = load_public_records(input_path, require_gold=False)
     predictions_path = out / "predictions.jsonl"
-    existing = {row.public_id for row in load_predictions_allow_partial(predictions_path)}
+    existing = _existing_prediction_ids(predictions_path)
     todo = [record for record in records if record.public_id not in existing]
     if args.limit:
         todo = todo[: args.limit]

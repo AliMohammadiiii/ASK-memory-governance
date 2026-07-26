@@ -13,6 +13,7 @@ from ask.eval.mgp6_v43_external import (
     derive_external_action,
     run_external_record,
 )
+from scripts.run_mgp6_v43_external import _existing_prediction_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -117,3 +118,7 @@ def test_external_record_uses_public_namespace_and_never_observes_gold(tmp_path:
     assert result["derivation_version"] == EXTERNAL_DERIVATION_VERSION
     assert "gold_action" not in result
     assert not (_keys(result) & PROHIBITED_MODEL_KEYS)
+
+
+def test_external_runner_treats_a_fresh_prediction_path_as_empty(tmp_path: Path) -> None:
+    assert _existing_prediction_ids(tmp_path / "predictions.jsonl") == set()
