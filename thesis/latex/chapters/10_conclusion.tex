@@ -1,0 +1,158 @@
+\section{10.1 Conclusion}\label{conclusion}
+
+This thesis treats the memory write as the governed object: an explicit
+KEEP/SUPERSEDE/ABSTAIN decision over typed, provenance-tracked,
+lineage-preserving records, measured separately at the action,
+stored-state/lineage, and answer layers. It reaches two conclusions, one
+methodological and one empirical, and they arrived in that order.
+
+The methodological conclusion is negative and it came first. MGP-6 v2
+fails a construct-validity gate: conflict type alone reaches 1.000
+held-out accuracy without reading the dialogue or the memory state. On
+that pilot the lexical reference policy obtains 0.8889 test accuracy
+against 0.9000 for the structured LLM with a paired family interval
+containing zero; the reference has 0/33 observed action false commits
+but a one-sided upper bound of 0.0868 and 10/45 missed updates, and the
+cost matrix reverses which policy is preferable. No capability claim
+survives that gate, and the thesis makes none.
+
+The empirical conclusion follows from building the instrument the
+failure demanded. MGP-6 v4.3 --- 900 human-authored items in 100
+semantic components across 20 domains, component-split, exactly
+action-balanced, dual-annotated, with the shortcut probe enforced as a
+release gate --- supports a single pre-registered configuration scored
+once on a sealed 540-item split: \textbf{0.8481 accuracy, 0.8479
+macro-F1, Cohen's κ 0.7722}, with component-cluster intervals roughly
+40\% wider than item independence would imply. Against a \(1/3\) chance
+floor, every structural baseline, every component ablation, the
+zero-shot policy, the standalone rule policy, and three deployed
+external memory systems fall between 0.2944 and 0.3667 on development
+data, failing in two opposite directions --- commit-happy systems
+overwrite 77--98\% of records they should keep, abstain-happy systems
+decline 78--98\% of decisions they should make. Downstream, a
+homogeneous full-slice LongMemEval-M run places governed writes at
+76.1\% above every structural baseline, with the gain concentrated in
+knowledge-update and preference competencies rather than spread
+uniformly.
+
+The thesis's most transferable finding is smaller than any of those
+numbers and more useful than all of them: \textbf{for a write-governance
+system the error structure carries more information than the aggregate}.
+Of 38 mishandled ambiguous items, 30 leave the stored state
+byte-identical and lose only the audit record, while 8 replace an active
+record on insufficient evidence. A single false-commit rate of 0.2111
+overstates the state-corrupting harm fivefold. The same discipline
+exposes a defect the aggregate would have hidden: selective accuracy
+(0.8449) sits below overall accuracy (0.8481), so the abstention
+mechanism performs governance without performing selective-risk
+targeting, and the two are not the same capability.
+
+What the evidence does not support bounds all of it. Only one hidden
+configuration was authorised, so every comparative contrast is
+development evidence on the split used for selection. The collections
+are synthetic, English-only, single-slot, and single-step. Human
+annotation is owner-attested rather than identity-authenticated, and
+perfect agreement is equally consistent with a labelling manual that is
+unambiguous by construction. One model family, one seed. Monetary cost
+is unavailable rather than estimated. What the thesis offers is an
+auditable protocol, a benchmark whose construct gates run at build time,
+and a measured result inside explicitly stated bounds --- not controller
+superiority, population safety, or deployment performance.
+
+\section{10.2 Answers to the research
+questions}\label{answers-to-the-research-questions}
+
+\textbf{RQ1.} A governed write path makes actions and state transitions
+explicit and auditable, and on MGP-6 v4.3 the composed controller
+performs the three-way decision far above chance (0.8481 sealed-hidden,
+κ 0.7722) where every baseline, ablation, and deployed external system
+does not. Component decomposition attributes the result to the
+composition rather than to either part alone. It does not establish that
+this generalizes beyond a controlled synthetic diagnostic, and no hidden
+comparator exists.
+
+\textbf{RQ2.} MGP-6 v2 exposed its own label shortcut and is suitable
+only for mechanism debugging. MGP-6 v4.3 moves that probe to a
+build-time release gate, so the successor instrument is fit for
+controlled comparison --- but its components, balanced evidence, and
+constructed scenarios still do not reproduce the distribution of natural
+user interactions.
+
+\textbf{RQ3.} Decision metrics, commit safety, state and lineage
+metrics, probe behaviour, and judged answers must be reported separately
+--- and, this thesis adds, so must the \emph{classes} of decision error.
+Separating state-preserving from state-corrupting write failures changes
+the estimated harm fivefold, and separating governance from selective
+risk revealed that the controller's abstentions are not risk-targeted.
+Two shipped forgetting metrics fail and are disclosed as failing.
+
+\textbf{RQ4.} Component-cluster resampling, shortcut probes,
+finite-sample bounds, and cost sensitivity materially change what may be
+claimed. On v2 they turn a policy comparison into a null. On v4.3 they
+widen the reported interval by about a third relative to item
+independence, and they show the ASK controller ordering is stable across
+all three cost regimes where the v2 comparison flipped.
+
+\textbf{RQ5.} A frozen ledger with claim-eligibility labels, mandatory
+phrasing rules, co-reported raw and adjudicated numbers, enumerated
+invalid runs, and a recomputation artifact that regenerates every
+reported number from raw per-item predictions keep thesis, papers, and
+code consistent --- including where the consistent statement is
+``development evidence only'' or ``not final''.
+
+\section{10.3 Future work}\label{future-work}
+
+\textbf{Immediate --- close the hidden-comparator gap.} The single most
+valuable next experiment is not a better controller but a \emph{scored
+comparator set}: run the four structural baselines, the four ablations,
+and the successor configuration against the sealed v4.3 hidden split
+under the same one-shot pre-registration discipline that produced the
+0.8481 result. Until that exists, §7.10.6 remains development evidence
+and the successor's 0.9611 is an unverified development number.
+
+\textbf{Immediate --- independent construction.} Execute
+\texttt{benchmarks/mgp6/MGP6\_V3\_INDEPENDENT\_PROTOCOL.md} with writers
+separated from controller design, three blinded human annotators whose
+identity the build system can authenticate, all three actions inside
+every conflict family, long trajectories, and pre-unblinding shortcut
+gates. The v4.3 build-time gate is a real improvement over the v2
+post-hoc audit, but it is still run by the project that authored the
+data.
+
+\textbf{Near-term --- calibrate the abstention.} The selective-accuracy
+inversion (0.8449 versus 0.8481) identifies a concrete target: the guard
+currently decides \emph{whether a write is justified}, not \emph{whether
+the controller is likely to be wrong}. A confidence signal fitted on an
+independent set, evaluated by risk--coverage rather than accuracy, would
+separate these two functions and is testable on development data without
+consuming another hidden run.
+
+\textbf{Near-term --- variance the current design cannot see.} All
+reported intervals reflect item and component sampling under one model
+family, one seed, and temperature 0. Multiple seeds, multiple model
+families, and repeated runs of the same configuration would quantify run
+variance, which is currently unmeasured and is the most likely source of
+an over-read on any single number in this thesis.
+
+\textbf{Near-term --- the designed but unexecuted SSP intervention.} The
+provenance-constrained typed preference record and answer contract
+(\texttt{SINGLE\_SESSION\_PREFERENCE\_METHOD.md}), with its
+credit-attribution ablation between grounding-supply and answer-side
+repairs, targets the competency where the V12 controller retains the
+most headroom (0.533).
+
+\textbf{Longer-term.} Evaluate oracle versus predicted components; run
+external memory systems under their native operations with observable
+state, stale retrieval, latency, and cost, treating action mappings only
+as sensitivity analyses; execute a complete homogeneous downstream
+pipeline on the full LongMemEval collection rather than a 180-item
+slice; and connect the operational policy to non-prioritized belief
+revision \citep{alchourron1985theory} and multi-principal governance
+\citep{ren2026gatemem}.
+
+The broader conclusion stands independent of the pending cells: a
+memory-capable agent should be judged not only by what it recalls, but
+by what it declines to commit, what it supersedes with auditable
+lineage, and whether its evaluation can tell those apart --- and, this
+thesis adds, by whether its evaluation can tell a lost audit record
+apart from a corrupted one.

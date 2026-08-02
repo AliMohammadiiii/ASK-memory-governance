@@ -2,8 +2,9 @@
 \label{sec:intro}
 
 A language agent that persists across sessions must decide what to do with each
-candidate memory: retain the current record, replace it with a newer one, or
-decline to commit because the evidence is insufficient. Deployed systems often
+candidate memory: preserve the current record (and possibly append a compatible
+one), replace it with a newer one, or decline to commit because the evidence is
+insufficient. Deployed systems often
 make this decision through opaque LLM tool calls
 \citep{packer2023memgpt,chhikara2025mem0} or additive event logs
 \citep{park2023generative}. A wrong write can remain latent until much later: an
@@ -21,28 +22,67 @@ individual operations nor abstention, typing, provenance, and lineage as new.
 The contribution is a harness that makes their decision-, state-, and
 answer-layer consequences separately observable.
 
-We first exercise the harness on \mgp, a $180$-item, English, synthetic pilot.
-The collection was authored by the same project that implemented the reference
-policy and has only one independent human re-annotation of its test split. It is
-therefore a diagnostic instrument, not an independently established benchmark.
-Rather than treating a held-out item split as sufficient, we explicitly test
-whether scenario metadata predicts the action and whether item-level inference
-understates within-template dependence.
+We exercise the harness on two instruments and report both honestly. The first
+is \mgp, a $180$-item English synthetic pilot authored by the same project that
+implemented its reference policy. Rather than accept a held-out item split as
+sufficient, we tested whether scenario metadata alone predicts the action --- and
+it does, perfectly. That measured negative result, not a leaderboard number, is
+what the pilot contributes.
+
+The second is its successor, \mgpc: $900$ human-authored, controlled synthetic
+items in $100$ semantic components across $20$ domains, split by component into
+exactly action-balanced train, development, and sealed hidden partitions, with
+duplicate, shortcut, allowlist, and deterministic-build gates passed at release
+and dual human annotation covering every item. A single configuration was
+pre-registered on development data and run once against the sealed hidden
+split. This is still a controlled synthetic diagnostic and still not a
+community benchmark, but its construct-validity gate is enforced at build time
+rather than discovered afterwards.
 
 Our contributions and findings are:
 \begin{enumerate}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
 \item We formalize the three write actions and release a layered evaluator for
-action correctness, state invariants, lineage, stale retrieval, selective risk,
-and asymmetric write costs.
-\item We add train/dev-fitted shortcut baselines and template-family/minimal-pair
-cluster bootstrap. Conflict type alone predicts every held-out test action;
-type alone predicts $96.7\%$. This is direct evidence that the current pilot
-does not identify general evidence reasoning.
-\item On the held-out test split, a transparent reference policy reaches
-$0.8889$ accuracy and a structured LLM policy reaches $0.9000$; the paired
-family-cluster interval includes zero. Zero observed reference-policy false
-commits has a non-zero finite-sample upper bound and trades against missed
-updates, so the preferred policy changes with the cost matrix.
+action correctness, state invariants, lineage and superseded-record
+recoverability, stale retrieval, selective risk, and asymmetric write costs.
+\item We implement the deployed write policy as an auditable five-dimensional
+scorecard over extraction confidence, evidence quality, marker burden, signed
+candidate--prior relation, and type stability. Exact replay of all $12{,}654$
+\lme{} write decisions exposes which dimensions and guards actually determine
+the action: marker burden controls abstention, the signed relation controls
+supersession, and removing the discrete relation guard would convert $11{,}091$
+\keep{} decisions into \supersede{}.
+\item On the sealed \mgpc{} hidden split ($n=540$) the pre-registered composed
+controller reaches $0.8481$ accuracy and $0.8479$ macro-F1.
+The component-cluster $95\%$ intervals are $[0.8037, 0.8889]$ for accuracy
+and $[0.8021, 0.8894]$ for macro-F1. We decompose its errors by operational
+harm rather than
+reporting one aggregate: the state-corrupting failure --- replacing an active
+record on insufficient evidence --- occurs on $8/180$ ambiguous items
+($0.0444$), while the far more frequent $30/180$ lapse leaves the state
+untouched and loses only the audit record.
+\item On the development split, every structural baseline, every component
+ablation, the zero-shot policy, and three deployed external memory systems fall
+at or below the $0.3333$ chance rate of the balanced three-way decision, in two
+opposite ways: commit-happy systems overwrite $77$--$98\%$ of records they
+should keep, and abstain-happy systems decline $78$--$98\%$ of decisions they
+should make. The composed controller reaches $0.844$ and its successor
+configuration $0.961$; each contrast rejects at Holm-corrected
+$p < 10^{-17}$.
+\item We report full computation accounting at both scales: the controlled
+\mgpc{} decision costs a $1.3$~s median and $393$ prompt tokens, while the
+\lme{} trace shows that extraction and relation classification consume $92.8\%$
+of end-to-end prompt tokens. Monetary cost is recorded as unavailable rather
+than estimated where provider telemetry emitted no price field.
+\item As downstream evidence, a homogeneous full-slice \lme{} run places the
+governed controller at $76.1\%$, above every structural baseline
+(naive overwrite $63.3\%$, paired $p = 2.9\times10^{-4}$), with the gain
+concentrated in knowledge-update and preference competencies rather than spread
+uniformly.
+\item We add train/dev-fitted shortcut baselines and cluster bootstrap. On the
+v2 pilot, conflict type alone predicts every held-out action and type alone
+predicts $96.7\%$ --- direct evidence that an item-level holdout can look clean
+while a family label determines the answer, and the reason the v4.3 build runs
+this probe as a release gate.
 \end{enumerate}
 
 This reframing turns a weakness into a falsifiable result: an item-level test

@@ -1,0 +1,168 @@
+\section{3.1 System boundary}\label{system-boundary}
+
+Let an interaction stream produce candidate memory items. At step \(t\),
+extraction yields a candidate \(c_t\) (typed content with provenance),
+the store state is \(M_t\) (a set of typed records, each active or
+superseded, with lineage links), and the controller computes a relation
+\(r_t \in \{\text{independent}, \text{duplicate}, \text{update/contradiction}, \text{unclear}\}\)
+between \(c_t\) and a selected prior record, then a decision
+
+\[
+d_t = \pi(c_t, r_t, M_t) \in \{\text{KEEP}, \text{SUPERSEDE}, \text{ABSTAIN}\},
+\]
+
+with transition semantics
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{KEEP}: insert \(c_t\) as a new active record (also the correct
+  action when no conflicting prior exists);
+\item
+  \textbf{SUPERSEDE}: insert \(c_t\), mark the conflicting prior
+  inactive, and record a lineage link from the new record to the
+  superseded one;
+\item
+  \textbf{ABSTAIN}: no mutation; the conflict or ambiguity is recorded
+  for review rather than committed.
+\end{itemize}
+
+Retrieval reads only active records; lineage remains queryable for audit
+and for explicitly historical questions. The policy \(\pi\) may be a
+deterministic scorecard (§4.4) or an LLM (§4.5); in both cases the
+action vocabulary and the transition semantics are fixed by code, not by
+the model.
+
+\section{3.2 What makes a write decision
+wrong}\label{what-makes-a-write-decision-wrong}
+
+Three governance failure modes are scored separately (formal definitions
+in Appendix C):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Invalid commit} --- committing a write (KEEP or SUPERSEDE) on
+  an item whose gold action is ABSTAIN: the store now contains a record
+  that policy says should not have been committed.
+\item
+  \textbf{Missed supersession} --- choosing KEEP or ABSTAIN when the
+  gold action is SUPERSEDE: the stale record remains active. Its
+  conservative sub-case, SUPERSEDE→ABSTAIN, leaves the store
+  consistent-but-stale without committing anything false; the harmful
+  sub-case, silent KEEP, leaves an unresolved contradiction active.
+\item
+  \textbf{Lineage loss} --- performing the right action while failing to
+  preserve the supersession chain, invisible to action accuracy but
+  fatal to auditability.
+\end{enumerate}
+
+Downstream, two state-dependent behaviors are scored: \textbf{stale
+retrieval} (a superseded record surfaces as current) and \textbf{premise
+resistance} (whether the system rejects a query premise that its
+governed memory contradicts).
+
+\section{3.3 Functional requirements}\label{functional-requirements}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{FR-1 Typed extraction.} Candidate memories carry a type (e.g.,
+  stable preference, transient preference, episodic fact),
+  holder/subject, and source provenance.
+\item
+  \textbf{FR-2 Relation classification.} Each candidate is classified
+  against retrieved priors before any write.
+\item
+  \textbf{FR-3 Three-action decision.} Every write decision is one of
+  KEEP/SUPERSEDE/ABSTAIN; unknown or unparsable proposals resolve to no
+  mutation.
+\item
+  \textbf{FR-4 Lineage preservation.} SUPERSEDE links the new record to
+  the superseded one; superseded records are excluded from ordinary
+  retrieval but never silently destroyed.
+\item
+  \textbf{FR-5 Interpretable policy option.} A deterministic,
+  feature-scored policy must be available so decisions can be explained
+  and audited without model introspection.
+\item
+  \textbf{FR-6 Decision export.} Per-item decisions, features, and
+  outcomes are exported with stable IDs for scoring.
+\item
+  \textbf{FR-7 Evidence-labeled reporting.} Every reported metric
+  carries the run's claim-eligibility label.
+\end{itemize}
+
+\section{3.4 Invariants}\label{invariants}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  No memory mutation outside the three-action vocabulary.
+\item
+  No SUPERSEDE without an identified prior record; lineage recorded
+  atomically with the write.
+\item
+  ABSTAIN never mutates state.
+\item
+  Retrieval of active records never returns superseded ones (violations
+  are scored as stale retrieval, not patched).
+\item
+  No unparsable model output is coerced into a write.
+\item
+  No result enters a manuscript table without a ledger entry and
+  eligibility label.
+\end{enumerate}
+
+\section{3.5 Threat model and failure
+sources}\label{threat-model-and-failure-sources}
+
+Accidental and adversarial sources considered: ambiguous or
+contradictory user statements; model hallucination of relations or
+targets; distractor content crowding out decisive evidence at retrieval
+time; provider failures corrupting extraction (empirically observed:
+HTTP-402 no-responses cached as empty extractions in the v7 LongMemEval
+run, §7.6); judge errors in downstream grading (empirically observed:
+number-word/date false negatives, §8.3); and researcher degrees of
+freedom (fix-on-failure loops without confirmation sets --- the reason
+the LongMemEval failure replay is excluded from final claims, §9.1).
+Chapter 9 maps each to a validity threat with mitigation status.
+
+\section{3.6 Failure taxonomy by causal
+layer}\label{failure-taxonomy-by-causal-layer}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Layer
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Example failure
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Primary diagnostic
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Extraction & candidate fact missed or fabricated & extraction traces;
+fail-closed policy (v8) \\
+Relation classification & contradiction labeled independent & relation
+confusion; escalation gating \\
+Decision & KEEP chosen where gold is SUPERSEDE & action confusion
+matrix; per-action F1 \\
+Commit safety & write on a gold-ABSTAIN item & invalid-commit rate \\
+Lineage & supersession chain broken & lineage integrity \\
+Retrieval & superseded record surfaces; decisive turn trimmed away &
+stale-retrieval rate; SSP taxonomy (§8.1) \\
+Answer & correct grounding present, wrong binding & answer-side
+categories of the SSP taxonomy \\
+Judge & correct answer graded wrong & adjudication ledger; κ between
+judges \\
+\end{longtable}
+}

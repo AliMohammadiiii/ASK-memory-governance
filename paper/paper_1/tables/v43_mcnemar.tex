@@ -1,0 +1,36 @@
+% AUTO-GENERATED. Exact two-sided McNemar on paired per-item predictions,
+% MGP-6 v4.3 public dev (n=180). Holm correction over this 15-test family.
+\begin{table}[t]
+\centering
+\small
+\caption{Paired exact McNemar tests on the MGP-6 v4.3 public development split
+($n{=}180$, two-sided, Holm-corrected over the $15$-test family). $b$ is
+A-correct/B-wrong and $c$ is A-wrong/B-correct; RD is the accuracy difference.
+Item independence is assumed and components are not resampled, so these are
+secondary to the interval estimates in Table~\ref{tab:v43dev}. Every
+controller-vs-baseline contrast rejects; the two successor variants do not
+separate from each other.}
+\label{tab:v43mcnemar}
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{@{}llrrrrl@{}}
+\toprule
+A & B & $b$ & $c$ & RD & Holm $p$ & Decision \\
+\midrule
+Frozen controller & Letta & 106 & 7 & $+0.5500$ & $1.2\!\times\!10^{-22}$ & reject $H_0$ \\
+Frozen controller & $-$ abstention & 98 & 6 & $+0.5111$ & $2.2\!\times\!10^{-21}$ & reject $H_0$ \\
+Frozen controller & B1 no memory & 90 & 4 & $+0.4778$ & $4.2\!\times\!10^{-21}$ & reject $H_0$ \\
+Frozen controller & B4 naive overwrite & 98 & 7 & $+0.5056$ & $1.4\!\times\!10^{-20}$ & reject $H_0$ \\
+Frozen controller & $-$ provenance & 98 & 7 & $+0.5056$ & $1.4\!\times\!10^{-20}$ & reject $H_0$ \\
+Frozen controller & Zero-shot decision & 99 & 8 & $+0.5056$ & $4.4\!\times\!10^{-20}$ & reject $H_0$ \\
+Frozen controller & B2 flat retrieval & 95 & 7 & $+0.4889$ & $7.1\!\times\!10^{-20}$ & reject $H_0$ \\
+Frozen controller & $-$ typing & 98 & 8 & $+0.5000$ & $7.1\!\times\!10^{-20}$ & reject $H_0$ \\
+Frozen controller & $-$ lineage & 97 & 8 & $+0.4944$ & $1.0\!\times\!10^{-19}$ & reject $H_0$ \\
+Frozen controller & Graphiti & 110 & 13 & $+0.5389$ & $1.6\!\times\!10^{-19}$ & reject $H_0$ \\
+Frozen controller & Rule policy alone & 106 & 14 & $+0.5111$ & $5.8\!\times\!10^{-18}$ & reject $H_0$ \\
+Frozen controller & Mem0 & 106 & 14 & $+0.5111$ & $5.8\!\times\!10^{-18}$ & reject $H_0$ \\
+Successor (guard-comp.) & Frozen controller & 28 & 7 & $+0.1167$ & 0.002 & reject $H_0$ \\
+Successor & Frozen controller & 28 & 9 & $+0.1056$ & 0.005 & reject $H_0$ \\
+Successor (guard-comp.) & Successor & 2 & 0 & $+0.0111$ & 0.500 & \textbf{retain $H_0$} \\
+\bottomrule
+\end{tabular}
+\end{table}

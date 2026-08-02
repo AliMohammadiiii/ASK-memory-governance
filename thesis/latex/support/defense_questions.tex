@@ -1,0 +1,290 @@
+\section{Problem and contribution}\label{problem-and-contribution}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{What problem does the thesis solve?}\\
+  It makes persistent-memory writes explicit and auditable by deciding
+  KEEP, SUPERSEDE, or ABSTAIN before mutation.
+\item
+  \textbf{What is the thesis's core contribution?}\\
+  Operationalizing and evaluating a combined three-action write policy
+  at decision, stored-state/lineage, and downstream-answer layers.
+\item
+  \textbf{What is not novel here?}\\
+  Updating, versioning, provenance, lineage, abstention, gating, and
+  operation-level evaluation all have prior art.
+\item
+  \textbf{Why avoid a ``first'' claim?}\\
+  The literature contains close precedents for every constituent
+  mechanism, and the evidence does not justify priority for the
+  conjunction.
+\item
+  \textbf{Why is this governance rather than ordinary memory
+  management?}\\
+  The action is policy-constrained, side-effecting, reviewable, and tied
+  to provenance and lineage rather than being an opaque storage
+  heuristic.
+\item
+  \textbf{Why three actions?}\\
+  KEEP handles compatible information, SUPERSEDE handles justified
+  replacement, and ABSTAIN prevents unsupported mutation.
+\item
+  \textbf{Why not use DELETE?}\\
+  Supersession preserves the prior record and lineage for audit; silent
+  deletion destroys evidence.
+\item
+  \textbf{Why is ABSTAIN a write action if it does not mutate state?}\\
+  It is a policy outcome at the write boundary and records that evidence
+  was insufficient to authorize mutation.
+\item
+  \textbf{Why use an interpretable rule policy?}\\
+  It makes thresholds and features inspectable and supports causal
+  ablation without model-internal explanations.
+\item
+  \textbf{Could an LLM implement the same policy?}\\
+  Yes. The project includes an LLM-backed controller inside the same
+  action and transition scaffold.
+\end{enumerate}
+
+\section{Diagnostic design}\label{diagnostic-design}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{10}
+\item
+  \textbf{What is MGP-6 v2?}\\
+  An author-designed 180-scenario diagnostic slice covering six conflict
+  types and three probe modes.
+\item
+  \textbf{Is MGP-6 a benchmark?}\\
+  It is a controlled diagnostic, not an independent community benchmark.
+\item
+  \textbf{What is the gold-action distribution?}\\
+  90 SUPERSEDE, 66 ABSTAIN, and 24 KEEP.
+\item
+  \textbf{Why is the distribution imbalanced?}\\
+  The diagnostic emphasizes governance-critical supersession and
+  abstention behaviors that naive systems cannot express.
+\item
+  \textbf{What are the splits?}\\
+  60 train, 30 development, and 90 test.
+\item
+  \textbf{Why lead with test-split numbers?}\\
+  The rule policy was developed using train/development, so test-first
+  reporting limits researcher flexibility.
+\item
+  \textbf{What do the query modes measure?}\\
+  Direct recall, resistance to stale premises, and implicit use of
+  current state.
+\item
+  \textbf{How were labels audited?}\\
+  One independent annotator covered the 90 test items, plus a separate
+  four-model audit panel.
+\item
+  \textbf{Can you claim human inter-annotator agreement?}\\
+  No.~There is one independent human annotator, not multiple human
+  annotators.
+\item
+  \textbf{What was the annotation disagreement?}\\
+  One implicit-conflict item, \texttt{MGP6V2-T3-TEST-016}, was gold
+  SUPERSEDE and annotator ABSTAIN.
+\end{enumerate}
+
+\section{Results and statistics}\label{results-and-statistics}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{20}
+\item
+  \textbf{What is the most important quantitative result?}\\
+  Conflict type alone reaches 1.000 held-out accuracy; type alone
+  reaches 0.9667. The pilot fails its construct-validity gate.
+\item
+  \textbf{What are the held-out policy results?}\\
+  Reference: 0.8889 accuracy / 0.9145 macro-F1; structured LLM: 0.9000 /
+  0.9040.
+\item
+  \textbf{Does the reference policy beat or match the LLM?}\\
+  No such claim is licensed. The LLM is numerically higher and the
+  paired family-cluster interval includes zero; that is neither
+  superiority nor non-inferiority.
+\item
+  \textbf{Why is an item holdout insufficient?}\\
+  The conflict/type-to-action mapping persists across splits, so a
+  system can recognize scenario categories without reasoning over
+  evidence.
+\item
+  \textbf{What does zero observed action false commit mean?}\\
+  It is 0/33 test cases, not zero population risk; the one-sided 95\%
+  upper bound is 0.0868.
+\item
+  \textbf{What is the cost of the conservative reference policy?}\\
+  It misses 10/45 required updates, versus 7/45 for the structured LLM.
+\item
+  \textbf{Why use cluster bootstrap?}\\
+  Items share template and minimal-pair structure; resampling families
+  better reflects dependence than treating 90 items as independent.
+\item
+  \textbf{Do the cost matrices select one universal winner?}\\
+  No.~Commit-averse costs favour the reference, while update-responsive
+  costs favour the structured LLM.
+\item
+  \textbf{What is action false-commit rate?}\\
+  Among gold-ABSTAIN items, the fraction predicted KEEP or SUPERSEDE. It
+  is separate from state invalid-commit, which checks whether state
+  mutated.
+\item
+  \textbf{Why report macro-F1 with accuracy?}\\
+  The action distribution is imbalanced, and macro-F1 gives each action
+  equal weight.
+\end{enumerate}
+
+\section{Ablations and causal
+interpretation}\label{ablations-and-causal-interpretation}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{30}
+\item
+  \textbf{What happens without abstention?}\\
+  Accuracy falls to 0.5556 and invalid-commit rate rises to 1.0.
+\item
+  \textbf{What happens without provenance?}\\
+  Accuracy falls to 0.7000 and invalid-commit rate rises to 0.606.
+\item
+  \textbf{What happens without typing?}\\
+  Macro-F1 falls to 0.5680 and KEEP F1 becomes 0.0.
+\item
+  \textbf{What happens without lineage?}\\
+  Action accuracy stays 0.9222 while lineage integrity falls from 0.8556
+  to 0.3689.
+\item
+  \textbf{Why is the lineage ablation important?}\\
+  It demonstrates within this generator that unchanged action labels can
+  coexist with degraded lineage state; independent confirmation is still
+  required.
+\item
+  \textbf{Do the ablations prove deployment safety?}\\
+  No.~They attribute effects within this scaffold and diagnostic only.
+\end{enumerate}
+
+\section{External systems and incomplete
+evidence}\label{external-systems-and-incomplete-evidence}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{36}
+\item
+  \textbf{How should external-adapter results be interpreted?}\\
+  As harness- and mapping-specific measurements, not native-system
+  capability rankings.
+\item
+  \textbf{Why disclose both NOOP mappings?}\\
+  NOOP is not semantically identical to ABSTAIN, so the mapping changes
+  accuracy materially.
+\item
+  \textbf{Why is MemOS diagnostic-only?}\\
+  Its adapter does not expose whether an old memory was replaced, making
+  supersession unobservable.
+\item
+  \textbf{What is the few-shot baseline result?}\\
+  With 174/180 predictions and six missing scored INVALID, its
+  coverage-aware bound is 0.7833 accuracy / 0.7692 macro-F1.
+\item
+  \textbf{Why is the few-shot row incomplete?}\\
+  Six required item predictions are absent; denominator alignment does
+  not turn missing inference into a complete run.
+\end{enumerate}
+
+\section{LongMemEval integrity}\label{longmemeval-integrity}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{41}
+\item
+  \textbf{What happened in LongMemEval v7?}\\
+  Provider failures produced 316 HTTP-402 traces and 388 empty
+  extraction fallbacks, contaminating the run.
+\item
+  \textbf{Which v7 system scored higher?}\\
+  Naive overwrite scored 114/180, above the controller's 110/180, but
+  both are diagnostic-only.
+\item
+  \textbf{Why is replaying prior failures biased?}\\
+  Selection depends on the earlier outcome, so the changed configuration
+  and judge apply only to hard items.
+\item
+  \textbf{What did the failure replay observe?}\\
+  It repaired 25 of exactly 70 selected v7 failures; it is
+  \texttt{failure\_replay\_only}.
+\item
+  \textbf{Why is the archived 139/180 construction excluded?}\\
+  It carries all prior successes forward, mixes regimes, selects
+  failures for repair, and adds four post-hoc analyst overrides.
+\item
+  \textbf{What does the Modal top-up show?}\\
+  Among 84 observed prior successes, 71 stayed correct and 13 regressed,
+  invalidating automatic carry-forward.
+\item
+  \textbf{What are the defensible combined bounds?}\\
+  There are 96/154 raw observed correct; unresolved items give full-180
+  raw bounds of 53.3\%--67.8\%.
+\item
+  \textbf{What happened to SSP?}\\
+  v7 was 11/30, the selected replay repaired 0/19 failures, and the
+  top-up observes 8/29 with a maximum of 9/30; the values cannot be
+  carried across versions.
+\item
+  \textbf{Why does the replay not isolate the answer model?}\\
+  Replay prompt contexts differ from v7, so multiple pipeline factors
+  changed.
+\item
+  \textbf{What is the status of final-1.1?}\\
+  \texttt{externally\_pending}; the supplied OpenRouter credential
+  returned HTTP 403 before inference.
+\item
+  \textbf{Can you claim any final LongMemEval accuracy?}\\
+  No.~Current rows are diagnostic-only, failure-replay-only, incomplete,
+  invalid, or externally pending.
+\end{enumerate}
+
+\section{Validity, ethics, and future
+work}\label{validity-ethics-and-future-work}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{52}
+\item
+  \textbf{What is the main internal-validity threat?}\\
+  The author co-designed scenarios, gold policy, and rule features,
+  making some baseline comparisons partly tautological.
+\item
+  \textbf{What is the main external-validity threat?}\\
+  One author-designed slice, one main model family, and one seed do not
+  establish broad generalization.
+\item
+  \textbf{What is the main construct-validity threat?}\\
+  Bespoke metrics and a single independent human annotator require wider
+  external validation.
+\item
+  \textbf{What is the main statistical-validity threat?}\\
+  Small diagnostic strata and the absence of run-to-run variance
+  estimates.
+\item
+  \textbf{How does the system handle ambiguous writes?}\\
+  ABSTAIN produces no mutation and routes the case for review.
+\item
+  \textbf{What ethical risk does lineage create?}\\
+  Retaining superseded history can increase privacy and surveillance
+  risk, so access control and retention policy are still required.
+\item
+  \textbf{What experiment should run next?}\\
+  The frozen homogeneous final-1.1 full-180 LongMemEval evaluation with
+  an authorized provider credential.
+\item
+  \textbf{What would weaken the thesis's central claim?}\\
+  Evidence that a simpler design matches decision, state/lineage, audit,
+  and answer behavior under equivalent risk constraints would reduce the
+  need for the combined controller.
+\end{enumerate}

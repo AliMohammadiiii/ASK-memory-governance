@@ -1,6 +1,32 @@
 # Scientific source of truth
 
-Audit date: 2026-07-15. Machine-readable companions: `artifacts/analysis/mgp6_validity_audit.json`, `artifacts/results_ledger.json`, `artifacts/results_ledger.csv`, `artifacts/controller_run_comparison.json`, and `docs/audit/RUN_CLASSIFICATION.csv`.
+## Superseding addendum — 2026-07-27
+
+The LongMemEval “no final result” statement in Section 2 records the state of
+the audit on 2026-07-15 and is no longer current. The homogeneous V12 run
+(`runs_local/lme_final_controller_v12_qwen_180`) subsequently completed all 180
+items under one answer model and one judge. Its controller result is 137/180
+(76.1%) versus 114/180 (63.3%) for naive overwrite; the detailed evidence and
+open items are in `reports/RESULTS_LME_FINAL.md`. The run is
+`final_candidate`, not fully frozen: a stale launcher hash and a manifest not
+finalized after resume remain open. Consequently the historical
+`artifacts/results_ledger.json` and its generated `reports/FINAL_RESULTS.*`
+have not been promoted and still describe the earlier externally-pending
+state. For the current paper, raw V12 predictions, judgments, and action logs,
+the V12 report, and `paper/paper_1/claims_evidence_matrix.md` supersede that
+historical LongMemEval subsection. The contaminated v7 and 77.2% carry-forward
+construction remain ineligible.
+
+MGP-6 v4.3 also supersedes v2 as the paper's controlled diagnostic result. V2
+remains only as the construct-validity failure documented below. The v4.3
+hidden result and development-only comparisons are recorded in the paper claim
+matrix and `artifacts/analysis/mgp6_v43_full_benchmark_analysis.json`.
+
+Original audit date: 2026-07-15. Machine-readable companions:
+`artifacts/analysis/mgp6_validity_audit.json`,
+`artifacts/results_ledger.json`, `artifacts/results_ledger.csv`,
+`artifacts/controller_run_comparison.json`, and
+`docs/audit/RUN_CLASSIFICATION.csv`.
 
 The run-status vocabulary is `final_candidate`, `diagnostic_only`, `failure_replay_only`, `incomplete`, `invalid`, and `externally_pending`. Run status records provenance, but later validity evidence governs scientific eligibility. A numerical artifact does not become claim-eligible merely because it is complete, historically labelled `final_candidate`, or has a confidence interval.
 

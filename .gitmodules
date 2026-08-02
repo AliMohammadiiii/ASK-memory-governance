@@ -1,0 +1,3 @@
+[submodule "tehran-thesis"]
+	path = thesis/template
+	url = https://github.com/sinamomken/tehran-thesis.git

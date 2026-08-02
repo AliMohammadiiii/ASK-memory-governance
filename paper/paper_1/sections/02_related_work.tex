@@ -53,9 +53,15 @@ write actions, abstention, or lineage. The Supersede environment
 phrase ``memory governance'' for authorization across principals --- a different
 axis from our epistemic write correctness. LongMemEval \citep{wu2025longmemeval}
 and LoCoMo \citep{maharana2024locomo} are end-to-end QA benchmarks that cannot
-attribute a failure to the write decision. \mgp{} operationalizes joint scoring of write-time
-\keep/\supersede/\abstain{} decisions and resulting memory state; we do not
-claim that operation-level or state-level evaluation itself is new.
+attribute a failure to the write decision. Newer evaluations close other parts
+of that gap: Memora \citep{uddin2026memora} penalizes obsolete-memory use;
+MemGym \citep{xu2026memgym} reports memory-isolated scores across agentic
+regimes; and GroupMemBench \citep{yang2026groupmembench} adds multi-principal
+knowledge-update and abstention cases. None supplies the same controlled
+three-way write label together with a post-transition lineage target. \mgp{}
+operationalizes joint scoring of write-time \keep/\supersede/\abstain{}
+decisions and resulting memory state; we do not claim that operation-level,
+memory-isolated, or state-level evaluation itself is new.
 
 \paragraph{Selective prediction, belief revision, knowledge editing.}
 The reject option \citep{chow1970reject,elyaniv2010selective,geifman2017selective}
@@ -64,7 +70,12 @@ and learning to defer \citep{madras2018defer,mozannar2020defer} are the origin o
 \emph{retrieval} in coding agents. We therefore never claim to introduce
 abstention to memory systems; we measure what an explicit abstain-on-write option
 contributes within our controlled diagnostic and claim no priority for the
-mechanism. AGM belief revision \citep{alchourron1985agm} is the intellectual
+mechanism. RSCB-MC is also the closest feature-controller precedent: its
+16-feature contextual bandit governs whether retrieved coding memory should be
+injected, whereas our five-feature rule governs a candidate write and exposes
+the exact score and state transition. The distinction is scope and
+auditability, not ownership of feature-based control. AGM belief revision
+\citep{alchourron1985agm} is the intellectual
 ancestor of \keep/\supersede; we cite it as ancestry only and prove no
 postulate compliance. Knowledge editing \citep{meng2022rome,meng2023memit}
 governs \emph{how} to change a parametric belief and assumes the edit should

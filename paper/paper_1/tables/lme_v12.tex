@@ -1,0 +1,27 @@
+% AUTO-GENERATED from runs_local/lme_final_controller_v12_qwen_180/*/report.json
+% and judgments.jsonl. Paired McNemar recomputed per item over the 6-test family.
+\begin{table}[t]
+\centering
+\small
+\caption{\lme{} V12 homogeneous full-slice run (freeze \texttt{final-2.0};
+answer model \texttt{qwen/qwen3.5-9b}; judge \texttt{google/gemma-4-31b-it};
+$0$ judge-model fallbacks). Accuracy intervals are exact binomial. The last
+column is an exact two-sided McNemar test against the row above, Holm-corrected
+over the six tests reported here: every step in the ordering separates.
+Latency is \emph{end-to-end per-item pipeline} time, dominated by memory
+ingestion of the item's session history, not by the answer call --- which is
+why the two write-time systems cost three orders of magnitude more per item
+than the retrieval-only baselines.}
+\label{tab:lme_v12}
+\begin{tabular}{@{}lrlrrl@{}}
+\toprule
+System & Correct/$n$ & Accuracy (95\% CI) & Prompt tok./item & Latency/item (s) & vs.\ row above \\
+\midrule
+B1 no memory & 9/180 & 0.0500 $[0.022,0.083]$ & 95 & 1.6 & --- \\
+B3 recency & 43/180 & 0.2389 $[0.183,0.300]$ & 768 & 3.1 & $4.7\!\times\!10^{-10}$ \\
+B2 flat vector & 80/180 & 0.4444 $[0.372,0.517]$ & 3,629 & 2.5 & $3.7\!\times\!10^{-6}$ \\
+B4 naive overwrite & 114/180 & 0.6333 $[0.561,0.700]$ & 14,227 & 966.0 & $6.8\!\times\!10^{-6}$ \\
+\textbf{ASK governed writes} & \textbf{137/180} & \textbf{0.7611} $[0.700,0.822]$ & 22,625 & 809.2 & $2.9\!\times\!10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}

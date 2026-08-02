@@ -1,0 +1,41 @@
+% AUTO-GENERATED from runs_local/lme_final_controller_v12_qwen_180/*/judgments.jsonl
+% and the per-system ingestion traces. Recomputed in
+% artifacts/analysis/mgp6_v43_full_benchmark_analysis.json -> lme_v12.system_comparison
+% Intervals are the harness's own bootstrap percentile CIs from each report.json,
+% the same intervals used in Table~\ref{tab:lme_v12}, so one canonical interval
+% per statistic across the paper.
+\begin{table*}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.8pt}
+\caption{Complete \lme{} V12 system comparison on one homogeneous $180$-item
+slice (same corpus, same reader model, same frozen judge). Accuracy is over all
+$180$ items and intervals are the pre-registered bootstrap percentile CIs, so
+they match Table~\ref{tab:lme_v12} exactly. The error columns decompose the
+$180$ into correct, wrong answer, over-refusal on an answerable item (detected by
+the scorer's refusal guard), and answering one of the $9$ by-design unanswerable
+items. Answer latency is the per-item cumulative end-to-end field. Ingestion
+tokens are the summed prompt tokens of the extraction and relation stages where
+telemetry exists.}
+\label{tab:lme_full}
+\begin{tabular}{@{}lrrrrrrrrl@{}}
+\toprule
+& \multicolumn{2}{c}{Accuracy} & \multicolumn{4}{c}{Error decomposition (of $180$)} & \multicolumn{2}{c}{Prompt tokens} & \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-7}\cmidrule(lr){8-9}
+System & Acc. & 95\% CI & Corr. & Wrong & Over-ref. & Unans. & Answer & Ingestion & Latency \\
+\midrule
+B1 no-memory & $0.0500$ & $[0.022,0.083]$ & 9 & 1 & 170 & 0 & 0.02M & --- & 1.6~s \\
+B2 flat-vector & $0.4444$ & $[0.372,0.517]$ & 80 & 30 & 70 & 0 & 0.65M & --- & 2.5~s \\
+B3 recency & $0.2389$ & $[0.183,0.300]$ & 43 & 22 & 115 & 0 & 0.14M & 43.0M & 3.1~s \\
+B4 naive-overwrite & $0.6333$ & $[0.561,0.700]$ & 114 & 49 & 15 & 2 & 2.56M & n.d.\textsuperscript{$\ddagger$} & 966.0~s \\
+ASK controller & $0.7611$ & $[0.700,0.822]$ & 137 & 25 & 17 & 1 & 4.07M & 52.7M & 809.2~s \\
+\bottomrule
+\end{tabular}
+\\[3pt]
+{\footnotesize \textsuperscript{$\ddagger$} B4's relation stage ran ($9{,}339$
+classifications recorded) but its trace carries no per-call token or latency
+telemetry, and its relation cache shares $0$ keys with the controller's, so the
+cost was incurred independently and cannot be recovered. It is reported as not
+determined rather than as zero or as an estimate. B1 and B2 have no LLM
+ingestion stage at all: B2 retrieves over embeddings.}
+\end{table*}

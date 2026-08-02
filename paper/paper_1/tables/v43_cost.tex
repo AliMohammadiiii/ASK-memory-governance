@@ -1,0 +1,35 @@
+% AUTO-GENERATED from raw_responses.jsonl and run_manifest.json of each run.
+% Recomputed in artifacts/analysis/mgp6_v43_full_benchmark_analysis.json.
+\begin{table}[t]
+\centering
+\small
+\caption{Computation and token accounting for the MGP-6 v4.3 write-decision
+stage. Latency is provider-reported per-response wall time and therefore
+includes queueing at the OpenRouter route, not model FLOPs; every run used
+\texttt{concurrency}$=1$ and \texttt{temperature}$=0$. The five-feature
+scorecard adapter issues no model call, so its per-item cost is local CPU time. Monetary
+cost is \emph{unavailable}: OpenRouter response telemetry carried no price
+field on any of these runs, and we do not substitute list-price estimates.}
+\label{tab:v43cost}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Run & $n$ & \multicolumn{4}{c}{Latency per item (ms)} & \multicolumn{2}{c}{Tokens per item} \\
+\cmidrule(lr){3-6}\cmidrule(lr){7-8}
+ & & mean & median & p95 & max & prompt & completion \\
+\midrule
+Frozen controller, hidden & 540 & 1,673 & 1,278 & 2,932 & 12,626 & 393 & 7.4 \\
+Frozen controller, dev & 180 & 1,400 & 959 & 3,669 & 10,260 & 396 & 7.5 \\
+Successor controller, dev & 180 & 1,288 & 952 & 3,388 & 7,593 & 506 & 7.8 \\
+Zero-shot LLM decision, dev & 180 & 1,425 & 1,039 & 3,122 & 9,886 & 549 & 8.0 \\
+B4 naive overwrite, dev & 180 & 1,647 & 1,139 & 4,116 & 23,586 & 578 & 7.9 \\
+B2 flat retrieval, dev & 180 & 1,581 & 1,060 & 4,582 & 8,478 & 597 & 7.9 \\
+B3 recency, dev & 180 & 1,774 & 1,071 & 5,515 & 11,404 & 233 & 7.9 \\
+B1 no memory, dev & 180 & 1,692 & 1,149 & 5,017 & 15,801 & 567 & 7.8 \\
+Five-feature scorecard adapter, dev & 180 & $0.24$ & $0.13$ & $0.64$ & $3.6$ & 0 & 0.0 \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{Hidden-run totals}: 212,467 prompt $+$ 4,000 completion tokens; 903.5~s summed model latency;} \\
+\multicolumn{8}{@{}l}{$0$ retries, $0$ invalid responses, $0$ duplicate predictions, $1$ transport disconnect recovered by resume.} \\
+\multicolumn{8}{@{}p{0.95\linewidth}}{\footnotesize The manifest's $207.96$~s \texttt{wall\_clock\_seconds} records only the resumed invocation that produced the final $108$ predictions, not the full $540$-item run; the summed model latency is the defensible aggregate.} \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,89 @@
+This directory contains an \textbf{English review draft}, not an
+institution-ready submission. The scientific source of truth is the
+2026-07-15 construct-validity audit in
+\texttt{artifacts/analysis/mgp6\_validity\_audit.json}, with the v1.1
+ledger retained for historical run provenance.
+
+\section{Deliverables}\label{deliverables}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{MASTERS\_THESIS\_ASK\_MGP6.md} --- complete English master
+  draft.
+\item
+  \texttt{two\_page\_summary.md} --- compact research summary.
+\item
+  \texttt{contribution\_summary.md} --- defensible contribution and
+  non-claim boundary.
+\item
+  \texttt{defense\_questions.md} --- oral-defense preparation.
+\item
+  \texttt{claims\_evidence\_matrix.md} --- thesis-scoped claim gate.
+\item
+  \texttt{THESIS\_NUMBER\_AUDIT.md} --- ledger v1.1 number audit.
+\item
+  \texttt{frontmatter/} --- Persian abstract/summary/terminology and
+  administrative placeholders.
+\item
+  \texttt{references.bib} and \texttt{references/README.md} ---
+  consolidated bibliography and audit notes.
+\item
+  \texttt{compiled/ASK\_Masters\_Thesis\_English\_Review\_Draft.docx}
+  --- editable review copy.
+\item
+  \texttt{compiled/ASK\_Masters\_Thesis\_English\_Review\_Draft.pdf} ---
+  rendered review copy.
+\end{itemize}
+
+\section{Evidence status}\label{evidence-status}
+
+MGP-6 v2 policy results are diagnostic: conflict type alone reaches
+1.000 held-out accuracy, so the pilot does not isolate evidence
+reasoning. The reference policy obtains 0.8889 test accuracy versus
+0.9000 for the structured LLM, with a family-clustered paired interval
+containing zero. The few-shot result is incomplete; mapped
+external-system rankings and all LongMemEval evidence are non-primary.
+
+MGP-6 v4.3 is a controlled synthetic successor release with 900 items,
+component-held-out train/dev/hidden splits, public/private separation,
+and owner-attested dual-human completion. Its single frozen final
+configuration completed the 540-item hidden procedure with aggregate
+accuracy 0.8481 and macro-F1 0.8479; component-bootstrap intervals and
+the prediction hash are reported in the thesis. This result is limited
+to the controlled synthetic diagnostic and is not an external-validation
+or deployment claim.
+
+\section{External completion
+requirements}\label{external-completion-requirements}
+
+The repository does not contain the official University of Tehran thesis
+template or verified administrative metadata. Before institutional
+submission, a human must:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  obtain and apply the current official template and regulations;
+\item
+  fill candidate, student number, department/faculty,
+  supervisor/advisor, approval, defense, and signature fields;
+\item
+  confirm Persian-front-matter requirements and typography with the
+  department;
+\item
+  choose and validate the required citation/bibliography style;
+\item
+  update Word fields, table of contents, lists of figures/tables, and
+  page numbering in the official template;
+\item
+  rerun the ledger/hash, citation, structural, accessibility, and visual
+  QA checks; and
+\item
+  execute or continue to disclose the independent v3 confirmation and
+  any externally pending downstream protocol.
+\end{enumerate}
+
+Use \texttt{thesis\_checklist.md} as the handoff gate. Do not treat the
+review DOCX/PDF as an official submission artifact.

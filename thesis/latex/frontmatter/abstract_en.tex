@@ -1,0 +1,85 @@
+Long-term memory makes language agents more useful and, at the same
+time, creates a governance problem: the agent must decide what to keep,
+what to supersede when new evidence contradicts stored state, and when
+to abstain because the evidence is insufficient to justify a write.
+These write-time decisions are not the same construct as downstream
+answer accuracy, and evaluations that collapse them conceal both
+capability and risk.
+
+This thesis formulates memory governance as an explicit, auditable
+three-way decision --- KEEP, SUPERSEDE, ABSTAIN --- over typed,
+provenance-tracked records, and separates evaluation of the write
+action, the resulting state and lineage, and the later answer. It
+reports two instruments. The first, MGP-6 v2, is an author-designed
+180-item pilot whose most important result is a \emph{failed}
+construct-validity gate: a conflict-type-only lookup fitted on train and
+development reaches 1.000 held-out accuracy without reading the dialogue
+or memory state (type-only: 0.9667). That failure motivated the second
+instrument.
+
+MGP-6 v4.3 is a 900-item human-authored controlled synthetic diagnostic
+in 100 semantic components across 20 domains, split by component into
+exactly action-balanced train (180), development (180), and sealed
+hidden (540) partitions, with duplicate, shortcut, allowlist, and
+deterministic-build gates passed at release and dual human annotation
+covering every item. One pre-registered configuration --- a composed
+controller pairing a public-evidence rule policy with a live model
+policy under a conservative abstention guard --- was run exactly once on
+the sealed split. It attains \textbf{0.8481 accuracy} and \textbf{0.8479
+macro-F1} (component-cluster 95\% intervals {[}0.8037, 0.8889{]} and
+{[}0.8021, 0.8894{]}; Cohen's κ = 0.7722 against balanced gold). The
+component-cluster interval is roughly 40\% wider than an
+item-independence interval, which is the correct width and the one
+reported.
+
+The thesis argues that the error \emph{structure} carries more
+governance information than the aggregate, and reports it accordingly.
+Of 38 mishandled ambiguous items, 30 become KEEP --- leaving the stored
+state byte-identical and losing only the audit record --- while just 8
+replace an active record on insufficient evidence (0.0444, CI {[}0.0227,
+0.0852{]}). A single ``false commit'' rate of 0.2111 therefore
+overstates the state-corrupting harm roughly fivefold. Missed updates
+run 0.0833 and destructive overwrites 0.0611. Component decomposition
+shows neither the rule policy nor the model policy alone exceeds 0.750
+on development data, so the result is a genuine composition rather than
+a rule engine with a model attached. Each write decision costs a 1.3 s
+median and 393 prompt tokens, below every full-context baseline it
+outperforms; monetary cost is recorded as unavailable rather than
+estimated, because provider telemetry emitted no price field.
+
+On the development split, every structural baseline, every component
+ablation, the zero-shot policy, the standalone rule policy, and three
+deployed external memory systems fall between 0.2944 and 0.3667 --- at
+or below the 0.3333 chance rate of the balanced decision --- failing in
+two opposite ways: commit-happy systems overwrite 77--98\% of records
+they should keep, while abstain-happy systems decline 78--98\% of
+decisions they should make. The composed controller reaches 0.8444 and
+its successor configuration 0.9611, with every
+controller-versus-baseline contrast rejecting at Holm-corrected p
+\textless{} 1.6e−19.
+
+As downstream evidence, a homogeneous full-slice LongMemEval-M run (all
+180 items, one answer model, one judge, zero judge fallbacks) places the
+governed controller at 76.1\%, above every structural baseline (naive
+overwrite 63.3\%; paired p = 2.9e−04), with the gain concentrated in
+knowledge-update and preference competencies rather than spread
+uniformly --- the pattern a write-policy effect should produce.
+
+What the evidence cannot support is stated as flatly as what it can.
+Only one hidden configuration was authorised, so every baseline and
+ablation contrast is development evidence on the split used for
+selection; the collections are synthetic, English-only, single-slot, and
+single-step; human annotation is owner-attested rather than
+identity-authenticated; and the abstention mechanism is not a calibrated
+selective predictor --- its selective accuracy (0.8449) falls below its
+overall accuracy (0.8481). The thesis contributes an auditable
+evaluation decomposition, a released benchmark with build-time construct
+gates, per-item predictions with cluster-aware and cost-conditional
+analysis, and a prospective independently generated multi-human
+confirmation protocol. It does not establish population safety,
+calibrated confidence, or long-lived deployment performance.
+
+\textbf{Keywords:} long-term memory, language agents, memory governance,
+supersession, abstention, provenance, lineage, auditability, diagnostic
+evaluation, construct validity, selective prediction, error
+decomposition, MGP-6 v4.3, ASK Controller, LongMemEval.

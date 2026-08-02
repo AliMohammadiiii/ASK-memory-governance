@@ -1,0 +1,35 @@
+% AUTO-GENERATED. Cost matrices are pre-specified in
+% FINAL_METRIC_DEFINITIONS.md; expected loss recomputed per item.
+\begin{table}[t]
+\centering
+\small
+\caption{Expected loss under three governance cost regimes. Balanced charges
+$1$ for any error. Commit-averse charges acting on an ambiguous record most
+heavily (\abstain$\to$\supersede{} $=5$, \keep$\to$\supersede{} $=5$,
+\abstain$\to$\keep{} $=3$). Update-responsive charges failing to apply a
+required update most heavily (\supersede$\to$\abstain{} and
+\supersede$\to$\keep{} $=3$). The ordering of the ASK controllers is stable
+across all three regimes, which the reference-versus-LLM comparison on the v2
+pilot was not.}
+\label{tab:v43cost_matrix}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+System & Balanced & Commit-averse & Update-responsive \\
+\midrule
+Frozen controller, \emph{hidden} ($n{=}540$) & 0.1519 & 0.4204 & 0.2963 \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Public development ($n{=}180$)}} \\
+\quad Successor controller (guard-comp.) & 0.0389 & 0.0889 & 0.0944 \\
+\quad Successor controller & 0.0500 & 0.1500 & 0.1333 \\
+\quad Frozen controller & 0.1556 & 0.4167 & 0.3000 \\
+\quad B4 naive overwrite & 0.6611 & 3.2333 & 1.6222 \\
+\quad B2 flat retrieval & 0.6444 & 3.0556 & 1.6056 \\
+\quad B1 no memory & 0.6333 & 2.6667 & 1.5667 \\
+\quad Zero-shot LLM decision & 0.6611 & 3.2944 & 1.6444 \\
+\quad Five-feature scorecard adapter (no model) & 0.6667 & 1.2444 & 1.6667 \\
+\quad Mem0 & 0.6667 & 0.6944 & 1.6556 \\
+\quad Letta & 0.7056 & 1.7667 & 1.7778 \\
+\quad Graphiti & 0.6944 & 1.1278 & 1.7056 \\
+\bottomrule
+\end{tabular}
+\end{table}

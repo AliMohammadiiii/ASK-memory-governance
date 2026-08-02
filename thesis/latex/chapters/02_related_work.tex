@@ -1,0 +1,192 @@
+This chapter follows the verified related-work audit, with submission
+citations rechecked against primary metadata sources on 2026-07-15. The
+most important change relative to earlier drafts is a cluster of near
+neighbors --- STALE, TOKI, Supersede, MemGuard, and HaluMem --- that are
+conceptually closer to ASK than the production systems archived in
+Chapter 7 and constrain which novelty claims remain defensible (§2.8).
+
+\section{2.1 Memory in language-agent
+systems}\label{memory-in-language-agent-systems}
+
+\emph{Memory} covers several mechanisms with different mutability and
+deletion semantics: context-window memory, retrieval memory, summary
+memory, structured records, and model parameters. Long context does not
+remove governance obligations --- long-context models use evidence
+unevenly by position \citep{liu2024lost} --- and retrieval-augmented
+generation separates storage from generation without providing a write
+policy \citep{lewis2020retrieval, borgeaud2022improving}.
+
+The systems line most relevant to ASK treats memory as an agent-managed
+store. MemGPT frames the LLM as an operating system that self-edits
+tiered memory \citep{packer2023memgpt}; its open-source successor Letta
+is evaluated in Chapter 7 (0.678 action accuracy under the favourable
+NOOP→ABSTAIN mapping). MemGPT's memory edits are opaque function calls:
+there are no write-time decision criteria, no abstention, no lineage.
+Mem0 productionizes an extract--consolidate--retrieve pipeline whose LLM
+chooses ADD/UPDATE/DELETE/NOOP per item \citep{chhikara2025mem0}; its
+NOOP means ``nothing new'', not ``too ambiguous to commit'', and it
+exposes no supersession lineage (Chapter 7: 0.622 upper bound,
+invalid-commit rate 1.0). Zep/Graphiti stores a bi-temporal knowledge
+graph in which contradicted edges receive invalidation timestamps
+instead of deletion \citep{rasmussen2025zep} --- the strongest shipped
+precedent for supersession-with-history --- but invalidation is a side
+effect of LLM extraction, not a governed decision with an abstain
+option, and Zep never scores whether an invalidation was correct. MemOS
+proposes MemCube versioning/provenance and uses the word ``governance''
+\citep{li2025memos}, but publishes no decision rule for
+supersede-vs-keep-vs-refuse; through its adapter, supersession is not
+even observable (Chapter 7: bound-only). A-MEM evolves
+Zettelkasten-style notes but always integrates new information
+\citep{xu2025amem}; MemoryBank forgets on an Ebbinghaus schedule ---
+time-driven, not evidence-driven \citep{zhong2024memorybank}; Generative
+Agents accumulate an append-only stream with reflection
+\citep{park2023generative}.
+
+Two recent lines are closer to ASK's decision framing. Memory-R1 trains
+an RL memory manager over a discrete ADD/UPDATE/DELETE/NOOP action space
+\citep{yan2025memoryr1} --- the clearest prior formalization of writes
+as actions --- but the policy is opaque (PPO/GRPO), the reward is
+answer-level, and NOOP is not uncertainty-driven abstention. RMM
+performs prospective merge-or-add at session end with retrospective
+RL-refined retrieval \citep{tan2025rmm}; its merge-vs-add echoes
+supersede-vs-keep but uses similarity thresholds without contradiction
+semantics or abstention. MemGuard assigns each memory an explicit
+functional role (type) at write time to prevent cross-type contamination
+\citep{ha2026memguard}; ASK's no-typing ablation (macro-F1
+0.9399→0.5680, KEEP F1→0.0) makes the same argument experimentally.
+
+\section{2.2 Memory lifecycle, revision, and
+conflict}\label{memory-lifecycle-revision-and-conflict}
+
+FadeMem classifies new-vs-old memory pairs (compatible / contradictory /
+subsumes / subsumed) and applies decay or fusion \citep{fademem2026}; it
+always acts on a detected conflict --- there is no abstain --- and
+suppresses rather than preserving lineage. PAMU updates preference
+signals only when drift is significant, via sliding-window and EMA
+fusion \citep{sun2025pamu}: a conservative, interpretable update
+trigger, but for preference vectors only, with no discrete action space.
+TOKI is the closest conceptual neighbor found in the verified audit
+\citep{wang2026toki}: it argues that contradiction resolution \emph{is}
+write-time concurrency control, types four production heuristics as
+bitemporal operators, and preserves the losing fact in an audit row. Its
+await-confirmation operator is a formal ancestor of ABSTAIN and its
+audit row parallels supersession lineage. Reddy and Challaram's
+deterministic conflict-resolution result \citep{reddy2026freshness}
+motivates testing interpretable update logic on independent data; it
+does not validate the author-designed MGP-6 pilot by analogy.
+
+\section{2.3 Benchmarks and evaluation for agent
+memory}\label{benchmarks-and-evaluation-for-agent-memory}
+
+LongMemEval evaluates chat assistants on five long-term memory abilities
+including knowledge updates and abstention \citep{wu2025longmemeval}; it
+is this thesis's downstream substrate (a stratified 180-item slice), and
+it is end-to-end only --- it cannot attribute failure to the write
+decision. LoCoMo tests very long conversational memory at scale
+\citep{maharana2024locomo}. HaluMem separately scores extraction,
+updating, and QA and reports that hallucinations accumulate at
+extraction/update \citep{halumem2025}; it detects hallucination rather
+than scoring a governed action choice, and it does not use gold
+KEEP/SUPERSEDE/ABSTAIN actions or lineage and premise-resistance
+metrics. The contribution here is therefore the operationalization and
+controlled, layered evaluation of this particular policy combination,
+not a claim of primacy for operation-level evaluation or decision
+typologies.
+
+STALE is a high-priority benchmark neighbor \citep{chao2026stale}: 400
+expert-validated implicit-conflict scenarios probing State Resolution,
+Premise Resistance, and Implicit Policy Adaptation. It shares MGP-6's
+constructs almost by name (MGP-6's query modes include
+\texttt{premise\_resistance}; its single annotation disagreement is an
+\texttt{implicit\_conflict} item). The decisive difference is scope:
+STALE probes a frozen agent's \emph{read-side} recognition that its
+memory is stale, whereas MGP-6 scores \emph{write-time actions} with an
+abstain option, supersession lineage, and memory-state metrics.
+Supersede isolates the ``supersession gap'' on the LongMemEval
+knowledge-update subset and trains it with GRPO
+\citep{patel2026supersede}; its reward is answer-time fact currency
+rather than a write-action taxonomy with abstention, lineage, or an
+interpretable policy. GateMem uses the phrase ``memory governance'' for
+a different axis --- access control, deletion compliance, and utility
+across principals in shared memory pools \citep{ren2026gatemem}. RSCB-MC
+applies risk-sensitive contextual bandits with explicit abstention to
+memory \emph{retrieval} in coding agents \citep{iscan2026remember}.
+Together these verified neighbors preclude any primacy claim for
+abstention, governance, update control, provenance, or operation-level
+measurement.
+
+Benchmark and dataset documentation follows the spirit of datasheets and
+model cards \citep{gebru2021datasheets, mitchell2019modelcards}; the
+agreement statistics of Chapter 5 use Cohen's κ
+\citep{cohen1960coefficient}, and the interval estimates of Chapters
+5--7 use bootstrap methods \citep{efron1993bootstrap}.
+
+\section{2.4 Belief revision and knowledge
+editing}\label{belief-revision-and-knowledge-editing}
+
+The AGM theory of belief change --- expansion, revision, contraction
+under minimal-change postulates --- is the formal ancestor of
+KEEP/SUPERSEDE \citep{alchourron1985theory}; classical AGM has no native
+abstain (non-prioritized revision covers declining input). ASK is best
+read as an operational, resource-bounded approximation of
+non-prioritized revision for LLM memory; no formal AGM compliance is
+claimed or proven. Parametric knowledge editing (ROME, MEMIT) evaluates
+edits in weight space with efficacy/generalization/specificity
+\citep{meng2022rome, meng2023memit} --- the decision-level-evaluation
+analogue for parameters; editing assumes the edit should happen, whereas
+ASK governs \emph{whether} to commit at all.
+
+\section{2.5 Selective prediction and
+abstention}\label{selective-prediction-and-abstention}
+
+Abstention descends from the reject option \citep{chow1970reject},
+selective classification
+\citep{elyaniv2010selective, geifman2017selective}, and learning to
+defer \citep{madras2018predict, mozannar2020consistent}. ASK applies
+that established idea at memory-write time. TOKI's await-confirmation
+and RSCB-MC's retrieval-time abstention further narrow the contribution.
+The defensible result is a within-generator mechanism signature plus
+explicit false-commit/missed-update trade-off, not a general safety
+effect.
+
+\section{2.6 Personalization and preference
+modeling}\label{personalization-and-preference-modeling}
+
+PrefEval shows preference following collapses within about ten turns
+zero-shot \citep{zhao2025prefeval} --- external motivation for the
+single-session-preference failure line in Chapter 8, with the difference
+that PrefEval measures following while this thesis attributes failure
+mechanism (grounding supply vs answer-side discipline). PersonaMem
+benchmarks dynamic user profiling across sessions with frontier models
+around 50\% \citep{jiang2025personamem}; LaMP is the canonical
+retrieval-augmented personalization suite with static profiles
+\citep{salemi2023lamp}.
+
+\section{2.7 Provenance and
+auditability}\label{provenance-and-auditability}
+
+Provenance \emph{storage} is well-precedented: Zep's bi-temporal
+validity intervals and episodes \citep{rasmussen2025zep}, TOKI's audit
+rows \citep{wang2026toki}, MemOS's MemCube metadata \citep{li2025memos},
+and HaluMem's evaluation-side error tracing \citep{halumem2025}.
+Auditability as a governance requirement also appears in alignment and
+risk frameworks
+\citep{ouyang2022training, bai2022constitutional, nist2023airmf}. ASK
+scores provenance and lineage ablations inside its pilot; the no-lineage
+result demonstrates that action accuracy can miss lineage degradation,
+but author alignment prevents a general causal claim.
+
+\section{2.8 Positioning and allowed novelty
+claims}\label{positioning-and-allowed-novelty-claims}
+
+Following \texttt{reports/NOVELTY\_CLAIMS\_ALLOWED.md} and the verified
+audit, the thesis makes one narrow contribution claim: it
+\textbf{operationalizes and evaluates the combination} of an
+interpretable KEEP/SUPERSEDE/ABSTAIN write policy, typed and
+provenance-tracked records, lineage-preserving transitions, and separate
+decision-, stored-state/lineage-, and downstream-answer measurements.
+The controlled ablations attribute distinct failure signatures to
+components of that combination. The thesis does not claim invention or
+primacy for write operations as actions, update/versioning, provenance,
+lineage, abstention, write gating, operation-level evaluation, or the
+term ``memory governance''.

@@ -57,21 +57,60 @@ annotator against the author gold and, separately, Fleiss $\kappa$ for a
 four-model audit panel. The latter is never described as human
 inter-annotator agreement.
 
-\subsection{v4.3 staged execution and reproducibility}
+\subsection{\mgpc{} systems, metrics, and statistics}
 
-The v4.3 release is evaluated in stages. Train is reserved for engineering
-checks, and development data are used for prompt, configuration, ablation, cost,
-and latency selection. Before hidden prediction, the selected provider and exact
-model identifier, prompt and system-prompt hashes, decoding, seed, retry policy,
-timeout, concurrency, evaluator, split and data hashes, code commit, and
-environment lock are frozen. Hidden inputs are then predicted once per
-pre-registered final configuration; prediction files are validated and hashed
-before hidden gold is opened locally for scoring. At the time of writing, this
-procedure was completed once for the selected public-indexed-evidence ASK live
-controller using Qwen~3.5-9B through OpenRouter. Its $540/540$ predictions were
-coverage-validated and sealed with SHA-256
-\texttt{e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806}
-before the local private scorer opened hidden gold. One transport-level remote
-disconnect occurred after 432 durable predictions; the same frozen manifest
-resumed only the remaining records, with no duplicate identifiers or changed
-controls. No hidden result was used for prompt, model, or configuration choice.
+The \mgpc{} comparison covers sixteen configurations on the public development
+split: the pre-registered frozen controller, the successor controller in both
+its as-run and guard-composed forms, four structural baselines (no memory, flat
+retrieval, recency, naive overwrite), an unstructured zero-shot decision policy,
+the deterministic five-feature scorecard through its v4.3 adapter, and four
+component ablations (no abstention, no provenance, no typing, no lineage).
+Three deployed
+external memory systems --- Letta, Mem0, and Graphiti --- were run through adapters
+we wrote. Because their native operations do not match our action vocabulary,
+their scores depend on an action mapping and are reported as harness
+diagnostics, not as capability measurements of those systems in their intended
+use. All model-backed rows use \texttt{qwen/qwen3.5-9b} at temperature $0$,
+seed $4301$, $128$ maximum new tokens, and concurrency $1$.
+
+Primary decision metrics are action accuracy, macro-F1, per-action
+precision/recall/F1, Cohen's $\kappa$, and the multiclass Matthews correlation;
+the last two are informative here precisely because the splits are exactly
+balanced. We decompose errors by operational harm rather than reporting a single
+error rate: action false commit on gold-\abstain{} items, separated into the
+state-preserving \abstain$\to$\keep{} and state-corrupting
+\abstain$\to$\supersede{} components; missed update on gold-\supersede{} items;
+destructive overwrite of a gold-\keep{} record; and unnecessary abstention over
+items that required a decision. Every rate carries a Wilson $95\%$ interval, and
+a zero count is reported with a finite-sample upper bound rather than as zero
+risk. Expected loss is computed under balanced, commit-averse, and
+update-responsive cost matrices fixed before scoring.
+
+Hidden-split uncertainty uses a $5{,}000$-replicate component-cluster bootstrap
+at seed $4301$, because items within a semantic component share a scenario
+skeleton. On the public development split, component-cluster resampling is
+unavailable --- the component map is private and the public scorer does not read
+it --- so those intervals are $10{,}000$-replicate item bootstraps and are
+narrower than a component-aware estimate would be. Paired system contrasts on
+development use exact two-sided McNemar tests with Holm correction over the
+reported family; they inherit the same independence assumption and are
+interpreted accordingly (Section~\ref{sec:limitations}).
+
+Operational accounting is taken from the per-response records rather than
+from wall-clock timing of the harness: provider-reported latency per response
+(mean, median, p95, maximum), prompt and completion tokens, transport failures,
+in-client retries, and invalid-response counts. Monetary cost is reported only
+where the provider emitted a price field; on every run in this paper it did
+not, and we record cost as unavailable rather than substituting list-price
+arithmetic.
+
+\subsection{\mgpc{} staged execution and reproducibility}
+
+The staged protocol and its one-shot hidden discipline are specified in
+Section~\ref{sec:v43contract}. In summary: train supports engineering checks,
+development carries every prompt, configuration, guard, ablation, cost, and
+latency choice, and the sealed hidden split was opened exactly once, after the
+configuration was frozen and hashed and the prediction file was
+coverage-validated and sealed. The direct methodological consequence, which
+governs how Section~\ref{sec:results} may be read, is that no hidden baseline,
+ablation, or paired comparison exists.

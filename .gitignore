@@ -78,5 +78,23 @@ checkpoints/
 paper/**/compiled/
 thesis/compiled/
 
+# LaTeX intermediates and local publication exports
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+/paper/paper_1/*.pdf
+/paper/paper_1.zip
+/artifacts/analysis/*.pdf
+thesis/**/compiled/*.docx
+thesis/**/compiled/*.pdf
+
 # Preserved local manuscript backup (not an active paper source)
 paper/paper_1/sections/08_downstream_analysis.tex.bak_v11

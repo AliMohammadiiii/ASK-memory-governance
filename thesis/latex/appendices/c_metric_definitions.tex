@@ -1,0 +1,44 @@
+Let \(y_i \in \{K, S, A\}\) be the gold action and \(\hat y_i\) the
+canonicalized prediction (unknown → INVALID, always incorrect).
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Action accuracy}
+  \(= \frac{1}{n}\sum_i \mathbb{1}[y_i = \hat y_i]\); \textbf{macro-F1}
+  = unweighted mean of per-action F1.
+\item
+  \textbf{Invalid-commit rate}
+  \(= \Pr(\hat y_i \in \{K, S\} \mid y_i = A)\) --- commits on
+  gold-ABSTAIN items (definition per revised \texttt{metrics\_mgp6.py}).
+\item
+  \textbf{Lineage integrity}: share of supersession chains whose links
+  are complete and correct after the run.
+\item
+  \textbf{Stale-retrieval rate}: share of probes on which a superseded
+  record surfaces as current.
+\item
+  \textbf{Premise resistance}: share of premise\_resistance probes on
+  which the stale/false premise is rejected.
+\item
+  \textbf{Implicit application}: share of implicit\_application probes
+  answered from the current value.
+\item
+  \textbf{LME answer accuracy}: judge-graded correctness; per-competency
+  accuracy with stratified percentile-bootstrap CIs (SSP: n=20,000, seed
+  0).
+\item
+  \textbf{Primary statistical machinery}: 10,000-replicate paired
+  cluster bootstrap over \texttt{template\_family\_id}, repeated over
+  minimal-pair groups plus singleton items; family-macro and
+  item-weighted estimates; one-sided finite-sample upper bounds for zero
+  event counts; frozen asymmetric expected-cost matrices; descriptive
+  ECE/Brier and risk--coverage diagnostics. Exact item-level McNemar,
+  Holm--Bonferroni, Newcombe intervals, and Wilson marginals are
+  retained only as secondary historical analyses because item
+  independence is doubtful.
+\item
+  \textbf{Excluded}: shipped \texttt{over\_forgetting\_rate} /
+  \texttt{under\_forgetting\_rate} (saturate at 1.0 for every system;
+  ledger \texttt{known\_metric\_issues}).
+\end{itemize}

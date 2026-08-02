@@ -1,0 +1,8 @@
+All prompt templates are versioned under \texttt{prompts/}
+(\texttt{extraction\_v0…v\_final3.j2}, \texttt{relation\_stage1\_v0.j2},
+\texttt{relation\_stage2\_v0.j2}) and referenced by the run configs.
+Contract requirements: strict JSON output schemas; retrieved memory
+delimited as untrusted data; the action vocabulary enumerated;
+unparsable output resolves to no mutation. Judge prompts and guard order
+are documented in \texttt{src/ask/eval/longmemeval.py} (§4.8). Prompts
+are not duplicated here to keep a single source of truth.

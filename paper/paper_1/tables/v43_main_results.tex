@@ -1,0 +1,35 @@
+% AUTO-GENERATED from runs/mgp6_v43/final_hidden/live_model_controller_qwen35_9b/
+% (private_hidden_metrics.json, run_manifest.json, raw_responses.jsonl).
+% Recomputed values in artifacts/analysis/mgp6_v43_full_benchmark_analysis.json.
+\begin{table}[t]
+\centering
+\small
+\caption{MGP-6 v4.3 sealed-hidden result for the single pre-registered
+configuration (ASK live controller, \texttt{qwen/qwen3.5-9b}, $n{=}540$,
+coverage $1.000$). Component-cluster intervals use 5{,}000 resamples at seed
+4301; Wilson intervals treat items as independent and are shown only to expose
+how much of the width is cluster dependence. Cohen's $\kappa$ and MCC are
+computed against the balanced gold ($180$ items per action), so chance
+accuracy is $0.3333$.}
+\label{tab:v43main}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Quantity & Value & 95\% interval \\
+\midrule
+Action accuracy & 0.8481 & [0.8037, 0.8889] (cluster) \\
+\quad (item-independence reference) & & [0.8154, 0.8760] (Wilson) \\
+Macro-F1 & 0.8479 & [0.8021, 0.8894] (cluster) \\
+Balanced accuracy & 0.8481 & --- \\
+Cohen's $\kappa$ & 0.7722 & --- \\
+Matthews correlation & 0.7728 & --- \\
+\midrule
+Non-abstention coverage & 0.6926 & --- \\
+Selective accuracy & 0.8449 & --- \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Per-action}} \\
+\quad \abstain{} & P 0.8554 / R 0.7889 / F1 0.8208 & support 180 \\
+\quad \keep{} & P 0.7947 / R 0.8389 / F1 0.8162 & support 180 \\
+\quad \supersede{} & P 0.8967 / R 0.9167 / F1 0.9066 & support 180 \\
+\bottomrule
+\end{tabular}
+\end{table}

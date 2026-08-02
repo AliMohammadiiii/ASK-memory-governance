@@ -3,83 +3,148 @@
 
 \subsection{What the evidence supports}
 
-The evidence supports the usefulness of separating write, state, and answer
-failures and the necessity of testing diagnostic shortcuts before interpreting
-policy scores. It also supports within-pilot mechanism observations, such as
-lineage corruption being invisible to action accuracy. On the downstream task,
-the homogeneous \lme{} run (Section~\ref{sec:downstream}) shows the governed
-controller above every structural baseline ($76.1\%$ vs.\ $\le 63.3\%$), which
-is evidence of downstream benefit relative to those baselines. It does not
-support population accuracy on the diagnostic, deployment safety, or
-reference-policy superiority and non-inferiority, none of which the
-\mgp{} comparison could resolve.
+Four claims are supported, at different levels. First, separating write, state,
+and answer failures is diagnostically useful: the v2 no-lineage ablation leaves
+action accuracy unchanged at $0.9222$ while lineage integrity falls to
+$0.3689$, a corruption invisible to a decision-only score. Second, the
+five-dimensional scorecard is the actual \lme{} runtime policy, not a paper
+abstraction: exact replay recovers every action, and counterfactual replay shows
+that $f$, $r$, and the relation guard carry nearly all action variation on this
+run (Section~\ref{sec:downstream:scorecard}). Third, on \mgpc{} the composed
+controller is far above chance on a balanced decision where the evaluated
+baselines, adapter-mapped external systems, and ablations are not, and neither
+controller component alone explains the development result
+(Sections~\ref{sec:results:dev}--\ref{sec:results:guard}). Fourth, on the
+homogeneous \lme{} slice, governed writes exceed every structural baseline
+($76.1\%$ versus $\le 63.3\%$, paired $p=2.9\times10^{-4}$), with the largest
+gain in knowledge update.
+
+Five stronger readings are not supported. (i) No \mgpc{} hidden-split system
+comparison exists. Only one configuration was authorised, so every baseline,
+ablation, external-system, successor, and component contrast is development
+evidence on the split used for selection. (ii) Neither diagnostic estimates a
+deployment population. Cluster intervals quantify uncertainty within the
+constructed \mgpc{} collection, and the \lme{} result covers one stratified
+$180$-item slice. (iii) A $0.0444$ state-corrupting false-commit rate on
+synthetic data is not a safety certification; its upper confidence bound is
+$0.0852$. (iv) The \lme{} action log has no per-candidate gold write label, so
+exact scorecard replay and leave-one-feature-out changes establish mechanism,
+not action correctness, threshold optimality, or a causal benefit of the five
+features. The v4.3 scorecard adapter's $0.3333$ development accuracy is direct
+evidence against making that stronger claim. (v) Monetary cost is unavailable:
+we report measured tokens and latency rather than imputed billing.
+
+One defect is also substantive. The frozen \mgpc{} configuration's selective
+accuracy ($0.8449$) is below its overall accuracy ($0.8481$), so abstentions are
+not preferentially placed on items it would otherwise get wrong. The
+abstention mechanism performs governance work without functioning as a
+calibrated selective predictor; these are different claims.
 
 \subsection{Threats to validity}
 
 \paragraph{Internal and construct validity.}
-The same project designed the taxonomy, manual, generator, gold labels, and
-reference policy. Conflict type perfectly predicts test actions, so item holdout
-and high annotation agreement cannot establish construct validity.
-Family-cluster bootstrap corrects one form of dependence but cannot repair the
-deterministic family--label mapping.
+The v2 pilot fails directly: the same project designed the taxonomy, generator,
+gold, and reference policy, and conflict type perfectly predicts the held-out
+action. Family-cluster bootstrap cannot repair a deterministic
+family--label map. The v4.3 redesign closes that measured shortcut through
+surface-matched action variants, component-disjoint splits, restricted-view
+probes, and duplicate gates, but it remains author-designed and stylized.
+Passing the implemented probes means those probes did not recover the action;
+it does not prove that no untested shortcut exists.
+
+The scorecard thresholds and weights are hand-specified configuration, not
+learned or independently calibrated. On V12 the stability prior changes no
+action and common thresholds change only five. Type conditioning is therefore
+implemented but weakly exercised, and the observed type-specific action rates
+must not be read as validation of the chosen durability ordering.
 
 \paragraph{External validity.}
-\mgp{} is small, synthetic, English-only, single-step, and single-slot. It lacks
-independent generation, natural dialogue, multi-step trajectories, multiple
-model families, multiple seeds, and native external-system comparisons. None of
-its rates estimates a deployment population.
+\mgpc{} is synthetic, English-only, single-slot, and single-step. It lacks
+natural conversational trajectories, interference between slots, multiple
+languages, and a population sampling frame. The \lme{} run supplies naturalistic
+long-horizon QA structure but remains one fixed slice, answer model, judge, and
+seed. The two instruments complement rather than validate each other:
+\mgpc{} has write labels without realism; \lme{} has downstream realism without
+per-write labels.
 
 \paragraph{Annotation.}
-There is one independent human re-annotation of the test split plus a four-model
-audit panel. Agreement may be high because the manual and family-to-label mapping
-are deterministic. The model panel is not human inter-annotator agreement, and
-one human annotator cannot establish multi-annotator reliability or construct
-validity.
+The instruments have different evidence and must not be conflated. V2 has one
+independent human re-annotation of its $90$-item test split plus a separate
+four-model audit panel; that is not multi-human agreement. V4.3 has two
+completed $900$-item packets with perfect action agreement and evidence-turn
+citations, but completion and reviewer identity are owner-attested. Perfect
+agreement on a deterministic manual establishes consistency, not independent
+construct validity.
 
 \paragraph{Statistical conclusion.}
-There are only 48 test template families, and cluster intervals are
-correspondingly wide. The reference--LLM comparison is a null, not evidence of
-equality. Confidence calibration and cost matrices were not validated on
-independent data, so they expose trade-offs rather than certify risk. The
-one-sided upper bound attached to zero action false commits prevents a sample zero from
-being presented as a safety guarantee.
+The v2 test contains only $48$ template families; its reference--LLM interval is
+a null, not evidence of equality. On \mgpc{} the hidden component-cluster
+interval is materially wider than the item-independence Wilson interval and is
+the one we privilege. Development intervals are item bootstraps because the
+public scorer does not read the private component map; the paired McNemar tests
+therefore ignore within-component dependence. Their largest effects are
+descriptively unambiguous, but the $0.117$ successor contrast is especially
+sensitive to that assumption. On \lme{}, only the aggregate governed-versus-
+naive-overwrite test supports inference after correction; the competency cells
+are descriptive at $n=30$ each.
+
+\paragraph{Selection and one-shot protocol.}
+The \mgpc{} hidden result is one measurement of one configuration. Development
+selection is the protocol working as intended, but the successor's $0.961$
+development score is not evidence that it improves the frozen controller's
+$0.848$ hidden score. For \lme{}, the homogeneous V12 run supersedes the
+contaminated v7 and selection-biased replay constructions; those earlier
+artifacts remain in the paper only to document why they were rejected.
+
+\paragraph{Operational provenance.}
+The v4.3 hidden run resumed once after a transport disconnect under an immutable
+manifest, with complete coverage and no duplicate prediction. V12 has two open
+bookkeeping issues --- a stale launcher code/protocol hash and a manifest not
+written to a terminal status after resume --- while its per-system answer,
+judge-routing, and fallback checks pass. These do not change the reported
+predictions, but they prevent a stronger clean-room provenance claim.
+Provider-reported latency is route-dependent wall time, not hardware compute.
+The V12 answer pipeline contains a deterministic computation aid in addition
+to the write controller. It produced no direct model bypass and its two
+controller-side answer substitutions had zero net accuracy effect, so it does
+not explain the reported controller--naive contrast; we nevertheless disclose
+it because downstream accuracy is not a write-only measurement.
 
 \subsection{Ethics and scope}
 
-The pilot contains synthetic, low-risk scenarios with no real personal data. Our
-target is epistemic write correctness. Memory poisoning, multi-principal access
-control, privacy, deletion compliance, and security governance are separate
-threat models that we do not test. We make no production-safety claim.
+Both diagnostics contain synthetic, low-risk scenarios and no real personal
+data. Our target is epistemic write correctness. Memory poisoning,
+multi-principal authorization, privacy leakage, deletion compliance, and
+security governance are separate threat models that we do not test. We make no
+production-safety claim.
 
 \subsection{Successor-dataset gate}
 
-A successor release must be constructed after the evaluated policies and
-thresholds are frozen; use an independent generator and hidden labels; include
-\keep, \supersede, and \abstain{} within every conflict family; add adversarial
-minimal pairs and 5/10/20-step trajectories; obtain blinded labels from at least
-three humans; and include natural or independently paraphrased dialogue. The
-test set must remain sealed until all development choices are fixed. These are
+A stronger release must be constructed after policies and thresholds are
+frozen; use independent generation and hidden labels; include \keep,
+\supersede, and \abstain{} within every conflict family; add adversarial minimal
+pairs and 5/10/20-step trajectories; obtain blinded labels from at least three
+humans; and include natural or independently paraphrased dialogue. Hidden
+baselines and ablations must be authorised before any hidden scoring. These are
 requirements for stronger claims, not future-work decorations.
 
 \subsection{Reproducibility statement}
 
-The dataset, schema, validator, reference policies, and per-item predictions are
-released. The construct-validity script regenerates shortcut tables,
-family/minimal-pair cluster intervals, calibration, risk--coverage, and cost
-sensitivity from those artifacts. The incomplete six-shot run and mapped
-external adapters remain explicitly non-primary. Reproduction commands are in
-Appendix~\ref{app:repro}. Independent construction, multi-human annotation, and
-trajectory data are release gates for a successor benchmark rather than boxes
-silently marked complete here.
+The repository releases schemas, validators, policies, public data, per-item
+predictions, and the V12 action log. The analysis programs regenerate shortcut
+tables, cluster intervals, calibration, risk--coverage, cost sensitivity, and
+the five-dimensional scorecard replay. Every scorecard row carries enough state
+to recompute both scores and the final action without a model call. Incomplete,
+mapped, contaminated, and selection-biased artifacts retain their exact status
+instead of being silently averaged into primary results. Reproduction commands
+are in Appendix~\ref{app:repro}.
 
 \subsection{v4.3 scope and release limitations}
 
 MGP-6 v4.3 is a controlled synthetic diagnostic, not evidence of real-world
-generalization or deployment safety. Its semantic components and balanced
-evidence support controlled comparison, but deliberately constructed scenarios
-do not reproduce the distribution of natural user interactions. Human completion
-is owner-attested rather than independently identity-authenticated by the build
-system. The release has no selected public redistribution license, so it should
-not be publicly hosted until licensing is resolved. Its private hidden gold,
-human gold, mappings, completed annotations, consensus, and detailed audits must
-remain outside version control and model-facing inputs.
+generalization or deployment safety. Its private hidden gold, final human gold,
+mappings, completed annotations, consensus, and detailed audits remain outside
+version control and model-facing inputs. No public redistribution license has
+been selected, so the data should not be publicly hosted until licensing is
+resolved; aggregate results and cryptographic commitments do not remove that
+restriction.

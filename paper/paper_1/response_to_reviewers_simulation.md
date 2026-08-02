@@ -1,73 +1,107 @@
 # Response to reviewers (simulation)
 
-This document rehearses the strongest objections after the diagnostic-paper
-rewrite. It is not part of the submission.
+Updated 2026-07-27. This document rehearses the strongest objections to the
+current MGP-6 v4.3 and LongMemEval V12 manuscript. It is not part of the
+submission.
 
-**1. “The controller and dataset were designed by the same authors.”**
+**1. “The authors designed the diagnostic, labels, and controller.”**
 
-Agreed. We no longer use MGP-6 v2 to claim method superiority. The manuscript
-leads with the failed shortcut gate: conflict type alone obtains perfect held-out
-accuracy. We frame the existing set as a pilot for exposing measurement failure
-and provide a role-separated successor protocol. Addressed in the abstract,
-§4, §7.1, and §9.
+That criticism invalidates a broad capability claim, especially for the v2
+pilot, where conflict type perfectly predicts the held-out action. The paper
+now treats v2 as a construct-validity failure. V4.3 breaks the measured mapping
+by putting all three actions inside each semantic component, isolating
+components across splits, and enforcing duplicate and restricted-view shortcut
+gates. It remains an owner-designed controlled diagnostic, not a population
+benchmark or independent deployment test.
 
-**2. “The held-out split still leaks the label.”**
+**2. “You compared many systems after looking at the hidden set.”**
 
-Correct. Family-disjoint splitting prevented exact template-family reuse but
-did not break the conflict/type-to-action mapping. The conflict-only and
-type-only probes are now primary results. Addressed in §4.4, §6, Table 1, and
-§7.1.
+We did not. Only the single frozen composed controller was authorized on the
+sealed v4.3 hidden split. Every baseline, ablation, successor, external-system,
+and component comparison is explicitly development-only. The paper does not
+use development contrasts to claim hidden improvement.
 
-**3. “The structured LLM is numerically better than the rule policy.”**
+**3. “The five-feature scorecard did not produce the headline v4.3 result.”**
 
-Correct on this test: 0.9000 versus 0.8889. The paired family-cluster interval
-includes zero, so we claim neither superiority nor non-inferiority. Addressed in
-the abstract, §7.2, and Table 2.
+Correct, and the mechanisms are separated throughout. The scorecard produced
+all 12,654 LongMemEval V12 write decisions; the v2 artifact used a lexical
+policy; the v4.3 hidden run used a composed model--public-evidence controller.
+The scorecard's v4.3 development adapter obtains 0.3333. The paper claims
+runtime transparency and mechanism diagnosis for the scorecard, not v4.3
+write-label superiority.
 
-**4. “Zero false commits is being sold as safety.”**
+**4. “Exact scorecard replay does not show that its writes are correct.”**
 
-It is not. We report 0/33 action false commits with a one-sided 95% upper bound
-of 0.0868, alongside the 10/45 missed-update count. Cost-sensitive analysis
-shows that the preferred system changes between commit-averse and
-update-responsive regimes. Addressed
-in §7.3 and §9.
+Correct. Exact replay proves execution fidelity. LongMemEval supplies no gold
+action for each extracted candidate, so the dimension and guard
+counterfactuals establish rule dependence, not correctness, causal benefit, or
+threshold optimality. The downstream QA comparison is reported as a separate
+outcome.
 
-**5. “The paper describes a scorecard that did not produce the results.”**
+**5. “The advertised five dimensions are effectively only two.”**
 
-The mismatch is corrected. §5 describes the actual deterministic lexical
-reference policy and explicitly notes that the broader prototype’s weighted
-five-feature scorecard did not generate these predictions and is not evaluated
-by this experiment.
+On the observed V12 support, marker burden controls abstention and signed
+relation controls supersession. Omitting confidence changes eight actions;
+omitting evidence quality or the stability prior changes none. Common
+type-specific thresholds change only five. We report this effective
+dimensionality as a result, not hide it, and describe the unused channels as
+hand-specified policy commitments that need independent calibration.
 
-**6. “A single-step synthetic set is not long-lived memory.”**
+**6. “The weighted supersession score is unsafe without an ad hoc guard.”**
 
-Agreed. We restrict v2 to transition-level diagnostics. The prospective v3
-protocol requires 5/10/20-turn trajectories, A→B→C and A→B→A patterns, delayed
-evidence, multiple slots, and leave-one-family-out analysis. Addressed in §9 and
-the public protocol.
+The discrete negative-relation guard is indeed load-bearing. Removing it
+changes 11,091 KEEP decisions to SUPERSEDE because 96.6% of observed KEEP
+scores already clear the scalar supersession threshold. The paper therefore
+defines the controller as an ordered score-plus-guard rule and identifies the
+guard as the safety-critical mechanism.
 
-**7. “One human annotator plus LLM judges is not human IAA.”**
+**7. “The composed v4.3 controller’s gain may come from only one component.”**
 
-Agreed. The two sources are reported separately. The manuscript does not use
-“multi-human inter-annotator agreement.” V3 requires three blinded humans and
-preserves pre-adjudication labels.
+The response trace records the model proposal, public-evidence rule proposal,
+and final action. On development, neither component reaches the composed
+accuracy. The conservative guard repairs 37 model errors and introduces 9,
+which localizes the benefit to their composition. No analogous component claim
+is made on hidden because component scoring there was not authorized.
 
-**8. “External systems are evaluated through an unfair mapping.”**
+**8. “The LongMemEval gain could come from a deterministic answer solver rather
+than memory writes.”**
 
-Mapped external-system action rankings are removed from the main paper. V3
-requires native observable operations for primary comparisons and permits
-action mapping only as a fully disclosed sensitivity analysis.
+The answer-layer computation aid is separately traced. No V12 item bypassed the
+answer model. It replaced two controller answers under verification: one repair
+and one regression, for zero net accuracy change. The 23-item aggregate
+controller advantage over naive overwrite therefore cannot be explained by
+deterministic output substitution.
 
-**9. “The downstream evidence is contaminated or incomplete.”**
+**9. “The cost comparison hides the expensive parts of the pipeline.”**
 
-Agreed. The LongMemEval section and table are removed from the main manuscript.
-The artifacts remain only for provenance and failure analysis. A downstream
-claim is gated on one complete, homogeneous, no-carry-forward run.
+The paper reports extraction, relation classification, and answer generation
+separately. In V12, write-time ingestion consumes 92.8% of prompt tokens and
+99.4% of model calls; answer generation is 7.2% of prompt tokens. Latency is
+identified as provider-reported route time, not hardware compute, and monetary
+cost is unavailable rather than imputed from list prices.
 
-**10. “Why is this publishable after conceding so much?”**
+**10. “External memory systems are unfairly forced into your action labels.”**
 
-The paper’s contribution is an auditable evaluation decomposition and a concrete
-negative result about how an apparently strong held-out memory-governance score
-can be reproduced by label shortcuts. It also releases per-item predictions,
-cluster-aware analysis, asymmetric error metrics, and a falsifiable successor
-protocol. We do not ask the pilot to support claims it cannot identify.
+External rows are development-only and retain their adapter/mapping
+qualification. They are not treated as native operation comparisons or hidden
+evidence. The manuscript makes the mapping dependence part of the result
+boundary.
+
+**11. “The downstream evidence is contaminated or selection-biased.”**
+
+The older v7 and 77.2% carry-forward artifacts are explicitly ineligible. The
+paper's downstream claim uses the homogeneous V12 180-item slice with one
+answer model and one judge. Two provenance-bookkeeping issues remain disclosed:
+a stale launcher hash and a manifest not finalized after resume. Neither changes
+the recorded predictions, but both prevent a stronger clean-room claim.
+
+**12. “The ingredients already exist in prior memory systems.”**
+
+They do. The paper claims no priority for memory write actions, abstention,
+typing, provenance, lineage, operation-level evaluation, or the phrase
+“memory governance.” The narrower contribution is the executable conjunction:
+write-, state-, lineage-, retrieval-, and answer-layer outcomes remain
+separately observable; the deployed write rule is exactly replayable; its
+effective mechanism is measured by dimension, type, and guard; and a controlled
+diagnostic is paired with downstream evidence under explicit validity
+boundaries.

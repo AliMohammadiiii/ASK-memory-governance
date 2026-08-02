@@ -1,0 +1,91 @@
+Audit date: 2026-07-15\\
+Primary quantitative source:
+\texttt{artifacts/analysis/mgp6\_validity\_audit.json}\\
+Historical run source: \texttt{artifacts/results\_ledger.json} v1.1
+
+The validity audit changes interpretation, not the archived prediction
+values. MGP-6 v2 policy rows are diagnostic because the collection fails
+its shortcut gate, even where the older ledger calls them
+\texttt{final\_candidate}.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+ID
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Quantity
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Audited value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Claim status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+N01 & Pilot size/splits & 180; train/dev/test 60/30/90 & context \\
+N02 & Gold actions & SUPERSEDE 90, ABSTAIN 66, KEEP 24 & context; label
+imbalance disclosed \\
+N03 & Template/minimal-pair clusters & 96 families; 24 minimal-pair
+groups & dependence context \\
+N04 & Type-only train+dev lookup on test & 0.9667 accuracy / 0.9471
+macro-F1 & construct leakage \\
+N05 & Conflict-type-only lookup on test & 1.0000 / 1.0000 & failed
+construct gate \\
+N06 & Reference policy test & 0.8889 / 0.9145; family CI {[}0.8125,
+0.9688{]} & diagnostic \\
+N07 & Structured LLM test & 0.9000 / 0.9040; family CI {[}0.8333,
+0.9688{]} & diagnostic \\
+N08 & Reference minus LLM test accuracy & −0.0111; paired family CI
+{[}−0.0938, 0.0625{]} & null; no non-inferiority \\
+N09 & Reference action false commits & 0/33; one-sided 95\% upper 0.0868
+& finite-sample diagnostic \\
+N10 & Reference missed updates & 10/45 = 0.2222 & diagnostic cost \\
+N11 & Structured LLM false commits/missed updates & 2/33 = 0.0606; 7/45
+= 0.1556 & diagnostic trade-off \\
+N12 & Update-responsive expected cost & reference 0.5556; LLM 0.4333 &
+sensitivity only \\
+N13 & Commit-averse expected cost & reference 0.1111; LLM 0.1889 &
+sensitivity only \\
+N14 & No-lineage ablation & action 0.9222 unchanged; lineage
+0.8556→0.3689 & full-corpus mechanism check \\
+N15 & Six-shot decision run & 174/180; aligned 0.7833 / 0.7692 &
+incomplete; excluded \\
+N16 & Annotation & one human 89/90, κ 0.98146; model panel separate &
+not multi-human IAA \\
+N17 & LongMemEval & no eligible complete homogeneous result & excluded
+from primary claims \\
+\end{longtable}
+}
+
+\section{Standing rules}\label{standing-rules}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Lead with N04--N05 before any policy score.
+\item
+  Never headline the 0.9222 full-corpus reference score.
+\item
+  Distinguish action false commit from state invalid commit.
+\item
+  Attach the finite-sample upper bound and missed-update count to any
+  zero-event statement.
+\item
+  Use family/minimal-pair clustering; item-level tests are secondary.
+\item
+  Do not call a null result equality, matching, equivalence, or
+  non-inferiority.
+\item
+  Keep external mappings, incomplete runs, and contaminated downstream
+  evidence outside primary comparisons.
+\item
+  Do not imply that v3 independent data, three-human annotation, or long
+  trajectories have been executed.
+\end{enumerate}

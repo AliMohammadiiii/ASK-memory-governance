@@ -1,0 +1,44 @@
+% AUTO-GENERATED from runs/benchmark_suite/v43_public_dev_complete_qwen35_9b/,
+% runs/mgp6_v43/postfinal_successor/, runs/mgp6_v43_external_sharded/dev/.
+% Metrics recomputed from per-item predictions against public dev gold;
+% see artifacts/analysis/mgp6_v43_full_benchmark_analysis.json.
+\begin{table}[t]
+\centering
+\small
+\caption{MGP-6 v4.3 \emph{public development} split ($n{=}180$, balanced
+$60/60/60$; chance accuracy $0.3333$). All rows are development evidence and
+none is a confirmatory result: the split was used for prompt, configuration,
+and guard selection. Bootstrap intervals are $10{,}000$ item resamples;
+component-cluster resampling is unavailable here because the component map is
+private and the public scorer does not read it. FC $=$ action false commit on
+gold-\abstain{} items; MU $=$ missed update on gold-\supersede{} items;
+DO $=$ destructive overwrite of a gold-\keep{} record.}
+\label{tab:v43dev}
+\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{@{}lrlrrrrr@{}}
+\toprule
+System & Acc. & 95\% CI & M-F1 & MCC & FC & MU & DO \\
+\midrule
+\multicolumn{8}{@{}l}{\emph{ASK controllers}} \\
+\quad Successor controller (guard-composed) & 0.9611 & $[0.933,0.989]$ & 0.9607 & 0.943 & 0.000 & 0.017 & 0.033 \\
+\quad Successor controller (as run) & 0.9500 & $[0.917,0.978]$ & 0.9494 & 0.926 & 0.000 & 0.033 & 0.067 \\
+\quad Frozen controller (pre-registered config.) & 0.8444 & $[0.789,0.894]$ & 0.8458 & 0.771 & 0.233 & 0.133 & 0.033 \\
+\multicolumn{8}{@{}l}{\emph{Structural baselines}} \\
+\quad B1 no memory & 0.3667 & $[0.294,0.439]$ & 0.3118 & 0.065 & 0.800 & 0.217 & 0.733 \\
+\quad B2 flat retrieval & 0.3556 & $[0.283,0.428]$ & 0.2440 & 0.065 & 0.900 & 0.067 & 0.917 \\
+\quad B3 recency & 0.3278 & $[0.261,0.400]$ & 0.2175 & -0.015 & 0.933 & 0.117 & 0.900 \\
+\quad B4 naive overwrite & 0.3389 & $[0.272,0.411]$ & 0.1891 & 0.023 & 1.000 & 0.017 & 0.967 \\
+\quad Zero-shot LLM decision & 0.3389 & $[0.272,0.411]$ & 0.1788 & 0.046 & 1.000 & 0.000 & 0.983 \\
+\quad Five-feature scorecard adapter (no model) & 0.3333 & $[0.267,0.406]$ & 0.2434 & 0.000 & 0.217 & 0.783 & 0.217 \\
+\multicolumn{8}{@{}l}{\emph{Controller ablations}} \\
+\quad $-$ abstention & 0.3333 & $[0.267,0.406]$ & 0.2465 & 0.000 & 1.000 & 0.233 & 0.767 \\
+\quad $-$ provenance & 0.3389 & $[0.272,0.411]$ & 0.1887 & 0.029 & 0.983 & 0.017 & 0.967 \\
+\quad $-$ typing & 0.3444 & $[0.278,0.417]$ & 0.1899 & 0.092 & 0.983 & 0.000 & 0.983 \\
+\quad $-$ lineage & 0.3500 & $[0.283,0.422]$ & 0.2020 & 0.088 & 0.983 & 0.000 & 0.967 \\
+\multicolumn{8}{@{}l}{\emph{Deployed external memory systems (adapter-mapped)}} \\
+\quad Letta & 0.2944 & $[0.228,0.361]$ & 0.2424 & -0.069 & 0.417 & 0.733 & 0.383 \\
+\quad Mem0 & 0.3333 & $[0.267,0.406]$ & 0.1851 & 0.000 & 0.033 & 1.000 & 0.000 \\
+\quad Graphiti & 0.3056 & $[0.239,0.372]$ & 0.2112 & -0.064 & 0.217 & 0.867 & 0.117 \\
+\bottomrule
+\end{tabular}
+\end{table}

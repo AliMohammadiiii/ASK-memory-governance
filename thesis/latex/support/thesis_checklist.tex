@@ -1,0 +1,156 @@
+This checklist separates repository-complete review work from University
+of Tehran requirements that remain external.
+
+\section{A. Evidence freeze}\label{a.-evidence-freeze}
+
+\begin{itemize}
+\tightlist
+\item[$\boxtimes$]
+  Master draft references ledger v1.1.
+\item[$\boxtimes$]
+  Ledger SHA-256 recorded in the draft and number audit.
+\item[$\boxtimes$]
+  Eligibility vocabulary is canonical: \texttt{final\_candidate},
+  \texttt{diagnostic\_only}, \texttt{failure\_replay\_only},
+  \texttt{incomplete}, \texttt{invalid}, \texttt{externally\_pending}.
+\item[$\boxtimes$]
+  Few-shot row disclosed as 174/180 and coverage-aware 0.7833/0.7692.
+\item[$\boxtimes$]
+  Failure replay excluded from result claims.
+\item[$\boxtimes$]
+  Modal top-up counts and 53.3\%--67.8\% raw bounds included.
+\item[$\boxtimes$]
+  SSP v7/replay/top-up evidence kept configuration-specific.
+\item[$\boxtimes$]
+  final-1.1 disclosed as externally pending after HTTP 403 before
+  inference.
+\item[$\square$]
+  Recompute the ledger hash and recompile if
+  \texttt{artifacts/results\_ledger.json} changes.
+\end{itemize}
+
+\section{B. Claims and scholarship}\label{b.-claims-and-scholarship}
+
+\begin{itemize}
+\tightlist
+\item[$\boxtimes$]
+  MGP-6 described as an author-designed diagnostic slice.
+\item[$\boxtimes$]
+  Rule-vs-LLM null stated correctly (Holm p=0.286).
+\item[$\boxtimes$]
+  External adapter mappings disclosed.
+\item[$\boxtimes$]
+  Annotation phrased as one independent annotator plus a four-model
+  panel.
+\item[$\boxtimes$]
+  Novelty narrowed to operationalization and layered evaluation.
+\item[$\boxtimes$]
+  No primacy claim for
+  update/versioning/provenance/lineage/abstention/gating.
+\item[$\boxtimes$]
+  Every Markdown citation key has a BibTeX entry.
+\item[$\square$]
+  Human bibliography audit: titles, complete author lists, venues,
+  years, DOIs/URLs.
+\item[$\square$]
+  Apply the citation style required by the University of Tehran
+  template.
+\end{itemize}
+
+\section{C. Administrative fields ---
+external}\label{c.-administrative-fields-external}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Obtain the current official University of Tehran thesis template and
+  regulations.
+\item[$\square$]
+  Candidate full legal name (English and Persian).
+\item[$\square$]
+  Student number.
+\item[$\square$]
+  Degree, programme, department, faculty, and campus wording.
+\item[$\square$]
+  Supervisor, advisor, and examiner names/titles with approvals.
+\item[$\square$]
+  Submission, approval, and defense dates.
+\item[$\square$]
+  Signatures, seals, and committee pages.
+\item[$\square$]
+  Acknowledgements and dedication approved by the candidate.
+\item[$\square$]
+  Ethics/approval statement confirmed with the department.
+\end{itemize}
+
+\section{D. Institutional layout ---
+external}\label{d.-institutional-layout-external}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Transfer the English review draft into the official template.
+\item[$\square$]
+  Confirm paper size, margins, fonts, binding gutter, and section order.
+\item[$\square$]
+  Confirm Persian abstract and extended-summary requirements.
+\item[$\square$]
+  Confirm bilingual title-page wording.
+\item[$\square$]
+  Generate and update the table of contents and lists of figures/tables.
+\item[$\square$]
+  Verify Roman/Arabic page-number transitions and section breaks.
+\item[$\square$]
+  Check equation, table, figure, appendix, and citation numbering in
+  Word.
+\item[$\square$]
+  Confirm PDF/A or archival-export requirements.
+\end{itemize}
+
+\section{E. Final technical QA}\label{e.-final-technical-qa}
+
+\begin{itemize}
+\tightlist
+\item[$\boxtimes$]
+  Editable English review-draft DOCX generated.
+\item[$\boxtimes$]
+  Review-draft PDF generated from the DOCX.
+\item[$\boxtimes$]
+  DOCX accessibility audit run.
+\item[$\boxtimes$]
+  Heading hierarchy and table structure checked.
+\item[$\boxtimes$]
+  Every rendered DOCX/PDF page visually inspected for clipping, overlap,
+  broken tables, and missing glyphs.
+\item[$\square$]
+  Re-run all QA after applying the official institutional template.
+\item[$\square$]
+  Open the final DOCX in Microsoft Word and update all fields.
+\item[$\square$]
+  Verify every hyperlink and cross-reference.
+\item[$\square$]
+  Verify final page count and print output.
+\end{itemize}
+
+\section{F. Open research cells}\label{f.-open-research-cells}
+
+\begin{itemize}
+\tightlist
+\item[$\square$]
+  Execute the independent MGP-6 v3 protocol with controller/data-author
+  separation.
+\item[$\square$]
+  Obtain three blinded human annotations and independent adjudication.
+\item[$\square$]
+  Run the frozen shortcut gates before unblinding policy predictions.
+\item[$\square$]
+  Complete component-oracle, native external-system, and multi-step
+  trajectory runs.
+\item[$\square$]
+  Execute a homogeneous downstream run only after all provenance gates
+  pass.
+\end{itemize}
+
+The unchecked cells keep MGP-6 v2 diagnostic and prohibit
+external-generalization, population-safety, native-system-ranking, or
+downstream-improvement claims.

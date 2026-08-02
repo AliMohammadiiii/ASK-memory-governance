@@ -1,0 +1,35 @@
+% AUTO-GENERATED from the V12 controller pipeline traces
+% (extraction_trace.jsonl, relation_trace.jsonl, answers.jsonl).
+% Recomputed in artifacts/analysis/mgp6_v43_full_benchmark_analysis.json
+% under lme_v12.pipeline_traces.
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{4.5pt}
+\caption{Stage-level accounting for the governed controller on the \lme{} V12
+slice ($180$ items), recovered from the released pipeline traces. The write-time
+stages dominate: extraction and relation classification together consume
+$92.8\%$ of prompt tokens and $99.4\%$ of model calls, while the answer stage
+that every end-to-end memory benchmark actually scores is $7.2\%$ of the token
+budget. Latency is summed provider-reported model time per stage.}
+\label{tab:lme_pipeline}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Stage & Model calls & Prompt tok. & Completion tok. & Share of prompt & Model latency \\
+\midrule
+Extraction & 11,847 & 41,806,968 & 1,806,685 & 73.6\% & 19.98~h \\
+Relation classification & 19,157 & 10,936,290 & 1,226,921 & 19.2\% & 18.93~h \\
+Answer generation & 180 & 4,072,477 & 41,418 & 7.2\% & ---\textsuperscript{$\dagger$} \\
+\midrule
+Total & 31,184 & 56,815,735 & 3,075,024 & --- & 38.91~h \\
+Per item & 173.2 & 315,643 & 17,083 & --- & 778~s \\
+\bottomrule
+\end{tabular}
+\\[3pt]
+{\footnotesize \textsuperscript{$\dagger$} The \texttt{latency\_ms} field on each
+answer record is \emph{cumulative end-to-end} time for that item, not
+answer-generation time: its total ($40.46$~h) exceeds the summed extraction and
+relation model latency ($38.91$~h) by $1.55$~h, which is the implied
+generation-only cost ($31$~s per item). Per-item pipeline times quoted elsewhere
+in this paper use that cumulative field and should be read accordingly.}
+\end{table}

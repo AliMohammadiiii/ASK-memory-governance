@@ -1,43 +1,304 @@
-\section{\mgp: A Decision-Level Diagnostic}
+\section{The Diagnostic Instruments}
 \label{sec:mgp6}
 
-\mgp{} is an author-designed diagnostic slice for write-time memory governance.
-We use the word \emph{diagnostic} deliberately and throughout: it is a pilot
-instrument for probing decision mechanisms, not a community benchmark, an
-independent test collection, or a measure of general QA or retrieval efficiency. All scenarios are synthetic,
-English-only, and low-risk, and contain no real personal data.
+This section describes the two collections the harness is exercised on: the
+historical \mgp{} pilot, which failed its own construct-validity check, and
+\mgpc{}, the successor built in response. Both are synthetic, English-only, and
+low-risk, and contain no real personal data. We use the word \emph{diagnostic}
+deliberately and throughout: these are instruments for probing decision
+mechanisms, not community benchmarks, independent test collections, or measures
+of general QA or retrieval efficiency.
 
-\subsection{v4.3 final release and leakage controls}
+\subsection{From the v2 pilot to the v4.3 release}
 
 The historical v2 pilot remains in the artifact as a record of the earlier
-instrument and its limitations. The successor release, \mgp{} v4.3.0, is a
-human-authored, template-guided, controlled synthetic diagnostic for the three
-decision actions \keep{}, \supersede{}, and \abstain{}. It contains 900 items
-in 100 semantic components across 20 domains. Components, rather than
-individual items, are assigned intact to train (180 items; 20 components),
-development (180; 20), and hidden (540; 60) partitions. Each split is exactly
-balanced across the three actions, and each domain contributes one component to
-train, one to development, and three to hidden.
+instrument and its limitations; every v2 number in this paper is labelled
+diagnostic. Its failure was specific and measurable. A conflict-type-only lookup
+fitted on train and development, which never reads the dialogue or the memory
+state, reproduces the v2 held-out actions exactly (Table~\ref{tab:shortcut}).
+Scenario recognition was therefore sufficient, and no v2 policy comparison can
+separate evidence reasoning from family recognition. A v4.1 shortcut review
+confirmed that surface lexical and structural features recovered the intended
+action without reasoning over authority, scope, time, identity, and prior
+memory. We kept mechanical repairs to schemas, identifiers, hashes, and
+manifests separate from the substantive v4.2 content redesign, and reviewed at
+the semantic-component level: the \keep, \supersede, and \abstain{} variants of
+a component were inspected jointly, label-specific explanations were deleted,
+and balanced factual evidence with controlled distractors replaced surface
+rewriting.
 
-This redesign follows the v2 shortcut diagnosis: earlier rewrite-oriented
-versions retained label-correlated lexical and structural cues, so held-out item
-performance could reflect scenario recognition rather than the intended
-reasoning about authority, scope, time, identity, and prior memory. The v4.3
-content architecture uses balanced factual evidence and controlled distractors.
-It passed duplicate, near-duplicate, model-field allowlist, and shortcut-audit
-gates; the detailed restricted-view and shallow-feature audits remain private.
-Public model-facing records exclude gold labels, design targets, private IDs,
-component metadata, and annotator metadata.
+\subsection{What \mgpc{} is, and what it is for}
+\label{sec:v43}
 
-Two completed human annotation packets cover all 900 items. They agree on all
-actions (raw agreement $=1.0$, Cohen's $\kappa=1.0$), with no exclusions or
-label adjudications. The 300 \abstain{} items are intentionally ambiguous
-scenarios, not gold-label disagreements. Completion is accepted through the
-dataset-owner attestation: the release builder verifies records, coverage,
-hashes, and agreement, but does not independently authenticate reviewer identity
-or annotation duration.
+\mgpc{} (release \texttt{4.3.0-human-validated-final}) exists to answer one
+question that no end-to-end memory QA benchmark can answer: \emph{given the
+same stored record and the same proposed new value, can a system tell apart the
+three cases where it should keep, replace, or decline?} End-to-end collections
+such as LongMemEval, LoCoMo, Memora, and GroupMemBench score downstream
+behaviour, which confounds the write decision with retrieval, context assembly,
+and generation. Operation-level HaluMem localizes update errors but does not
+provide this controlled ternary contrast. To isolate the write decision we need
+items where retrieval, context, and generation are held \emph{constant} and
+only the evidential situation varies. That requirement, not a desire for scale,
+dictated the construction.
 
-\subsection{Conflict taxonomy and distribution}
+\subsection{The item}
+
+Each record is deliberately minimal --- five fields, no free-form metadata:
+
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Field & Content \\
+\midrule
+\texttt{public\_id} & opaque identifier, \texttt{MGP43-} + 20 hex characters \\
+\texttt{memory\_before} & the stored record: \texttt{principal}, \texttt{memory\_slot}, \texttt{standing\_value} \\
+\texttt{dialogue} & 9, 11, or 13 turns, alternating \textsc{user}/\textsc{assistant}, each with a \texttt{turn\_id} \\
+\texttt{evaluation\_query} & fixed instruction naming the slot and the three permitted actions \\
+\texttt{gold\_action} & \keep{}, \supersede{}, or \abstain{} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The identifier is opaque by design and the schema sets
+\texttt{additionalProperties: false}, so a model-facing record cannot carry a
+design target, a component label, an annotator note, or any other channel
+through which the answer could leak. There is no conflict-type field --- the
+v2 field that turned out to determine the label.
+
+The dialogue itself has a fixed rhetorical shape. Early turns state the
+standing value and name the candidate value. A middle turn declares which
+positions in a numbered evidence list are \emph{indexed} to the target slot,
+and warns that the remaining positions belong to neighbouring records. The
+evidence list is then read out. A closing turn restates the requested value.
+The system must decide the action from the stored record and this dialogue
+alone, before any query about content is asked.
+
+\subsection{The semantic component: nine items that differ in one thing}
+
+The construction's load-bearing idea is the \emph{semantic component}. A
+component is a group of nine items sharing one \texttt{principal}, one
+\texttt{memory\_slot}, one \texttt{standing\_value}, and one candidate value.
+Within it the nine items form a $3 \times 3$ grid: three dialogue lengths
+($9$, $11$, $13$ turns) crossed with the three gold actions. Every component is
+therefore exactly action-balanced, and --- because the grid is crossed --- so is
+every dialogue length. We verified both properties directly on the released
+public splits: all $40$ public components are exactly $3$/$3$/$3$, and each
+dialogue length is exactly $40$ \keep{} / $40$ \supersede{} / $40$ \abstain{}.
+Neither length nor verbosity carries any signal about the action.
+
+What varies inside a component is narrower still. All nine items draw their
+evidence from a \emph{byte-identical pool of six sentences}; we confirmed this
+holds for all $120$ (component, length) triples in the public data. The three
+actions differ only in \emph{which two of those six sentences the dialogue
+indexes to the target slot}. Across the $80$ triples where the index statement
+parses mechanically, the three indexed pairs are always distinct and always
+partition the six-sentence pool exactly.
+
+A single component makes this concrete. For \textsf{Rohan}'s
+\texttt{status message}, standing value \textsf{available}, candidate value
+\textsf{do not disturb}, all nine items contain these six sentences and end with
+the same closing turn:
+
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Indexed pair & Gold action \\
+\midrule
+\parbox[t]{0.62\linewidth}{\raggedright
+``The do-not-disturb period has an expiry record.''\\
+``After the expiry, Rohan writes that his status is available.''} & \keep{} \\[1.2em]
+\parbox[t]{0.62\linewidth}{\raggedright
+``Rohan writes that the temporary period has ended.''\\
+``He then changes the status entry to do not disturb.''} & \supersede{} \\[1.2em]
+\parbox[t]{0.62\linewidth}{\raggedright
+``The retained records do not include the offsets needed to compare them.''\\
+``The expiry time and the status-change time use different time zones.''} & \abstain{} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent
+The reasoning each pair demands is different in kind. The \keep{} pair
+establishes that a temporary override expired and the standing value was
+reasserted afterwards, so the proposal is stale. The \supersede{} pair
+establishes that the temporary period ended and a durable change followed, so
+the proposal is current. The \abstain{} pair establishes that the two
+timestamps are not comparable, so neither conclusion is warranted --- the
+evidence is not \emph{weak}, it is \emph{unresolvable}. Critically, the other
+four sentences remain in every item as controlled distractors. A system that
+reads the whole transcript instead of the indexed evidence will find apparent
+support for all three actions in all three items.
+
+This is why the intended contrast is resistant to the tested lexical shortcuts,
+and it is also the
+sense in which \mgpc{} is a \emph{controlled} synthetic diagnostic rather than
+merely a synthetic collection: the confound is not removed by paraphrase, it is
+removed by holding the surface form fixed and moving only the pointer.
+
+\subsection{Splits, balance, and what the release gates actually check}
+
+Components, never items, are assigned to splits: train receives $180$ items
+from $20$ components, development $180$ from $20$, and the sealed hidden
+partition $540$ from $60$. Each of the $20$ domains contributes one component to
+train, one to development, and three to hidden. Assignment uses a recorded seed
+($4301$), and the build is byte-deterministic --- archive timestamps are pinned
+to a constant so the same inputs produce the same hashes. Because a component
+never straddles a boundary, a system cannot see the \keep{} variant of a
+scenario in training and the \supersede{} variant at test.
+
+The gates that certify this are executable, not narrative, and two of them are
+the reason v4.3 exists.
+
+\paragraph{The shortcut audit.} Fitted on train, evaluated on hidden, and run
+across five seeds, it trains word-level and character-level TF-IDF logistic
+regressions over \emph{twelve restricted views} of each item ---
+\path{full_text}, \path{dialogue_only},
+\path{query_only},
+\path{candidate_only}, \path{previous_turn}, \path{last_two},
+\path{target_evidence_only}, \path{memory_only},
+\path{user_only}, \path{assistant_only},
+\path{first_three}, and \path{id_only} --- plus
+punctuation-only and length-only numeric features and decision trees at depths
+one through five. Each view has a pre-set accuracy ceiling (for example $0.40$
+for \path{query_only} and \path{memory_only}, $0.45$ for
+\path{candidate_only}, $0.65$ for \path{full_text}). The release ships
+with \texttt{failed\_gates} empty: no probe cleared its threshold. The
+\path{id_only} probe deserves particular note --- it confirms the opaque
+identifiers themselves leak nothing --- as does \path{target_evidence_only},
+which checks that even the correctly indexed evidence, stripped of its
+dialogue context, does not linearly separate the classes.
+
+\paragraph{The duplicate audit.} It hashes seven restricted views and fails on
+\emph{any} cross-split collision in the five decision-relevant ones, then
+computes character TF-IDF cosine similarity across every cross-split pair and
+fails on any edge at $0.995$ or above. Because components share an evidence
+pool by construction, within-split near-duplicates are expected and permitted;
+the gate is specifically about leakage across the boundary.
+
+Public model-facing records exclude gold labels, design targets, component
+metadata, private identifiers, and annotator metadata. Hidden inputs, hidden
+gold, final human gold, completed annotation packets, private mappings, and the
+detailed restricted-view audits live only in a gitignored local boundary.
+Content is addressed by two Merkle roots, one over the final gold
+(\texttt{437b2a26\dots}) and one over the annotations
+(\texttt{a7e59f88\dots}), and each distributed archive carries its own SHA-256.
+
+\subsection{Human validation, and the weight it can bear}
+
+Two independent annotation packets cover all $900$ items. The builder does not
+accept them on trust: each row must carry a schema version, a content hash that
+matches the coordinator's binding for that item, an action in the permitted set,
+a non-empty list of evidence turn identifiers that all reference real turns in
+that dialogue, a rationale of at least $20$ characters, a confidence in
+$[0,1]$, boolean ambiguity and exclusion flags, an annotator identifier, and a
+timezone-aware timestamp. Coverage must be exactly $900$ with no duplicates.
+Any violation raises and aborts the build. The requirement that annotators cite
+turn identifiers is the substantive one: it makes an annotation checkable
+against the item rather than a bare label.
+
+The packets agree on every action --- raw agreement $1.0$, Cohen's $\kappa =
+1.0$, zero exclusions, zero adjudications --- with mean confidence $0.96$ and
+$0.967$. Both flagged all $300$ \abstain{} items as intentionally ambiguous
+\emph{scenarios}, which records designed ambiguity rather than uncertainty about
+the label.
+
+We are deliberate about what this does and does not establish. Perfect
+agreement on a task whose labelling rule is deterministic by construction
+certifies that the manual is followable and that the items instantiate it; it
+does \emph{not} independently validate the construct, because two annotators
+applying the same unambiguous rule will agree whether or not the rule measures
+memory governance. Completion is accepted through dataset-owner attestation:
+the builder verifies records, coverage, hashes, and agreement, but does not
+authenticate reviewer identity or annotation duration. That is a provenance
+limitation, and we report it as one rather than as an independent audit.
+
+\subsection{Reading the result the design makes possible}
+
+Because the three actions within a component are surface-matched, an error is
+diagnostic rather than merely wrong: predicting \supersede{} on the \keep{}
+variant means the system read a sentence that was present but not indexed. We
+tested this directly. Of the $28$ errors the frozen controller makes on the
+development split, $18$ can be mechanically resolved against a sibling item's
+indexed pair, and in \emph{all $18$} the evidence supporting the predicted
+action was present in the item but indexed to a different slot. Every
+resolvable error is distractor capture --- the precise failure the component
+design isolates. The instrument is measuring what it was built to measure.
+
+\subsection{The \mgpc{} evaluation contract and staged protocol}
+\label{sec:v43contract}
+
+For \mgpc{}, a system submits exactly one action per public identifier using two
+fields, \texttt{public\_id} and \texttt{action}. The evaluator rejects missing,
+duplicate, unknown, and extra identifiers, so partial coverage cannot be
+silently averaged away --- an incomplete submission fails rather than scoring.
+It reports accuracy, macro-F1, per-class precision/recall/F1, the full confusion
+matrix, coverage, selective coverage and accuracy, and component-cluster
+bootstrap intervals.
+
+Evaluation is staged to make the hidden split usable exactly once.
+Train is reserved for engineering checks. Development carries all prompt,
+configuration, guard, ablation, cost, and latency selection. Before any hidden
+prediction, the provider and exact model identifier, prompt and system-prompt
+hashes, decoding parameters, seed, retry policy, timeout, concurrency,
+evaluator version, adapter version, split and dataset hashes, code commit, and
+environment lock are frozen into a signed configuration record. Hidden inputs
+are then predicted once per pre-registered configuration; the prediction file is
+coverage-validated and hashed \emph{before} the local private scorer is allowed
+to open hidden gold.
+
+At the time of writing this procedure has been completed exactly once, for the
+selected public-indexed-evidence ASK live controller using
+\texttt{qwen/qwen3.5-9b} through OpenRouter at temperature $0$, seed $4301$,
+$128$ maximum new tokens, and concurrency $1$. Its $540/540$ predictions were
+coverage-validated and sealed with SHA-256
+\texttt{e6a5987991\dots f846806} before scoring, with the raw-response and
+manifest files hashed alongside. One transport-level remote disconnect occurred
+after $432$ durable predictions; the runner's immutable-manifest check admitted
+only the same frozen controls, and the resumed invocation produced the remaining
+$108$ records with no duplicate identifier and no changed prediction. No hidden
+record influenced any prompt, model, or configuration choice. The direct
+consequence, which we restate wherever the hidden number appears, is that there
+is \emph{no} hidden baseline, ablation, or paired comparison: only one
+configuration was authorised, so every contrast in this paper against baselines
+and ablations is a development-split contrast.
+
+\subsection{The composed controller under test}
+\label{sec:v43controller}
+
+The system evaluated on \mgpc{} is not a bare prompt. It composes two
+components that we can score separately on development data. A
+\emph{public-evidence rule policy} reads only the fields a model may see and
+emits one of five verdicts --- direct documented slot change, standing value
+confirmed or proposal retracted, temporary or scoped exception, unresolved
+scope/authority/timing, or no decisive public evidence --- each mapping to an
+action. In parallel a \emph{live model policy} is prompted with the typed state,
+the indexed evidence positions, and the three action definitions, and returns a
+single JSON action. A conservative guard then composes them: it overrides a
+model \abstain{} only when the rule policy has found decisive public evidence,
+and never overrides a model commitment. The guard is deliberately asymmetric,
+because converting an unnecessary abstention into a justified write is cheap
+whereas converting a justified abstention into a write is the failure the
+instrument exists to detect.
+
+Two properties of this design matter for reading the results. First, the guard
+is auditable per item: every prediction carries the model action, the rule
+verdict, the rule that fired, the composed action, and the SHA-256 of the
+evidence text it read. Second, because the composition is asymmetric, the
+composed system can only move probability mass \emph{out} of \abstain{}, so any
+increase in false commits is attributable to the guard and is directly
+measurable (Section~\ref{sec:results:guard}).
+
+\subsection{The \mgp{} pilot: composition and the leak it carried}
+
+The remainder of this section documents the historical pilot. It is retained
+because the v4.3 design decisions above are only legible against the failure
+that motivated them, and because its per-item predictions remain in the release.
+
+\subsubsection{Conflict taxonomy and distribution}
 
 The pilot contains $180$ scenarios, $30$ for each of six scenario families,
 with an action imbalance of
@@ -71,7 +332,7 @@ temporary override. Some supersession cases also have minimal-pair T4 partners.
 These pairs test a narrow cue change, but they do not remove the global shortcut:
 conflict type still determines the action throughout v2.
 
-\subsection{Query modes}
+\subsubsection{Query modes}
 
 Every scenario carries one query mode used only at the answer stage:
 \emph{direct recall} ($108$ items), \emph{premise resistance} ($45$; the query
@@ -81,7 +342,7 @@ solvable only by using the active value, with neither value named in the query).
 These modes let us measure whether a system that makes the right write decision
 also refuses stale premises and applies the active value in context.
 
-\subsection{Splits}
+\subsubsection{Splits and why family disjointness was not enough}
 
 Splits are $60$ train / $30$ dev / $90$ test, stratified so each type contributes
 $10/5/15$ rows and T5 contributes $8/2$, $4/1$, $12/3$ \keep/\abstain. No
@@ -91,7 +352,7 @@ when the same family-to-action rule holds in every split. We therefore treat the
 $90$-item test split as a held-out item split only, never as independent
 validation.
 
-\subsection{Pre-specified validity checks}
+\subsubsection{Pre-specified validity checks}
 
 Before comparing policies we fit lookup baselines on train+dev and evaluate them
 on test using only (i) the six-way type, (ii) the finer conflict type, and (iii)
@@ -101,19 +362,7 @@ bootstrap intervals by \texttt{template\_family\_id}; for
 shortcut baseline that approaches the full policy is a failed construct-validity
 check, not a competitive result.
 
-\subsection{v4.3 evaluation contract}
-
-For v4.3, systems submit exactly one action for every public identifier using
-the two fields \texttt{public\_id} and \texttt{action}; the exact JSON form is
-part of the released evaluation protocol. The evaluator rejects missing,
-duplicate, unknown, and extra identifiers. It reports
-accuracy, macro-F1, per-class precision/recall/F1, a confusion matrix, coverage,
-and component-cluster bootstrap intervals. Items within a semantic component are
-not treated as independent; paired comparisons use component-aware resampling
-or component-level analysis. LongMemEval is reported separately as external
-memory evaluation, not as a substitute for this controlled diagnostic.
-
-\subsection{Schema, invariants, and scoring}
+\subsubsection{Schema, invariants, and scoring}
 
 Each row provides a dialogue prefix, prior memory state, perturbation event,
 source/temporal metadata, a gold action, an auditable gold memory state, the
@@ -135,7 +384,7 @@ integrity on \supersede{} items, and stale-retrieval rate (the fraction of answe
 superseded value). Two shipped forgetting-rate metrics saturate at $1.0$ for every
 system and are excluded from all tables as uninformative.
 
-\subsection{Annotation: one independent annotator plus a model audit panel}
+\subsubsection{Annotation: one independent annotator plus a model audit panel}
 \label{sec:annotation}
 
 We are precise about the annotation evidence, which has two separate components
@@ -160,10 +409,11 @@ The panel and the single annotator may share the manual's reading because the
 labelling policy is unambiguous by construction --- a construct-validity caveat we
 carry explicitly.
 
-\subsection{Construction grounding}
+\subsubsection{Construction grounding}
 
 Scenario \emph{shapes} were informed by inspecting real corpora --- LongMemEval
 knowledge-update items and its false-premise (\texttt{\_abs}) questions, Memora
+\citep{uddin2026memora}
 operation chains, GateMem's machine-readable judge structure, and named
 confidence-laundering patterns --- but every released row is a newly authored
 synthetic paraphrase; no source content is reused. This grounds the failure modes

@@ -1,0 +1,219 @@
+\section{1.1 Motivation}\label{motivation}
+
+A language model with no persistent memory cannot reliably carry
+preferences, commitments, or corrections across sessions. A language
+model with persistent memory is risky for the opposite reason: stale
+facts can keep influencing behavior after the user has corrected them,
+contradictory records can accumulate silently, and a system can act on
+information it should have refused to write in the first place. The
+engineering objective is therefore not ``remember as much as possible''
+but to govern the memory write as a decision under explicit policy.
+
+This observation changes where control must live. Prompting a model to
+``be careful'' is insufficient because memory writes have side effects
+that outlive the prompt. A new candidate fact must be classified against
+the existing store --- is it independent, a duplicate, or a
+contradiction of a prior record? --- and the resulting action must be
+explicit and auditable: keep the new record alongside the old, supersede
+the old record while preserving its lineage, or abstain because the
+evidence is too ambiguous to commit either way. When a system cannot
+express the third option, every conflict becomes a silent overwrite or a
+silent duplicate.
+
+Existing evaluations mostly treat memory as an answer-retrieval problem:
+given a long interaction history, can the model answer a later question
+\citep{wu2025longmemeval, maharana2024locomo}? That view is valuable but
+incomplete: end-to-end question accuracy cannot attribute a failure to
+the write decision that caused it, and it cannot see governance failures
+that happen not to affect the sampled questions. A governance evaluation
+must score the decision boundary itself.
+
+\section{1.2 Research problem}\label{research-problem}
+
+\begin{quote}
+How can a language-agent memory system make and audit policy-sensitive
+write decisions --- keep, supersede, abstain --- and how can those
+decisions be evaluated without conflating governance correctness with
+retrieval or answer quality?
+\end{quote}
+
+The problem decomposes into five concerns: \textbf{representation}
+(typed memory records with provenance and lineage), \textbf{decision}
+(an interpretable, abstention-aware action policy), \textbf{execution}
+(supersession must actually mark the prior record inactive and preserve
+its lineage), \textbf{measurement} (decision-level metrics with correct
+denominators, plus state metrics such as lineage integrity and stale
+retrieval, distinct from answer metrics), and \textbf{honest reporting}
+(every number carries a claim-eligibility label; contaminated or patched
+runs are labeled as such).
+
+\section{1.3 Research questions}\label{research-questions}
+
+\textbf{RQ1 --- Architecture.} What controller decomposition makes
+memory-write decisions explicit, interpretable, and auditable, and
+prevents a language model from mutating memory outside a governed action
+vocabulary?
+
+\textbf{RQ2 --- Diagnostic.} Can a compact, author-designed diagnostic
+slice expose memory-governance failures --- invalid commits, premise
+acceptance, lineage loss --- that are invisible to downstream answer
+accuracy?
+
+\textbf{RQ3 --- Measurement.} Which metrics separate decision
+correctness, memory-state correctness, and downstream answer behavior,
+and which shipped metrics fail (and must be disclosed as failing)?
+
+\textbf{RQ4 --- Reliability.} How far do the reported conclusions
+survive paired significance testing with multiplicity control,
+annotation audit, and adversarial review of run provenance?
+
+\textbf{RQ5 --- Reproducibility.} What artifact and claim controls keep
+a thesis, its papers, and its code mutually consistent --- including
+when the honest answer is ``this number is not final''?
+
+\section{1.4 Hypotheses and their outcomes
+(preview)}\label{hypotheses-and-their-outcomes-preview}
+
+The original directional comparisons are not confirmatory because the
+pilot fails its shortcut gate. Chapter 7 therefore treats them as
+diagnostics and reports these outcomes:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{H1 --- Governance framing helps an LLM.} Not identified by v2:
+  structured and unstructured prompts differ on a label-leaking
+  collection, so the observed gap is descriptive.
+\item
+  \textbf{H2 --- An interpretable reference policy can match an LLM
+  policy.} No superiority or non-inferiority conclusion: test accuracy
+  is 0.8889 versus 0.9000 and the family-clustered paired interval
+  includes zero.
+\item
+  \textbf{H3 --- Abstention is load-bearing for action safety.}
+  Mechanistically supported inside the generator, but not validated
+  externally; zero observed action false commits has a non-zero
+  finite-sample upper bound and accompanies missed updates.
+\item
+  \textbf{H4 --- Decision and stored-state metrics can diverge.}
+  Supported as a measurement demonstration: the no-lineage ablation
+  preserves action accuracy while degrading lineage integrity.
+\item
+  \textbf{H5 --- Controller end-task superiority on LongMemEval.} Not
+  supported; existing downstream runs are contaminated, incomplete, or
+  selection-biased.
+\end{itemize}
+
+\section{1.5 Contributions}\label{contributions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Formulation and evaluation decomposition (RQ1, RQ3).} Memory
+  writes are represented as KEEP/SUPERSEDE/ABSTAIN decisions over typed,
+  provenance-tracked, lineage-preserving records and evaluated
+  separately at action, state, and answer layers.
+\item
+  \textbf{A benchmark with build-time construct gates (RQ2, RQ4).} MGP-6
+  v4.3 --- 900 human-authored items in 100 semantic components across 20
+  domains, component-split, exactly action-balanced, dual-annotated,
+  with shortcut/duplicate/allowlist/deterministic-build gates enforced
+  at release rather than audited afterwards, and a sealed 540-item
+  hidden partition governed by a one-shot pre-registration protocol.
+\item
+  \textbf{A confirmatory decision-level result inside stated bounds
+  (RQ1).} One pre-registered configuration scored once on the sealed
+  split: 0.8481 accuracy, 0.8479 macro-F1, Cohen's κ 0.7722, with
+  component-cluster intervals roughly 40\% wider than item-independence
+  intervals would imply.
+\item
+  \textbf{Error decomposition by operational harm (RQ3).} The thesis
+  separates state-preserving from state-corrupting write failures and
+  shows the distinction changes the risk estimate fivefold (0.2111
+  aggregate false commit versus 0.0444 state-corrupting), alongside
+  missed-update, destructive-overwrite, and unnecessary-abstention rates
+  each with finite-sample intervals.
+\item
+  \textbf{Component attribution (RQ2).} Scoring the rule policy and the
+  model policy separately shows neither exceeds 0.750 alone against a
+  composed 0.8444, and bounds the abstention guard's hidden-split
+  contribution at most 6.7 accuracy points of the 84.8 observed.
+\item
+  \textbf{Computation and cost accounting (RQ3).} Per-decision latency
+  distributions, prompt/completion token counts, retry and failure
+  counts, and cost-conditional expected loss under three governance
+  regimes --- with monetary cost declared unavailable rather than
+  reconstructed from list prices.
+\item
+  \textbf{Measured negative results (RQ4).} The v2 pilot's conflict-type
+  shortcut reaches 1.000 held-out accuracy; the v2 reference policy does
+  not outperform the structured LLM and its preferred status flips with
+  the cost matrix; and the v4.3 controller's abstentions are not
+  selectively risk-targeted. Each is reported rather than omitted.
+\item
+  \textbf{Downstream validation with an attributable pattern (RQ1,
+  RQ5).} A homogeneous full-slice LongMemEval-M run places governed
+  writes at 76.1\% above every structural baseline, with every adjacent
+  step in the ordering separating under paired tests and the gain
+  concentrated in the competencies the write policy targets.
+\item
+  \textbf{Evidence exclusion and successor design (RQ4, RQ5).}
+  Incomplete, mapped, contaminated, and selection-biased results are
+  excluded from primary claims by an explicit ledger; a role-separated
+  successor protocol specifies independent generation, three-human
+  annotation, long trajectories, hidden baselines scored under the same
+  one-shot discipline, and native external metrics.
+\item
+  \textbf{Reproducible evidence package (RQ5).} Released per-item
+  predictions, a recomputation artifact regenerating every reported
+  number from raw predictions, audit JSON/Markdown, claim-evidence
+  matrix, and machine-readable ledgers keep paper, thesis, code, and
+  limitations synchronized.
+\end{enumerate}
+
+\section{1.6 Scope}\label{scope}
+
+The thesis evaluates the ASK formulation on an author-designed
+diagnostic slice and one stratified LongMemEval-M slice with a single
+base model family and single seed. It does not claim community-benchmark
+status for MGP-6 v2, does not claim end-task superiority on LongMemEval,
+does not claim human multi-annotator agreement, and does not claim that
+governance on these slices generalizes to open-domain deployments. These
+boundaries are stated because they are what the evidence supports;
+Chapter 9 enumerates them systematically.
+
+\section{1.7 Thesis structure and contribution
+map}\label{thesis-structure-and-contribution-map}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Research question
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Main chapter(s)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Primary artifact
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+RQ1 & Chapter 4 & \texttt{src/ask/} (policy, memory operations,
+orchestrator) \\
+RQ2 & Chapters 5, 7 & \texttt{benchmarks/mgp6/} (data, manual, metrics),
+ablation runs \\
+RQ3 & Chapters 6, 7 & \texttt{metrics\_mgp6.py}, ledger
+\texttt{known\_metric\_issues} \\
+RQ4 & Chapters 7, 8, 9 & \texttt{reports/STATISTICAL\_ANALYSIS.md},
+\texttt{reports/ERROR\_TAXONOMY.md},
+\texttt{reports/THREATS\_TO\_VALIDITY.md} \\
+RQ5 & Chapters 6, 9, App. E--F &
+\texttt{artifacts/results\_ledger.json},
+\texttt{reports/CLAIMS\_EVIDENCE\_MATRIX.md} \\
+\end{longtable}
+}

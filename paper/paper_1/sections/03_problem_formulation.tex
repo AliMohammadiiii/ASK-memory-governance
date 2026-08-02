@@ -42,10 +42,13 @@ formulation itself is agnostic to how they are computed.
 The controller emits one action $a \in \mathcal{A} = \{\keep, \supersede, \abstain\}$,
 which induces a deterministic transition $M' = \delta(M, u, a)$:
 \begin{itemize}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
-\item $\delta(M, u, \keep) = M$ for durable records: the prior active record is
-preserved unchanged. A \emph{clear temporary} override may be added only as a
-separate \textsf{active} \textsf{transient\_pref} record, never by mutating the
-durable one.
+\item Under \keep{}, the transition never invalidates the prior active record.
+In a single-slot diagnostic, a durable candidate leaves the state unchanged;
+a clear temporary override may be added only as a separate
+\textsf{transient\_pref}. In a multi-record runtime, a compatible candidate may
+instead be appended as another active record while the prior remains active.
+Thus \keep{} means ``admit or retain without replacement,'' not necessarily
+``perform no insertion.''
 \item $\delta(M, u, \supersede)$ marks the prior active record
 \textsf{superseded} and adds one \textsf{active} successor whose $\pi$ points back
 at it. The prior value is \emph{retained}, not deleted, and no longer active in
@@ -67,9 +70,10 @@ systems; we make them explicit because \mgp{} scores each.
 
 \begin{description}[leftmargin=0em,topsep=2pt,itemsep=2pt]
 \item[\keep{} vs.\ retrieval absence.] \keep{} is a positive write-time decision
-to retain the current active value in the presence of a candidate update; it is
-not the same as a record simply not being retrieved at answer time. \keep{}
-operates on the state; retrieval absence operates on a later read.
+not to invalidate the current active value in the presence of a candidate. It
+may append a compatible record in a multi-record store; it is not the same as a
+record simply not being retrieved at answer time. \keep{} operates on the
+state; retrieval absence operates on a later read.
 \item[\abstain{} vs.\ no-op.] A no-op (e.g.\ Mem0's \texttt{NOOP}) fires when the
 candidate carries \emph{nothing new}. \abstain{} fires when the candidate carries
 something potentially relevant but the evidence is \emph{too weak or ambiguous to

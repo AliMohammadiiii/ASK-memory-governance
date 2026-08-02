@@ -1,78 +1,91 @@
 # Publication strategy
 
-Updated: 2026-07-15.
+Updated: 2026-07-27.
 
 ## Paper identity
 
-Submit this work as a **diagnostic/evaluation paper**, not a method-superiority
-or leaderboard paper. The defensible contribution is:
+Submit this work as a diagnostic/evaluation and auditable-systems paper, not a
+leaderboard or method-superiority paper. The defensible identity is:
 
-1. a three-layer evaluation of write decision, stored state/lineage, and later
-   answer behavior;
-2. an explicit KEEP/SUPERSEDE/ABSTAIN decision problem with asymmetric costs;
-3. a reproducible construct-validity audit showing that the current
-   author-designed MGP-6 v2 pilot leaks labels;
-4. a negative, useful result: the transparent rule policy does not beat the
-   structured LLM on held-out test, and zero observed action false commits trades off
-   against missed updates.
+1. write transition, resulting state/lineage, retrieval, and downstream answer
+   are separate evaluation layers;
+2. a deployed typed five-dimensional write rule is exactly replayable and its
+   effective mechanism can be measured by dimension, memory type, and guard;
+3. MGP-6 v4.3 is a controlled three-way semantic diagnostic with a one-shot
+   sealed result and explicit shortcut gates;
+4. the homogeneous LongMemEval V12 run supplies downstream evidence and full
+   pipeline accounting; and
+5. negative and ineligible evidence remains visible rather than being blended
+   into headline results.
 
-The title, abstract, results order, discussion, and conclusion must preserve
-this identity. Do not describe the lexical reference policy as a learned or
-weighted scorecard; the implemented five-feature scorecard did not generate the
-reported MGP-6 predictions.
+The scorecard, v2 lexical policy, and v4.3 composed controller are distinct
+implementations. Never attribute one experiment's predictions to another.
 
-## Eligible main-paper evidence
+## Eligible primary evidence
 
-- Conflict-type-only train+dev lookup: 1.0000 held-out test accuracy.
-- Type-only lookup: 0.9667 accuracy / 0.9471 macro-F1.
-- Reference policy: 0.8889 / 0.9145 on test.
-- Structured LLM: 0.9000 / 0.9040 on test.
-- The paired family-cluster interval for reference minus LLM includes zero.
-- Reference policy: 0/33 observed action false commits with a one-sided 95% upper
-  bound of 0.0868, alongside 10/45 missed updates.
-- Full-corpus ablations only as mechanism diagnostics, clearly separated from
-  held-out policy comparisons.
+- MGP-6 v4.3 sealed hidden, single pre-registered composed controller:
+  0.8481 accuracy / 0.8479 macro-F1 with component-cluster intervals.
+- Hidden operational error decomposition: 30 state-preserving
+  ABSTAIN→KEEP lapses and 8 state-corrupting ABSTAIN→SUPERSEDE errors.
+- LongMemEval V12 homogeneous 180-item slice: controller 137/180 (76.1%) versus
+  naive overwrite 114/180 (63.3%), paired Holm-corrected `p=2.9e-4`.
+- V12 scorecard replay: both stored scores and all 12,654 actions reproduce
+  exactly from `(c,e,f,r,rho)`.
+- V12 mechanism probes: leave-one-dimension-out changes
+  8 / 0 / 779 / 483 / 0 actions for `c/e/f/r/rho`; removing the relation guard
+  changes 11,091 KEEP decisions to SUPERSEDE.
+- V12 type analysis: the observed action profiles differ by type, while a
+  common stability prior changes zero decisions and common thresholds change
+  five.
+- V12 pipeline accounting: extraction plus relation classification consume
+  92.8% of prompt tokens and 99.4% of model calls.
 
-The 0.9222 full-corpus score may appear only in a secondary diagnostic context,
-never as the headline method result.
+## Eligible development and diagnostic evidence
 
-## Excluded evidence
+- V4.3 public-development baselines, ablations, external adapters, component
+  decomposition, cost matrices, and successor configuration. Every presentation
+  must retain the development-only qualification.
+- V2 conflict-type-only and type-only shortcut results as construct-validity
+  failures.
+- V2 no-lineage ablation as a measurement demonstration: action accuracy is
+  unchanged while lineage integrity collapses.
+- Contaminated v7, selected replay, and top-up bounds only as reasons those
+  artifacts are ineligible.
+- The single-session-preference taxonomy as descriptive analysis with an
+  unexecuted intervention.
 
-- The incomplete 174/180 six-shot prediction run.
-- External-system action rankings produced through non-native mappings.
-- Every existing LongMemEval number, including the contaminated v7 run and the
-  selection-biased 77.2% failure replay.
-- Claims of population safety, external validity, non-inferiority, calibrated
-  confidence, long-lived deployment performance, or multi-human agreement.
+## Forbidden readings
 
-The archived downstream and external-adapter analyses remain available for
-provenance and failure analysis but are not inputs to the main manuscript.
+- No hidden comparison for v4.3 baselines, ablations, external systems,
+  components, or successors.
+- No claim that exact scorecard replay establishes write correctness,
+  optimality, calibration, or causal value; V12 has no candidate-level gold
+  write actions.
+- No claim that all five dimensions were active on V12. Marker burden, signed
+  relation, and the relation guard carry almost all observed variation.
+- No capability claim from v2, contaminated v7, or the 77.2% carry-forward
+  construction.
+- No population, deployment-safety, state-of-the-art, non-inferiority,
+  multi-human-independence, or monetary-cost claim.
+- No priority claim for write operations, abstention, typed memory, provenance,
+  lineage, operation-level evaluation, or “memory governance.”
 
-## Route and submission gate
+## Submission gate
 
-Target a venue that explicitly welcomes dataset analysis, evaluation,
-reproducibility, or negative findings. Select the live venue and template only
-after checking its current official call; do not encode a stale deadline in the
-repository.
+Before submission:
 
-The current paper can be circulated as an honest audit draft. A stronger
-capability paper requires the independently generated MGP-6 v3 confirmation set
-defined in `benchmarks/mgp6/MGP6_V3_INDEPENDENT_PROTOCOL.md`. Before submission:
-
-1. regenerate the 10,000-sample validity audit from released per-item files;
-2. pass the bibliography audit and compile the anonymous PDF from a clean
-   build directory;
-3. keep the shortcut-failure result before all policy comparisons;
-4. verify that every number in the abstract and tables traces to the audit JSON;
-5. keep human and model-panel annotation evidence separate;
-6. run a fresh related-work and venue-policy check against primary sources;
-7. obtain redistribution consent for any raw human annotations.
-
-If independent v3 data, three-human annotation, or a clean downstream run are
-not completed, state that limitation; do not simulate or impute them.
+1. regenerate the scorecard, v4.3, and LongMemEval tables from raw artifacts;
+2. pass the bibliography audit and compile the anonymous PDF without overfull
+   content, undefined references, or missing citations;
+3. preserve the one-shot hidden/development distinction everywhere;
+4. verify every abstract number against `claims_evidence_matrix.md`;
+5. keep v2, v4.3, and V12 annotation/evidence regimes separate;
+6. check current venue policy and related work against primary sources; and
+7. resolve redistribution licensing before publishing non-public data.
 
 ## One-paper decision
 
-Keep one paper. The single-session preference intervention and downstream
-failure taxonomy do not yet have an independently executed experiment and do
-not justify a separate contribution.
+Keep one paper. The scorecard mechanism audit, controlled v4.3 diagnostic, and
+V12 downstream result are complementary layers of the same contribution. The
+single-session-preference intervention remains unexecuted and does not justify
+a separate empirical claim.

@@ -29,6 +29,7 @@
 \newcommand{\supersede}{\textsc{Supersede}\xspace}
 \newcommand{\abstain}{\textsc{Abstain}\xspace}
 \newcommand{\mgp}{MGP-6~v2\xspace}
+\newcommand{\mgpc}{MGP-6~v4.3\xspace}
 \newcommand{\lme}{LongMemEval-M\xspace}
 \newcommand{\ask}{ASK\xspace}
 \newcommand{\diag}[1]{#1\,(diagnostic)}
@@ -40,7 +41,11 @@ Language Agents}
 % camera-ready build.
 \newif\ifanonymous
 \anonymoustrue
-\author{Ali Mohammadi}
+\ifanonymous
+  \author{Anonymous submission}
+\else
+  \author{Ali Mohammadi}
+\fi
 \date{}
 
 \begin{document}

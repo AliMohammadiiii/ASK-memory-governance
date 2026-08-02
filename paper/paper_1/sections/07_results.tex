@@ -1,61 +1,276 @@
-\section{Results on \mgp{}}
+\section{Results}
 \label{sec:results}
 
-All results below are recomputed from released per-item predictions. We lead
-with validity checks because they determine how the policy scores may be
-interpreted.
+All results below are recomputed from released per-item prediction files rather
+than transcribed from run reports; the recomputation is in
+\texttt{artifacts/analysis/mgp6\_v43\_full\_benchmark\_analysis.json}. We report
+\mgpc{} first, because it is the instrument whose construct-validity gate holds,
+and then the \mgp{} pilot, whose failed gate is itself a result.
 
-\subsection{MGP-6 v4.3 final hidden result}
+\subsection{\mgpc{} sealed-hidden result}
+\label{sec:results:hidden}
 
-One pre-registered configuration was selected using public development data:
-the ASK live controller with public-indexed evidence routing and a conservative
-ABSTAIN-only guard, using \texttt{qwen/qwen3.5-9b} through OpenRouter. It was
-then run exactly once on the sealed hidden split ($n=540$), with complete
-prediction coverage before local-private scoring. It obtains $0.8481$ accuracy
-and $0.8479$ macro-F1. A 5,000-replicate component-cluster bootstrap gives
-95\% intervals $[0.8037, 0.8889]$ for accuracy and $[0.8021, 0.8894]$ for
-macro-F1. These are uncertainty estimates within this controlled synthetic
-diagnostic, not a real-world generalization estimate.
+One pre-registered configuration --- the ASK live controller with
+public-indexed-evidence routing and the conservative \abstain-only guard, using
+\texttt{qwen/qwen3.5-9b} --- was selected on public development data and then run
+exactly once on the sealed hidden split ($n=540$, coverage $1.000$).
+Table~\ref{tab:v43main} reports it. Accuracy is $0.8481$ and macro-F1 is
+$0.8479$; the $5{,}000$-replicate component-cluster bootstrap gives
+$[0.8037, 0.8889]$ and $[0.8021, 0.8894]$.
 
-\begin{center}
-\small
-\begin{tabular}{@{}lrrrr@{}}
-\toprule
-Action & Precision & Recall & F1 & Support \\
-\midrule
-\abstain{} & 0.8554 & 0.7889 & 0.8208 & 180 \\
-\keep{} & 0.7947 & 0.8389 & 0.8162 & 180 \\
-\supersede{} & 0.8967 & 0.9167 & 0.9066 & 180 \\
-\bottomrule
-\end{tabular}
-\end{center}
+Two derived statistics make the balanced design pay off. Cohen's $\kappa$
+against gold is $0.7722$ and the multiclass Matthews correlation is $0.7728$;
+because the gold split is exactly $180/180/180$, these are not inflated by any
+class prior, and the gap between $0.848$ accuracy and $0.77$ agreement is
+entirely the structure of the errors rather than their count. Balanced accuracy
+equals raw accuracy ($0.8481$) for the same reason. For contrast, the
+item-independence Wilson interval is $[0.8154, 0.8760]$, whose width
+($0.0605$) is $29\%$ smaller than the cluster width ($0.0852$): reporting only
+the Wilson interval would understate the uncertainty by that much, and the
+difference is the price of scenario components.
 
-Rows in the following confusion matrix are gold actions and columns are
-predicted actions:
-\begin{center}
-\small
-\begin{tabular}{@{}lrrr@{}}
-\toprule
-Gold $\backslash$ predicted & \abstain{} & \keep{} & \supersede{} \\
-\midrule
-\abstain{} & 142 & 30 & 8 \\
-\keep{} & 18 & 151 & 11 \\
-\supersede{} & 6 & 9 & 165 \\
-\bottomrule
-\end{tabular}
-\end{center}
+\input{tables/v43_main_results}
 
-The controller predicted 166 abstentions, 190 keeps, and 184 supersessions.
-Coverage was 1.0; non-abstention coverage was $0.6926$ and selective accuracy
-was $0.8449$. Abstention precision/recall were $0.8554/0.7889$. Model-response
-latency had mean/median/p95 $1673/1278/2931$~ms (sum $903.5$~s across 540
-responses). One transport-level disconnect required a resume; there were no
-invalid responses, parse retries, or duplicate predictions. Provider telemetry
-did not contain price fields, so cost is reported as unavailable rather than
-estimated. No final hidden baseline, ablation, or paired system comparison was
-run: those configurations informed public development selection only.
+\subsection{Error structure: what the confusion matrix says that accuracy does not}
+\label{sec:results:confusion}
 
-\subsection{The shortcut check fails}
+Table~\ref{tab:v43confusion} and Figure~\ref{fig:v43-confusion}b give the
+hidden-split confusion matrix. The errors are strongly asymmetric, and for a
+write-governance system the asymmetry, not the total, is the operational
+result.
+
+\supersede{} is the best-recovered action ($0.9167$ recall, $0.9066$ F1):
+when the evidence really does establish a new value, the controller applies it.
+\abstain{} is the worst ($0.7889$ recall, $0.8208$ F1), and its errors are
+lopsided --- of $38$ mishandled gold-\abstain{} items, $30$ became \keep{} and
+only $8$ became \supersede{}. That distinction matters operationally. An
+\abstain$\to$\keep{} error leaves the stored state byte-identical to what
+abstention would have produced; the memory is not corrupted, only the audit
+trail loses the record that the system saw ambiguous evidence and declined. An
+\abstain$\to$\supersede{} error actually replaces an active record on
+insufficient evidence, which is the failure the action space exists to prevent.
+Collapsing both into one ``false commit'' rate of $38/180 = 0.2111$
+(CI $[0.1578, 0.2764]$) therefore overstates the harm: the state-corrupting
+component is $8/180 = 0.0444$ (CI $[0.0227, 0.0852]$), a factor of five
+smaller.
+
+Because the three actions within a component are surface-matched
+(Section~\ref{sec:v43}), the confusion profile also names its own mechanism.
+\abstain{} is hardest precisely because its indexed evidence asserts
+\emph{unresolvability} while four distractor sentences continue to assert
+resolvable \keep{} and \supersede{} readings; a system that reads the transcript
+instead of the index will be pulled toward a commitment. The development-split
+error audit confirms this directly: every mechanically resolvable error is
+distractor capture.
+
+The remaining categories are read the same way. Missed updates --- gold
+\supersede{} not applied --- are $15/180 = 0.0833$ (CI $[0.0511, 0.1329]$), so
+the system leaves a stale value in place on roughly one in twelve items that
+required a change. Destructive overwrites, where a gold-\keep{} record was
+superseded, are $11/180 = 0.0611$ (CI $[0.0345, 0.1061]$). Unnecessary
+abstention over the $360$ items that did require a decision is
+$24/360 = 0.0667$ (CI $[0.0452, 0.0973]$), which is low: the controller is not
+buying its safety by refusing to act. Selective behaviour matches --- non-abstention
+coverage is $0.6926$ with selective accuracy $0.8449$, meaning the items the
+controller does commit on are answered slightly \emph{less} accurately than
+average, so its abstentions are not well targeted at its own hard cases. This
+is a calibration finding, and it is the clearest single defect in the frozen
+configuration.
+
+\input{tables/v43_confusion}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/mgp6_v43_confusion.png}
+\caption{Confusion matrices for the frozen controller on the public development
+split (a) and the sealed hidden split (b), and for the successor controller on
+development (c). Cells give counts and row-normalised rates; rows are gold
+actions. The dominant off-diagonal cell in (a) and (b) is
+gold-\abstain{} predicted \keep{} --- a lost audit record rather than a
+corrupted state --- and it is the error the successor configuration eliminates
+in (c).}
+\label{fig:v43-confusion}
+\end{figure}
+
+\subsection{Development-split comparison against baselines and ablations}
+\label{sec:results:dev}
+
+Because only one hidden run was authorised, every system contrast is on the
+public development split ($n=180$, balanced $60/60/60$). We report these as
+development evidence and never as confirmatory results: this is the split on
+which the prompt, the guard, and the configuration were chosen.
+Table~\ref{tab:v43dev} and Figure~\ref{fig:v43-dev} give the full suite,
+Table~\ref{tab:v43mcnemar} the paired tests.
+
+The most useful fact in the table is a negative one about the baselines. All
+four structural baselines, all four ablations, the zero-shot decision policy,
+the five-feature scorecard adapter, and all three deployed external memory
+systems land between $0.2944$ and $0.3667$ --- that is, at or below the $0.3333$
+chance rate of a balanced three-way decision. Their macro-F1 values
+($0.178$--$0.312$) and Matthews correlations ($-0.069$ to $0.092$) confirm
+that this is not near-chance accuracy with useful structure underneath; these
+systems are close to uninformative on this task. Two mechanisms produce that
+result. The commit-happy systems (B2, B4, the zero-shot policy, and the
+no-abstention, no-typing, and no-lineage ablations) supersede almost
+everything: their destructive-overwrite rates run $0.767$--$0.983$ and their
+false-commit rates $0.900$--$1.000$. The abstain-happy systems (the scorecard
+adapter, Mem0, Graphiti) do the opposite: Mem0 abstains on $117/120$ items that
+required a decision and misses every one of the $60$ required updates. Both
+failure modes score near chance while behaving in opposite ways, which is
+precisely why we report the error decomposition rather than accuracy alone.
+
+Against that floor the composed controllers separate cleanly. The frozen
+configuration reaches $0.8444$ (CI $[0.789, 0.894]$) and the successor
+configuration $0.9500$ as run, $0.9611$ once its guard is composed rather than
+replaced. Every controller-versus-baseline and controller-versus-ablation
+contrast rejects at Holm-corrected $p < 10^{-17}$, with $b/c$ splits as
+one-sided as $98/6$. The successor gain over the frozen configuration is
+smaller but still separates ($b=28$, $c=7$, RD $+0.117$, Holm $p = 0.0015$).
+The two successor variants do not separate from each other ($b=2$, $c=0$,
+Holm $p = 0.5$), so we do not claim the guard-composition fix improved the
+successor system --- only that it did not damage it while restoring the intended
+composition semantics.
+
+\input{tables/v43_dev_suite}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/mgp6_v43_dev_systems.png}
+\caption{MGP-6 v4.3 public development accuracy with $10{,}000$-replicate item
+bootstrap intervals. Every baseline, ablation, and deployed external system
+falls at or below the $0.3333$ chance line of the balanced three-way decision;
+only the composed ASK controllers clear it. Development evidence only: this is
+the split used for configuration selection.}
+\label{fig:v43-dev}
+\end{figure}
+
+\input{tables/v43_mcnemar}
+
+\subsection{Which component does the work}
+\label{sec:results:guard}
+
+Because the controller composes a rule policy with a model policy, we can score
+each component separately on development data (Table~\ref{tab:v43guard},
+Figure~\ref{fig:v43-guard}a). Neither alone reaches the composed result. For
+the frozen configuration the model action alone scores $0.7500$ and the rule
+policy alone also $0.7500$; composing them yields $0.8444$. The guard changed
+$27$ of $180$ items, repairing $20$ model errors, breaking $3$ correct model
+actions, and leaving $4$ error-neutral. For the successor configuration the
+asymmetry is starker: the model alone scores $0.7167$, the guard changes $42$
+items, and every one of those changes is a repair. Its rule policy is not
+scorable as a standalone action assignment, because that configuration's
+policy emits \texttt{model\_preserved} on $120$ of $180$ items by design rather
+than proposing an action.
+
+On the hidden split the guard fired $36$ times, always out of \abstain{}
+($30 \to \keep$, $6 \to \supersede$). This bounds its contribution: even if
+every one of those $36$ overrides were correct and every model \abstain{} it
+did not touch were wrong, the guard accounts for at most $6.7$ accuracy points
+of the $84.8$ observed. The result is a genuine composition, not a rule engine
+with a model attached, nor a model with cosmetic rules.
+
+\input{tables/v43_guard}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/mgp6_v43_guard_and_errors.png}
+\caption{(a) Component decomposition on the public development split: neither
+the model policy nor the public-evidence rule policy alone reaches the composed
+accuracy. The successor configuration's rule policy preserves the model action
+on $120/180$ items by design and so has no standalone action assignment
+(\emph{n.d.}). (b) Governance-relevant error rates, each within its own gold
+class. The controller's residual risk is concentrated in false commits, of
+which the majority are state-preserving \abstain$\to$\keep{} lapses; B4 naive
+overwrite is shown for scale.}
+\label{fig:v43-guard}
+\end{figure}
+
+\subsection{Cost sensitivity}
+\label{sec:results:costmatrix}
+
+Accuracy weights every error equally, which no memory-governance deployment
+does. Table~\ref{tab:v43cost_matrix} recomputes expected loss under three
+pre-specified cost regimes. On the hidden split the frozen controller incurs
+$0.1519$ balanced loss, $0.4204$ commit-averse, and $0.2963$ update-responsive.
+The commit-averse figure is the largest because that regime charges most
+heavily for exactly the controller's dominant error class. Crucially, the
+ordering among ASK controllers is stable across all three regimes --- unlike the
+reference-versus-LLM comparison on the v2 pilot (Section~\ref{sec:v2policy}),
+where the preferred system flips with the cost matrix. A deployment that
+weights ambiguity-preservation heavily should prefer the successor
+configuration on every regime we specified; that conclusion does not depend on
+which regime it picks.
+
+\input{tables/v43_cost_matrix}
+
+\subsection{Computation time and token cost}
+\label{sec:results:cost}
+
+Table~\ref{tab:v43cost} and Figure~\ref{fig:v43-cost} give the operational
+accounting. All runs used concurrency $1$, temperature $0$, and a $128$-token
+generation cap, so the numbers are per-item serial costs and are not a
+throughput claim.
+
+The write decision is cheap. On the hidden split, per-item response latency has
+mean $1{,}673$~ms, median $1{,}278$~ms, p95 $2{,}931$~ms, and maximum
+$12{,}626$~ms, summing to $903.5$~s of model time across $540$ items. The
+distribution is right-skewed with a thin provider tail rather than a fat one:
+median-to-p95 is a factor of $2.3$, but p95-to-max is a factor of $4.3$, so the
+worst-case latency is dominated by a handful of route-level stalls rather than
+by hard items. We resist reading these as compute measurements. They are
+provider-reported wall times through a shared OpenRouter route; the
+deterministic scorecard adapter, which makes no network call, completes the same
+$180$ decisions in a $0.13$~ms median.
+
+Token cost separates the systems more informatively than latency does.
+Evidence-indexed routing spends $393$ prompt tokens per decision on the hidden
+split ($212{,}467$ total) and $7.4$ completion tokens, because the decision is
+constrained to emit a single JSON action. The full-context baselines spend
+substantially more for a chance-level result: B4 naive overwrite $578$ prompt
+tokens per item, B2 flat retrieval $597$, and the zero-shot policy $549$. The
+successor configuration costs more than the frozen one ($506$ versus $396$
+prompt tokens per item on development) and buys $10.6$ accuracy points for that $28\%$
+increase. The only cheaper live system, B3 recency at $233$ tokens, achieves
+$0.3278$ accuracy.
+
+Monetary cost is reported as \emph{unavailable}, not estimated. OpenRouter
+response telemetry carried no price or cost field on any of these runs. Given
+the frozen model identifier, a list-price multiplication would be arithmetically
+easy and epistemically empty --- routing, provider selection, and caching all
+affect the billed amount, and none of that is in our logs. We record the token
+counts, which are measured, and decline to convert them into a currency figure
+that is not.
+
+Run integrity on the hidden split was clean: $0$ in-client retries, $0$ invalid
+or unparseable responses, $0$ duplicate predictions, and one transport-level
+disconnect after $432$ predictions that the immutable-manifest resume recovered
+under identical controls. One caveat on the manifest: its
+$207.96$~s \texttt{wall\_clock\_seconds} field records only the resumed
+invocation that produced the final $108$ predictions, so it should not be read
+as the end-to-end duration of the $540$-item run. The summed model latency of
+$903.5$~s is the defensible aggregate.
+
+\input{tables/v43_cost}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/mgp6_v43_compute_cost.png}
+\caption{(a) Per-item model response latency (log scale), showing every
+observation with the median tick and the $5$--$95$ percentile bar. Medians sit
+near one second across systems; the spread is provider-route variance, not item
+difficulty. (b) Token cost per write decision, split into prompt and
+completion. Evidence-indexed routing spends fewer prompt tokens than the
+full-context baselines while being the only configuration above chance.}
+\label{fig:v43-cost}
+\end{figure}
+
+\subsection{The v2 shortcut check fails, and why v4.3 exists}
+\label{sec:v2shortcut}
+
+The remainder of this section reports the historical \mgp{} pilot. Its results
+are retained because they motivate the v4.3 redesign, and because the shortcut
+failure they document is the paper's most transferable finding about diagnostic
+construction. None of them supports a capability claim.
 
 The conflict-type-only lookup fitted on train+dev reaches $1.0000$ accuracy and
 macro-F1 on test; the coarser six-way type lookup reaches $0.9667$ accuracy and
@@ -66,7 +281,8 @@ check dominates every policy comparison below.
 
 \input{tables/shortcut_audit}
 
-\subsection{Held-out policy comparison}
+\subsection{Held-out v2 policy comparison}
+\label{sec:v2policy}
 
 \input{tables/main_results}
 
@@ -79,7 +295,7 @@ The unstructured zero-shot policy reaches $0.6778$/$0.6542$, but that gap is
 itself evaluated on the shortcut-leaking pilot and is not a general
 scaffold-effect estimate.
 
-\subsection{Safety--responsiveness trade-off}
+\subsection{Safety--responsiveness trade-off on the v2 pilot}
 
 The reference policy makes no action false commits on the 33 test abstention items, but
 the exact one-sided 95\% upper bound is $0.0868$, not zero risk. It misses
@@ -93,7 +309,7 @@ ordering. Top-label ECE is $0.156$ for the reference confidence and $0.302$ for
 the LLM confidence; both are descriptive because neither confidence was
 calibrated on an independent set.
 
-\subsection{State and component diagnostics}
+\subsection{State and component diagnostics on the v2 pilot}
 
 Full-corpus ablations are retained only as within-generator mechanism checks.
 Removing abstention raises invalid-commit from $0.0$ to $1.0$; removing
@@ -108,3 +324,18 @@ The $174/180$ six-shot run remains incomplete and is excluded from all
 comparisons. Mapped external-system action scores and non-homogeneous downstream
 runs remain in the artifact audit only; neither supports a main-paper capability
 claim.
+
+\subsection{What transfers from v2 to v4.3}
+
+The v2 shortcut failure is not repaired by the v4.3 numbers; it is
+\emph{avoided} by a different construction. Three v2 findings do transfer.
+First, a lookup probe over metadata is a cheap and decisive construct-validity
+gate, and the v4.3 build runs one as a release gate rather than as a
+post-hoc audit. Second, the lineage ablation --- action accuracy unchanged at
+$0.9222$ while lineage integrity falls $0.8556 \to 0.3689$ --- shows that a
+decision-level score cannot detect a corrupted transition history, which is why
+the v4.3 evaluation contract keeps state and action scoring separate. Third,
+the cost-matrix flip in the v2 reference-versus-LLM comparison established that
+``safer'' is not a system property but a property of a system under a stated
+cost regime; Section~\ref{sec:results:costmatrix} therefore reports v4.3 under
+three regimes rather than one.

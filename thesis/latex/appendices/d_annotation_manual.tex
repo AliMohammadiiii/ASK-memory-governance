@@ -1,0 +1,14 @@
+The annotation manual is
+\texttt{benchmarks/mgp6/annotation\_manual\_v2.md}; the kit builder is
+\texttt{make\_annotation\_kit.py}; agreement computation is
+\texttt{compute\_agreement\_v2.py}; raw annotation files live under
+\texttt{benchmarks/mgp6/annotations/human/} (independent annotator) and
+\texttt{mgp6\_v2/annotation/} (four-LLM panel). The single open
+adjudication item is \texttt{MGP6V2-T3-TEST-016} (gold SUPERSEDE vs
+annotator ABSTAIN, implicit conflict). Adjudication protocol: blinded
+display of the raw item and both labels; evidence spans and policy
+principle for each; resolution \ensuremath{\in} \{released, alternative, both
+defensible, underspecified\}; logged with adjudicators, date, and
+version impact. Main results use released gold; sensitivity may score
+the alternative label or exclude the item (±1 item = 1.1\% of the test
+split).

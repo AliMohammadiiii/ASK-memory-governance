@@ -1,0 +1,67 @@
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Artifact
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Path
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Role
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Frozen run ledger & \texttt{artifacts/results\_ledger.json} v1.1 (sha256
+\texttt{fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e})
+& historical run provenance and archived result transcription; its older
+policy interpretation is superseded \\
+Construct-validity audit &
+\texttt{artifacts/analysis/mgp6\_validity\_audit.\{json,md\}} & primary
+source for MGP-6 shortcut probes, held-out policy metrics, cluster
+intervals, calibration, finite-sample bounds, and cost sensitivity \\
+Final tables & \texttt{reports/FINAL\_RESULTS.\{md,json\}} &
+deterministic ledger transcription \\
+Statistics & \texttt{reports/STATISTICAL\_ANALYSIS.md},
+\texttt{reports/statistical\_analysis\_raw\_output.txt} &
+McNemar/Holm/CIs \\
+Claims control & \texttt{reports/CLAIMS\_EVIDENCE\_MATRIX.md};
+thesis-scoped: \texttt{thesis/claims\_evidence\_matrix.md} & phrasing
+rules, strength tags \\
+Source of truth & \texttt{docs/audit/SCIENTIFIC\_SOURCE\_OF\_TRUTH.md} &
+claim strengths, corrections \\
+Error analysis & \texttt{reports/ERROR\_TAXONOMY.md};
+\texttt{docs/research/SINGLE\_SESSION\_PREFERENCE\_FAILURE\_ANALYSIS.md};
+\texttt{…/SINGLE\_SESSION\_PREFERENCE\_METHOD.md} & Chapter 8 sources \\
+Validity & \texttt{reports/THREATS\_TO\_VALIDITY.md};
+\texttt{docs/audit/DATA\_LEAKAGE\_AND\_RESEARCHER\_DOF.md} & Chapter 9
+sources \\
+Run reconstruction &
+\texttt{docs/audit/CONTROLLERRUN\_RECONSTRUCTION.md};
+\texttt{…/CONTROLLERRUN\_FAILURE\_LEDGER.md};
+\texttt{…/INVALID\_AND\_SUPERSEDED\_RUNS.md} & LongMemEval anatomy \\
+Related work audit & \texttt{reports/RELATED\_WORK\_UPDATE.md} & Chapter
+2 source \\
+Dataset + kit & \texttt{benchmarks/mgp6/} (data, manual, metrics,
+annotation) & Chapter 5 \\
+MGP-6 run artifacts & \texttt{artifacts/mgp6\_v2/…} (per-item
+predictions + reports) & Chapter 7 \\
+LME-M run evidence & external run pointers in
+\texttt{docs/audit/RUN\_CLASSIFICATION.csv} & Chapters 7--8; raw
+external data not redistributed \\
+Reproducibility & \texttt{reports/REPRODUCIBILITY\_CHECKLIST.md},
+\texttt{Makefile}, \texttt{.github/workflows/ci.yml} & Appendix E \\
+\end{longtable}
+}
+
+\textbf{Claim-eligibility vocabulary:} \texttt{diagnostic\_only} ---
+informative but not independent validation;
+\texttt{failure\_replay\_only} --- selected by prior failure and
+excluded from result claims; \texttt{incomplete} --- missing required
+coverage; \texttt{invalid} --- unusable; \texttt{externally\_pending}
+--- specified but blocked by an external prerequisite. The older
+\texttt{final\_candidate} label is a provenance state, not permission to
+ignore the later shortcut failure.

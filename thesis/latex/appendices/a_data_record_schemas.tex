@@ -1,0 +1,43 @@
+\section{\texorpdfstring{A.1 MGP-6 v2 scenario row (schema:
+\texttt{benchmarks/mgp6/mgp6\_schema\_v2.py}; spec:
+\texttt{mgp6\_v2\_spec.md})}{A.1 MGP-6 v2 scenario row (schema: benchmarks/mgp6/mgp6\_schema\_v2.py; spec: mgp6\_v2\_spec.md)}}\label{a.1-mgp-6-v2-scenario-row-schema-benchmarksmgp6mgp6_schema_v2.py-spec-mgp6_v2_spec.md}
+
+Fields (abridged): \texttt{scenario\_id} (stable ID,
+e.g.~\texttt{MGP6V2-T3-TEST-016}), \texttt{type} (T1--T6),
+\texttt{split} (train/dev/test), \texttt{context}
+(prior-memory-establishing turns), \texttt{candidate} (new event),
+\texttt{gold\_action} (KEEP/SUPERSEDE/ABSTAIN), \texttt{query} +
+\texttt{query\_mode} (direct\_recall / premise\_resistance /
+implicit\_application), \texttt{gold\_answer}.
+
+\section{A.2 Released prediction row
+(abridged)}\label{a.2-released-prediction-row-abridged}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{\{}
+  \DataTypeTok{"scenario\_id"}\FunctionTok{:} \StringTok{"MGP6V2{-}T1{-}TEST{-}016"}\FunctionTok{,}
+  \DataTypeTok{"predicted\_action"}\FunctionTok{:} \StringTok{"ABSTAIN"}\FunctionTok{,}
+  \DataTypeTok{"predicted\_memory\_state"}\FunctionTok{:} \OtherTok{[}
+    \FunctionTok{\{}\DataTypeTok{"id"}\FunctionTok{:} \StringTok{"mgp6v2{-}t1{-}test{-}016{-}m1"}\FunctionTok{,} \DataTypeTok{"status"}\FunctionTok{:} \StringTok{"active"}\FunctionTok{,} \DataTypeTok{"supersedes\_id"}\FunctionTok{:} \KeywordTok{null}\FunctionTok{\}}
+  \OtherTok{]}\FunctionTok{,}
+  \DataTypeTok{"predicted\_answer"}\FunctionTok{:} \StringTok{"The user\textquotesingle{}s current desk lighting preference is warm light."}\FunctionTok{,}
+  \DataTypeTok{"confidence"}\FunctionTok{:} \FloatTok{0.4}
+\FunctionTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+This is an abridgement of the restored released artifact, not a
+synthetic scorecard trace. Gold labels are joined from the dataset
+during evaluation, and system/run identity is encoded by the artifact
+path (for example,
+\texttt{artifacts/mgp6\_v2/ref\_5systems/controller/predictions.jsonl}).
+
+\section{\texorpdfstring{A.3 Memory record and lineage (store:
+\texttt{src/ask/memory/operations.py})}{A.3 Memory record and lineage (store: src/ask/memory/operations.py)}}\label{a.3-memory-record-and-lineage-store-srcaskmemoryoperations.py}
+
+Records carry: id, type (e.g.~stable\_pref / transient\_pref /
+episodic\_fact), content, holder, provenance (source turn/session),
+status (active/superseded), \texttt{superseded\_by} lineage link,
+timestamps. \texttt{retrieve\_active} excludes superseded records;
+\texttt{get\_lineage} walks the chain.

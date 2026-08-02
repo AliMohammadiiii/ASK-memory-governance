@@ -1,0 +1,285 @@
+This chapter follows the v1.1 evidence policy and the repository threat
+analysis; every threat cites a concrete artifact and carries a
+mitigation status.
+
+\section{9.1 Internal validity}\label{internal-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Threat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Instance
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+I1 & Dataset/controller circularity and label leakage & conflict type
+alone reaches 1.000 held-out accuracy & \textbf{failed construct gate};
+not repaired by policy comparisons or cluster bootstrap; independent v3
+data required \\
+I2 & Failure-derived fixes without a confirmation set (LongMemEval
+v7→v8) & fixes designed on the exact 70 failures then replayed on them &
+\textbf{mitigated for reporting}: replay classified
+\texttt{failure\_replay\_only}; \textbf{open experimentally}:
+homogeneous rerun required \\
+I3 & Adjudication contamination & v7: 108 original judge-correct + 2
+manual corrections; replay merge: 4 Codex/GPT-5 overrides that are not
+independent human adjudication & \textbf{mitigated for reporting}:
+raw/overridden counts separated; overrides excluded from final claims \\
+I4 & Provider contamination and carry-forward bias & v7 has 316 HTTP-402
+traces and 388 empty fallbacks; top-up finds 13 regressions among 84
+observed prior successes & \textbf{mitigated for reporting}: no v7/v8
+result claim; \textbf{open experimentally}: homogeneous rerun \\
+I5 & Split hygiene (MGP-6) & controller developed on train/dev;
+type/action mapping persists across splits & \textbf{not sufficient}:
+test figures are primary but remain diagnostic \\
+I6 & Metric revision mid-project & \texttt{invalid\_commit} semantics
+revised; \texttt{.bak} preserved & \textbf{mitigated}: revised
+definition used throughout \\
+\end{longtable}
+}
+
+\section{9.2 External validity}\label{external-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Threat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+E1 & MGP-6 v2 is an author-designed diagnostic slice, not a community
+benchmark & \textbf{open}: mapped external-system comparisons do not
+provide independent validation; v3 protocol required \\
+E2 & LongMemEval evaluated on a 180-item slice, not the full 500 &
+\textbf{open} \\
+E3 & Single base model (qwen3.5-9b) and single seed; CIs reflect item
+sampling, not run variance & \textbf{open} \\
+E4 & External-adapter numbers are harness- and mapping-specific &
+\textbf{partially mitigated}: both NOOP mappings reported; MemOS flagged
+bound-only \\
+E5 & Synthetic-template dependence (templates, labels, and reference
+policy authored together) & \textbf{confirmed threat}: conflict/type
+shortcut succeeds despite family-disjoint splits \\
+\end{longtable}
+}
+
+\section{9.3 Construct validity}\label{construct-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Threat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+C1 & ``Human IAA'' would be a mis-description: evidence is n=1 human +
+4-LLM panel & \textbf{partially mitigated} by the mandated phrasing;
+\textbf{open}: multi-human IAA; review sheet 0/180 \\
+C2 & Panel may share the author's reading (manual unambiguous by
+construction) & \textbf{open} \\
+C3 & Shipped forgetting metrics uninformative (saturate at 1.0) &
+\textbf{mitigated by disclosure}: excluded from claims \\
+C4 & Judge as construct proxy on LongMemEval (known false-negative
+classes) & \textbf{partially mitigated}: guard fixes, deferral to
+semantic judge, logged adjudication \\
+C5 & Premise resistance and invalid-commit are bespoke metrics &
+\textbf{partially mitigated}: defined in code; interpreted
+descriptively \\
+\end{longtable}
+}
+
+\section{9.4 Statistical-conclusion
+validity}\label{statistical-conclusion-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Threat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+S1 & Small and clustered n (90 test items, 48 test families; SSP strata
+30) & \textbf{partially mitigated}: family/minimal-pair bootstrap and
+exact counts; external uncertainty remains open \\
+S2 & Multiplicity & \textbf{mitigated}: Holm over the pre-specified
+4-test family \\
+S3 & Tautological rule-vs-weak-baseline comparisons (OR = ∞ by design) &
+\textbf{mitigated by framing}: ``not sampling noise'', not capability
+proof \\
+S4 & The reference-vs-LLM null is easy to misreport as equality or
+non-inferiority & \textbf{mitigated}: test RD −0.0111 and family
+interval reported; no margin-based claim \\
+S5 & Selective replay and judge heterogeneity invalidate the archived
+139/180 construction & \textbf{mitigated for reporting}:
+\texttt{failure\_replay\_only}; top-up bounds reported; \textbf{open
+experimentally}: homogeneous rerun \\
+S6 & Direction can invert on LongMemEval (B4 63.3\% \textgreater{}
+controller 61.1\%) & \textbf{open}: no comparative claim until rerun \\
+\end{longtable}
+}
+
+\section{9.5 MGP-6 v4.3-specific
+threats}\label{mgp-6-v4.3-specific-threats}
+
+The v4.3 release repairs the v2 construct gate, but it introduces its
+own threats and none is closed by a higher accuracy number.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\#
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Threat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Instance
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Status
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+V1 & \textbf{No hidden comparator.} Only one configuration was
+authorised on the sealed split & every baseline, ablation, and
+external-system contrast in §7.10.6 is development evidence on the split
+that selected the configuration & \textbf{open}: hidden baselines must
+be scored under the same one-shot discipline before any comparative
+claim reaches the sealed split \\
+V2 & \textbf{Development intervals are too narrow.} Component-cluster
+resampling is unavailable to the public scorer & §7.10.6 intervals are
+item bootstraps; the paired McNemar tests assume independence that does
+not hold within a component & \textbf{partially mitigated}: relied upon
+only for contrasts with b/c splits of 98/6 or larger; the 0.117
+successor gain is flagged as the marginal case \\
+V3 & \textbf{Annotation provenance is attested, not authenticated} &
+dual packets agree on all 900 items (κ = 1.0), but the builder validates
+records and hashes rather than reviewer identity or duration &
+\textbf{open}: perfect agreement is also consistent with a manual that
+is unambiguous by construction, so it certifies followability, not
+construct validity \\
+V4 & \textbf{Abstention is not calibrated selection} & selective
+accuracy 0.8449 \textless{} overall accuracy 0.8481 & \textbf{disclosed,
+unrepaired}: the guard performs governance, not selective-risk
+targeting; the two must not be conflated \\
+V5 & \textbf{Successor configuration is untested on any sealed split} &
+0.9611 development accuracy, guard-composed & \textbf{open}: must not be
+read as an improvement over the 0.8481 hidden result --- different
+splits, different exposure \\
+V6 & \textbf{Cost is unmeasured in currency} & provider telemetry
+emitted no price field on any run & \textbf{mitigated by disclosure}:
+tokens and latency reported as measured; no list-price reconstruction \\
+V7 & \textbf{Single model family, single seed} & all model-backed rows
+use \texttt{qwen/qwen3.5-9b}, seed 4301, temperature 0 & \textbf{open}:
+intervals reflect item and component sampling, not run or model-family
+variance \\
+V8 & \textbf{Latency is provider wall time, not compute} & measured
+through a shared OpenRouter route with concurrency 1 & \textbf{mitigated
+by framing}: reported as operational cost, never as a compute or
+throughput claim \\
+\end{longtable}
+}
+
+\section{9.6 Priority actions (decreasing validity
+impact)}\label{priority-actions-decreasing-validity-impact}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Execute the role-separated MGP-6 v3 confirmation protocol: independent
+  writers, all actions within every family, long trajectories, sealed
+  labels, and shortcut rejection gates.
+\item
+  Recruit three blinded human annotators for the confirmation test and
+  retain raw labels plus independent adjudication.
+\item
+  Evaluate component-oracle and predicted-component pipelines with
+  family-clustered, cost-sensitive analysis.
+\item
+  Run external memory systems with native observable metrics; treat
+  action mappings only as sensitivity analyses.
+\item
+  Execute a complete homogeneous downstream run only after its input,
+  provider, judge, and provenance gates pass.
+\end{enumerate}
+
+\section{9.7 Ethics, privacy, and dual
+use}\label{ethics-privacy-and-dual-use}
+
+A system that supersedes and audits memories can be abused to rewrite
+records or manufacture provenance; a system that retains them enables
+surveillance, extraction, and membership inference
+\citep{carlini2021extracting, shokri2017membership, bender2021dangers, weidinger2022taxonomy}.
+Mitigations in this project's scope: lineage is append-only and
+superseded records are preserved rather than destroyed; ABSTAIN routes
+ambiguity to review instead of committing; the evaluation data is
+synthetic (MGP-6) or externally licensed and not redistributed
+(LongMemEval); no personal data of real users is stored. Deployment
+beyond research requires access control, dual control for bulk
+operations, and organizational governance consonant with risk-management
+frameworks \citep{nist2023airmf}; alignment techniques at the model
+layer \citep{ouyang2022training, bai2022constitutional} complement but
+do not replace the deterministic write boundary. The governance
+controller is an engineering framework, not legal advice; ``supersede''
+and ``abstain'' here are epistemic operations, not compliance
+guarantees.
+
+\section{9.8 Reproducibility statement}\label{reproducibility-statement}
+
+Released: code, MGP-6 v2 data, per-item predictions, the 10,000-sample
+construct-validity audit, cluster intervals, cost sensitivity,
+bibliographic checks, and the v3 confirmation protocol. The v4.3 final
+configuration, freeze authorization, aggregate hidden metrics, and
+prediction hash are reproducibly recorded, while hidden records and gold
+remain private. The few-shot run is incomplete; mapped external systems
+and all LongMemEval evidence are non-primary. Independent v3
+construction and three-human annotation remain unexecuted. Documentation
+follows datasheet/model-card practice
+\citep{gebru2021datasheets, mitchell2019modelcards}.

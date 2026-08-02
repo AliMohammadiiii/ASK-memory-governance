@@ -1,0 +1,651 @@
+{
+  "decision_rule": {
+    "common_threshold_counterfactual": {
+      "theta_abs": 0.7,
+      "theta_sup": 0.75
+    },
+    "features": {
+      "c": "extraction confidence",
+      "e": "evidence quality: span specificity plus recency",
+      "f": "negation/hedge marker burden",
+      "r": "signed relation: support positive, update pressure negative",
+      "rho": "type-conditional stability prior"
+    },
+    "order": [
+      "ABSTAIN if S_abs > theta_abs[type]",
+      "else SUPERSEDE if S_sup > theta_sup[type] and max(0,-r) > 0",
+      "else KEEP"
+    ],
+    "s_abs": "(1-c) + f + (1-|r|)",
+    "s_sup": "1.0*c + 0.8*e - 0.7*f + 1.2*max(0,-r) - 0.5*rho",
+    "weights": {
+      "c": 1.0,
+      "e": 0.8,
+      "f": 0.7,
+      "r": 1.2,
+      "rho": 0.5
+    }
+  },
+  "interpretation_guard": "Leave-one-dimension-out and type-neutral results are deterministic counterfactual replays of this fixed log. They diagnose rule dependence; they do not estimate retrained-system or population causal effects.",
+  "mechanism": {
+    "keep_above_sup_threshold": 11091,
+    "keep_above_sup_threshold_rate": 0.9662833246210141,
+    "keep_blocked_by_relation_guard": 11091,
+    "keep_blocked_by_relation_guard_rate": 0.9662833246210141,
+    "leave_one_dimension_out": {
+      "c": {
+        "action_counts": {
+          "Abstain": 773,
+          "Keep": 11486,
+          "Supersede": 395
+        },
+        "changed": 8,
+        "changed_rate": 0.000632211158526948,
+        "changes_by_memory_type": {
+          "episodic_fact": 3,
+          "stable_pref": 5
+        },
+        "transitions": {
+          "Abstain->Keep": 6,
+          "Supersede->Keep": 2
+        }
+      },
+      "e": {
+        "action_counts": {
+          "Abstain": 779,
+          "Keep": 11478,
+          "Supersede": 397
+        },
+        "changed": 0,
+        "changed_rate": 0.0,
+        "changes_by_memory_type": {},
+        "transitions": {}
+      },
+      "f": {
+        "action_counts": {
+          "Keep": 12199,
+          "Supersede": 455
+        },
+        "changed": 779,
+        "changed_rate": 0.06156156156156156,
+        "changes_by_memory_type": {
+          "episodic_fact": 492,
+          "stable_pref": 51,
+          "transient_pref": 236
+        },
+        "transitions": {
+          "Abstain->Keep": 721,
+          "Abstain->Supersede": 58
+        }
+      },
+      "r": {
+        "action_counts": {
+          "Abstain": 693,
+          "Keep": 11961
+        },
+        "changed": 483,
+        "changed_rate": 0.03816974869606449,
+        "changes_by_memory_type": {
+          "episodic_fact": 431,
+          "stable_pref": 5,
+          "transient_pref": 47
+        },
+        "transitions": {
+          "Abstain->Keep": 86,
+          "Supersede->Keep": 397
+        }
+      },
+      "rho": {
+        "action_counts": {
+          "Abstain": 779,
+          "Keep": 11478,
+          "Supersede": 397
+        },
+        "changed": 0,
+        "changed_rate": 0.0,
+        "changes_by_memory_type": {},
+        "transitions": {}
+      }
+    },
+    "type_channels": {
+      "common_stability_prior_only": {
+        "action_counts": {
+          "Abstain": 779,
+          "Keep": 11478,
+          "Supersede": 397
+        },
+        "changed": 0,
+        "changed_rate": 0.0,
+        "changes_by_memory_type": {},
+        "transitions": {}
+      },
+      "common_thresholds_only": {
+        "action_counts": {
+          "Abstain": 774,
+          "Keep": 11483,
+          "Supersede": 397
+        },
+        "changed": 5,
+        "changed_rate": 0.0003951319740793425,
+        "changes_by_memory_type": {
+          "stable_pref": 5
+        },
+        "transitions": {
+          "Abstain->Keep": 5
+        }
+      },
+      "fully_type_neutral": {
+        "action_counts": {
+          "Abstain": 774,
+          "Keep": 11483,
+          "Supersede": 397
+        },
+        "changed": 5,
+        "changed_rate": 0.0003951319740793425,
+        "changes_by_memory_type": {
+          "stable_pref": 5
+        },
+        "transitions": {
+          "Abstain->Keep": 5
+        }
+      }
+    },
+    "without_relation_guard": {
+      "action_counts": {
+        "Abstain": 779,
+        "Keep": 387,
+        "Supersede": 11488
+      },
+      "changed": 11091,
+      "changed_rate": 0.8764817449027975,
+      "changes_by_memory_type": {
+        "episodic_fact": 8761,
+        "stable_pref": 179,
+        "transient_pref": 2151
+      },
+      "transitions": {
+        "Keep->Supersede": 11091
+      }
+    }
+  },
+  "n_decisions": 12654,
+  "observed": {
+    "action_counts": {
+      "Abstain": 779,
+      "Keep": 11478,
+      "Supersede": 397
+    },
+    "action_rates": {
+      "Abstain": 0.06156156156156156,
+      "Keep": 0.9070649596965387,
+      "Supersede": 0.031373478741899795
+    },
+    "by_action": {
+      "Abstain": {
+        "feature_summary": {
+          "c": {
+            "max": 0.98,
+            "mean": 0.9221822849807445,
+            "median": 0.95,
+            "min": 0.75,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.7922544929396662,
+            "median": 0.85,
+            "min": 0.37749999999999995,
+            "p95": 0.85
+          },
+          "f": {
+            "max": 1.0,
+            "mean": 0.9409499358151476,
+            "median": 1.0,
+            "min": 0.5,
+            "p95": 1.0
+          },
+          "r": {
+            "max": 1.0,
+            "mean": 0.8580231065468549,
+            "median": 1.0,
+            "min": -1.0,
+            "p95": 1.0
+          },
+          "rho": {
+            "max": 0.9,
+            "mean": 0.5287548138639281,
+            "median": 0.6,
+            "min": 0.3,
+            "p95": 0.9
+          }
+        },
+        "memory_type_counts": {
+          "episodic_fact": 492,
+          "stable_pref": 51,
+          "transient_pref": 236
+        },
+        "n": 779,
+        "share": 0.06156156156156156
+      },
+      "Keep": {
+        "feature_summary": {
+          "c": {
+            "max": 1.0,
+            "mean": 0.9343587733054539,
+            "median": 0.95,
+            "min": 0.8,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.7948303275832026,
+            "median": 0.85,
+            "min": 0.28125,
+            "p95": 0.85
+          },
+          "f": {
+            "max": 0.5,
+            "mean": 0.21005401637916013,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.5
+          },
+          "r": {
+            "max": 1.0,
+            "mean": 0.9981791252831504,
+            "median": 1.0,
+            "min": 0.6,
+            "p95": 1.0
+          },
+          "rho": {
+            "max": 0.9,
+            "mean": 0.5523000522739153,
+            "median": 0.6,
+            "min": 0.3,
+            "p95": 0.6
+          }
+        },
+        "memory_type_counts": {
+          "episodic_fact": 9001,
+          "stable_pref": 326,
+          "transient_pref": 2151
+        },
+        "n": 11478,
+        "share": 0.9070649596965387
+      },
+      "Supersede": {
+        "feature_summary": {
+          "c": {
+            "max": 0.95,
+            "mean": 0.9415617128463476,
+            "median": 0.95,
+            "min": 0.85,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.788375314861461,
+            "median": 0.85,
+            "min": 0.33375,
+            "p95": 0.8499999999999999
+          },
+          "f": {
+            "max": 0.5,
+            "mean": 0.13602015113350127,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.5
+          },
+          "r": {
+            "max": -0.6,
+            "mean": -0.9191435768261964,
+            "median": -1.0,
+            "min": -1.0,
+            "p95": -0.6
+          },
+          "rho": {
+            "max": 0.9,
+            "mean": 0.5811083123425692,
+            "median": 0.6,
+            "min": 0.3,
+            "p95": 0.6
+          }
+        },
+        "memory_type_counts": {
+          "episodic_fact": 364,
+          "stable_pref": 4,
+          "transient_pref": 29
+        },
+        "n": 397,
+        "share": 0.031373478741899795
+      }
+    },
+    "by_memory_type": {
+      "episodic_fact": {
+        "action_counts": {
+          "Abstain": 492,
+          "Keep": 9001,
+          "Supersede": 364
+        },
+        "action_rates": {
+          "Abstain": 0.04991376686618647,
+          "Keep": 0.9131581617124885,
+          "Supersede": 0.03692807142132495
+        },
+        "feature_summary": {
+          "c": {
+            "max": 1.0,
+            "mean": 0.9392614385715734,
+            "median": 0.95,
+            "min": 0.75,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.7968439941158567,
+            "median": 0.85,
+            "min": 0.28125,
+            "p95": 0.85
+          },
+          "f": {
+            "max": 1.0,
+            "mean": 0.209394339048392,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 0.5
+          },
+          "r": {
+            "max": 1.0,
+            "mean": 0.9186466470528559,
+            "median": 1.0,
+            "min": -1.0,
+            "p95": 1.0
+          },
+          "rho": {
+            "max": 0.6,
+            "mean": 0.6,
+            "median": 0.6,
+            "min": 0.6,
+            "p95": 0.6
+          }
+        },
+        "n": 9857,
+        "score_summary": {
+          "abs_margin": {
+            "max": 0.8,
+            "mean": -0.42200466673430037,
+            "median": -0.6499999999999999,
+            "min": -0.7,
+            "p95": 0.0
+          },
+          "s_abs": {
+            "max": 1.5,
+            "mean": 0.27799533326569953,
+            "median": 0.050000000000000044,
+            "min": 0.0,
+            "p95": 0.7
+          },
+          "s_sup": {
+            "max": 2.5300000000000002,
+            "mean": 1.174255148625342,
+            "median": 1.26,
+            "min": 0.20900000000000013,
+            "p95": 1.3299999999999996
+          },
+          "sup_margin": {
+            "max": 1.7800000000000002,
+            "mean": 0.4242551486253423,
+            "median": 0.51,
+            "min": -0.5409999999999999,
+            "p95": 0.5799999999999998
+          }
+        },
+        "share": 0.7789631737000158,
+        "theta_abs": [
+          0.7
+        ],
+        "theta_sup": [
+          0.75
+        ]
+      },
+      "stable_pref": {
+        "action_counts": {
+          "Abstain": 51,
+          "Keep": 326,
+          "Supersede": 4
+        },
+        "action_rates": {
+          "Abstain": 0.13385826771653545,
+          "Keep": 0.8556430446194225,
+          "Supersede": 0.010498687664041995
+        },
+        "feature_summary": {
+          "c": {
+            "max": 0.95,
+            "mean": 0.9240157480314961,
+            "median": 0.95,
+            "min": 0.8,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.7659219160104986,
+            "median": 0.85,
+            "min": 0.31625,
+            "p95": 0.85
+          },
+          "f": {
+            "max": 1.0,
+            "mean": 0.2992125984251969,
+            "median": 0.0,
+            "min": 0.0,
+            "p95": 1.0
+          },
+          "r": {
+            "max": 1.0,
+            "mean": 0.973753280839895,
+            "median": 1.0,
+            "min": -1.0,
+            "p95": 1.0
+          },
+          "rho": {
+            "max": 0.9,
+            "mean": 0.9000000000000001,
+            "median": 0.9,
+            "min": 0.9,
+            "p95": 0.9
+          }
+        },
+        "n": 381,
+        "score_summary": {
+          "abs_margin": {
+            "max": 0.6,
+            "mean": -0.22270341207349076,
+            "median": -0.5,
+            "min": -0.5499999999999999,
+            "p95": 0.5000000000000001
+          },
+          "s_abs": {
+            "max": 1.2,
+            "mean": 0.37729658792650916,
+            "median": 0.09999999999999998,
+            "min": 0.050000000000000044,
+            "p95": 1.1
+          },
+          "s_sup": {
+            "max": 2.38,
+            "mean": 0.8917926509186352,
+            "median": 0.8780000000000001,
+            "min": 0.10200000000000004,
+            "p95": 1.18
+          },
+          "sup_margin": {
+            "max": 1.48,
+            "mean": -0.008207349081364846,
+            "median": -0.02199999999999991,
+            "min": -0.798,
+            "p95": 0.2799999999999999
+          }
+        },
+        "share": 0.0301090564248459,
+        "theta_abs": [
+          0.6
+        ],
+        "theta_sup": [
+          0.9
+        ]
+      },
+      "transient_pref": {
+        "action_counts": {
+          "Abstain": 236,
+          "Keep": 2151,
+          "Supersede": 29
+        },
+        "action_rates": {
+          "Abstain": 0.09768211920529801,
+          "Keep": 0.8903145695364238,
+          "Supersede": 0.012003311258278146
+        },
+        "feature_summary": {
+          "c": {
+            "max": 0.95,
+            "mean": 0.9132450331125829,
+            "median": 0.9,
+            "min": 0.8,
+            "p95": 0.95
+          },
+          "e": {
+            "max": 0.85,
+            "mean": 0.7892823882450332,
+            "median": 0.85,
+            "min": 0.39499999999999996,
+            "p95": 0.85
+          },
+          "f": {
+            "max": 1.0,
+            "mean": 0.42218543046357615,
+            "median": 0.5,
+            "min": 0.0,
+            "p95": 1.0
+          },
+          "r": {
+            "max": 1.0,
+            "mean": 0.9662665562913907,
+            "median": 1.0,
+            "min": -1.0,
+            "p95": 1.0
+          },
+          "rho": {
+            "max": 0.3,
+            "mean": 0.3,
+            "median": 0.3,
+            "min": 0.3,
+            "p95": 0.3
+          }
+        },
+        "n": 2416,
+        "score_summary": {
+          "abs_margin": {
+            "max": 0.6500000000000001,
+            "mean": -0.28671357615894044,
+            "median": -0.20000000000000007,
+            "min": -0.75,
+            "p95": 0.30000000000000004
+          },
+          "s_abs": {
+            "max": 1.4500000000000002,
+            "mean": 0.5132864238410596,
+            "median": 0.6,
+            "min": 0.050000000000000044,
+            "p95": 1.1
+          },
+          "s_sup": {
+            "max": 2.68,
+            "mean": 1.1167735927152318,
+            "median": 1.08,
+            "min": 0.366,
+            "p95": 1.48
+          },
+          "sup_margin": {
+            "max": 2.13,
+            "mean": 0.5667735927152318,
+            "median": 0.53,
+            "min": -0.18400000000000005,
+            "p95": 0.9299999999999999
+          }
+        },
+        "share": 0.1909277698751383,
+        "theta_abs": [
+          0.8
+        ],
+        "theta_sup": [
+          0.55
+        ]
+      }
+    },
+    "feature_summary": {
+      "c": {
+        "max": 1.0,
+        "mean": 0.9338351509404141,
+        "median": 0.95,
+        "min": 0.75,
+        "p95": 0.95
+      },
+      "e": {
+        "max": 0.85,
+        "mean": 0.7944692389758179,
+        "median": 0.85,
+        "min": 0.28125,
+        "p95": 0.85
+      },
+      "f": {
+        "max": 1.0,
+        "mean": 0.2527264106211475,
+        "median": 0.0,
+        "min": 0.0,
+        "p95": 1.0
+      },
+      "r": {
+        "max": 1.0,
+        "mean": 0.9293978188715031,
+        "median": 1.0,
+        "min": -1.0,
+        "p95": 1.0
+      },
+      "rho": {
+        "max": 0.9,
+        "mean": 0.5517543859649122,
+        "median": 0.6,
+        "min": 0.3,
+        "p95": 0.6
+      }
+    },
+    "memory_type_counts": {
+      "episodic_fact": 9857,
+      "stable_pref": 381,
+      "transient_pref": 2416
+    },
+    "memory_type_rates": {
+      "episodic_fact": 0.7789631737000158,
+      "stable_pref": 0.0301090564248459,
+      "transient_pref": 0.1909277698751383
+    }
+  },
+  "replay_validation": {
+    "actions": {
+      "fidelity": 1.0,
+      "matched": 12654,
+      "mismatch_examples": [],
+      "mismatched": 0
+    },
+    "scores": {
+      "fidelity": 1.0,
+      "matched": 12654,
+      "max_s_abs_absolute_error": 0.0,
+      "max_s_sup_absolute_error": 0.0,
+      "mismatch_examples": [],
+      "mismatched": 0
+    }
+  },
+  "source": "runs_local/lme_final_controller_v12_qwen_180/controller/action_log.jsonl"
+}

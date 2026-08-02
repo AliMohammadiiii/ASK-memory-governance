@@ -1,0 +1,185 @@
+\section{8.1 Single-session preference (SSP): a v7 diagnostic
+taxonomy}\label{single-session-preference-ssp-a-v7-diagnostic-taxonomy}
+
+In the contaminated v7 run, SSP is the controller's weakest competency:
+\textbf{11/30 correct (0.3667), CI {[}0.20, 0.5333{]}}. The failure-only
+replay repaired 0/19 of those v7 failures, but it used different prompt
+contexts and therefore does not isolate an answer-model effect. The
+complementary top-up observes \textbf{8/29 correct} with one unresolved
+item (maximum \textbf{9/30}), proving that the v7 count cannot be
+carried forward as a cross-version result. The taxonomy below is
+consequently a causal analysis of the \textbf{19 v7 failures}, not a
+final-1.1 evaluation
+(\texttt{docs/research/SINGLE\_SESSION\_PREFERENCE\_FAILURE\_ANALYSIS.md}).
+
+\textbf{Primary failure categories (n = 19):}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+Primary category & Count & Share \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+retrieval-omission & 6 & 31.6\% \\
+cross-session-contamination & 4 & 21.1\% \\
+target-attribute-extraction-miss & 3 & 15.8\% \\
+distractor-entity-binding & 2 & 10.5\% \\
+polarity-error & 2 & 10.5\% \\
+unsupported-answer-specificity & 1 & 5.3\% \\
+immediate-request-vs-enduring-preference & 1 & 5.3\% \\
+\end{longtable}
+}
+
+\textbf{Combined mechanism mentions (primary + secondary, of 19):}
+retrieval-omission 11; cross-session-contamination 8;
+distractor-entity-binding 7; target-attribute-extraction-miss 5;
+unsupported-answer-specificity 3;
+immediate-request-vs-enduring-preference 2; polarity-error 2.
+
+\textbf{Pipeline-layer localization:} retrieval-ranking 12/19 (63.2\%);
+answer-realization 10/19 (52.6\%); context-construction (top-k trim)
+5/19 (26.3\%); attribution/target-binding 5/19 (26.3\%); ingestion,
+extraction, persistence, controller-policy, and judge-scorer 0/19 each.
+Notably, \textbf{no SSP failure was traced to the write-governance
+policy itself}: the decisive facts exist in the corpus, and for the
+answer-side cases they were even present in the prompt.
+
+Two families dominate. \textbf{Grounding-supply failures}
+(retrieval-omission + cross-session-contamination: primary in 10/19,
+present in 15/19): the single supporting session's decisive preference
+turn is out-ranked by topically similar distractor sessions and trimmed
+away, and the model then answers from the wrong session or fabricates.
+The 0/19 replay repair is consistent with that localization but is not
+causal proof because the replay changed prompt contexts as well as the
+answer path. \textbf{Answer-side binding/realization failures} (primary
+in 9/19): the decisive fact was in context, but the answer bound the
+preference to the wrong target, violated an explicitly stated negative
+constraint (recommending a dis-preferred podcast genre), or
+over-specified beyond evidence. One item (\texttt{1da05512}) is a
+borderline judge-severity case rather than a clean pipeline defect, and
+several judge rationales say ``fabricates'' where the mechanism is
+distractor binding --- the offending tokens are verbatim in retrieved
+memory.
+
+\textbf{Highest-leverage proposed fix (hypothesized, not run):} make
+preference grounding an explicit, provenance-constrained representation
+--- a typed record (holder / target / attribute / polarity / scope /
+source-session) whose retrieval is guaranteed for the question's subject
+--- paired with an answer contract that asserts only
+retrieved-and-grounded preferences and honors stated negatives. The
+design targets the \textasciitilde15/19 grounding-supply mentions, while
+the \textasciitilde9/19 answer-side failures show why a retrieval-only
+repair is unlikely to suffice. Necessity and effect size remain
+untested. The design and its credit-attribution ablation matrix are
+specified in
+\texttt{docs/research/SINGLE\_SESSION\_PREFERENCE\_METHOD.md};
+PrefEval's finding that preference following collapses within ten turns
+\citep{zhao2025prefeval} independently motivates the same construct.
+
+\section{8.2 MGP-6 error profiles: three systems, three
+signatures}\label{mgp-6-error-profiles-three-systems-three-signatures}
+
+\textbf{Reference policy --- conservative, one-directional on the full
+pilot.} Its 14 full-corpus action errors are SUPERSEDE→ABSTAIN. On test
+it has 0/33 action false commits, but the one-sided 95\% upper bound is
+0.0868 and it misses 10/45 updates. This is a measured trade-off inside
+the pilot, not a population-safety result.
+
+\textbf{Structured LLM policy --- different error allocation.} Test
+action accuracy is 0.9000 versus 0.8889 for the reference, with a paired
+family interval containing zero. It has more action false commits (2/33)
+but fewer missed updates (7/45). This supports cost-sensitive reporting,
+not an absolute policy ordering.
+
+\textbf{Zero-shot decision baseline --- diagnostic gap.} Its lower score
+and high full-corpus invalid-commit rate show a failure mode worth
+studying, but label leakage prevents attributing the difference cleanly
+to the governance scaffold.
+
+\textbf{Ablation signatures.} Abstention removal → invalid-commit 1.0;
+typing removal → KEEP F1 0.0; lineage removal → audit-score decay
+invisible to action accuracy (0.8556→0.3689). These are distinct
+within-generator failure signatures, consistent with the motivation
+behind MemGuard's typing argument \citep{ha2026memguard} and TOKI's
+audit rows \citep{wang2026toki}. They motivate independent component
+tests; they do not by themselves establish necessity, causal effect
+size, or external validity.
+
+\section{8.3 LongMemEval run-integrity failure classes
+(F1--F12)}\label{longmemeval-run-integrity-failure-classes-f1f12}
+
+The failure ledger
+(\texttt{docs/audit/CONTROLLERRUN\_FAILURE\_LEDGER.md}) distinguishes
+per-item failures (§8.1) from run/pipeline failures, of which the most
+consequential are: \textbf{F1/F2} --- HTTP-402 provider no-responses
+cached as valid empty extractions (316 ``402'' traces; 388 empty
+extractions), fixed in v8 by fail-closed extraction; \textbf{F9} ---
+relation-classifier no-responses converted to a cached semantic Keep,
+same fix; \textbf{F3/F4} --- total-loss replay failures (thinking-mode
+token exhaustion → 0 predictions; embedder segfaults), fixed by
+\texttt{enable\_thinking:false} and a shared embedding server;
+\textbf{F6} --- judge false negatives on number-words and dates (``4''
+vs ``four'', ``Valentine's Day'' vs ``February 14th''), fixed by guarded
+normalization with deferral to the semantic judge; \textbf{F8} --- the
+v7 escalation no-op; \textbf{F5/F11} --- provenance defects (misnamed
+aborted run; a manifest pointing to a non-existent replay directory);
+\textbf{F10} --- in-place verdict overrides preserved with originals;
+and the top-up evidence showing that prior successes cannot be retained
+by assumption. The general lesson: infrastructure failures that default
+to ``empty but valid'' silently corrupt memory state, while selective
+replay silently biases reported accuracy; fallbacks must fail closed and
+repairs must be evaluated on homogeneous coverage.
+
+\section{8.4 The retained annotation disagreement as construct
+evidence}\label{the-retained-annotation-disagreement-as-construct-evidence}
+
+\texttt{MGP6V2-T3-TEST-016} (implicit conflict): gold SUPERSEDE,
+independent annotator ABSTAIN. The disagreement sits on the same
+SUPERSEDE/ABSTAIN boundary as the reference policy's conservative
+errors, making it a useful candidate for independent adjudication. With
+one human label and an author-aligned manual, it is not enough to
+identify a generally hard construct region. It is retained for blinded
+adjudication; sensitivity is bounded (one item = 1.1\% of the test
+split) and both labels are defensible under the current manual.
+
+\section{8.5 Decision--state--answer
+divergence}\label{decisionstateanswer-divergence}
+
+The pilot illustrates why the three layers should be reported
+separately. Within MGP-6, similar action accuracy can coexist with very
+different premise-resistance behavior, and the no-lineage ablation
+leaves action labels unchanged while changing the instrument's state
+metric. Separately, the contaminated LongMemEval slice happens to rank
+B4 naive overwrite above the controller on answers (63.3\% vs 61.1\%).
+Because the first observations are author-aligned and the second is
+contaminated, these are diagnostic examples rather than clean
+cross-layer effect estimates. They nevertheless show how a single
+aggregate can conceal different failure locations and motivate the
+layered evaluation design (RQ3).
+
+\section{8.6 Asymmetric harm and the price of
+conservatism}\label{asymmetric-harm-and-the-price-of-conservatism}
+
+The reference policy's full-pilot action errors are conservative, but
+missed supersession can itself be harmful. Whether the trade is right is
+policy-dependent: under the frozen commit-averse matrix the reference
+has lower test loss (0.111 vs 0.189), while under the update-responsive
+matrix the structured LLM has lower loss (0.433 vs 0.556). The current
+weights and any prototype score thresholds have not been validated on
+independent data, so this is sensitivity analysis rather than
+optimization evidence.
+
+\section{8.7 What the near-neighbor cluster
+implies}\label{what-the-near-neighbor-cluster-implies}
+
+Five verified 2026-adjacent works (STALE, Supersede, TOKI, MemGuard,
+HaluMem) cover read-side staleness probing, the supersession gap, formal
+write-time contradiction operators, write-time typing, and
+operation-level evaluation. This thesis is positioned as an
+\textbf{evaluation decomposition and validity audit}: it makes no claim
+that the individual mechanisms or their conjunction are unprecedented.
+The convergence supports the importance of the problem, while the
+deterministic-policy finding of \citep{reddy2026freshness} motivates
+independent confirmation rather than validating this pilot by analogy.

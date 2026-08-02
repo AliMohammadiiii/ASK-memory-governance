@@ -1,26 +1,39 @@
 \begin{abstract}
 Persistent language agents can silently corrupt future behavior when they write
 an ambiguous update, retain a stale value, or replace a record without history.
-Existing end-to-end question-answering evaluations conflate this write decision
-with storage, retrieval, and answer generation. We formulate memory writing as
-\keep, lineage-preserving \supersede, or write-time \abstain, and introduce a
-layered harness that scores the action, resulting state, and later answer
-separately. We study the harness on \mgp, an author-designed 180-item pilot
-diagnostic with typed and provenance-tracked states. The held-out test results
-do not establish method superiority: a transparent reference policy reaches
-$0.8889$ action accuracy, versus $0.9000$ for a structured LLM policy, and their
-family-clustered difference includes zero. More importantly, a conflict-type-only
-lookup fitted on train and development reaches $1.000$ test accuracy (type-only:
-$0.9667$), demonstrating that the current pilot leaks its labels and cannot
-isolate evidence reasoning from scenario recognition. The reference policy has
-zero observed action false commits on 33 test abstention cases, but the one-sided 95\%
-upper bound is $0.0868$ and its missed-update rate is $0.2222$; under an
-update-responsive cost matrix the structured LLM is preferable. As downstream
-evidence, a homogeneous full-slice run on \lme{} (all $180$ items, one answer
-model, one judge, no judge fallbacks) places the governed controller at
-$76.1\%$ accuracy, above every structural baseline (naive overwrite: $63.3\%$).
-We release the per-item predictions, shortcut audits, cluster bootstrap,
-risk--coverage and state/lineage metrics. The contribution is therefore an auditable evaluation
-protocol and a measured negative finding about diagnostic design, not a claim
-of general memory-governance performance.
+End-to-end question answering conflates this write decision with extraction,
+retrieval, and generation. We formulate memory writing as \keep,
+lineage-preserving \supersede, or write-time \abstain, and release a layered
+harness that scores the action, resulting state, and later answer separately.
+On \mgpc, a $900$-item controlled synthetic diagnostic in $100$ surface-matched
+semantic components, one pre-registered configuration run once on the sealed
+$540$-item hidden split reaches $0.8481$ action accuracy and $0.8479$ macro-F1
+(component-cluster $95\%$ intervals $[0.8037,0.8889]$ and
+$[0.8021,0.8894]$). The error decomposition is operationally more informative:
+of $38$ mishandled ambiguous items, $30$ preserve the state and lose only the
+abstention audit record, whereas $8$ replace an active record on insufficient
+evidence ($0.0444$, CI $[0.0227,0.0852]$).
+
+The deployed controller evaluates every candidate across five transparent
+dimensions: extraction confidence, evidence quality, negation/hedge burden,
+signed candidate--prior relation, and a memory-type stability prior. Exact
+replay reproduces all $12{,}654$ \lme{} write decisions. Counterfactual omission
+shows that marker burden determines the observed abstentions and signed
+relation determines supersessions, while evidence quality and the stability
+prior change no action on this run. A separate relation guard is essential:
+without it, $11{,}091$ observed \keep{} decisions would become
+\supersede{}. This is a mechanism diagnosis, not write-label accuracy.
+
+As downstream evidence, a homogeneous $180$-item \lme{} run with one answer
+model and one judge places governed writes at $76.1\%$, above every structural
+baseline (naive overwrite $63.3\%$; paired
+$p=2.9\times10^{-4}$), with the gain concentrated in knowledge-update and
+preference items. Trace accounting shows that extraction and relation
+classification consume $92.8\%$ of prompt tokens; the scored answer stage is
+only $7.2\%$. Finally, a conflict-type-only lookup reaches $1.000$ held-out
+accuracy on the earlier v2 pilot without reading the dialogue, a measured
+construct failure that motivated v4.3's component split and executable shortcut
+gates. We release per-item predictions, action logs, shortcut audits, cluster
+bootstraps, error decompositions, and latency/token accounting, while making no
+priority, deployment-safety, or population-generalization claim.
 \end{abstract}

@@ -1,0 +1,63 @@
+این واژه‌نامه برای یکدستی ترجمه در چکیده و خلاصه مبسوط استفاده می‌شود. نام
+کنش‌های رسمی در متن فنی به صورت لاتین حفظ می‌شوند.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+English term
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+معادل پیشنهادی فارسی
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+توضیح کاربرد
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+long-term memory & حافظه بلندمدت & حافظه پایدار میان نشست‌ها \\
+memory governance & حاکمیت حافظه & قواعد و کنترل‌های تصمیم‌گیری برای تغییر
+حافظه \\
+write-time policy & سیاست هنگام نوشتن & سیاستی که پیش از تغییر حالت اجرا
+می‌شود \\
+KEEP & نگهداشتن / KEEP & افزودن رکورد سازگار بدون غیرفعال‌کردن رکورد
+قبلی \\
+SUPERSEDE & جایگزین‌کردن / SUPERSEDE & ثبت رکورد تازه و غیرفعال‌کردن رکورد
+متعارض با حفظ تبار \\
+ABSTAIN & خودداری / ABSTAIN & عدم تغییر حالت به دلیل شواهد ناکافی یا
+ابهام \\
+provenance & منشأ & منبع، نشست یا نوبتی که رکورد از آن استخراج شده
+است \\
+lineage & تبار & پیوند میان رکورد جدید و رکورد جایگزین‌شده \\
+stored state & وضعیت ذخیره‌شده & مجموعه رکوردهای فعال، غیرفعال و پیوندهای
+آن‌ها \\
+invalid commit & تعهد نامعتبر & نوشتن KEEP یا SUPERSEDE در موردی که
+برچسب صحیح ABSTAIN است \\
+premise resistance & مقاومت در برابر پیش‌فرض نادرست & رد پیش‌فرض ناسازگار
+با وضعیت فعلی حافظه \\
+stale retrieval & بازیابی رکورد منسوخ & بازیابی رکورد جایگزین‌شده به
+عنوان اطلاعات جاری \\
+diagnostic slice & برش تشخیصی & مجموعه کنترل‌شده برای آشکارسازی الگوهای
+خطا، نه معیار عمومی \\
+action accuracy & دقت کنش & سهم تصمیم‌های سه‌گانه صحیح \\
+macro-F1 & میانگین کلان F1 & میانگین بدون وزن F1 کلاس‌های کنش \\
+ablation & آزمایش حذف مؤلفه & حذف یک جزء برای اندازه‌گیری اثر علّی آن در
+چارچوب \\
+claim eligibility & صلاحیت ادعا & وضعیت تعیین‌کننده مجازبودن استفاده از
+یک اجرا در ادعای علمی \\
+final\_candidate & نامزد نتیجه نهایی & نتیجه قابل استناد با محدودیت
+دامنه \\
+diagnostic\_only & صرفاً تشخیصی & مشاهده مفید اما غیرنهایی \\
+failure\_replay\_only & صرفاً بازپخش خطا & اجرای انتخاب‌شده بر اساس خطای
+قبلی و نامعتبر برای برآورد کلی \\
+incomplete & ناقص & پوشش موردنیاز کامل نشده است \\
+invalid & نامعتبر & اجرا برای استنتاج علمی قابل استفاده نیست \\
+externally\_pending & در انتظار عامل بیرونی & پروتکل مشخص است اما اجرای
+آن به پیش‌نیاز بیرونی وابسته است \\
+evidence ledger & دفتر شواهد & منبع نسخه‌بندی‌شده اعداد و وضعیت صلاحیت
+ادعا \\
+\end{longtable}
+}

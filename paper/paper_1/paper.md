@@ -1,3 +1,8 @@
+> **Archival snapshot.** This Markdown export predates the MGP-6 v4.3 and
+> LongMemEval V12 audits and is not the current manuscript. The maintained
+> sources are `main.tex` and `sections/*.tex`; the compiled `main.pdf` and
+> `claims_evidence_matrix.md` are the authoritative paper and claim ledger.
+
 # Introduction
 
 A language agent that persists across sessions must decide what to do

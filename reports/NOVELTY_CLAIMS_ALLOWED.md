@@ -1,55 +1,144 @@
-# Novelty claims ALLOWED (narrowed after literature audit, 2026-07-13)
+# Novelty claims allowed
 
-Rules of use: each claim is allowed only in the scope written and alongside the
-evidence caveats in `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`. The fast-moving
-2026 literature contains close neighbors for update policy, supersession,
-lineage, preference-aware updating, and abstention. The release therefore makes
-no priority claim ("first" or "to our knowledge"). Its novelty is the controlled
-operationalization and layered evaluation of a particular combination.
+Updated 2026-07-27 after the MGP-6 v4.3 and LongMemEval V12 audits.
 
-## A. Framing / problem claims
+Rules of use: each claim is allowed only at the stated evidence level and with
+the corresponding boundary. The project makes no “first” or “to our knowledge”
+claim. Recent work contains close precedents for write operations, conflict
+handling, lineage, typing, abstention, and operation-level evaluation.
 
-**A1.** "We study the write decision of a long-lived personal-agent memory as a ternary action — KEEP, SUPERSEDE (with recorded lineage), or ABSTAIN — and evaluate the decision separately from stored state and downstream answers."
-- Guards: cite Memory-R1 (prior write-action space), TOKI (prior formal write-time framing incl. await-confirmation), RSCB-MC (prior abstain in memory control at retrieval time), SAGE (prior write-side gate). Allowed because none of these *evaluates* the three-way decision against gold actions.
+## A. Core conjunction
 
-**A2.** "MGP-6 is an author-designed diagnostic that isolates write-time KEEP/SUPERSEDE/ABSTAIN decisions with gold action labels and scores both the decision (action accuracy, macro-F1, invalid-commit) and resulting memory state (lineage integrity, stale retrieval)."
-- Guards: cite HaluMem (operation-level hallucination eval — nearest prior), STALE (read-side implicit-conflict/premise-resistance probing — shared constructs), Supersede env (answer-level supersession gap on LongMemEval), ES-MemEval/LongMemEval (answer-level abstention categories). Mandatory accompanying caveats: author-designed diagnostic slice, 180 scenarios, one independent annotator (κ 0.98) plus a four-model audit panel — never "multi-annotator human agreement" (SOT §1.2).
+**A1. Allowed.** “We operationalize a three-way write policy—KEEP, lineage-
+preserving SUPERSEDE, or write-time ABSTAIN—over typed, provenance-tracked
+records and evaluate the write decision separately from stored state/lineage,
+retrieval, and downstream answers.”
 
-**A3.** "We measure what an explicit abstain-on-write option contributes in this diagnostic: removing ABSTAIN drops action accuracy from 0.9222 to 0.5556 and raises invalid-commit rate from 0.0 to 1.0 on MGP-6."
-- Guards: cite selective-prediction/learning-to-defer lineage (Chow; Geifman & El-Yaniv; Madras et al.; Mozannar & Sontag) as the origin of the reject option; RSCB-MC and TOKI as memory-control abstention precedents. The claim is about the *measurement on write decisions*, never about inventing abstention.
+- Required precedents: Memory-R1 for discrete write operations; Zep/Graphiti
+  and TOKI for retained history and write-time conflict control; MemGuard and
+  MemOS for typing; HaluMem for operation-level evaluation; selective
+  prediction and RSCB-MC for abstention/feature control.
+- Boundary: the controlled conjunction and separable measurement are the
+  contribution; none of the ingredients is claimed as an invention.
 
-## B. Method claims
+**A2. Allowed.** “The evaluation harness makes action correctness, state
+invariants, lineage integrity, superseded-record recoverability, stale
+retrieval, selective risk, and asymmetric write costs separately observable.”
 
-**B1.** "An interpretable five-feature scorecard controller is sufficient for high write-decision quality on this diagnostic (0.9222/0.9399), outperforming a zero-shot LLM decision baseline (0.700/0.6657) whose invalid-commit rate is 0.606, and never committing invalidly (invalid-commit 0.0)."
-- Guards: cite Reddy & Challaram 2026 (independent convergent finding that deterministic beats LLM judgment on memory conflicts) and FadeMem (LLM-classifier alternative). Scope: "on this diagnostic" is mandatory.
+- Boundary: claim implemented instrumentation, not novelty for each metric.
 
-**B2.** "Supersession is recorded as explicit lineage, and lineage correctness is scored separately from action accuracy; ablating lineage leaves action accuracy unchanged (0.9222) while lineage integrity collapses (0.8556 → 0.3689), showing that action-level metrics alone cannot see lineage corruption."
-- Guards: cite Zep/Graphiti (bi-temporal invalidation) and MemOS (versioned MemCubes) as prior lineage *storage*; TOKI as prior lineage-with-audit formalism. The novelty is the *separate scoring* and the invisibility result.
+## B. Five-dimensional controller
 
-**B3.** "Typed memory does causal work in write decisions: removing typing drops macro-F1 from 0.9399 to 0.5680 (KEEP F1 → 0.0); removing provenance drops accuracy from 0.9222 to 0.700 and raises invalid-commit from 0.0 to 0.606."
-- Guards: cite MemGuard (typed functional roles at write time, contamination-motivated) and MemOS (typed levels). The novelty is the measured ablation, not typing itself.
+**B1. Allowed.** “The deployed LongMemEval V12 writer evaluates each candidate
+on extraction confidence, evidence quality, marker burden, signed
+candidate–prior relation, and a memory-type stability prior, then applies
+type-conditional thresholds and a discrete relation-update guard.”
 
-**B4.** "The rule controller's conservative failure direction — all 14 SUPERSEDE errors become ABSTAIN, none become invalid commits — is a designed and verified property on MGP-6."
-- Guards: none needed beyond ledger; keep scope to MGP-6.
+- Boundary: the weights and thresholds are hand-specified, not learned,
+  calibrated, or optimal.
 
-## C. Comparison claims
+**B2. Allowed.** “The published rule exactly replays both stored scores and all
+12,654 V12 actions from the action log.”
 
-**C1.** "Under a disclosed action mapping, four deployed memory systems (Mem0 0.622, Letta 0.678, Graphiti 0.383 as NOOP→ABSTAIN upper bounds; MemOS bound-only 0.144 due to a structural adapter limitation) leave a large gap to an interpretable governed controller on MGP-6."
-- Mandatory phrasing elements: "upper bound", the mapping disclosure, and the MemOS structural-limitation sentence (SOT §1). Never present MemOS's figure as capability.
+- Boundary: this is execution fidelity, not candidate-level write correctness.
 
-**C2.** "On a contaminated diagnostic LongMemEval-M run, naive overwrite (63.3%) outperformed our v7 controller (61.1%); we report this openly and analyze why."
-- This negative claim is allowed and is a credibility asset. It may not be inverted into a superiority claim using the contradicted 77.2% construction (see NOT_ALLOWED N5).
+**B3. Allowed.** “On V12, marker burden determines the observed abstentions,
+signed relation determines supersessions, and removing the relation guard would
+convert 11,091 KEEP decisions to SUPERSEDE.”
 
-## D. Analysis claims
+- Required qualification: a deterministic counterfactual on the fixed log, not
+  a retrained-system or population causal estimate.
 
-**D1.** "We contribute a mechanism-level taxonomy for the 19 single-session-preference failures in the contaminated v7 LongMemEval run (grounding-supply primary in 10/19; answer-side discipline in 9/19) and a pre-registered, unexecuted correction design. The selected replay repairs 0/19, while the incomplete top-up reaches at most 9/30, so no improvement claim is made."
-- Guards: cite PrefEval and PersonaMem for the preference-following failure context. Mandatory: the SSP method is PROPOSED, n=19 taxonomy from one run, no accuracy claim for any proposed arm (`docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md` §6).
+**B4. Allowed.** “Memory types have different observed action profiles, but the
+stability prior changes no action and common thresholds change only five.”
 
-**D2.** "Answer-level QA accuracy cannot attribute failure to the write decision; MGP-6's decision-level and memory-state metrics are designed to close exactly this attribution gap."
-- Guards: cite HaluMem (errors originate at extraction/update) and Supersede env (maintenance-not-comprehension bottleneck) as convergent evidence.
+- Required qualification: descriptive evidence; the hand-set durability
+  ordering is implemented but weakly exercised.
 
-## E. Conjunction claim (the paper's core)
+## C. MGP-6 v4.3 diagnostic
 
-**E1.** "We operationalize and jointly evaluate (i) an explicit write-time KEEP/SUPERSEDE/ABSTAIN policy, (ii) recorded and separately scored supersession lineage, (iii) typed memory with measured ablations, (iv) an interpretable decision policy, and (v) decision-, state-, and answer-level outcomes. Each component has named precedents (Memory-R1; Zep/TOKI; MemGuard/MemOS; preference-aware update work; HaluMem/STALE), which we build on."
-- This is the strongest allowed novelty formulation. The precedent list and the
-  absence of a priority claim are mandatory.
+**C1. Allowed.** “MGP-6 v4.3 is a controlled 900-item diagnostic with 100
+nine-item semantic components, all three write actions inside each component,
+component-isolated splits, and executable duplicate and shortcut gates.”
+
+- Boundary: synthetic, author-designed, single-slot, single-step, and not a
+  community or population benchmark.
+
+**C2. Allowed.** “The single pre-registered composed controller reaches 0.8481
+accuracy / 0.8479 macro-F1 on the sealed hidden split.”
+
+- Required qualification: no hidden baseline, ablation, component, external,
+  successor, or paired comparison exists.
+
+**C3. Allowed.** “On hidden, 30 of 38 gold-ABSTAIN errors preserve state through
+KEEP, while 8 replace a record on insufficient evidence.”
+
+- Boundary: operational error decomposition on synthetic data, not a safety
+  certification.
+
+**C4. Allowed.** “On public development, neither the model component nor the
+public-evidence rule component alone reaches the composed accuracy; the guard
+repairs 37 model errors and introduces 9.”
+
+- Required qualification: development-only component analysis.
+
+## D. Downstream evidence and implementation
+
+**D1. Allowed.** “On one homogeneous 180-item LongMemEval-M slice, governed
+writes reach 76.1% versus 63.3% for naive overwrite under the frozen answer
+model and judge.”
+
+- Required qualification: one slice, answer model, judge, and seed; no broad
+  capability or deployment claim.
+
+**D2. Allowed.** “Write-time ingestion consumes 92.8% of V12 prompt tokens and
+99.4% of model calls; extraction is the dominant stage.”
+
+- Boundary: measured provider trace accounting, not hardware FLOPs or monetary
+  cost.
+
+**D3. Allowed.** “The deterministic date/numeric/list helper is separately
+auditable and cannot explain the aggregate gain: it bypassed the answer model
+zero times and its two controller substitutions produced one repair and one
+regression.”
+
+- Boundary: answer-layer implementation result, not a write-controller gain.
+
+**D4. Allowed.** “Structured action logs, raw extraction/relation traces,
+atomic lineage transitions, active-only retrieval, content-addressed caches,
+immutable manifests, and resumable stages make the pipeline auditable.”
+
+- Boundary: implementation/reproducibility contribution, not a learning claim.
+
+## E. Negative and exclusion claims
+
+**E1. Allowed.** “MGP-6 v2 fails its construct-validity check because conflict
+type alone predicts every held-out action.”
+
+- Boundary: v2 motivates v4.3; it supports no general evidence-reasoning claim.
+
+**E2. Allowed.** “The v2 no-lineage ablation leaves action accuracy unchanged
+while lineage integrity falls from 0.8556 to 0.3689.”
+
+- Boundary: within-generator measurement demonstration, not external method
+  validation.
+
+**E3. Allowed.** “The contaminated v7 and 77.2% carry-forward construction are
+ineligible; the homogeneous V12 run supersedes them.”
+
+- Boundary: do not average, compare, or promote those artifacts into a primary
+  result.
+
+## F. Claims not allowed
+
+- “ASK invents memory write actions, abstention, typed memory, provenance,
+  lineage, operation-level evaluation, or memory governance.”
+- “The five-feature scorecard achieves high gold write accuracy on V12.”
+- “All five scorecard dimensions materially contribute on V12.”
+- “V4.3 baselines or successors were beaten on the sealed hidden split.”
+- “The hidden result demonstrates deployment safety or real-world
+  generalization.”
+- “V2 demonstrates general evidence reasoning.”
+- “The project has independent multi-human validation for v4.3.”
+- “The reported token/latency traces establish monetary cost or hardware
+  efficiency.”

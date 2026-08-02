@@ -1,0 +1,49 @@
+% AUTO-GENERATED from guard_trace fields in raw_responses.jsonl
+% (hidden n=540 and public dev n=180). See
+% artifacts/analysis/mgp6_v43_full_benchmark_analysis.json.
+\begin{table}[t]
+\centering
+\small
+\caption{Decomposition of the composed controller into its two components. The
+model proposes an action; the public-evidence rule policy proposes one
+independently; the conservative guard composes them by overriding a model
+\abstain{} only when the rule policy finds decisive public evidence. Neither
+component reaches the composed accuracy, and on the hidden split the guard
+never fires in the commit-increasing direction more than $36$ times, so it
+cannot be the sole source of the result.}
+\label{tab:v43guard}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+ & Public dev ($n{=}180$) & Hidden ($n{=}540$) \\
+\midrule
+Model action alone & 0.7500 & not scorable\textsuperscript{$\dagger$} \\
+Rule policy alone & 0.7500 & not scorable\textsuperscript{$\dagger$} \\
+Composed (reported) & 0.8444 & 0.8481 \\
+\midrule
+Items where the guard changed the action & 27 & 36 \\
+\quad repaired a model error & 20 & --- \\
+\quad broke a correct model action & 3 & --- \\
+\quad error-neutral & 4 & --- \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Guard transitions (model $\to$ final)}} \\
+\quad \abstain{} $\to$ \keep{} & 25 & 30 \\
+\quad \abstain{} $\to$ \supersede{} & 2 & 6 \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Rule fired, hidden split}} \\
+\quad no decisive public evidence & --- & 255 \\
+\quad direct documented slot change & --- & 120 \\
+\quad standing value confirmed / proposal retracted & --- & 90 \\
+\quad unresolved scope, authority, or timing & --- & 57 \\
+\quad temporary or scoped exception & --- & 18 \\
+\midrule
+\multicolumn{3}{@{}l}{\emph{Hidden action marginals} (\abstain/\keep/\supersede):} \\
+\quad model policy & \multicolumn{2}{r}{202 / 160 / 178} \\
+\quad rule policy & \multicolumn{2}{r}{312 / 108 / 120} \\
+\quad composed (reported) & \multicolumn{2}{r}{166 / 190 / 184} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\footnotesize \textsuperscript{$\dagger$} Component-wise hidden scoring would
+require a second pass over sealed gold beyond the single authorised scoring
+event, so only the composed prediction was scored.}
+\end{table}

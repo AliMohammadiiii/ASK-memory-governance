@@ -15,56 +15,318 @@ into a generic result.
 
 The V12 run evaluates all $180$ items with a single answer model
 (\texttt{qwen/qwen3.5-9b}) and a single judge (\texttt{google/gemma-4-31b-it}),
-with logged judge routing and \emph{zero} judge model fallbacks. On this run the
-\ask{} controller reaches $137/180=76.1\%$ accuracy
-(exact $95\%$ CI $70.0$--$82.2$), the highest of the five evaluated memory
-systems and $12.8$ points above the strongest structural baseline (naive
-overwrite, $114/180=63.3\%$). Answerable-only accuracy is $75.4\%$ over the
-$171$ answerable items, and abstention accuracy is $88.9\%$ over the $9$
-abstention items. The system ordering is monotone in memory sophistication
-(Table~\ref{tab:lme}, Figure~\ref{fig:lme-accuracy}): no memory
-($5.0\%$) $<$ recency ($23.9\%$) $<$ flat-vector retrieval ($44.4\%$) $<$ naive
-overwrite ($63.3\%$) $<$ governed writes ($76.1\%$).
+with logged judge routing and \emph{zero} judge-model fallbacks. On this run the
+\ask{} controller reaches $137/180 = 76.1\%$ accuracy (exact $95\%$ CI
+$70.0$--$82.2$), the highest of the five evaluated memory systems and $12.8$
+points above the strongest structural baseline (naive overwrite,
+$114/180 = 63.3\%$). Answerable-only accuracy is $75.4\%$ over $171$ answerable
+items and abstention accuracy is $88.9\%$ over $9$ abstention items. The
+ordering is monotone in memory sophistication: no memory ($5.0\%$) $<$ recency
+($23.9\%$) $<$ flat-vector retrieval ($44.4\%$) $<$ naive overwrite ($63.3\%$)
+$<$ governed writes ($76.1\%$).
+
+Monotone orderings invite over-reading, so we tested each adjacent step
+(Table~\ref{tab:lme_v12}). Every step separates under an exact paired McNemar
+test, Holm-corrected over the six tests: recency over no memory
+($p = 4.7\times10^{-10}$), flat vector over recency ($p = 3.7\times10^{-6}$),
+naive overwrite over flat vector ($p = 6.8\times10^{-6}$), and governed writes
+over naive overwrite ($b=31$, $c=8$, RD $+0.128$, $p = 2.9\times10^{-4}$). The
+last of these is the paper's downstream claim, and it is a within-slice
+comparison under one frozen protocol, not a general capability estimate.
+
+\input{tables/lme_v12}
+
+Per competency the gain over naive overwrite is not uniform, and that
+non-uniformity is the strongest available evidence that the downstream
+improvement comes from the write decision rather than from generic pipeline
+differences: a better retriever would not preferentially help knowledge-update
+items. Section~\ref{sec:downstream:competency} reports the full five-system
+breakdown and the per-competency significance treatment.
+
+\subsection{Write-decision behaviour and downstream cost}
+
+The controller's action log records $12{,}654$ write decisions across $3{,}547$
+sessions: $11{,}478$ \keep{} ($90.7\%$), $779$ \abstain{} ($6.2\%$), and $397$
+\supersede{} ($3.1\%$). The distribution is what the design predicts on natural
+dialogue, where most turns carry no conflicting evidence, and it is very
+different from the balanced \mgpc{} diagnostic --- which is the reason we keep
+both instruments. Every one of the $397$ supersessions recorded both a
+predecessor and a successor identifier, and none of the $779$ abstentions
+produced a resulting record, so the lineage and no-op invariants held on all
+$12{,}654$ decisions.
+
+\subsection{Five-dimensional scorecard: type comparison and action mechanism}
+\label{sec:downstream:scorecard}
+
+The action log is sufficiently complete to reproduce the live policy without a
+model call: each row carries $(c,e,f,r,\rho)$, both scores, both
+type-conditional thresholds, and the action. Replaying
+Equation~\ref{eq:scorecard} matches both stored scores and the final action on
+$12{,}654/12{,}654$ rows exactly. The framework in
+Section~\ref{sec:scorecard} is therefore not an architectural proposal or
+post-hoc explanation; it is the decision rule that generated every V12 write.
+
+Table~\ref{tab:lme-scorecard-types} compares actions by memory type. Episodic
+facts dominate the extracted population ($9{,}857$, $77.9\%$) and account for
+$364/397$ supersessions. Stable preferences are rare ($381$, $3.0\%$), have the
+highest abstention rate ($13.4\%$), and the lowest supersession rate ($1.0\%$).
+Transient preferences lie between them in volume but not action mix: $9.8\%$
+abstain and only $1.2\%$ supersede. These differences are descriptive rather
+than a type effect, because the feature distributions also differ --- the
+median marker burden is $0$ for episodic and stable records but $0.5$ for
+transient records.
+
+\input{tables/lme_scorecard}
+
+The counterfactual replay in Table~\ref{tab:lme-scorecard-ablation} identifies
+which dimensions actually determine actions on this support. Omitting $f$
+removes every observed abstention: $721$ become \keep{} and $58$ become
+\supersede{}. Omitting $r$ removes all $397$ supersessions and converts another
+$86$ abstentions to \keep{}. By contrast, omitting evidence quality $e$ or the
+stability prior $\rho$ changes no action, and omitting confidence $c$ changes
+only eight. This does not make $e$, $\rho$, or $c$ useless in principle: they
+move score margins and can act on inputs near a boundary. It does show that the
+observed V12 action partition is carried almost entirely by marker burden and
+signed relation.
+
+The most consequential result is about the rule's discrete guard. Of the
+$11{,}478$ \keep{} decisions, $11{,}091$ ($96.6\%$) already satisfy
+$S_{\mathrm{sup}}>\theta_{\mathrm{sup}}$. They remain \keep{} only because
+$r$ supplies no update pressure. Removing that guard changes all $11{,}091$ to
+\supersede{} ($87.6\%$ of the entire log). Thus the weighted supersession score
+is not independently selective on this run; the signed-relation gate is the
+safety-critical component.
+
+Type enters through $\rho$ and the thresholds, but is nearly inert here. Setting
+all $\rho$ values to the episodic prior changes zero decisions; replacing all
+type-specific thresholds with the episodic thresholds changes only five
+stable-preference \abstain{} decisions to \keep{} ($0.04\%$ of the log).
+The type ordering is a transparent policy commitment, while the observed
+between-type action rates mostly reflect candidate and relation features. Since
+\lme{} supplies no gold write action per extracted candidate, this analysis
+establishes execution, dependence, and invariants --- not action correctness.
+The downstream QA comparison remains the separate outcome.
+
+\subsection{Where the compute actually goes}
+\label{sec:downstream:pipeline}
+
+The released pipeline traces let us decompose the controller's cost by stage
+rather than reporting a single per-item figure, and the decomposition overturns
+the natural reading of the accuracy table (Table~\ref{tab:lme_pipeline},
+Figure~\ref{fig:lme-pipeline}a).
+
+Answering the $180$ questions takes $180$ model calls and $4.07$M prompt
+tokens. Getting to the point where those questions \emph{can} be answered takes
+$31{,}004$ further calls and $52.7$M prompt tokens: $11{,}847$ extraction calls
+over $11{,}491$ dialogue turns ($41.8$M tokens, $73.6\%$ of the budget) and
+$19{,}157$ relation-classification calls over $9{,}539$ candidate--prior pairs
+($10.9$M tokens, $19.2\%$). The write-time stages are $92.8\%$ of prompt tokens
+and $99.4\%$ of model calls. The answer stage --- the only stage an end-to-end
+memory benchmark scores --- is $7.2\%$ of the token budget.
+
+This reframes the cost comparison in Table~\ref{tab:lme_v12}. The governed
+controller is not an expensive answerer; it is a cheap answerer sitting on an
+expensive ingestion pipeline, and the same is true of naive overwrite. Reporting
+only answer-stage tokens, as the retrieval-only baselines invite, measures the
+$7\%$ and ignores the $93\%$.
+
+\paragraph{A correction to how per-item latency should be read.}
+The \texttt{latency\_ms} field on each answer record is \emph{cumulative
+end-to-end} time for that item, not answer-generation time. Summing it gives
+$40.46$~h, while the summed extraction and relation model latency is $38.91$~h;
+the $1.55$~h difference is the implied generation-only cost, about $31$~s per
+item rather than the $809$~s the field suggests. Per-item pipeline times quoted
+in Table~\ref{tab:lme_v12} and elsewhere use the cumulative field and should be
+read as end-to-end pipeline time. We flag this explicitly because the naive
+reading --- that a single answer call takes thirteen minutes --- is wrong by more
+than an order of magnitude.
+
+\paragraph{Extraction is mostly rejection.}
+Of the $11{,}491$ processed turns, $5{,}656$ yield
+\texttt{no\_extractable\_content} --- that is $49.2\%$. The extractor's most
+common output is
+\emph{nothing}, which is the correct behaviour on conversational filler and the
+first line of defence against memory bloat. The remaining turns produce
+$11{,}771$ candidate memories ($1.02$ per turn overall), typed as $9{,}144$
+episodic facts, $2{,}261$ transient preferences, and $366$ stable preferences.
+Mean extraction confidence is $0.934$ (minimum $0.75$), $17.4\%$ of candidates
+carry a hedge marker, and $1.3\%$ carry a negation marker. Parsing was robust:
+$370$ of $11{,}491$ turns hit a first-parse error, $9$ required the repair path,
+and there were zero model fallbacks and zero retries beyond the first attempt.
+
+\paragraph{Relation routing is deliberately conservative.}
+The relation stage is two-stage: stage one labels the candidate against a
+retrieved prior as \textsf{support}, \textsf{contradict}, or
+\textsf{independent}; stage two, invoked on $9{,}530$ of $9{,}539$
+classifications, resolves same-subject and temporal ordering. Routing is then
+deterministic, and the released trace records the reason for every decision
+(Figure~\ref{fig:lme-pipeline}c). All $8{,}281$ \textsf{independent} labels route
+to \textsf{unclear} --- an independent candidate is never allowed to displace a
+prior. Of $369$ \textsf{contradict} labels, only the $221$ that stage two
+confirms as \emph{same-subject and newer} route to \textsf{supersede}; $113$
+older and $33$ same-time contradictions are held as \textsf{contradict} without
+a write. So $221$ of $9{,}539$ classifications ($2.3\%$) are permitted to
+propose a replacement, which is the mechanism behind the $397$ supersessions
+($3.1\%$) in the action log and, ultimately, behind the controller's low
+destructive-overwrite rate.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/lme_system_accuracy.png}
-\caption{Overall \lme{} accuracy ($N=180$) for the five memory systems in the
-homogeneous V12 run, with exact $95\%$ CIs. The \ask{} controller (highlighted)
-leads all structural baselines.}
-\label{fig:lme-accuracy}
+\includegraphics[width=\linewidth]{figures/lme_v12_pipeline.png}
+\caption{Stage-level anatomy of the governed controller on the \lme{} V12 slice,
+from the released pipeline traces. (a) Prompt-token budget by stage: the answer
+stage that end-to-end benchmarks score is $7.2\%$ of the total. (b) The
+ingestion funnel; $5{,}656$ of the $11{,}491$ processed turns ($49.2\%$) yield no
+extractable content, and the write-decision count exceeds the extracted-memory
+count because a candidate is evaluated against each retrieved prior. (c)
+Deterministic relation routing --- only a stage-one \textsf{contradict} that
+stage two confirms as same-subject and newer becomes a supersession.}
+\label{fig:lme-pipeline}
 \end{figure}
 
-\begin{table}[t]
+\input{tables/lme_pipeline}
+
+\paragraph{Caching did not help, and the trace says why.}
+The extraction cache holds $11{,}477$ unique keys against $11{,}491$ traced
+turns and the relation cache $9{,}523$ against $9{,}539$ classifications ---
+under $0.3\%$ deduplication in both. Each turn is keyed by its own content and
+each candidate by its pairing with a specific prior, so in a single pass over
+distinct sessions there is essentially nothing to reuse. The caches are
+insurance for resumes, not a throughput optimisation, and any deployment
+estimate that assumes cache amortisation across a first pass is unsupported by
+this evidence.
+
+\subsection{The complete system comparison}
+\label{sec:downstream:full}
+
+Table~\ref{tab:lme_full} and Figure~\ref{fig:lme-full} give the full
+five-system comparison on one homogeneous slice: accuracy with intervals, an
+error decomposition, per-item latency, and separated answer and ingestion token
+costs. Three things in it are not visible from an accuracy ranking.
+
+\paragraph{Accuracy alone conflates two very different failures.}
+Decomposing the $180$ items separates a wrong answer from a declined one
+(Figure~\ref{fig:lme-full}b). B1 with no memory is not merely inaccurate --- it
+refuses $170$ of $171$ answerable items, which is the correct behaviour for a
+system with nothing to retrieve, and its $5\%$ comes almost entirely from
+correctly declining the $9$ unanswerable items. B3 recency refuses $115$. Read as
+accuracy these look like the same kind of failure as a wrong answer; they are
+not. The governed controller and naive overwrite are the only two systems that
+actually commit to answers at scale, and between them the interesting number is
+the wrong-answer count: $25$ against $49$. The controller roughly halves wrong
+answers ($-49\%$) while adding two over-refusals, and a paired exact McNemar
+test restricted to wrong answers gives $b=31$, $c=7$,
+$p = 1.2\times10^{-4}$.
+
+\paragraph{Only the controller both commits and stays calibrated.}
+On the $9$ by-design unanswerable items, naive overwrite answers $2$ and the
+controller answers $1$. The absolute counts are too small to separate ---
+we report them because a system that commits more often should be checked for
+exactly this failure, not because $2$ versus $1$ is a result.
+
+\paragraph{The expensive part is ingestion, not governance.}
+This is the finding that most changes the cost story
+(Figure~\ref{fig:lme-full}c). B3 recency --- a baseline whose whole premise is
+that it is cheap --- runs an extraction stage of $43.0$M prompt tokens, which is
+$3\%$ \emph{more} than the governed controller's $41.8$M, and scores $23.9\%$
+against $76.1\%$. Extraction is the dominant cost and it is common to every
+write-time system. The governance machinery proper --- relation classification
+--- is $10.9$M tokens, a $26\%$ marginal increment on extraction, and that
+increment is what separates $23.9\%$ from $76.1\%$. The controller does have the
+largest total prompt cost ($56.8$M against B3's $43.2$M) because it is the only
+system that runs both stages; the point is not that governance is free but that
+it is a small fraction of a cost every memory-maintaining system already pays.
+Framing governed writes as \emph{the} expensive option misplaces the accounting:
+what is expensive is deciding what a turn contains.
+
+\begin{figure*}[t]
 \centering
-\small
-\caption{\lme{} results. The V12 homogeneous full-slice run (freeze
-\texttt{final-2.0}) is the eligible downstream result; earlier v7/v8 rows are
-retained as history and remain ineligible per the ledger.}
-\label{tab:lme}
-\begin{tabular}{@{}l r r l@{}}
-\toprule
-Run or construction & correct/$n$ & accuracy & ledger status \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{V12 homogeneous full-slice run (freeze final-2.0)}} \\
-\quad B1 no-memory        & 9/180   & 0.0500 & \texttt{final\_candidate} \\
-\quad B2 flat-vector      & 80/180  & 0.4444 & \texttt{final\_candidate} \\
-\quad B3 recency          & 43/180  & 0.2389 & \texttt{final\_candidate} \\
-\quad B4 naive-overwrite  & 114/180 & 0.6333 & \texttt{final\_candidate} \\
-\quad \textbf{\ask{} controller} & \textbf{137/180} & \textbf{0.7611} & \texttt{final\_candidate} \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{Earlier constructions (history; ineligible)}} \\
-\quad v7 \ask{} controller     & 110/180 & 0.6111 & \texttt{diagnostic\_only} \\
-\quad v8 replay of v7 failures & 25/70   & 0.3571 & \texttt{failure\_replay\_only} \\
-\quad v8 carry-forward construction & 139/180 & 0.7722 & \texttt{failure\_replay\_only} \\
-\quad v8 top-up of former successes & 71/84 & 0.8452 & \texttt{incomplete} \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=\linewidth]{figures/lme_v12_full_comparison.png}
+\caption{Complete \lme{} V12 comparison on one homogeneous $180$-item slice.
+(a) Accuracy with $95\%$ Wilson intervals. (b) Error decomposition: over-refusal
+on an answerable item is a different failure from a wrong answer, and the two
+retrieval-only baselines fail almost entirely by refusing. (c) Prompt-token cost segmented by stage. ASK has the
+largest total ($56.8$M) because it is the only system running both stages, but
+the comparison that matters is within extraction: B3 recency's extraction alone
+($43.0$M) exceeds ASK's ($41.8$M) while scoring a third as well, so extraction
+is the dominant and largely shared cost and the governance stage is a $26\%$
+increment on it. B4's relation stage ran but recorded no token telemetry, so only
+its answer cost is plotted.}
+\label{fig:lme-full}
+\end{figure*}
+
+\input{tables/lme_full}
+
+\subsection{Where the gain lands, by competency}
+\label{sec:downstream:competency}
+
+Figure~\ref{fig:lme-competency} and Table~\ref{tab:lme_competency_full} break
+all five systems down by competency. The controller leads on every one of the
+six, but the $+23$-item margin over naive overwrite is not spread evenly: $+8$
+on knowledge update, $+5$ on single-session preference, $+3$ each on
+single-session assistant and temporal reasoning, and $+2$ each on multi-session
+and single-session user.
+
+That concentration is the mechanistic evidence. Knowledge update is precisely
+the competency that requires recognising a superseding fact and replacing the
+prior value, which is the decision the write policy governs; it is where a
+governed write should help most, and it is where it helps most ($29/30$ against
+$21/30$). Single-session preference is the second-largest gain and also the
+competency where the controller's abstention is most active ($6$ over-refusals),
+consistent with the v7 error taxonomy in Section~\ref{sec:v7taxonomy}
+attributing those failures to retrieval and answer realisation rather than to
+the write policy.
+
+Under Holm-corrected paired exact McNemar tests across the six competencies,
+only knowledge update separates individually ($p = 0.047$); the other five have
+corrected $p = 1.0$. At $n = 30$ per competency this is expected, and we state
+the implication plainly: the per-competency pattern is \emph{descriptive
+evidence about where the effect concentrates}, while the reliable inferential
+claim is the aggregate contrast ($p = 2.9\times10^{-4}$). A reader should not
+take any single competency cell as independently established.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/lme_v12_competency.png}
+\caption{Per-competency behaviour on the \lme{} V12 slice ($n = 30$ per
+competency per system). (a) Accuracy for all five systems; the two
+retrieval-only baselines collapse to zero on the two single-session competencies
+that require a stored preference. (b) The governed controller's item gain over
+naive overwrite, concentrated on knowledge update --- the competency that most
+directly requires a correct supersession.}
+\label{fig:lme-competency}
+\end{figure*}
+
+\input{tables/lme_competency_full}
+
+\subsection{Downstream cost in context}
+
+Per-item end-to-end pipeline time is $809$~s for the governed controller and
+$966$~s for naive overwrite, against $1.6$--$3.1$~s for the three retrieval-only
+baselines --- a factor of roughly $320$ against flat-vector retrieval, buying
+$31.7$ accuracy points. Answer-stage prompt tokens show the same ordering
+($22{,}625$ per item versus $14{,}227$ and $3{,}629$), but as
+Section~\ref{sec:downstream:pipeline} shows, that comparison understates the
+true gap by more than an order of magnitude, because the retrieval-only
+baselines have no ingestion pipeline to account for. Whether the exchange is
+worthwhile is a deployment question we do not adjudicate; we report the full
+accounting so it is not hidden behind the accuracy ordering.
+
+\paragraph{The deterministic computation aid is auditable and net neutral.}
+The governed and naive-overwrite pipelines also run a deterministic
+date/numeric/list solver over retrieved evidence. It recognized an intent on
+$28$ controller items and $39$ naive-overwrite items, but no item bypassed the
+answer model. Controller-side verification replaced the model's final answer
+twice: one date-difference replacement repaired an error and one ordinal-list
+replacement introduced an error, for zero net change in accuracy. Thus the
+$23$-item aggregate advantage over naive overwrite cannot be attributed to
+deterministic answer substitution. The preserved traces make this helper a
+separately testable answer-layer component rather than an unreported part of
+the write-policy effect.
 
 Every item was scored by the single frozen judge: $40$ items were resolved by
-deterministic guards (normalized match, no LLM call) and $140$ went to the LLM
-judge, with $2$ scoring fallbacks logged. Nine items received a documented
+deterministic guards (normalised match, no LLM call), $140$ went to the LLM
+judge, and $2$ scoring fallbacks were logged. Nine items received a documented
 semantic-equivalence adjudication that corrected judge scoring errors (for
 example, accepting ``7 days'' as equivalent to ``1 week''); each carries a
 written rationale and a preserved pre-adjudication backup of the machine
@@ -109,6 +371,7 @@ bound is below $77.2\%$, so this attempt cannot reproduce the carry-forward
 construction. These are missing-data bounds, not confidence intervals.
 
 \subsection{Single-session preference: carry-forward artifact and taxonomy}
+\label{sec:v7taxonomy}
 
 Single-session preference (SSP) was the weakest v7 competency at $11/30$. That
 is a contaminated diagnostic run only, not a clean v8 measurement.
@@ -160,20 +423,12 @@ source), require retrieval to surface the supporting-session record for the
 query subject, and constrain answers to retrieved, grounded preferences while
 honoring explicit negatives. We make no accuracy claim for this design. It is
 directed at the competency where the V12 controller has the most headroom:
-single-session-preference remains its weakest competency at $53.3\%$, alongside
-multi-session and temporal-reasoning at $63.3\%$ each, whereas knowledge-update
-and single-session-assistant are effectively solved at $96.7\%$
-(Figure~\ref{fig:lme-competency}).
+single-session preference remains its weakest competency at $53.3\%$, alongside
+multi-session and temporal reasoning at $63.3\%$ each, whereas knowledge update
+and single-session assistant are effectively solved at $96.7\%$
+(Table~\ref{tab:lme_competency_full}).
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=\linewidth]{figures/lme_competency_heatmap.png}
-\caption{Per-competency accuracy across the five memory systems in the V12 run.
-The \ask{} controller (outlined row) leads or ties on every competency; its
-remaining headroom is concentrated in preference and reasoning-heavy
-competencies.}
-\label{fig:lme-competency}
-\end{figure}
+
 
 The homogeneous full-slice run described in
 Section~\ref{sec:downstream:final} is the eligible downstream result. It

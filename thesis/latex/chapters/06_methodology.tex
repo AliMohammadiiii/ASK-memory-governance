@@ -1,0 +1,543 @@
+\section{5.9 MGP-6 v4.3: why it was built, how it was built, and what it
+can
+bear}\label{mgp-6-v4.3-why-it-was-built-how-it-was-built-and-what-it-can-bear}
+
+\subsection{5.9.1 The question the instrument has to
+answer}\label{the-question-the-instrument-has-to-answer}
+
+Every memory benchmark this thesis surveyed in Chapter 2 scores a
+downstream answer. That is the wrong measurement for a write policy,
+because a wrong answer can originate in retrieval, in context assembly,
+in generation, or in the write decision, and an aggregate answer score
+cannot say which. To isolate the write decision the instrument must hold
+retrieval, context, and generation \emph{constant} and vary only the
+evidential situation. Stated precisely, the question is:
+
+\begin{quote}
+Given the same stored record and the same proposed new value, can a
+system distinguish the case where the proposal is stale (KEEP), the case
+where it is current (SUPERSEDE), and the case where the evidence cannot
+settle the question (ABSTAIN)?
+\end{quote}
+
+That requirement --- not a desire for scale, coverage, or realism ---
+dictated the entire construction. MGP-6 v4.3 is small and synthetic
+\emph{on purpose}: the control it buys is the only reason it can answer
+the question.
+
+\subsection{5.9.2 Why v2 had to be
+replaced}\label{why-v2-had-to-be-replaced}
+
+The v4.1 shortcut review found that surface lexical and structural
+features recovered the intended action without any reasoning over
+authority, scope, time, identity, or prior memory. The v2 evidence for
+this is decisive and is reported in §7.2: a conflict-type-only lookup
+fitted on train+dev reaches \textbf{1.000} held-out accuracy while never
+reading the dialogue or the memory state (type-only: 0.9667). In v2,
+each conflict family mapped deterministically to one action, so
+family-disjoint splits blocked \emph{literal} overlap while leaving the
+family→label rule intact across every split. Scenario recognition was
+sufficient; evidence reasoning was never tested.
+
+Two lessons carried into the redesign. First, mechanical repairs
+(schemas, identifiers, hashes, manifests) had to be kept strictly
+separate from the substantive content redesign, so that a passing
+structural check could not be mistaken for a repaired construct --- this
+separation is what distinguishes v4.1 from v4.2. Second, review had to
+happen at the level of the \emph{group of items that share a scenario},
+not the individual item: the KEEP, SUPERSEDE, and ABSTAIN variants must
+be inspected jointly, because a leak is a property of the contrast
+between them, not of any one of them.
+
+\subsection{5.9.3 The item}\label{the-item}
+
+Each released record has exactly five fields and the schema sets
+\texttt{additionalProperties:\ false}:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Field
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Content
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{public\_id} & opaque identifier, \texttt{MGP43-} + 20 hex
+characters \\
+\texttt{memory\_before} & the stored record: \texttt{principal},
+\texttt{memory\_slot}, \texttt{standing\_value} \\
+\texttt{dialogue} & 9, 11, or 13 turns alternating USER/ASSISTANT, each
+with a \texttt{turn\_id} \\
+\texttt{evaluation\_query} & fixed instruction naming the slot and the
+three permitted actions \\
+\texttt{gold\_action} & KEEP, SUPERSEDE, or ABSTAIN \\
+\end{longtable}
+}
+
+The closed schema is a design commitment, not housekeeping. There is no
+conflict-type field, no design target, no component label, no annotator
+note --- no channel of the kind that leaked the answer in v2. The
+identifier is opaque so that it encodes nothing recoverable.
+
+The dialogue has a fixed rhetorical shape: early turns state the
+standing value and name the candidate value; a middle turn declares
+which positions in a numbered evidence list are \textbf{indexed} to the
+target slot and warns that the remaining positions belong to
+neighbouring records; the evidence list is read out; a closing turn
+restates the requested value. The decision must be made from the stored
+record and this dialogue alone, before any content question is asked.
+
+\subsection{5.9.4 The semantic component --- the load-bearing
+idea}\label{the-semantic-component-the-load-bearing-idea}
+
+A \textbf{semantic component} is a group of nine items sharing one
+\texttt{principal}, one \texttt{memory\_slot}, one
+\texttt{standing\_value}, and one candidate value. The nine form a 3 × 3
+grid: three dialogue lengths (9, 11, 13 turns) crossed with the three
+gold actions. Because the grid is crossed, both margins are exactly
+balanced. Direct verification on the released public splits confirms
+this:
+
+\begin{itemize}
+\tightlist
+\item
+  all \textbf{40/40} public components are exactly 3 KEEP / 3 SUPERSEDE
+  / 3 ABSTAIN;
+\item
+  each dialogue length is exactly \textbf{40 KEEP / 40 SUPERSEDE / 40
+  ABSTAIN}.
+\end{itemize}
+
+Neither verbosity nor length carries any signal about the action --- a
+shortcut that trips many synthetic benchmarks is closed by construction
+rather than by audit.
+
+What varies inside a component is narrower still, and this is the
+mechanism that makes the instrument work. All nine items draw their
+evidence from a \textbf{byte-identical pool of six sentences} ---
+verified for all \textbf{120/120} (component, length) triples in the
+public data. The three actions differ \emph{only} in \textbf{which two
+of those six sentences the dialogue indexes to the target slot}. Across
+the 80 triples where the index statement parses mechanically, the three
+indexed pairs are always distinct and always \textbf{partition the
+six-sentence pool exactly} (80/80).
+
+\subsection{5.9.5 A worked component}\label{a-worked-component}
+
+For \texttt{principal\ =\ Rohan},
+\texttt{memory\_slot\ =\ status\ message},
+\texttt{standing\_value\ =\ available}, candidate value
+\texttt{do\ not\ disturb}, all nine items contain the same six sentences
+and the same closing turn. Only the index differs:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Indexed pair (the two sentences bound to the slot)
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Gold
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+``The do-not-disturb period has an expiry record.'' + ``After the
+expiry, Rohan writes that his status is available.'' & \textbf{KEEP} \\
+``Rohan writes that the temporary period has ended.'' + ``He then
+changes the status entry to do not disturb.'' & \textbf{SUPERSEDE} \\
+``The retained records do not include the offsets needed to compare
+them.'' + ``The expiry time and the status-change time use different
+time zones.'' & \textbf{ABSTAIN} \\
+\end{longtable}
+}
+
+The reasoning each pair demands differs in kind, which is the point:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{KEEP} --- a temporary override expired and the standing value
+  was reasserted \emph{after} it. The proposal is stale; the stored
+  record is already correct.
+\item
+  \textbf{SUPERSEDE} --- the temporary period ended and a durable change
+  followed. The proposal is current; the stored record is out of date.
+\item
+  \textbf{ABSTAIN} --- the two timestamps are in different time zones
+  and the retained records lack the offsets needed to compare them.
+  Neither conclusion is warranted. Note the character of this case: the
+  evidence is not \emph{weak} or \emph{sparse}, it is
+  \textbf{unresolvable}. This is deliberate, and it is why the 300
+  ABSTAIN items carry a dual ambiguity flag: they encode designed
+  unresolvability, not annotator uncertainty.
+\end{itemize}
+
+The other four sentences stay in every item as \textbf{controlled
+distractors}. A system that reads the whole transcript rather than the
+indexed evidence will find apparent support for all three actions in all
+three items. The confound is not removed by paraphrasing; it is removed
+by holding the surface form fixed and moving only the pointer. That is
+the sense in which v4.3 is a \emph{controlled} synthetic benchmark
+rather than merely a synthetic one.
+
+\subsection{5.9.6 Splits and determinism}\label{splits-and-determinism}
+
+Components, never items, are assigned to splits: train 180 items / 20
+components, development 180 / 20, hidden 540 / 60. Each of the 20
+domains contributes one component to train, one to development, and
+three to hidden. Assignment uses recorded seed 4301. The build is
+byte-deterministic --- archive timestamps are pinned to a constant
+(1980-01-01) so identical inputs yield identical hashes. Because a
+component never straddles a boundary, no system can observe the KEEP
+variant of a scenario in training and the SUPERSEDE variant at test.
+
+\subsection{5.9.7 The release gates are executable, not
+narrative}\label{the-release-gates-are-executable-not-narrative}
+
+\textbf{Shortcut audit.} Fitted on train, evaluated on hidden,
+component-held-out, repeated over five seeds (4301--4305). It trains
+word-level and character-level TF-IDF logistic regressions over
+\textbf{twelve restricted views} of each item, plus punctuation-only and
+length-only numeric features, plus decision trees at depths one through
+five. Each view carries a pre-set accuracy ceiling:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}lrlr@{}}
+\toprule\noalign{}
+View & Ceiling & View & Ceiling \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{full\_text} & 0.65 & \texttt{assistant\_only} & 0.45 \\
+\texttt{dialogue\_only} & 0.65 & \texttt{first\_three} & 0.50 \\
+\texttt{target\_evidence\_only} & 0.65 & \texttt{query\_only} & 0.40 \\
+\texttt{last\_two} & 0.50 & \texttt{memory\_only} & 0.40 \\
+\texttt{candidate\_only} & 0.45 & \texttt{id\_only} & 0.40 \\
+\texttt{previous\_turn} & 0.45 & \texttt{punctuation\_only} & 0.40 \\
+\texttt{user\_only} & 0.45 & \texttt{length\_only} & 0.40 \\
+\texttt{depth3\_tree} & 0.60 & & \\
+\end{longtable}
+}
+
+The release ships with \texttt{failed\_gates\ =\ {[}{]}}: no probe
+cleared its threshold. Two views deserve specific note.
+\texttt{id\_only} confirms the opaque identifiers leak nothing --- the
+exact class of failure that made v2's conflict-type field fatal.
+\texttt{target\_evidence\_only} is the strictest self-criticism in the
+build: it checks that even the \emph{correctly indexed} evidence,
+stripped of dialogue context, does not linearly separate the three
+classes, so the label depends on reading the evidence in context rather
+than on a lexical signature of the evidence itself.
+
+\textbf{Duplicate audit.} SHA-256 over seven restricted views, failing
+on \emph{any} cross-split collision in the five decision-relevant ones
+(\texttt{full\_text}, \texttt{dialogue\_only}, \texttt{candidate\_only},
+\texttt{previous\_turn}, \texttt{last\_two}), plus character TF-IDF
+(4--6 grams) cosine similarity over every cross-split pair, failing on
+any edge at ≥ 0.995. Because components share an evidence pool by
+construction, within-split near-duplication is expected and permitted;
+the gate targets leakage across the split boundary specifically.
+
+\textbf{Public/private boundary.} Public model-facing records exclude
+gold labels, design targets, component metadata, private identifiers,
+and annotator metadata. Hidden inputs, hidden gold, final human gold,
+completed annotation packets, private mappings, and the detailed
+restricted-view audits live only in a gitignored local boundary. Content
+is addressed by two Merkle roots --- final gold \texttt{437b2a26…} and
+annotations \texttt{a7e59f88…} --- and each distributed archive carries
+its own SHA-256.
+
+\subsection{5.9.8 Human validation and the weight it can
+bear}\label{human-validation-and-the-weight-it-can-bear}
+
+Two independent annotation packets cover all 900 items. The builder does
+not accept them on trust. Every row must carry a schema version; a
+\texttt{content\_hash} matching the coordinator's binding for that item;
+an action in the permitted set; a \textbf{non-empty list of evidence
+turn identifiers that all reference real turns in that dialogue}; a
+rationale of at least 20 characters; a confidence in {[}0,1{]}; boolean
+ambiguity and exclusion flags; an annotator identifier; and a
+timezone-aware timestamp. Coverage must be exactly 900 with no duplicate
+annotation identifiers. Any violation raises \texttt{RuntimeError} and
+aborts the build.
+
+The evidence-turn requirement is the substantive one: it makes an
+annotation \emph{checkable against the item} rather than a bare label,
+and it is what allows the builder to confirm that annotators engaged
+with the indexed evidence structure rather than pattern-matching the
+scenario.
+
+Outcome: agreement on every action (raw 1.0, Cohen's κ 1.0), zero
+exclusions, zero label adjudications, mean confidence 0.96 and 0.967.
+Both annotators flagged all 300 ABSTAIN items as intentionally ambiguous
+scenarios.
+
+\textbf{What this does and does not establish.} Perfect agreement on a
+task whose labelling rule is deterministic by construction certifies
+that the manual is followable and that the items instantiate it. It does
+\textbf{not} independently validate the construct: two annotators
+applying the same unambiguous rule will agree whether or not the rule
+measures memory governance. This is the honest reading, and it is why κ
+= 1.0 appears in this thesis as a construction check rather than as
+evidence of difficulty or of external validity. Completion is accepted
+through dataset-owner attestation; the builder validates records,
+coverage, hashes, and agreement, but does not authenticate reviewer
+identity or annotation duration.
+
+\subsection{5.9.9 Why the design makes errors
+interpretable}\label{why-the-design-makes-errors-interpretable}
+
+Because the three actions within a component are surface-matched, an
+error is \emph{diagnostic} rather than merely wrong. Predicting
+SUPERSEDE on the KEEP variant means the system read a sentence that was
+present in the item but indexed to a different slot --- distractor
+capture, specifically.
+
+This is testable, and it was tested. Of the 28 errors the frozen
+controller makes on the development split, 18 can be mechanically
+resolved against a sibling item's indexed pair (same component, same
+dialogue length, gold action equal to the \emph{predicted} action). In
+\textbf{all 18}, the evidence supporting the predicted action was
+present in the item but not indexed to the target slot. Every resolvable
+error is distractor capture --- precisely the failure mode the component
+design was built to isolate. The instrument is measuring what it was
+constructed to measure, which is a stronger statement than any accuracy
+figure in Chapter 7.
+
+\subsection{5.9.10 What the construction cannot
+deliver}\label{what-the-construction-cannot-deliver}
+
+The control that makes v4.3 informative is bought by giving up realism,
+and the trade must be stated plainly. Deliberately constructed scenarios
+do not reproduce the distribution of natural user interactions; the
+dialogues are stylized evidence-list recitations, not conversation. The
+design is single-slot and single-step, so it cannot test interference
+between records or multi-turn write trajectories. It is English-only.
+Human completion is owner-attested rather than identity-authenticated.
+And the release has no selected public redistribution license, so it
+must not be publicly hosted until licensing is resolved. MGP-6 v4.3 is a
+controlled diagnostic that must be paired with an external benchmark
+such as LongMemEval (§7.11), never a substitute for one.
+
+\section{6.1 Evidence policy: the ledger and claim
+eligibility}\label{evidence-policy-the-ledger-and-claim-eligibility}
+
+Run provenance comes from \texttt{artifacts/results\_ledger.json} v1.1;
+scientific interpretation is superseded by
+\texttt{artifacts/analysis/mgp6\_validity\_audit.json}. The failed
+shortcut gate makes MGP-6 v2 policy rows diagnostic regardless of their
+older ledger label. Mapping-dependent adapters, incomplete runs, and
+every LongMemEval row remain non-primary. Annotation is described as one
+independent annotator plus a separate model panel, never human IAA.
+
+\section{6.2 Systems under test (MGP-6 v2, n =
+180)}\label{systems-under-test-mgp-6-v2-n-180}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5000}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+System
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+B1 no-memory & answers without a store \\
+B2 flat retrieval & stores everything, retrieves by similarity; no write
+decisions \\
+B3 recency & prefers most recent record; no abstention \\
+B4 naive overwrite & new information always replaces old; no
+abstention \\
+Reference policy & deterministic lexical predicate policy used by the
+released MGP-6 prediction artifact; not the prototype five-feature
+scorecard \\
+LLM controller & full ASK with qwen/qwen3.5-9b as the decision policy \\
+Zero-shot LLM decision & same model asked for the action without the
+governance scaffold \\
+Few-shot (6-shot) LLM decision & 174/180 predictions; six missing IDs
+scored INVALID for a coverage-aware bound (0.7833 / 0.7692);
+\texttt{incomplete} \\
+External adapters & Mem0 2.0.11, Letta (MemGPT), Graphiti 0.29.2, MemOS
+via adapter harnesses \\
+\end{longtable}
+}
+
+External-adapter scoring requires an action mapping because these
+systems emit NOOP rather than ABSTAIN. Those mapped rankings are
+retained in the artifact audit but excluded from primary comparisons. A
+successor study must use each system's native observable operations and
+resulting state.
+
+\section{6.3 Ablations}\label{ablations}
+
+Four single-component removals from the full rule controller, same items
+and scaffold: \textbf{no\_abstain} (forced binary commit),
+\textbf{no\_provenance}, \textbf{no\_typing}, \textbf{no\_lineage}.
+Their within-generator failure signatures (§7.3) are mechanism
+diagnostics: they show how this implementation changes when a switch is
+removed, but do not independently establish that each component is
+necessary in other datasets or controllers.
+
+\section{6.4 LongMemEval-M protocol}\label{longmemeval-m-protocol}
+
+Stratified 180-item slice (6 × 30, seed 0). Five systems (B1--B4,
+controller) were run under the v7 configuration (answerer qwen3.5-9b,
+judge google/gemma-4-31b-it); the run is \textbf{diagnostic only} due to
+documented provider contamination (§7.6). The v8 failure replay
+re-executed exactly the 70 v7 controller failures under a changed
+configuration and is \texttt{failure\_replay\_only}, not an evaluation
+of the full slice. The complementary Modal top-up targeted 110 prior v7
+successes but completed only 84, so it is \texttt{incomplete}; it
+nevertheless provides decisive counter-evidence to carrying all
+successes forward (§7.7). The frozen final-1.1 protocol specifies a
+homogeneous full-180 rerun with qwen/qwen3.5-9b and a Gemma judge under
+a fixed provider and retry policy. Its API smoke failed before inference
+because the supplied OpenRouter credential returned HTTP 403, so the run
+is \texttt{externally\_pending} and no LongMemEval value is final.
+
+\section{6.5 Metrics}\label{metrics}
+
+Decision layer: action accuracy, macro-F1, per-action F1, confusion
+counts. Commit safety: invalid-commit rate (share of gold-ABSTAIN items
+on which the system commits a write). Memory state: lineage integrity;
+stale-retrieval rate. Probe behavior: premise resistance; implicit
+application. Downstream (LME-M): judge-graded answer accuracy with
+per-competency decomposition and stratified bootstrap CIs. Formal
+definitions in Appendix C. Excluded as uninformative: the shipped
+over-/under-forgetting rates (§5.8). Premise resistance and
+invalid-commit are bespoke metrics defined in \texttt{metrics\_mgp6.py}
+and are interpreted descriptively, not as externally validated
+constructs (threat C5).
+
+\section{6.6 Statistical analysis}\label{statistical-analysis}
+
+The primary analysis uses the held-out 90-item test split and
+10,000-replicate paired cluster bootstrap over
+\texttt{template\_family\_id}, repeated with minimal-pair groups plus
+singleton items. Both item-weighted and family-macro estimates are
+reported. Exact item-level McNemar is secondary because within-family
+independence is doubtful. Zero event counts receive one-sided
+finite-sample upper bounds. No superiority, equivalence, or
+non-inferiority language is licensed without a pre-specified contrast
+and margin. On LongMemEval, no hypothesis test is computed because no
+clean comparative design exists. Reproduction:
+\texttt{python3\ scripts/analysis/audit\_mgp6\_validity.py}.
+
+\section{6.7 Leakage and researcher-degrees-of-freedom
+controls}\label{leakage-and-researcher-degrees-of-freedom-controls}
+
+Train+development lookup probes over type, conflict type, and public
+metadata precede policy interpretation. Conflict type reaches 1.000 test
+accuracy and therefore fails the construct-validity gate: test-first
+split hygiene alone is insufficient. The v7→v8 fix loop had no
+confirmation set, so its output is \texttt{failure\_replay\_only};
+overrides remain separate from raw results; and invalid, incomplete,
+mapped, and superseded runs are excluded from primary claims.
+
+\section{6.8 MGP-6 v4.3 experimental protocol and completed hidden
+run}\label{mgp-6-v4.3-experimental-protocol-and-completed-hidden-run}
+
+MGP-6 v4.3 uses train for loader and engineering checks, and development
+for prompt, model, configuration, ablation, cost, and latency selection.
+Each system submits one strict record,
+\texttt{\{"public\_id":"MGP43-...","action":"KEEP"\}}; the validator
+rejects missing, duplicate, unknown, extra, and invalid-action records.
+Public loading and prompt construction are deterministic, prediction
+writing is resume-safe, and raw-response logs record latency, token,
+retry, and failure accounting without private fields.
+
+Before hidden prediction, the release and split hashes, provider and
+exact model ID, prompt and system-prompt hashes, decoding, seed, retry
+policy, timeout, concurrency, evaluator version, code commit,
+environment lock, and prediction schema were frozen and recorded. The
+selected public-indexed-evidence ASK live controller with
+qwen/qwen3.5-9b was then run exactly once on the 540-item hidden split.
+Its prediction file was complete, duplicate-free, and sealed with
+SHA-256 e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806
+before the local-private scorer opened hidden gold. A transport
+disconnect after 432 durable predictions was recorded; the frozen run
+resumed only the remaining 108 records and did not change controls or
+duplicate IDs.
+
+The private evaluator reports accuracy, macro-F1, per-class
+precision/recall/F1, confusion matrix, coverage, selective and
+abstention metrics, and a 5,000-replicate component-cluster bootstrap
+with seed 4301. It does not expose gold records in its aggregate output.
+Provider telemetry supplies latency, tokens, failures, retries, and
+invalid-response counts, but no price field; cost is therefore recorded
+as unavailable. LongMemEval remains a separate external evaluation, not
+a substitute for this controlled diagnostic. Because only one final v4.3
+configuration was pre-registered, there is no final hidden baseline,
+ablation, or paired comparison.
+
+\subsection{6.8.1 Systems, metrics, and statistical treatment for
+v4.3}\label{systems-metrics-and-statistical-treatment-for-v4.3}
+
+The v4.3 comparison covers twelve configurations on the public
+development split: the pre-registered frozen controller; the successor
+controller in both its as-run and guard-composed forms; four structural
+baselines (B1 no memory, B2 flat retrieval, B3 recency, B4 naive
+overwrite); an unstructured zero-shot decision policy; the deterministic
+public-evidence rule policy in isolation; and four component ablations
+(no abstention, no provenance, no typing, no lineage). Three deployed
+external memory systems --- Letta, Mem0, and Graphiti --- were run
+through adapters written for this thesis. Because their native
+operations do not match the KEEP/SUPERSEDE/ABSTAIN vocabulary, their
+scores depend on an action mapping and are reported as harness
+diagnostics, never as capability measurements of those systems in their
+intended use. All model-backed rows use \texttt{qwen/qwen3.5-9b} at
+temperature 0, seed 4301, 128 maximum new tokens, and concurrency 1.
+
+Primary decision metrics are action accuracy, macro-F1, per-action
+precision/recall/F1, Cohen's κ, and the multiclass Matthews correlation.
+The latter two are interpretable here precisely because every split is
+exactly action-balanced, so neither is inflated by a class prior.
+
+Errors are decomposed by \emph{operational harm} rather than reported as
+a single rate. Four quantities are tracked, each with its own
+denominator: action false commit on gold-ABSTAIN items, separated into
+the state-preserving ABSTAIN→KEEP and state-corrupting ABSTAIN→SUPERSEDE
+components; missed update on gold-SUPERSEDE items; destructive overwrite
+of a gold-KEEP record; and unnecessary abstention over items that
+required a decision. Every rate carries a Wilson 95\% interval, and a
+zero count is reported with a finite-sample upper bound rather than as
+zero risk. Expected loss is computed under balanced, commit-averse, and
+update-responsive cost matrices fixed before scoring.
+
+Hidden-split uncertainty uses a 5,000-replicate component-cluster
+bootstrap at seed 4301, because items within a semantic component share
+a scenario skeleton and are not independent. On the public development
+split, component-cluster resampling is \textbf{unavailable} --- the
+component map is private and the public scorer does not read it --- so
+those intervals are 10,000-replicate item bootstraps and are
+consequently \emph{narrower than a component-aware estimate would be}.
+Paired system contrasts on development use exact two-sided McNemar tests
+with Holm correction over the reported family; they inherit the same
+independence assumption. This thesis relies on them only for contrasts
+whose effect sizes (b/c splits of 98/6 and larger) could not plausibly
+be produced by within-component dependence, and flags the one marginal
+contrast --- the 0.117 successor gain --- as the place where the
+assumption matters most.
+
+Operational accounting is taken from per-response records rather than
+harness wall-clock timing: provider-reported latency per response (mean,
+median, p95, maximum), prompt and completion tokens, transport failures,
+in-client retries, and invalid-response counts. Monetary cost is
+reported only where the provider emitted a price field; on every run in
+this thesis it did not, and cost is recorded as unavailable rather than
+reconstructed from list-price arithmetic.

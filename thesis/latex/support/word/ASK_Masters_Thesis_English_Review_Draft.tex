@@ -1,0 +1,3887 @@
+\textbf{\textsc{MASTER\textquotesingle S THESIS - ENGLISH REVIEW DRAFT}}
+
+Auditable Governance of Long-Term Memory in Language Agents
+
+The ASK Controller (Keep-Supersede-Abstain), the MGP-6 v2 Diagnostic,
+and Evidence-Bounded Evaluation
+
+Review state: 15 July 2026\\
+Evidence basis: ledger v1.1 + construct-validity audit\\
+Editable research draft
+
+\begin{quote}
+\textbf{The official University of Tehran template and verified
+administrative fields were not supplied. This document is a review copy,
+not an institution-ready submission.}
+\end{quote}
+
+Administrative fields intentionally remain external
+
+\section{Front Matter}\label{front-matter}
+
+\textbf{Master\textquotesingle s Thesis --- English Review Draft}
+Administrative fields (candidate, supervisor, advisor, faculty, dates,
+signatures) are intentionally left as placeholders and are consolidated
+in frontmatter/ADMINISTRATIVE\_PLACEHOLDERS.md. They must never be
+filled in by tooling.
+
+Persian-language front matter is available in
+frontmatter/abstract\_fa.md, frontmatter/extended\_summary\_fa.md, and
+frontmatter/terminology\_fa.md.
+
+\textbf{Evidence-status notice.} Every number in this thesis is
+transcribed from the frozen evidence ledger
+artifacts/results\_ledger.json v1.1 (sha256
+fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e,
+created 2026-07-13) or the later construct-validity audit
+artifacts/analysis/mgp6\_validity\_audit.json. The 2026-07-15 shortcut
+failure supersedes the ledger\textquotesingle s older final\_candidate
+interpretation for MGP-6 v2: those policy rows are now diagnostic. No
+failure\_replay\_only, incomplete, invalid, externally\_pending, or
+mapping-dependent row is used as a primary capability result. Conversion
+to the official University of Tehran thesis template and completion of
+its administrative fields remain external requirements (see
+thesis/README.md and thesis/thesis\_checklist.md).
+
+\subsection{Declaration}\label{declaration}
+
+This manuscript distinguishes verified results, supported-with-caveat
+results, diagnostic observations, and hypothesized designs, following
+the strength tags of reports/CLAIMS\_EVIDENCE\_MATRIX.md. Invalid and
+superseded runs are named and excluded
+(docs/audit/INVALID\_AND\_SUPERSEDED\_RUNS.md). Raw and adjudicated
+numbers are always reported together. No LongMemEval number is presented
+as final.
+
+\subsection{Abstract}\label{abstract}
+
+Long-term memory makes language agents more useful and, at the same
+time, creates a governance problem: the agent must decide what to keep,
+what to supersede when new evidence contradicts stored state, and when
+to abstain because the evidence is insufficient to justify a write.
+These write-time decisions are not the same construct as downstream
+answer accuracy, and evaluations that collapse them conceal both
+capability and risk.
+
+This thesis formulates memory governance as an explicit, auditable
+three-way decision --- KEEP, SUPERSEDE, ABSTAIN --- over typed,
+provenance-tracked records, and separates evaluation of the write
+action, the resulting state and lineage, and the later answer. It
+reports two instruments. The first, MGP-6 v2, is an author-designed
+180-item pilot whose most important result is a \emph{failed}
+construct-validity gate: a conflict-type-only lookup fitted on train and
+development reaches 1.000 held-out accuracy without reading the dialogue
+or memory state (type-only: 0.9667). That failure motivated the second
+instrument.
+
+MGP-6 v4.3 is a 900-item human-authored controlled synthetic diagnostic
+in 100 semantic components across 20 domains, split by component into
+exactly action-balanced train (180), development (180), and sealed
+hidden (540) partitions, with duplicate, shortcut, allowlist, and
+deterministic-build gates passed at release and dual human annotation
+covering every item. One pre-registered configuration --- a composed
+controller pairing a public-evidence rule policy with a live model
+policy under a conservative abstention guard --- was run exactly once on
+the sealed split. It attains \textbf{0.8481 accuracy} and \textbf{0.8479
+macro-F1} (component-cluster 95\% intervals {[}0.8037, 0.8889{]} and
+{[}0.8021, 0.8894{]}; Cohen\textquotesingle s κ = 0.7722 against
+balanced gold). The component-cluster interval is roughly 40\% wider
+than an item-independence interval, which is the correct width and the
+one reported.
+
+The thesis argues that the error \emph{structure} carries more
+governance information than the aggregate, and reports it accordingly.
+Of 38 mishandled ambiguous items, 30 become KEEP --- leaving the stored
+state byte-identical and losing only the audit record --- while just 8
+replace an active record on insufficient evidence (0.0444, CI {[}0.0227,
+0.0852{]}). A single "false commit" rate of 0.2111 therefore overstates
+the state-corrupting harm roughly fivefold. Missed updates run 0.0833
+and destructive overwrites 0.0611. Component decomposition shows neither
+the rule policy nor the model policy alone exceeds 0.750 on development
+data, so the result is a genuine composition rather than a rule engine
+with a model attached. Each write decision costs a 1.3 s median and 393
+prompt tokens, below every full-context baseline it outperforms;
+monetary cost is recorded as unavailable rather than estimated, because
+provider telemetry emitted no price field.
+
+On the development split, every structural baseline, every component
+ablation, the zero-shot policy, the standalone rule policy, and three
+deployed external memory systems fall between 0.2944 and 0.3667 --- at
+or below the 0.3333 chance rate of the balanced decision --- failing in
+two opposite ways: commit-happy systems overwrite 77--98\% of records
+they should keep, while abstain-happy systems decline 78--98\% of
+decisions they should make. The composed controller reaches 0.8444 and
+its successor configuration 0.9611, with every
+controller-versus-baseline contrast rejecting at Holm-corrected p
+\textless{} 1.6e−19.
+
+As downstream evidence, a homogeneous full-slice LongMemEval-M run (all
+180 items, one answer model, one judge, zero judge fallbacks) places the
+governed controller at 76.1\%, above every structural baseline (naive
+overwrite 63.3\%; paired p = 2.9e−04), with the gain concentrated in
+knowledge-update and preference competencies rather than spread
+uniformly --- the pattern a write-policy effect should produce.
+
+What the evidence cannot support is stated as flatly as what it can.
+Only one hidden configuration was authorised, so every baseline and
+ablation contrast is development evidence on the split used for
+selection; the collections are synthetic, English-only, single-slot, and
+single-step; human annotation is owner-attested rather than
+identity-authenticated; and the abstention mechanism is not a calibrated
+selective predictor --- its selective accuracy (0.8449) falls below its
+overall accuracy (0.8481). The thesis contributes an auditable
+evaluation decomposition, a released benchmark with build-time construct
+gates, per-item predictions with cluster-aware and cost-conditional
+analysis, and a prospective independently generated multi-human
+confirmation protocol. It does not establish population safety,
+calibrated confidence, or long-lived deployment performance.
+
+\textbf{Keywords:} long-term memory, language agents, memory governance,
+supersession, abstention, provenance, lineage, auditability, diagnostic
+evaluation, construct validity, selective prediction, error
+decomposition, MGP-6 v4.3, ASK Controller, LongMemEval.
+
+\subsection{Acknowledgements}\label{acknowledgements}
+
+Institutional and personal acknowledgements are administrative front
+matter and will be added from
+frontmatter/ADMINISTRATIVE\_PLACEHOLDERS.md before submission. The
+technical package acknowledges the LongMemEval authors (Wu et al.,
+2025), the maintainers of the evaluated external memory systems, and the
+annotation panel configuration documented in the ledger.
+
+\subsection{Reader\textquotesingle s guide}\label{readers-guide}
+
+Chapter 1 frames the research problem and questions. Chapter 2 situates
+the work in agent memory systems, memory lifecycle research, benchmarks,
+belief revision, and selective prediction, including the 2026 near
+neighbors. Chapter 3 formalizes the problem and threat model. Chapter 4
+specifies the ASK Controller as implemented. Chapter 5 documents MGP-6
+v2 and its annotation evidence. Chapter 6 defines the experimental
+methodology and the claim-eligibility policy. Chapter 7 reports results.
+Chapter 8 gives the error analysis and discussion. Chapter 9 addresses
+validity, ethics, and limitations. Chapter 10 concludes. Appendices A--F
+provide schemas, prompt pointers, metric definitions, the
+annotation-manual pointer, reproducibility commands, and the artifact
+manifest.
+
+\subsection{Abbreviations}\label{abbreviations}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.2610}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.7390}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Term}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Meaning}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ASK & Keep--Supersede--Abstain: the three-action memory-governance
+controller of this thesis \\
+MGP-6 v2 & Author-designed six-type memory-governance diagnostic slice
+(180 scenarios) \\
+LME-M & Stratified 180-item LongMemEval-M evaluation slice (6
+competencies × 30, seed 0) \\
+SSP & Single-session preference (LongMemEval competency) \\
+RD & Paired risk difference (accuracy difference on the same items) \\
+CI & Confidence interval \\
+IAA & Inter-annotator agreement (not claimed here; see §5.5) \\
+n.s. & Not statistically significant \\
+JSONL & JSON Lines format \\
+\end{longtable}
+}
+
+\section{1. Introduction and Research
+Questions}\label{introduction-and-research-questions}
+
+\subsection{1.1 Motivation}\label{motivation}
+
+A language model with no persistent memory cannot reliably carry
+preferences, commitments, or corrections across sessions. A language
+model with persistent memory is risky for the opposite reason: stale
+facts can keep influencing behavior after the user has corrected them,
+contradictory records can accumulate silently, and a system can act on
+information it should have refused to write in the first place. The
+engineering objective is therefore not "remember as much as possible"
+but to govern the memory write as a decision under explicit policy.
+
+This observation changes where control must live. Prompting a model to
+"be careful" is insufficient because memory writes have side effects
+that outlive the prompt. A new candidate fact must be classified against
+the existing store --- is it independent, a duplicate, or a
+contradiction of a prior record? --- and the resulting action must be
+explicit and auditable: keep the new record alongside the old, supersede
+the old record while preserving its lineage, or abstain because the
+evidence is too ambiguous to commit either way. When a system cannot
+express the third option, every conflict becomes a silent overwrite or a
+silent duplicate.
+
+Existing evaluations mostly treat memory as an answer-retrieval problem:
+given a long interaction history, can the model answer a later question
+(Wu et al., 2025; Maharana et al., 2024)? That view is valuable but
+incomplete: end-to-end question accuracy cannot attribute a failure to
+the write decision that caused it, and it cannot see governance failures
+that happen not to affect the sampled questions. A governance evaluation
+must score the decision boundary itself.
+
+\subsection{1.2 Research problem}\label{research-problem}
+
+How can a language-agent memory system make and audit policy-sensitive
+write decisions --- keep, supersede, abstain --- and how can those
+decisions be evaluated without conflating governance correctness with
+retrieval or answer quality?
+
+The problem decomposes into five concerns: \textbf{representation}
+(typed memory records with provenance and lineage), \textbf{decision}
+(an interpretable, abstention-aware action policy), \textbf{execution}
+(supersession must actually mark the prior record inactive and preserve
+its lineage), \textbf{measurement} (decision-level metrics with correct
+denominators, plus state metrics such as lineage integrity and stale
+retrieval, distinct from answer metrics), and \textbf{honest reporting}
+(every number carries a claim-eligibility label; contaminated or patched
+runs are labeled as such).
+
+\subsection{1.3 Research questions}\label{research-questions}
+
+\textbf{RQ1 --- Architecture.} What controller decomposition makes
+memory-write decisions explicit, interpretable, and auditable, and
+prevents a language model from mutating memory outside a governed action
+vocabulary?
+
+\textbf{RQ2 --- Diagnostic.} Can a compact, author-designed diagnostic
+slice expose memory-governance failures --- invalid commits, premise
+acceptance, lineage loss --- that are invisible to downstream answer
+accuracy?
+
+\textbf{RQ3 --- Measurement.} Which metrics separate decision
+correctness, memory-state correctness, and downstream answer behavior,
+and which shipped metrics fail (and must be disclosed as failing)?
+
+\textbf{RQ4 --- Reliability.} How far do the reported conclusions
+survive paired significance testing with multiplicity control,
+annotation audit, and adversarial review of run provenance?
+
+\textbf{RQ5 --- Reproducibility.} What artifact and claim controls keep
+a thesis, its papers, and its code mutually consistent --- including
+when the honest answer is "this number is not final"?
+
+\subsection{1.4 Hypotheses and their outcomes
+(preview)}\label{hypotheses-and-their-outcomes-preview}
+
+The original directional comparisons are not confirmatory because the
+pilot fails its shortcut gate. Chapter 7 therefore treats them as
+diagnostics and reports these outcomes:
+
+\begin{itemize}
+\item
+  \textbf{H1 --- Governance framing helps an LLM.} Not identified by v2:
+  structured and unstructured prompts differ on a label-leaking
+  collection, so the observed gap is descriptive.
+\item
+  \textbf{H2 --- An interpretable reference policy can match an LLM
+  policy.} No superiority or non-inferiority conclusion: test accuracy
+  is 0.8889 versus 0.9000 and the family-clustered paired interval
+  includes zero.
+\item
+  \textbf{H3 --- Abstention is load-bearing for action safety.}
+  Mechanistically supported inside the generator, but not validated
+  externally; zero observed action false commits has a non-zero
+  finite-sample upper bound and accompanies missed updates.
+\item
+  \textbf{H4 --- Decision and stored-state metrics can diverge.}
+  Supported as a measurement demonstration: the no-lineage ablation
+  preserves action accuracy while degrading lineage integrity.
+\item
+  \textbf{H5 --- Controller end-task superiority on LongMemEval.} Not
+  supported; existing downstream runs are contaminated, incomplete, or
+  selection-biased.
+\end{itemize}
+
+\subsection{1.5 Contributions}\label{contributions}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Formulation and evaluation decomposition (RQ1, RQ3).} Memory
+  writes are represented as KEEP/SUPERSEDE/ABSTAIN decisions over typed,
+  provenance-tracked, lineage-preserving records and evaluated
+  separately at action, state, and answer layers.
+\item
+  \textbf{A benchmark with build-time construct gates (RQ2, RQ4).} MGP-6
+  v4.3 --- 900 human-authored items in 100 semantic components across 20
+  domains, component-split, exactly action-balanced, dual-annotated,
+  with shortcut/duplicate/allowlist/deterministic-build gates enforced
+  at release rather than audited afterwards, and a sealed 540-item
+  hidden partition governed by a one-shot pre-registration protocol.
+\item
+  \textbf{A confirmatory decision-level result inside stated bounds
+  (RQ1).} One pre-registered configuration scored once on the sealed
+  split: 0.8481 accuracy, 0.8479 macro-F1, Cohen\textquotesingle s κ
+  0.7722, with component-cluster intervals roughly 40\% wider than
+  item-independence intervals would imply.
+\item
+  \textbf{Error decomposition by operational harm (RQ3).} The thesis
+  separates state-preserving from state-corrupting write failures and
+  shows the distinction changes the risk estimate fivefold (0.2111
+  aggregate false commit versus 0.0444 state-corrupting), alongside
+  missed-update, destructive-overwrite, and unnecessary-abstention rates
+  each with finite-sample intervals.
+\item
+  \textbf{Component attribution (RQ2).} Scoring the rule policy and the
+  model policy separately shows neither exceeds 0.750 alone against a
+  composed 0.8444, and bounds the abstention guard\textquotesingle s
+  hidden-split contribution at most 6.7 accuracy points of the 84.8
+  observed.
+\item
+  \textbf{Computation and cost accounting (RQ3).} Per-decision latency
+  distributions, prompt/completion token counts, retry and failure
+  counts, and cost-conditional expected loss under three governance
+  regimes --- with monetary cost declared unavailable rather than
+  reconstructed from list prices.
+\item
+  \textbf{Measured negative results (RQ4).} The v2
+  pilot\textquotesingle s conflict-type shortcut reaches 1.000 held-out
+  accuracy; the v2 reference policy does not outperform the structured
+  LLM and its preferred status flips with the cost matrix; and the v4.3
+  controller\textquotesingle s abstentions are not selectively
+  risk-targeted. Each is reported rather than omitted.
+\item
+  \textbf{Downstream validation with an attributable pattern (RQ1,
+  RQ5).} A homogeneous full-slice LongMemEval-M run places governed
+  writes at 76.1\% above every structural baseline, with every adjacent
+  step in the ordering separating under paired tests and the gain
+  concentrated in the competencies the write policy targets.
+\item
+  \textbf{Evidence exclusion and successor design (RQ4, RQ5).}
+  Incomplete, mapped, contaminated, and selection-biased results are
+  excluded from primary claims by an explicit ledger; a role-separated
+  successor protocol specifies independent generation, three-human
+  annotation, long trajectories, hidden baselines scored under the same
+  one-shot discipline, and native external metrics.
+\item
+  \textbf{Reproducible evidence package (RQ5).} Released per-item
+  predictions, a recomputation artifact regenerating every reported
+  number from raw predictions, audit JSON/Markdown, claim-evidence
+  matrix, and machine-readable ledgers keep paper, thesis, code, and
+  limitations synchronized.
+\end{enumerate}
+
+\subsection{1.6 Scope}\label{scope}
+
+The thesis evaluates the ASK formulation on an author-designed
+diagnostic slice and one stratified LongMemEval-M slice with a single
+base model family and single seed. It does not claim community-benchmark
+status for MGP-6 v2, does not claim end-task superiority on LongMemEval,
+does not claim human multi-annotator agreement, and does not claim that
+governance on these slices generalizes to open-domain deployments. These
+boundaries are stated because they are what the evidence supports;
+Chapter 9 enumerates them systematically.
+
+\subsection{1.7 Thesis structure and contribution
+map}\label{thesis-structure-and-contribution-map}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2030}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2030}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5940}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Research question}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Main chapter(s)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Primary artifact}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+RQ1 & Chapter 4 & src/ask/ (policy, memory operations, orchestrator) \\
+RQ2 & Chapters 5, 7 & benchmarks/mgp6/ (data, manual, metrics), ablation
+runs \\
+RQ3 & Chapters 6, 7 & metrics\_mgp6.py, ledger known\_metric\_issues \\
+RQ4 & Chapters 7, 8, 9 & reports/STATISTICAL\_ANALYSIS.md,
+reports/ERROR\_TAXONOMY.md, reports/THREATS\_TO\_VALIDITY.md \\
+RQ5 & Chapters 6, 9, App. E--F & artifacts/results\_ledger.json,
+reports/CLAIMS\_EVIDENCE\_MATRIX.md \\
+\end{longtable}
+}
+
+\section{2. Background and Related
+Work}\label{background-and-related-work}
+
+This chapter follows the verified related-work audit, with submission
+citations rechecked against primary metadata sources on 2026-07-15. The
+most important change relative to earlier drafts is a cluster of near
+neighbors --- STALE, TOKI, Supersede, MemGuard, and HaluMem --- that are
+conceptually closer to ASK than the production systems archived in
+Chapter 7 and constrain which novelty claims remain defensible (§2.8).
+
+\subsection{2.1 Memory in language-agent
+systems}\label{memory-in-language-agent-systems}
+
+\emph{Memory} covers several mechanisms with different mutability and
+deletion semantics: context-window memory, retrieval memory, summary
+memory, structured records, and model parameters. Long context does not
+remove governance obligations --- long-context models use evidence
+unevenly by position (Liu et al., 2024) --- and retrieval-augmented
+generation separates storage from generation without providing a write
+policy (Lewis et al., 2020; Borgeaud et al., 2022).
+
+The systems line most relevant to ASK treats memory as an agent-managed
+store. MemGPT frames the LLM as an operating system that self-edits
+tiered memory (Packer et al., 2023); its open-source successor Letta is
+evaluated in Chapter 7 (0.678 action accuracy under the favourable
+NOOP→ABSTAIN mapping). MemGPT\textquotesingle s memory edits are opaque
+function calls: there are no write-time decision criteria, no
+abstention, no lineage. Mem0 productionizes an
+extract--consolidate--retrieve pipeline whose LLM chooses
+ADD/UPDATE/DELETE/NOOP per item (Chhikara et al., 2025); its NOOP means
+"nothing new", not "too ambiguous to commit", and it exposes no
+supersession lineage (Chapter 7: 0.622 upper bound, invalid-commit rate
+1.0). Zep/Graphiti stores a bi-temporal knowledge graph in which
+contradicted edges receive invalidation timestamps instead of deletion
+(Rasmussen et al., 2025) --- the strongest shipped precedent for
+supersession-with-history --- but invalidation is a side effect of LLM
+extraction, not a governed decision with an abstain option, and Zep
+never scores whether an invalidation was correct. MemOS proposes MemCube
+versioning/provenance and uses the word "governance" (Li et al., 2025),
+but publishes no decision rule for supersede-vs-keep-vs-refuse; through
+its adapter, supersession is not even observable (Chapter 7:
+bound-only). A-MEM evolves Zettelkasten-style notes but always
+integrates new information (Xu et al., 2025); MemoryBank forgets on an
+Ebbinghaus schedule --- time-driven, not evidence-driven (Zhong et al.,
+2024); Generative Agents accumulate an append-only stream with
+reflection (Park et al., 2023).
+
+Two recent lines are closer to ASK\textquotesingle s decision framing.
+Memory-R1 trains an RL memory manager over a discrete
+ADD/UPDATE/DELETE/NOOP action space (Yan et al., 2025) --- the clearest
+prior formalization of writes as actions --- but the policy is opaque
+(PPO/GRPO), the reward is answer-level, and NOOP is not
+uncertainty-driven abstention. RMM performs prospective merge-or-add at
+session end with retrospective RL-refined retrieval (Tan et al., 2025);
+its merge-vs-add echoes supersede-vs-keep but uses similarity thresholds
+without contradiction semantics or abstention. MemGuard assigns each
+memory an explicit functional role (type) at write time to prevent
+cross-type contamination (Ha et al., 2026); ASK\textquotesingle s
+no-typing ablation (macro-F1 0.9399→0.5680, KEEP F1→0.0) makes the same
+argument experimentally.
+
+\subsection{2.2 Memory lifecycle, revision, and
+conflict}\label{memory-lifecycle-revision-and-conflict}
+
+FadeMem classifies new-vs-old memory pairs (compatible / contradictory /
+subsumes / subsumed) and applies decay or fusion (Wei et al., 2026); it
+always acts on a detected conflict --- there is no abstain --- and
+suppresses rather than preserving lineage. PAMU updates preference
+signals only when drift is significant, via sliding-window and EMA
+fusion (Sun et al., 2025): a conservative, interpretable update trigger,
+but for preference vectors only, with no discrete action space. TOKI is
+the closest conceptual neighbor found in the verified audit (Wang,
+2026): it argues that contradiction resolution \emph{is} write-time
+concurrency control, types four production heuristics as bitemporal
+operators, and preserves the losing fact in an audit row. Its
+await-confirmation operator is a formal ancestor of ABSTAIN and its
+audit row parallels supersession lineage. Reddy and
+Challaram\textquotesingle s deterministic conflict-resolution result
+(Reddy and Challaram, 2026) motivates testing interpretable update logic
+on independent data; it does not validate the author-designed MGP-6
+pilot by analogy.
+
+\subsection{2.3 Benchmarks and evaluation for agent
+memory}\label{benchmarks-and-evaluation-for-agent-memory}
+
+LongMemEval evaluates chat assistants on five long-term memory abilities
+including knowledge updates and abstention (Wu et al., 2025); it is this
+thesis\textquotesingle s downstream substrate (a stratified 180-item
+slice), and it is end-to-end only --- it cannot attribute failure to the
+write decision. LoCoMo tests very long conversational memory at scale
+(Maharana et al., 2024). HaluMem separately scores extraction, updating,
+and QA and reports that hallucinations accumulate at extraction/update
+(Chen et al., 2025); it detects hallucination rather than scoring a
+governed action choice, and it does not use gold KEEP/SUPERSEDE/ABSTAIN
+actions or lineage and premise-resistance metrics. The contribution here
+is therefore the operationalization and controlled, layered evaluation
+of this particular policy combination, not a claim of primacy for
+operation-level evaluation or decision typologies.
+
+STALE is a high-priority benchmark neighbor (Chao et al., 2026): 400
+expert-validated implicit-conflict scenarios probing State Resolution,
+Premise Resistance, and Implicit Policy Adaptation. It shares
+MGP-6\textquotesingle s constructs almost by name
+(MGP-6\textquotesingle s query modes include premise\_resistance; its
+single annotation disagreement is an implicit\_conflict item). The
+decisive difference is scope: STALE probes a frozen
+agent\textquotesingle s \emph{read-side} recognition that its memory is
+stale, whereas MGP-6 scores \emph{write-time actions} with an abstain
+option, supersession lineage, and memory-state metrics. Supersede
+isolates the "supersession gap" on the LongMemEval knowledge-update
+subset and trains it with GRPO (Patel, 2026); its reward is answer-time
+fact currency rather than a write-action taxonomy with abstention,
+lineage, or an interpretable policy. GateMem uses the phrase "memory
+governance" for a different axis --- access control, deletion
+compliance, and utility across principals in shared memory pools (Ren et
+al., 2026). RSCB-MC applies risk-sensitive contextual bandits with
+explicit abstention to memory \emph{retrieval} in coding agents (Iscan,
+2026). Together these verified neighbors preclude any primacy claim for
+abstention, governance, update control, provenance, or operation-level
+measurement.
+
+Benchmark and dataset documentation follows the spirit of datasheets and
+model cards (Gebru et al., 2021; Mitchell et al., 2019); the agreement
+statistics of Chapter 5 use Cohen\textquotesingle s κ (Cohen, 1960), and
+the interval estimates of Chapters 5--7 use bootstrap methods (Efron and
+Tibshirani, 1993).
+
+\subsection{2.4 Belief revision and knowledge
+editing}\label{belief-revision-and-knowledge-editing}
+
+The AGM theory of belief change --- expansion, revision, contraction
+under minimal-change postulates --- is the formal ancestor of
+KEEP/SUPERSEDE (Alchourrón et al., 1985); classical AGM has no native
+abstain (non-prioritized revision covers declining input). ASK is best
+read as an operational, resource-bounded approximation of
+non-prioritized revision for LLM memory; no formal AGM compliance is
+claimed or proven. Parametric knowledge editing (ROME, MEMIT) evaluates
+edits in weight space with efficacy/generalization/specificity (Meng et
+al., 2022; Meng et al., 2023) --- the decision-level-evaluation analogue
+for parameters; editing assumes the edit should happen, whereas ASK
+governs \emph{whether} to commit at all.
+
+\subsection{2.5 Selective prediction and
+abstention}\label{selective-prediction-and-abstention}
+
+Abstention descends from the reject option (Chow, 1970), selective
+classification (El-Yaniv and Wiener, 2010; Geifman and El-Yaniv, 2017),
+and learning to defer (Madras et al., 2018; Mozannar and Sontag, 2020).
+ASK applies that established idea at memory-write time.
+TOKI\textquotesingle s await-confirmation and RSCB-MC\textquotesingle s
+retrieval-time abstention further narrow the contribution. The
+defensible result is a within-generator mechanism signature plus
+explicit false-commit/missed-update trade-off, not a general safety
+effect.
+
+\subsection{2.6 Personalization and preference
+modeling}\label{personalization-and-preference-modeling}
+
+PrefEval shows preference following collapses within about ten turns
+zero-shot (Zhao et al., 2025) --- external motivation for the
+single-session-preference failure line in Chapter 8, with the difference
+that PrefEval measures following while this thesis attributes failure
+mechanism (grounding supply vs answer-side discipline). PersonaMem
+benchmarks dynamic user profiling across sessions with frontier models
+around 50\% (Jiang et al., 2025); LaMP is the canonical
+retrieval-augmented personalization suite with static profiles (Salemi
+et al., 2023).
+
+\subsection{2.7 Provenance and
+auditability}\label{provenance-and-auditability}
+
+Provenance \emph{storage} is well-precedented: Zep\textquotesingle s
+bi-temporal validity intervals and episodes (Rasmussen et al., 2025),
+TOKI\textquotesingle s audit rows (Wang, 2026), MemOS\textquotesingle s
+MemCube metadata (Li et al., 2025), and HaluMem\textquotesingle s
+evaluation-side error tracing (Chen et al., 2025). Auditability as a
+governance requirement also appears in alignment and risk frameworks
+(Ouyang et al., 2022; Bai et al., 2022; Standards and Technology, 2023).
+ASK scores provenance and lineage ablations inside its pilot; the
+no-lineage result demonstrates that action accuracy can miss lineage
+degradation, but author alignment prevents a general causal claim.
+
+\subsection{2.8 Positioning and allowed novelty
+claims}\label{positioning-and-allowed-novelty-claims}
+
+Following reports/NOVELTY\_CLAIMS\_ALLOWED.md and the verified audit,
+the thesis makes one narrow contribution claim: it
+\textbf{operationalizes and evaluates the combination} of an
+interpretable KEEP/SUPERSEDE/ABSTAIN write policy, typed and
+provenance-tracked records, lineage-preserving transitions, and separate
+decision-, stored-state/lineage-, and downstream-answer measurements.
+The controlled ablations attribute distinct failure signatures to
+components of that combination. The thesis does not claim invention or
+primacy for write operations as actions, update/versioning, provenance,
+lineage, abstention, write gating, operation-level evaluation, or the
+term "memory governance".
+
+\section{3. Problem Formulation}\label{problem-formulation}
+
+\subsection{3.1 System boundary}\label{system-boundary}
+
+Let an interaction stream produce candidate memory items. At step t,
+extraction yields a candidate cₜ (typed content with provenance), the
+store state is Mₜ (a set of typed records, each active or superseded,
+with lineage links), and the controller computes a relation rₜ ∈
+\{independent, duplicate, update/contradiction, unclear\} between cₜ and
+a selected prior record, then a decision
+
+d\_t = π(c\_t, r\_t, M\_t) ∈ \{KEEP, SUPERSEDE, ABSTAIN\},
+
+with transition semantics
+
+\begin{itemize}
+\item
+  \textbf{KEEP}: insert cₜ as a new active record (also the correct
+  action when no conflicting prior exists);
+\item
+  \textbf{SUPERSEDE}: insert cₜ, mark the conflicting prior inactive,
+  and record a lineage link from the new record to the superseded one;
+\item
+  \textbf{ABSTAIN}: no mutation; the conflict or ambiguity is recorded
+  for review rather than committed.
+\end{itemize}
+
+Retrieval reads only active records; lineage remains queryable for audit
+and for explicitly historical questions. The policy π may be a
+deterministic scorecard (§4.4) or an LLM (§4.5); in both cases the
+action vocabulary and the transition semantics are fixed by code, not by
+the model.
+
+\subsection{3.2 What makes a write decision
+wrong}\label{what-makes-a-write-decision-wrong}
+
+Three governance failure modes are scored separately (formal definitions
+in Appendix C):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Invalid commit} --- committing a write (KEEP or SUPERSEDE) on
+  an item whose gold action is ABSTAIN: the store now contains a record
+  that policy says should not have been committed.
+\item
+  \textbf{Missed supersession} --- choosing KEEP or ABSTAIN when the
+  gold action is SUPERSEDE: the stale record remains active. Its
+  conservative sub-case, SUPERSEDE→ABSTAIN, leaves the store
+  consistent-but-stale without committing anything false; the harmful
+  sub-case, silent KEEP, leaves an unresolved contradiction active.
+\item
+  \textbf{Lineage loss} --- performing the right action while failing to
+  preserve the supersession chain, invisible to action accuracy but
+  fatal to auditability.
+\end{enumerate}
+
+Downstream, two state-dependent behaviors are scored: \textbf{stale
+retrieval} (a superseded record surfaces as current) and \textbf{premise
+resistance} (whether the system rejects a query premise that its
+governed memory contradicts).
+
+\subsection{3.3 Functional requirements}\label{functional-requirements}
+
+\begin{itemize}
+\item
+  \textbf{FR-1 Typed extraction.} Candidate memories carry a type (e.g.,
+  stable preference, transient preference, episodic fact),
+  holder/subject, and source provenance.
+\item
+  \textbf{FR-2 Relation classification.} Each candidate is classified
+  against retrieved priors before any write.
+\item
+  \textbf{FR-3 Three-action decision.} Every write decision is one of
+  KEEP/SUPERSEDE/ABSTAIN; unknown or unparsable proposals resolve to no
+  mutation.
+\item
+  \textbf{FR-4 Lineage preservation.} SUPERSEDE links the new record to
+  the superseded one; superseded records are excluded from ordinary
+  retrieval but never silently destroyed.
+\item
+  \textbf{FR-5 Interpretable policy option.} A deterministic,
+  feature-scored policy must be available so decisions can be explained
+  and audited without model introspection.
+\item
+  \textbf{FR-6 Decision export.} Per-item decisions, features, and
+  outcomes are exported with stable IDs for scoring.
+\item
+  \textbf{FR-7 Evidence-labeled reporting.} Every reported metric
+  carries the run\textquotesingle s claim-eligibility label.
+\end{itemize}
+
+\subsection{3.4 Invariants}\label{invariants}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  No memory mutation outside the three-action vocabulary.
+\item
+  No SUPERSEDE without an identified prior record; lineage recorded
+  atomically with the write.
+\item
+  ABSTAIN never mutates state.
+\item
+  Retrieval of active records never returns superseded ones (violations
+  are scored as stale retrieval, not patched).
+\item
+  No unparsable model output is coerced into a write.
+\item
+  No result enters a manuscript table without a ledger entry and
+  eligibility label.
+\end{enumerate}
+
+\subsection{3.5 Threat model and failure
+sources}\label{threat-model-and-failure-sources}
+
+Accidental and adversarial sources considered: ambiguous or
+contradictory user statements; model hallucination of relations or
+targets; distractor content crowding out decisive evidence at retrieval
+time; provider failures corrupting extraction (empirically observed:
+HTTP-402 no-responses cached as empty extractions in the v7 LongMemEval
+run, §7.6); judge errors in downstream grading (empirically observed:
+number-word/date false negatives, §8.3); and researcher degrees of
+freedom (fix-on-failure loops without confirmation sets --- the reason
+the LongMemEval failure replay is excluded from final claims, §9.1).
+Chapter 9 maps each to a validity threat with mitigation status.
+
+\subsection{3.6 Failure taxonomy by causal
+layer}\label{failure-taxonomy-by-causal-layer}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2728}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3636}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3637}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Layer}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Example failure}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Primary diagnostic}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Extraction & candidate fact missed or fabricated & extraction traces;
+fail-closed policy (v8) \\
+Relation classification & contradiction labeled independent & relation
+confusion; escalation gating \\
+Decision & KEEP chosen where gold is SUPERSEDE & action confusion
+matrix; per-action F1 \\
+Commit safety & write on a gold-ABSTAIN item & invalid-commit rate \\
+Lineage & supersession chain broken & lineage integrity \\
+Retrieval & superseded record surfaces; decisive turn trimmed away &
+stale-retrieval rate; SSP taxonomy (§8.1) \\
+Answer & correct grounding present, wrong binding & answer-side
+categories of the SSP taxonomy \\
+Judge & correct answer graded wrong & adjudication ledger; κ between
+judges \\
+\end{longtable}
+}
+
+\section{4. ASK Architecture and
+Implementation}\label{ask_architecture_and_implementation}
+
+All code anchors below refer to the canonical repository
+(src/ask/\ldots) and were verified in the pipeline reconstruction audit
+(docs/audit/CONTROLLERRUN\_RECONSTRUCTION.md).
+
+\subsection{4.1 Architectural overview}\label{architectural-overview}
+
+The controller surrounds a SQLite-backed memory store with a governed
+write path: per-turn extraction of typed candidates, relation
+classification against retrieved priors, a scored three-action policy,
+transition execution with lineage, and retrieval/answer stages that
+consume only governed state. The per-session flow is driven by
+ControllerOrchestrator.answer() (src/ask/pipeline/orchestrator.py).
+
+\includegraphics[width=6.25in,height=2.67482in,alt={ASK Controller architecture}]{media/image1.png}
+
+ASK Controller architecture
+
+User turns\\
+\textbar{}\\
+v\\
+{[}Extractor (strict JSON schema){]} -\/-\textgreater{} typed candidate
+memories\\
+\textbar{}\\
+v\\
+{[}Prefilter: top-64 turns by question similarity{]}\\
+\textbar{}\\
+v\\
+{[}Relation classifier (two-stage, optional escalation){]}\\
+\textbar{} candidate vs selected prior\\
+v\\
+{[}Policy: scored KEEP / SUPERSEDE / ABSTAIN{]}\\
+\textbar{}\\
+v\\
+{[}Memory operations: insert\_active \textbar{} supersede(+lineage)
+\textbar{} no-op{]}\\
+\textbar{}\\
+v\\
+{[}Retrieval over active records (dense, k=16, neighbor expansion){]}\\
+\textbar{}\\
+v\\
+{[}Answer-context compilation (session-diverse rerank,
+\textasciitilde12k-token budget){]}\\
+\textbar{}\\
+v\\
+{[}Answerer{]} -\/-\textgreater{} {[}Judge / grader with guarded
+normalization{]}
+
+\subsection{4.2 Extraction}\label{extraction}
+
+Extractor.render\_prompt() renders a per-turn extraction prompt bound to
+a strict JSON schema (ExtractionOutput.model\_json\_schema());
+Extractor.extract() is called per user turn, concurrently (default
+concurrency 8). Extraction is fail-closed as of v8: on a provider
+no-response the extractor raises rather than caching a fabricated empty
+extraction --- the v7 behavior of caching empties is the documented
+contamination source F1/F2 (§7.6). A content-keyed shared extraction
+cache allows cross-run reuse without re-introducing synthetic empties.
+
+\subsection{4.3 Relation classification and prior
+selection}\label{relation-classification-and-prior-selection}
+
+For each candidate, \_process\_candidate() runs a two-stage relation
+classifier (RelationClassifier.classify()) with an optional cascade
+escalation to a stronger model --- gated so that escalation is a no-op
+unless a genuinely different model is configured (the v7 run set
+BIG\_MODEL == FAST\_MODEL, making its escalation tier inert; disclosed
+in §7.6). Prior selection (\_find\_prior, \_select\_prior\_relation)
+picks the stored record against which the relation is evaluated.
+
+\subsection{4.4 Prototype scorecard and released reference
+policy}\label{prototype-scorecard-and-released-reference-policy}
+
+controller.policy.decide() implements the scored three-action rule:
+
+if S\_abstain \textgreater{} θ\_abs: ABSTAIN\\
+elif S\_revise \textgreater{} θ\_sup and relation\_update \textgreater{}
+0: SUPERSEDE\\
+else: KEEP
+
+with feature scoring in src/ask/controller/scoring.py. The features are
+deliberately few and human-legible (a five-feature scorecard over
+relation evidence, type compatibility, provenance agreement, and
+conflict signals), so a runtime decision can be explained by inspection
+of its feature values.
+
+This runtime scorecard did \textbf{not} generate the released MGP-6
+reference predictions. Those predictions came from the deterministic
+lexical predicate policy in benchmarks/mgp6/systems/policies.py. Chapter
+7 therefore evaluates that artifact as a \emph{reference policy}, not as
+evidence for the five-feature scorecard or its thresholds. The scorecard
+remains an implemented architectural option whose independent tuning and
+evaluation are open work.
+
+\subsection{4.5 The LLM policy and the decision
+baselines}\label{the-llm-policy-and-the-decision-baselines}
+
+The LLM-backed controller replaces the scorecard with a model decision
+(qwen/qwen3.5-9b) inside the same scaffold: same extraction, relation
+evidence, action vocabulary, and transition semantics. Two decision
+baselines isolate the contribution of the scaffold itself: a zero-shot
+LLM decision baseline (no governance framing; 0.700 accuracy,
+invalid-commit 0.606) and a six-shot run with 174/180 predictions. The
+latter is scored coverage-aware by aligning the six missing IDs as
+INVALID (accuracy 0.7833; macro-F1 0.7692) and remains incomplete, not a
+completed-run comparison (§7.2).
+
+\subsection{4.6 Memory operations and
+lineage}\label{memory-operations-and-lineage}
+
+src/ask/memory/operations.py implements insert\_active, supersede (links
+lineage, marks the prior inactive), supersede\_evict, retrieve\_active
+(excludes superseded records), and get\_lineage. Lineage is what makes
+supersession auditable: the losing record remains queryable with its
+link to the superseding record, rather than being deleted or silently
+overwritten --- the same auditability argument made formally by
+TOKI\textquotesingle s audit rows (Wang, 2026) and operationally by
+Zep\textquotesingle s invalidation timestamps (Rasmussen et al., 2025),
+here scored directly via the lineage-integrity metric.
+
+\subsection{4.7 Retrieval and answer-context
+compilation}\label{retrieval-and-answer-context-compilation}
+
+Retrieval is dense (MiniLM-L6-v2, max sequence length 256, k=16) with
+neighbor expansion (±2 turns), assistant/raw-user context pools, and
+query-gated historical lineage (historical context is offered only when
+the question requests history). Answer-context compilation reranks for
+the answer, applies cross-session diversity (v8), and trims to a
+\textasciitilde12,000-token budget. The answerer (qwen3.5-9b,
+temperature 0) uses per-competency prompts with a WORK→FINAL scaffold.
+These retrieval-side mechanisms matter for Chapter 8: grounding supply
+is the dominant failure family in the contaminated v7 SSP diagnostic,
+while the later top-up shows that results cannot be carried across
+configurations.
+
+\subsection{4.8 Judging and
+normalization}\label{judging-and-normalization}
+
+LongMemEvalGrader.grade() applies ordered guards (blank, degenerate,
+refusal, abstention) before the token guard; \_normalize\_text()
+collapses spelled-out cardinals and multiplicatives ("twice"→"2"); the
+hard gold-token reject fires only on a provable numeric conflict, with
+all lexical/entity/date mismatches deferred to the semantic LLM judge.
+These fixes respond to documented judge false negatives (F6, §8.3) and
+are themselves part of the audit trail.
+
+\subsection{4.9 Test strategy}\label{test-strategy}
+
+Unit and regression tests cover fail-closed extraction
+(test\_extractor\_recovery.py), decision semantics, lineage operations,
+merge-by-session-id de-duplication (merge\_run\_shards()), and the guard
+logic above. The primary standalone, stdlib-only analysis
+(scripts/analysis/audit\_mgp6\_validity.py) recomputes shortcut probes,
+held-out metrics, cluster intervals, finite-sample bounds, calibration,
+risk--coverage, and cost sensitivity from per-item predictions. The
+older mcnemar\_mgp6.py item-level analysis remains reproducible but
+secondary (Appendix E).
+
+\subsection{4.10 Operational modes}\label{operational-modes}
+
+The controller supports simulation (no mutation), shadow, assisted
+(human approval for selected actions), and autonomous modes; ABSTAIN
+routes to review rather than committing. Deployment guidance (Chapter 9)
+restricts autonomous supersession to policy-stable, well-audited cases.
+
+\section{5. MGP-6 v2: The Diagnostic
+Instrument}\label{mgp-6-v2-the-diagnostic-instrument}
+
+\subsection{5.1 Purpose and status}\label{purpose-and-status}
+
+MGP-6 v2 is an \textbf{author-designed 180-scenario diagnostic slice},
+not an independent community benchmark; every claim in this thesis
+phrases it as such. Its purpose is to isolate write-time governance
+competence --- when to keep, when to supersede, when to abstain ---
+under controlled conflict structure, so that decision failures are
+attributable and countable. Verified against the raw JSONL on 2026-07-12
+(benchmarks/mgp6/data/mgp6\_v2.jsonl).
+
+\subsection{5.2 Composition}\label{composition}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.3506}}
+  >{\centering\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.6494}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Property}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Value}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Scenarios & 180 \\
+Conflict types & T1--T6, 30 each (type definitions:
+benchmarks/mgp6/mgp6\_v2\_spec.md; T3 = implicit conflict) \\
+Gold actions & SUPERSEDE 90, ABSTAIN 66, KEEP 24 \\
+Splits & train 60 / dev 30 / test 90 \\
+Query modes & direct\_recall 108, premise\_resistance 45,
+implicit\_application 27 \\
+\end{longtable}
+}
+
+The gold-action distribution is author-imposed rather than
+population-derived. SUPERSEDE is the majority class (90/180), while
+ABSTAIN and KEEP account for 66 and 24 items. Macro-F1 therefore
+accompanies accuracy, but neither metric repairs the more serious
+shortcut defect: conflict type deterministically identifies the action
+in this pilot. The distribution must not be interpreted as an estimate
+of deployment prevalence.
+
+\subsection{5.3 Unit of analysis and split
+policy}\label{unit-of-analysis-and-split-policy}
+
+Each scenario has a stable scenario\_id, an interaction context
+establishing prior memory, a candidate event, a gold action, a conflict
+type, a split, and a query mode for the downstream probe. Evaluation
+joins by stable ID. The rule controller was developed against train/dev;
+therefore the \textbf{test-split figures (n=90) are always reported
+first} and full-corpus figures second (§7.2), a split-hygiene rule
+enforced by the claims matrix.
+
+\subsection{5.4 Query modes: probing the state, not just the
+decision}\label{query-modes-probing-the-state-not-just-the-decision}
+
+Each scenario carries a downstream probe in one of three modes:
+\textbf{direct recall} (does the current value surface?),
+\textbf{premise resistance} (the probe asserts a stale or false premise;
+a governed system must resist it), and \textbf{implicit application}
+(the current value must be used without being named). These modes
+connect decision correctness to memory-state behavior; premise
+resistance in particular is where the rule and LLM controllers diverge
+most sharply (1.0 vs 0.0889, §7.2). The construct is adjacent to
+STALE\textquotesingle s read-side premise-resistance probing (Chao et
+al., 2026); MGP-6 v2 differs in scoring the \emph{write actions} that
+produce the probed state.
+
+\subsection{5.5 Annotation evidence --- stated
+precisely}\label{annotation-evidence-stated-precisely}
+
+Two distinct components, never to be conflated (source of truth §1.2):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{One independent annotator} covered the 90-item test split
+  (benchmarks/mgp6/annotations/human/): raw agreement \textbf{0.9889}
+  {[}0.9667, 1.0{]}, \textbf{Cohen\textquotesingle s κ 0.98146}
+  {[}0.93997, 1.0{]}, macro-F1 0.9913, exactly \textbf{one disagreement}
+  --- MGP6V2-T3-TEST-016 (implicit conflict; annotator ABSTAIN vs gold
+  SUPERSEDE). Caveats: n = 1 annotator; the annotator\textquotesingle s
+  independence and human identity rest on author attestation; this is
+  \textbf{not} multi-human inter-annotator agreement.
+\item
+  \textbf{A four-LLM audit panel} (geminiPro, gptSolHigh, kimi, z) over
+  the same 90 items: \textbf{Fleiss κ 0.9815}, unanimous on 88/90,
+  per-model agreement with gold 1.0 / 0.9778 / 1.0 / 1.0, majority vote
+  \textbf{100\%} versus gold. This is a model audit, not human IAA.
+\end{enumerate}
+
+Additional disclosures: the human review sheet exists but is 0/180
+filled; dataset documentation dated 2026-07-10 predates both annotation
+sets (2026-07-11) and wrongly states agreement was unmeasured ---
+reconciled in this thesis and flagged for the release. The single
+disagreement is retained as an adjudication item and used for
+sensitivity discussion (§8.4), not silently relabeled. Because the
+labeling manual was authored alongside the scenarios, the panel may
+share the author\textquotesingle s reading; this construct-validity
+limit is threat C2 in Chapter 9.
+
+\includegraphics[width=6.25in,height=4.77418in,alt={Annotation agreement}]{media/image2.png}
+
+Annotation agreement
+
+\subsection{5.6 Baselines embedded in the
+instrument}\label{baselines-embedded-in-the-instrument}
+
+Four reference systems establish what the slice measures: B1 no-memory,
+B2 flat retrieval, B3 recency preference, B4 naive overwrite. B2--B4
+cannot express abstention (invalid-commit rate 1.0 by construction on
+gold-ABSTAIN items), which is precisely the governance gap the
+instrument is designed to expose; consequently their comparisons with
+the controller are diagnostic, not general-capability results (§7.4,
+threat S3).
+
+\subsection{5.7 Relationship to
+LongMemEval-M}\label{relationship-to-longmemeval-m}
+
+The stratified LME-M slice (180 items, 6 competencies × 30, seed 0,
+built deterministically by scripts/build\_stratified\_slice.py; the
+underlying LongMemEval data is external and not redistributed) addresses
+the downstream layer: whether governed memory supports later answers
+over long histories (Wu et al., 2025). A system can occupy any cell of
+the decision-correct × answer-correct table. Chapter 7 uses the archived
+downstream runs only as failure analysis because provider contamination,
+replay selection, and incomplete coverage prevent a clean estimate of
+cross-layer association.
+
+\subsection{5.8 Known metric issues (disclosed, excluded from
+claims)}\label{known-metric-issues-disclosed-excluded-from-claims}
+
+As shipped, over\_forgetting\_rate and under\_forgetting\_rate saturate
+at 1.0 for every system and are uninformative; they appear in no claim
+in this thesis (ledger known\_metric\_issues). The invalid\_commit
+metric was revised during the project; all reported numbers use the
+revised definition, and pre-revision .bak files are preserved (threat
+I6).
+
+\section{6. Experimental Methodology}\label{experimental-methodology}
+
+\subsection{5.9 MGP-6 v4.3: why it was built, how it was built, and what
+it can
+bear}\label{mgp-6-v4.3-why-it-was-built-how-it-was-built-and-what-it-can-bear}
+
+\subsubsection{5.9.1 The question the instrument has to
+answer}\label{the-question-the-instrument-has-to-answer}
+
+Every memory benchmark this thesis surveyed in Chapter 2 scores a
+downstream answer. That is the wrong measurement for a write policy,
+because a wrong answer can originate in retrieval, in context assembly,
+in generation, or in the write decision, and an aggregate answer score
+cannot say which. To isolate the write decision the instrument must hold
+retrieval, context, and generation \emph{constant} and vary only the
+evidential situation. Stated precisely, the question is:
+
+Given the same stored record and the same proposed new value, can a
+system
+
+distinguish the case where the proposal is stale (KEEP), the case where
+it is
+
+current (SUPERSEDE), and the case where the evidence cannot settle the
+
+question (ABSTAIN)?
+
+That requirement --- not a desire for scale, coverage, or realism ---
+dictated the entire construction. MGP-6 v4.3 is small and synthetic
+\emph{on purpose}: the control it buys is the only reason it can answer
+the question.
+
+\subsubsection{5.9.2 Why v2 had to be
+replaced}\label{why-v2-had-to-be-replaced}
+
+The v4.1 shortcut review found that surface lexical and structural
+features recovered the intended action without any reasoning over
+authority, scope, time, identity, or prior memory. The v2 evidence for
+this is decisive and is reported in §7.2: a conflict-type-only lookup
+fitted on train+dev reaches \textbf{1.000} held-out accuracy while never
+reading the dialogue or the memory state (type-only: 0.9667). In v2,
+each conflict family mapped deterministically to one action, so
+family-disjoint splits blocked \emph{literal} overlap while leaving the
+family→label rule intact across every split. Scenario recognition was
+sufficient; evidence reasoning was never tested.
+
+Two lessons carried into the redesign. First, mechanical repairs
+(schemas, identifiers, hashes, manifests) had to be kept strictly
+separate from the substantive content redesign, so that a passing
+structural check could not be mistaken for a repaired construct --- this
+separation is what distinguishes v4.1 from v4.2. Second, review had to
+happen at the level of the \emph{group of items that share a scenario},
+not the individual item: the KEEP, SUPERSEDE, and ABSTAIN variants must
+be inspected jointly, because a leak is a property of the contrast
+between them, not of any one of them.
+
+\subsubsection{5.9.3 The item}\label{the-item}
+
+Each released record has exactly five fields and the schema sets
+additionalProperties: false:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.3506}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.6494}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Field}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Content}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+public\_id & opaque identifier, MGP43- + 20 hex characters \\
+memory\_before & the stored record: principal, memory\_slot,
+standing\_value \\
+dialogue & 9, 11, or 13 turns alternating USER/ASSISTANT, each with a
+turn\_id \\
+evaluation\_query & fixed instruction naming the slot and the three
+permitted actions \\
+gold\_action & KEEP, SUPERSEDE, or ABSTAIN \\
+\end{longtable}
+}
+
+The closed schema is a design commitment, not housekeeping. There is no
+conflict-type field, no design target, no component label, no annotator
+note --- no channel of the kind that leaked the answer in v2. The
+identifier is opaque so that it encodes nothing recoverable.
+
+The dialogue has a fixed rhetorical shape: early turns state the
+standing value and name the candidate value; a middle turn declares
+which positions in a numbered evidence list are \textbf{indexed} to the
+target slot and warns that the remaining positions belong to
+neighbouring records; the evidence list is read out; a closing turn
+restates the requested value. The decision must be made from the stored
+record and this dialogue alone, before any content question is asked.
+
+\subsubsection{5.9.4 The semantic component --- the load-bearing
+idea}\label{the-semantic-component-the-load-bearing-idea}
+
+A \textbf{semantic component} is a group of nine items sharing one
+principal, one memory\_slot, one standing\_value, and one candidate
+value. The nine form a 3 × 3 grid: three dialogue lengths (9, 11, 13
+turns) crossed with the three gold actions. Because the grid is crossed,
+both margins are exactly balanced. Direct verification on the released
+public splits confirms this:
+
+\begin{itemize}
+\item
+  all \textbf{40/40} public components are exactly 3 KEEP / 3 SUPERSEDE
+  / 3 ABSTAIN;
+\item
+  each dialogue length is exactly \textbf{40 KEEP / 40 SUPERSEDE / 40
+  ABSTAIN}.
+\end{itemize}
+
+Neither verbosity nor length carries any signal about the action --- a
+shortcut that trips many synthetic benchmarks is closed by construction
+rather than by audit.
+
+What varies inside a component is narrower still, and this is the
+mechanism that makes the instrument work. All nine items draw their
+evidence from a \textbf{byte-identical pool of six sentences} ---
+verified for all \textbf{120/120} (component, length) triples in the
+public data. The three actions differ \emph{only} in \textbf{which two
+of those six sentences the dialogue indexes to the target slot}. Across
+the 80 triples where the index statement parses mechanically, the three
+indexed pairs are always distinct and always \textbf{partition the
+six-sentence pool exactly} (80/80).
+
+\subsubsection{5.9.5 A worked component}\label{a-worked-component}
+
+For principal = Rohan, memory\_slot = status message, standing\_value =
+available, candidate value do not disturb, all nine items contain the
+same six sentences and the same closing turn. Only the index differs:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.7261}}
+  >{\centering\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.2739}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Indexed pair (the two sentences bound to the slot)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Gold}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+"The do-not-disturb period has an expiry record." + "After the expiry,
+Rohan writes that his status is available." & KEEP \\
+"Rohan writes that the temporary period has ended." + "He then changes
+the status entry to do not disturb." & SUPERSEDE \\
+"The retained records do not include the offsets needed to compare
+them." + "The expiry time and the status-change time use different time
+zones." & ABSTAIN \\
+\end{longtable}
+}
+
+The reasoning each pair demands differs in kind, which is the point:
+
+\begin{itemize}
+\item
+  \textbf{KEEP} --- a temporary override expired and the standing value
+  was reasserted
+\end{itemize}
+
+\emph{after} it. The proposal is stale; the stored record is already
+correct.
+
+\begin{itemize}
+\item
+  \textbf{SUPERSEDE} --- the temporary period ended and a durable change
+  followed. The
+\end{itemize}
+
+proposal is current; the stored record is out of date.
+
+\begin{itemize}
+\item
+  \textbf{ABSTAIN} --- the two timestamps are in different time zones
+  and the retained
+\end{itemize}
+
+records lack the offsets needed to compare them. Neither conclusion is
+warranted. Note the character of this case: the evidence is not
+\emph{weak} or \emph{sparse}, it is \textbf{unresolvable}. This is
+deliberate, and it is why the 300 ABSTAIN items carry a dual ambiguity
+flag: they encode designed unresolvability, not annotator uncertainty.
+
+The other four sentences stay in every item as \textbf{controlled
+distractors}. A system that reads the whole transcript rather than the
+indexed evidence will find apparent support for all three actions in all
+three items. The confound is not removed by paraphrasing; it is removed
+by holding the surface form fixed and moving only the pointer. That is
+the sense in which v4.3 is a \emph{controlled} synthetic benchmark
+rather than merely a synthetic one.
+
+\subsubsection{5.9.6 Splits and
+determinism}\label{splits-and-determinism}
+
+Components, never items, are assigned to splits: train 180 items / 20
+components, development 180 / 20, hidden 540 / 60. Each of the 20
+domains contributes one component to train, one to development, and
+three to hidden. Assignment uses recorded seed 4301. The build is
+byte-deterministic --- archive timestamps are pinned to a constant
+(1980-01-01) so identical inputs yield identical hashes. Because a
+component never straddles a boundary, no system can observe the KEEP
+variant of a scenario in training and the SUPERSEDE variant at test.
+
+\subsubsection{5.9.7 The release gates are executable, not
+narrative}\label{the-release-gates-are-executable-not-narrative}
+
+\textbf{Shortcut audit.} Fitted on train, evaluated on hidden,
+component-held-out, repeated over five seeds (4301--4305). It trains
+word-level and character-level TF-IDF logistic regressions over
+\textbf{twelve restricted views} of each item, plus punctuation-only and
+length-only numeric features, plus decision trees at depths one through
+five. Each view carries a pre-set accuracy ceiling:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2831}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2334}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2500}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2334}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{View}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Ceiling}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{View}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Ceiling}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+full\_text & 0.65 & assistant\_only & 0.45 \\
+dialogue\_only & 0.65 & first\_three & 0.50 \\
+target\_evidence\_only & 0.65 & query\_only & 0.40 \\
+last\_two & 0.50 & memory\_only & 0.40 \\
+candidate\_only & 0.45 & id\_only & 0.40 \\
+previous\_turn & 0.45 & punctuation\_only & 0.40 \\
+user\_only & 0.45 & length\_only & 0.40 \\
+depth3\_tree & 0.60 & & \\
+\end{longtable}
+}
+
+The release ships with failed\_gates = {[}{]}: no probe cleared its
+threshold. Two views deserve specific note. id\_only confirms the opaque
+identifiers leak nothing --- the exact class of failure that made
+v2\textquotesingle s conflict-type field fatal. target\_evidence\_only
+is the strictest self-criticism in the build: it checks that even the
+\emph{correctly indexed} evidence, stripped of dialogue context, does
+not linearly separate the three classes, so the label depends on reading
+the evidence in context rather than on a lexical signature of the
+evidence itself.
+
+\textbf{Duplicate audit.} SHA-256 over seven restricted views, failing
+on \emph{any} cross-split collision in the five decision-relevant ones
+(full\_text, dialogue\_only, candidate\_only, previous\_turn,
+last\_two), plus character TF-IDF (4--6 grams) cosine similarity over
+every cross-split pair, failing on any edge at ≥ 0.995. Because
+components share an evidence pool by construction, within-split
+near-duplication is expected and permitted; the gate targets leakage
+across the split boundary specifically.
+
+\textbf{Public/private boundary.} Public model-facing records exclude
+gold labels, design targets, component metadata, private identifiers,
+and annotator metadata. Hidden inputs, hidden gold, final human gold,
+completed annotation packets, private mappings, and the detailed
+restricted-view audits live only in a gitignored local boundary. Content
+is addressed by two Merkle roots --- final gold 437b2a26\ldots{} and
+annotations a7e59f88\ldots{} --- and each distributed archive carries
+its own SHA-256.
+
+\subsubsection{5.9.8 Human validation and the weight it can
+bear}\label{human-validation-and-the-weight-it-can-bear}
+
+Two independent annotation packets cover all 900 items. The builder does
+not accept them on trust. Every row must carry a schema version; a
+content\_hash matching the coordinator\textquotesingle s binding for
+that item; an action in the permitted set; a \textbf{non-empty list of
+evidence turn identifiers that all reference real turns in that
+dialogue}; a rationale of at least 20 characters; a confidence in
+{[}0,1{]}; boolean ambiguity and exclusion flags; an annotator
+identifier; and a timezone-aware timestamp. Coverage must be exactly 900
+with no duplicate annotation identifiers. Any violation raises
+RuntimeError and aborts the build.
+
+The evidence-turn requirement is the substantive one: it makes an
+annotation \emph{checkable against the item} rather than a bare label,
+and it is what allows the builder to confirm that annotators engaged
+with the indexed evidence structure rather than pattern-matching the
+scenario.
+
+Outcome: agreement on every action (raw 1.0, Cohen\textquotesingle s κ
+1.0), zero exclusions, zero label adjudications, mean confidence 0.96
+and 0.967. Both annotators flagged all 300 ABSTAIN items as
+intentionally ambiguous scenarios.
+
+\textbf{What this does and does not establish.} Perfect agreement on a
+task whose labelling rule is deterministic by construction certifies
+that the manual is followable and that the items instantiate it. It does
+\textbf{not} independently validate the construct: two annotators
+applying the same unambiguous rule will agree whether or not the rule
+measures memory governance. This is the honest reading, and it is why κ
+= 1.0 appears in this thesis as a construction check rather than as
+evidence of difficulty or of external validity. Completion is accepted
+through dataset-owner attestation; the builder validates records,
+coverage, hashes, and agreement, but does not authenticate reviewer
+identity or annotation duration.
+
+\subsubsection{5.9.9 Why the design makes errors
+interpretable}\label{why-the-design-makes-errors-interpretable}
+
+Because the three actions within a component are surface-matched, an
+error is \emph{diagnostic} rather than merely wrong. Predicting
+SUPERSEDE on the KEEP variant means the system read a sentence that was
+present in the item but indexed to a different slot --- distractor
+capture, specifically.
+
+This is testable, and it was tested. Of the 28 errors the frozen
+controller makes on the development split, 18 can be mechanically
+resolved against a sibling item\textquotesingle s indexed pair (same
+component, same dialogue length, gold action equal to the
+\emph{predicted} action). In \textbf{all 18}, the evidence supporting
+the predicted action was present in the item but not indexed to the
+target slot. Every resolvable error is distractor capture --- precisely
+the failure mode the component design was built to isolate. The
+instrument is measuring what it was constructed to measure, which is a
+stronger statement than any accuracy figure in Chapter 7.
+
+\subsubsection{5.9.10 What the construction cannot
+deliver}\label{what-the-construction-cannot-deliver}
+
+The control that makes v4.3 informative is bought by giving up realism,
+and the trade must be stated plainly. Deliberately constructed scenarios
+do not reproduce the distribution of natural user interactions; the
+dialogues are stylized evidence-list recitations, not conversation. The
+design is single-slot and single-step, so it cannot test interference
+between records or multi-turn write trajectories. It is English-only.
+Human completion is owner-attested rather than identity-authenticated.
+And the release has no selected public redistribution license, so it
+must not be publicly hosted until licensing is resolved. MGP-6 v4.3 is a
+controlled diagnostic that must be paired with an external benchmark
+such as LongMemEval (§7.11), never a substitute for one.
+
+\subsection{6.1 Evidence policy: the ledger and claim
+eligibility}\label{evidence-policy-the-ledger-and-claim-eligibility}
+
+Run provenance comes from artifacts/results\_ledger.json v1.1;
+scientific interpretation is superseded by
+artifacts/analysis/mgp6\_validity\_audit.json. The failed shortcut gate
+makes MGP-6 v2 policy rows diagnostic regardless of their older ledger
+label. Mapping-dependent adapters, incomplete runs, and every
+LongMemEval row remain non-primary. Annotation is described as one
+independent annotator plus a separate model panel, never human IAA.
+
+\subsection{6.2 Systems under test (MGP-6 v2, n =
+180)}\label{systems-under-test-mgp-6-v2-n-180}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.4568}}
+  >{\centering\arraybackslash}p{(\linewidth - 2\tabcolsep) * \real{0.5432}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Description}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+B1 no-memory & answers without a store \\
+B2 flat retrieval & stores everything, retrieves by similarity; no write
+decisions \\
+B3 recency & prefers most recent record; no abstention \\
+B4 naive overwrite & new information always replaces old; no
+abstention \\
+Reference policy & deterministic lexical predicate policy used by the
+released MGP-6 prediction artifact; not the prototype five-feature
+scorecard \\
+LLM controller & full ASK with qwen/qwen3.5-9b as the decision policy \\
+Zero-shot LLM decision & same model asked for the action without the
+governance scaffold \\
+Few-shot (6-shot) LLM decision & 174/180 predictions; six missing IDs
+scored INVALID for a coverage-aware bound (0.7833 / 0.7692);
+incomplete \\
+External adapters & Mem0 2.0.11, Letta (MemGPT), Graphiti 0.29.2, MemOS
+via adapter harnesses \\
+\end{longtable}
+}
+
+External-adapter scoring requires an action mapping because these
+systems emit NOOP rather than ABSTAIN. Those mapped rankings are
+retained in the artifact audit but excluded from primary comparisons. A
+successor study must use each system\textquotesingle s native observable
+operations and resulting state.
+
+\subsection{6.3 Ablations}\label{ablations}
+
+Four single-component removals from the full rule controller, same items
+and scaffold: \textbf{no\_abstain} (forced binary commit),
+\textbf{no\_provenance}, \textbf{no\_typing}, \textbf{no\_lineage}.
+Their within-generator failure signatures (§7.3) are mechanism
+diagnostics: they show how this implementation changes when a switch is
+removed, but do not independently establish that each component is
+necessary in other datasets or controllers.
+
+\subsection{6.4 LongMemEval-M protocol}\label{longmemeval-m-protocol}
+
+Stratified 180-item slice (6 × 30, seed 0). Five systems (B1--B4,
+controller) were run under the v7 configuration (answerer qwen3.5-9b,
+judge google/gemma-4-31b-it); the run is \textbf{diagnostic only} due to
+documented provider contamination (§7.6). The v8 failure replay
+re-executed exactly the 70 v7 controller failures under a changed
+configuration and is failure\_replay\_only, not an evaluation of the
+full slice. The complementary Modal top-up targeted 110 prior v7
+successes but completed only 84, so it is incomplete; it nevertheless
+provides decisive counter-evidence to carrying all successes forward
+(§7.7). The frozen final-1.1 protocol specifies a homogeneous full-180
+rerun with qwen/qwen3.5-9b and a Gemma judge under a fixed provider and
+retry policy. Its API smoke failed before inference because the supplied
+OpenRouter credential returned HTTP 403, so the run is
+externally\_pending and no LongMemEval value is final.
+
+\subsection{6.5 Metrics}\label{metrics}
+
+Decision layer: action accuracy, macro-F1, per-action F1, confusion
+counts. Commit safety: invalid-commit rate (share of gold-ABSTAIN items
+on which the system commits a write). Memory state: lineage integrity;
+stale-retrieval rate. Probe behavior: premise resistance; implicit
+application. Downstream (LME-M): judge-graded answer accuracy with
+per-competency decomposition and stratified bootstrap CIs. Formal
+definitions in Appendix C. Excluded as uninformative: the shipped
+over-/under-forgetting rates (§5.8). Premise resistance and
+invalid-commit are bespoke metrics defined in metrics\_mgp6.py and are
+interpreted descriptively, not as externally validated constructs
+(threat C5).
+
+\subsection{6.6 Statistical analysis}\label{statistical-analysis}
+
+The primary analysis uses the held-out 90-item test split and
+10,000-replicate paired cluster bootstrap over template\_family\_id,
+repeated with minimal-pair groups plus singleton items. Both
+item-weighted and family-macro estimates are reported. Exact item-level
+McNemar is secondary because within-family independence is doubtful.
+Zero event counts receive one-sided finite-sample upper bounds. No
+superiority, equivalence, or non-inferiority language is licensed
+without a pre-specified contrast and margin. On LongMemEval, no
+hypothesis test is computed because no clean comparative design exists.
+Reproduction: python3 scripts/analysis/audit\_mgp6\_validity.py.
+
+\subsection{6.7 Leakage and researcher-degrees-of-freedom
+controls}\label{leakage-and-researcher-degrees-of-freedom-controls}
+
+Train+development lookup probes over type, conflict type, and public
+metadata precede policy interpretation. Conflict type reaches 1.000 test
+accuracy and therefore fails the construct-validity gate: test-first
+split hygiene alone is insufficient. The v7→v8 fix loop had no
+confirmation set, so its output is failure\_replay\_only; overrides
+remain separate from raw results; and invalid, incomplete, mapped, and
+superseded runs are excluded from primary claims.
+
+\subsection{6.8 MGP-6 v4.3 experimental protocol and completed hidden
+run}\label{mgp-6-v4.3-experimental-protocol-and-completed-hidden-run}
+
+MGP-6 v4.3 uses train for loader and engineering checks, and development
+for prompt, model, configuration, ablation, cost, and latency selection.
+Each system submits one strict record,
+\{"public\_id":"MGP43-...","action":"KEEP"\}; the validator rejects
+missing, duplicate, unknown, extra, and invalid-action records. Public
+loading and prompt construction are deterministic, prediction writing is
+resume-safe, and raw-response logs record latency, token, retry, and
+failure accounting without private fields.
+
+Before hidden prediction, the release and split hashes, provider and
+exact model ID, prompt and system-prompt hashes, decoding, seed, retry
+policy, timeout, concurrency, evaluator version, code commit,
+environment lock, and prediction schema were frozen and recorded. The
+selected public-indexed-evidence ASK live controller with
+qwen/qwen3.5-9b was then run exactly once on the 540-item hidden split.
+Its prediction file was complete, duplicate-free, and sealed with
+SHA-256 e6a598799115c9fc80ae3e731f1b5d59a4947e48df5356b12ba518bafb846806
+before the local-private scorer opened hidden gold. A transport
+disconnect after 432 durable predictions was recorded; the frozen run
+resumed only the remaining 108 records and did not change controls or
+duplicate IDs.
+
+The private evaluator reports accuracy, macro-F1, per-class
+precision/recall/F1, confusion matrix, coverage, selective and
+abstention metrics, and a 5,000-replicate component-cluster bootstrap
+with seed 4301. It does not expose gold records in its aggregate output.
+Provider telemetry supplies latency, tokens, failures, retries, and
+invalid-response counts, but no price field; cost is therefore recorded
+as unavailable. LongMemEval remains a separate external evaluation, not
+a substitute for this controlled diagnostic. Because only one final v4.3
+configuration was pre-registered, there is no final hidden baseline,
+ablation, or paired comparison.
+
+\subsubsection{6.8.1 Systems, metrics, and statistical treatment for
+v4.3}\label{systems-metrics-and-statistical-treatment-for-v4.3}
+
+The v4.3 comparison covers twelve configurations on the public
+development split: the pre-registered frozen controller; the successor
+controller in both its as-run and guard-composed forms; four structural
+baselines (B1 no memory, B2 flat retrieval, B3 recency, B4 naive
+overwrite); an unstructured zero-shot decision policy; the deterministic
+public-evidence rule policy in isolation; and four component ablations
+(no abstention, no provenance, no typing, no lineage). Three deployed
+external memory systems --- Letta, Mem0, and Graphiti --- were run
+through adapters written for this thesis. Because their native
+operations do not match the KEEP/SUPERSEDE/ABSTAIN vocabulary, their
+scores depend on an action mapping and are reported as harness
+diagnostics, never as capability measurements of those systems in their
+intended use. All model-backed rows use qwen/qwen3.5-9b at temperature
+0, seed 4301, 128 maximum new tokens, and concurrency 1.
+
+Primary decision metrics are action accuracy, macro-F1, per-action
+precision/recall/F1, Cohen\textquotesingle s κ, and the multiclass
+Matthews correlation. The latter two are interpretable here precisely
+because every split is exactly action-balanced, so neither is inflated
+by a class prior.
+
+Errors are decomposed by \emph{operational harm} rather than reported as
+a single rate. Four quantities are tracked, each with its own
+denominator: action false commit on gold-ABSTAIN items, separated into
+the state-preserving ABSTAIN→KEEP and state-corrupting ABSTAIN→SUPERSEDE
+components; missed update on gold-SUPERSEDE items; destructive overwrite
+of a gold-KEEP record; and unnecessary abstention over items that
+required a decision. Every rate carries a Wilson 95\% interval, and a
+zero count is reported with a finite-sample upper bound rather than as
+zero risk. Expected loss is computed under balanced, commit-averse, and
+update-responsive cost matrices fixed before scoring.
+
+Hidden-split uncertainty uses a 5,000-replicate component-cluster
+bootstrap at seed 4301, because items within a semantic component share
+a scenario skeleton and are not independent. On the public development
+split, component-cluster resampling is \textbf{unavailable} --- the
+component map is private and the public scorer does not read it --- so
+those intervals are 10,000-replicate item bootstraps and are
+consequently \emph{narrower than a component-aware estimate would be}.
+Paired system contrasts on development use exact two-sided McNemar tests
+with Holm correction over the reported family; they inherit the same
+independence assumption. This thesis relies on them only for contrasts
+whose effect sizes (b/c splits of 98/6 and larger) could not plausibly
+be produced by within-component dependence, and flags the one marginal
+contrast --- the 0.117 successor gain --- as the place where the
+assumption matters most.
+
+Operational accounting is taken from per-response records rather than
+harness wall-clock timing: provider-reported latency per response (mean,
+median, p95, maximum), prompt and completion tokens, transport failures,
+in-client retries, and invalid-response counts. Monetary cost is
+reported only where the provider emitted a price field; on every run in
+this thesis it did not, and cost is recorded as unavailable rather than
+reconstructed from list-price arithmetic.
+
+\section{7. Results}\label{results}
+
+\subsection{7.1 How to read this
+chapter}\label{how-to-read-this-chapter}
+
+This chapter reports two instruments and the reader must not merge them.
+\textbf{MGP-6 v4.3} (§7.10) is the successor release whose
+construct-validity gate is enforced at build time; its sealed-hidden
+result is the thesis\textquotesingle s primary decision-level
+measurement, and its development-split comparison is explicitly labelled
+development evidence because that split selected the configuration.
+\textbf{MGP-6 v2} (§7.2--§7.9) is the earlier pilot whose gate
+\emph{failed}; its numbers are retained because the failure is itself a
+result and because it motivated the v4.3 redesign, but no v2 row
+supports a capability claim. \textbf{LongMemEval-M} (§7.11) is separate
+external validation, not a substitute for either.
+
+All values in this chapter are recomputed from released per-item
+prediction files rather than transcribed from run reports; the
+recomputation is archived in
+artifacts/analysis/mgp6\_v43\_full\_benchmark\_analysis.json.
+
+The construct-validity gate precedes every controller result. MGP-6 v2
+is an author-designed pilot and its ledger label does not override the
+newly measured shortcut failure. Policy scores below are diagnostic
+observations on this collection, not estimates of general
+memory-governance capability. Mapping-dependent external rows and every
+LongMemEval row are excluded from primary comparisons.
+
+\textbf{Shortcut probes fitted on train+development and evaluated on
+test:}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4589}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2705}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2706}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Probe (no dialogue or memory state)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Macro-F1}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Type only & 0.9667 & 0.9471 \\
+Conflict type only & 1.0000 & 1.0000 \\
+\end{longtable}
+}
+
+Conflict type deterministically identifies the action. This is the
+chapter\textquotesingle s primary result: the pilot cannot distinguish
+evidence reasoning from scenario-family recognition. Cluster bootstrap
+quantifies dependence inside the collection but cannot repair this
+construct failure.
+
+\subsection{7.2 MGP-6 v2 policy
+diagnostics}\label{mgp-6-v2-policy-diagnostics}
+
+Test split first (split-hygiene rule), full corpus second.
+
+\textbf{Lexical reference policy.} Test split (n=90): action accuracy
+\textbf{0.8889}, macro-F1 \textbf{0.9145}. Full corpus (n=180): 0.9222 /
+0.9399. The released predictions were generated by deterministic lexical
+predicates, not the prototype five-feature weighted scorecard. On test,
+the reference makes 0/33 action false commits, with a one-sided 95\%
+upper bound of 0.0868; it misses 10/45 required updates and
+unnecessarily abstains on 10/57 non-ABSTAIN items.
+
+\textbf{Structured LLM policy (qwen/qwen3.5-9b).} Test split: 0.9000 /
+0.9040. Full corpus: 0.8889 / 0.8913. On test it makes 2/33 action false
+commits and misses 7/45 updates. Its test accuracy is numerically above
+the reference policy.
+
+\textbf{Secondary full-corpus mechanism table (n = 180; includes train
+and development):}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2298}}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1591}}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1591}}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2062}}
+  >{\centering\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.2458}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Macro-F1}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Invalid-commit}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Eligibility}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Lexical reference policy & 0.9222 & 0.9399 & 0.0 & diagnostic \\
+Structured LLM policy (qwen3.5-9b) & 0.8889 & 0.8913 & 0.0758 &
+diagnostic \\
+Zero-shot LLM decision & 0.700 & 0.6657 & 0.606 & diagnostic \\
+B4 naive overwrite & 0.4222 & 0.2203 & 1.0 & diagnostic \\
+B3 recency & 0.4222 & 0.2203 & 1.0 & diagnostic \\
+B1 no-memory & 0.3667 & 0.1789 & --- & diagnostic \\
+B2 flat retrieval & 0.1333 & 0.0784 & 1.0 & diagnostic \\
+Few-shot (6-shot) decision & 0.7833 & 0.7692 & --- & incomplete: 174/180
+predictions; 6 missing scored INVALID \\
+\end{longtable}
+}
+
+The few-shot row is a \textbf{coverage-aware bound}, not a completed-run
+comparison. Its 174 predictions were aligned to the 180 gold IDs and the
+six missing IDs were scored INVALID. It is excluded from the
+pre-specified significance family and from any claim that assumes
+complete coverage.
+
+\subsection{7.3 Ablations (n = 180; within-generator
+diagnostics)}\label{ablations-n-180-within-generator-diagnostics}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2610}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2058}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2058}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3275}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Configuration}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Macro-F1}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Distinct failure signature}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Full controller & 0.9222 & 0.9399 & --- \\
+− abstention & 0.5556 & 0.4278 & invalid-commit 0.0 → 1.0 \\
+− provenance & 0.700 & 0.7428 & invalid-commit → 0.606 (identical to the
+zero-shot baseline\textquotesingle s rate) \\
+− typing & 0.7889 & 0.5680 & KEEP F1 → 0.0 \\
+− lineage & 0.9222 & 0.9399 & action labels unchanged; lineage integrity
+0.8556 → 0.3689 \\
+\end{longtable}
+}
+
+The lineage ablation is a useful within-generator mechanism check:
+action labels remain identical while the instrument\textquotesingle s
+lineage score falls by more than half. It illustrates why decision and
+state metrics should be reported separately, but author alignment and
+the pilot\textquotesingle s shortcut failure prevent treating the
+magnitude as an independent causal estimate.
+
+\subsection{7.4 Held-out clustered comparison and historical item
+tests}\label{held-out-clustered-comparison-and-historical-item-tests}
+
+On test, reference minus structured-LLM accuracy is \textbf{−0.0111}.
+The paired template-family cluster interval \textbf{{[}−0.0938,
+0.0625{]}} includes zero (48 test families); exact item-level McNemar
+has b=4, c=5, p=1.0. The reference family-macro interval is {[}0.8125,
+0.9688{]} and the structured-LLM interval is {[}0.8333, 0.9688{]}. These
+data support neither superiority nor non-inferiority.
+
+The table below preserves the earlier full-corpus item-level analysis
+for audit history. It includes train and development items, assumes item
+independence, and is not the primary inferential result.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1751}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1369}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.2135}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1159}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.0985}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1229}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1373}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Pair}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{RD (A−B)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{RD 95\% CI (Newcombe)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{b / c}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{OR}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Holm p}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Decision}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Rule vs B4 naive overwrite & +0.5000 & {[}+0.4230, +0.5690{]} & 90 / 0 &
+∞ & 4.85e-27 & reject H0 \\
+Rule vs B2 flat retrieval & +0.7889 & {[}+0.7181, +0.8382{]} & 142 / 0 &
+∞ & 1.44e-42 & reject H0 \\
+Rule vs LLM controller & +0.0333 & {[}−0.0188, +0.0873{]} & 14 / 8 &
+1.75 & 0.286 & retain H0 (n.s.) \\
+LLM controller vs zero-shot & +0.1889 & {[}+0.1096, +0.2664{]} & 46 / 12
+& 3.83 & 1.64e-05 & reject H0 \\
+\end{longtable}
+}
+
+Interpretation, in the order that matters:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Reference vs structured LLM is a held-out null with the LLM
+  numerically higher.} It is not evidence of equality, matching, or
+  non-inferiority.
+\item
+  \textbf{Structured vs zero-shot is descriptive.} The historical
+  full-corpus gap is large, but prompt structure and policy scaffolding
+  are evaluated on a shortcut-leaking pilot; it is not a clean general
+  scaffold-effect estimate.
+\item
+  \textbf{Reference vs B2/B4 is design-aligned.} The reference encodes
+  the labeling manual while the baselines cannot express the required
+  actions. These rows are mechanism checks, not capability proofs.
+\end{enumerate}
+
+\subsection{7.5 Archived external-system mapping sensitivity
+(non-primary)}\label{archived-external-system-mapping-sensitivity-non-primary}
+
+Under the favourable NOOP→ABSTAIN upper-bound mapping (NOOP→KEEP mapping
+in parentheses):
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3040}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1959}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1959}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3042}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Macro-F1}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Notes}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Letta (MemGPT lineage) (Packer et al., 2023) & 0.678 (0.489) & 0.488
+(0.302) & \\
+Mem0 2.0.11 (Chhikara et al., 2025) & 0.622 (0.400) & 0.442 (0.249) &
+invalid-commit 1.0 \\
+Graphiti 0.29.2 (Rasmussen et al., 2025) & 0.383 (0.139) & 0.219 (0.104)
+& \\
+MemOS (Li et al., 2025) & 0.144 & 0.164 & diagnostic\_only: supersession
+inexpressible through its adapter \\
+\end{longtable}
+}
+
+These are harness- and mapping-specific transformations, not fair
+primary capability measurements of the systems\textquotesingle{} native
+use cases. They are excluded from the paper\textquotesingle s main
+comparison. A confirmation study must report native
+write/state/retrieval behavior first and show all action mappings only
+as sensitivity analyses.
+
+\subsection{7.6 LongMemEval-M: diagnostic results
+(diagnostic\_only)}\label{longmemeval-m-diagnostic-results-diagnostic_only}
+
+v7 stratified run (n = 180 each; judge google/gemma-4-31b-it):
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2941}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2548}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2745}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1766}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Correct}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{SSP}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+B4 naive overwrite & 114 & 0.6333 & 11/30 \\
+ASK controller & 110 & 0.6111 & 11/30 \\
+B2 flat vector & 80 & 0.4444 & 6/30 \\
+B3 recency & 43 & 0.2389 & 0/30 \\
+B1 no-memory & 9 & 0.05 & --- \\
+\end{longtable}
+}
+
+Two disclosures are mandatory. \textbf{First, the baseline ordering: on
+this diagnostic slice, naive overwrite (63.3\%) outperformed the v7
+controller (61.1\%).} Any claim of controller superiority on LongMemEval
+is unsupported by current evidence. \textbf{Second, the v7 run is
+provider-contaminated:} 316 HTTP-402 traces, 388 empty extraction
+fallbacks cached as valid, at least 12 manual relaunches, and an
+escalation tier that was a no-op (BIG\_MODEL == FAST\_MODEL). Controller
+per-competency (v7, post-adjudication 110/180; pre-adjudication
+108/180): knowledge-update 21/30, multi-session 15/30,
+single-session-assistant 26/30, single-session-preference 11/30,
+single-session-user 22/30, temporal-reasoning 15/30. Earlier
+partial-range probes (v3: 5/10, 4/10; v4: 17/30; v6: 29/40) are
+superseded diagnostics; v5 and the thinking-mode v8 replay are invalid;
+both top-up runs are incomplete (§6.7).
+
+\subsection{7.7 Why the failure-replay construction is
+excluded}\label{why-the-failure-replay-construction-is-excluded}
+
+The v8 replay re-executed exactly the 70 v7 controller failures under a
+changed configuration and judge. It produced 25/70 machine-correct
+items. A historical merge then retained all 110 v7 successes, replaced
+only the replayed failures, and added four post-hoc Codex/GPT-5
+overrides, yielding an archived 139/180 (0.7722) construction. That
+number is classified failure\_replay\_only: the selection rule makes
+judge and configuration identity perfectly confounded with prior
+correctness, the fixes were designed on the same failures, the retained
+cases inherited v7 contamination, and the four overrides were not
+independent human adjudications. It is not a system result, an estimate
+of final-1.1, or a confidence-bound endpoint.
+
+The complementary Modal top-up makes the carry-forward error observable.
+It targeted the 110 v7 successes and completed 84: \textbf{71 remained
+correct and 13 regressed}. Combining these 84 observations with the 70
+replay observations gives \textbf{96/154 raw observed correct}. The 26
+unresolved items imply full-180 raw bounds of \textbf{96/180 = 53.3\%}
+to \textbf{122/180 = 67.8\%}. If the four replay overrides are shown
+separately as an adjudicated sensitivity, the corresponding bounds are
+\textbf{55.6\%--70.0\%}. Thus this observed v8 attempt cannot reproduce
+the archived carry-forward construction.
+
+For SSP, the complementary evidence is equally important: the top-up
+observes \textbf{8/29 correct}, with one unresolved item, so the maximum
+is \textbf{9/30}. The v7 diagnostic 11/30 and the
+replay\textquotesingle s 0/19 repairs remain useful for causal
+investigation, but no SSP count can be carried across configurations.
+The homogeneous final-1.1 full-180 run remains externally\_pending: its
+smoke request failed before inference with OpenRouter HTTP 403.
+
+\subsection{7.8 Annotation agreement (inferential evidence about the
+labels, not the
+systems)}\label{annotation-agreement-inferential-evidence-about-the-labels-not-the-systems}
+
+One independent annotator: raw agreement 0.9889 {[}0.9667, 1.0{]},
+Cohen\textquotesingle s κ 0.98146 {[}0.93997, 1.0{]}, one disagreement
+(MGP6V2-T3-TEST-016). Four-LLM panel: Fleiss κ 0.9815, majority vote
+100\% vs gold, 88/90 unanimous. Caveats as in §5.5: n = 1 human + model
+panel, not multi-human IAA.
+
+\subsection{7.9 Hypothesis outcomes}\label{hypothesis-outcomes}
+
+H1 is not identified by the shortcut-leaking pilot; H2 supports neither
+superiority nor non-inferiority; H3 and H4 remain within-generator
+mechanism demonstrations; H5 is unsupported. The independently generated
+v3 confirmation protocol is the required gate for stronger conclusions.
+
+\subsection{7.10 MGP-6 v4.3 final hidden result (one frozen
+configuration)}\label{mgp-6-v4.3-final-hidden-result-one-frozen-configuration}
+
+\subsubsection{7.10.1 Headline result and its
+uncertainty}\label{headline-result-and-its-uncertainty}
+
+The pre-registered ASK live controller attained \textbf{0.8481 accuracy}
+and \textbf{0.8479 macro-F1} on all 540 sealed hidden items, coverage
+1.000. The component-cluster bootstrap (5,000 resamples, seed 4301)
+gives 95\% intervals of \textbf{{[}0.8037, 0.8889{]}} for accuracy and
+\textbf{{[}0.8021, 0.8894{]}} for macro-F1.
+
+Because the hidden split is exactly action-balanced (180 KEEP, 180
+SUPERSEDE, 180 ABSTAIN), two agreement statistics are interpretable
+without prior correction, and both are reported here for the first time:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3904}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2113}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3983}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Quantity}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Value}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{95\% interval}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Action accuracy & 0.8481 & {[}0.8037, 0.8889{]} component-cluster \\
+--- item-independence reference & & {[}0.8154, 0.8760{]} Wilson \\
+Macro-F1 & 0.8479 & {[}0.8021, 0.8894{]} component-cluster \\
+Balanced accuracy & 0.8481 & --- \\
+Cohen\textquotesingle s κ vs gold & 0.7722 & --- \\
+Matthews correlation (multiclass) & 0.7728 & --- \\
+Non-abstention coverage & 0.6926 & --- \\
+Selective accuracy & 0.8449 & --- \\
+\end{longtable}
+}
+
+Two observations follow. First, the component-cluster interval is
+\textbf{41\% wider} than the Wilson interval that item independence
+would imply (width 0.0852 versus 0.0605). That difference is the cost of
+the component design, and reporting only the Wilson width would
+understate the uncertainty by 29\%. Second, the gap between 0.848
+accuracy and 0.772 κ is entirely the \emph{structure} of the errors,
+since chance accuracy is exactly 1/3 by construction.
+
+Per-action precision / recall / F1 is ABSTAIN 0.8554 / 0.7889 / 0.8208,
+KEEP 0.7947 / 0.8389 / 0.8162, and SUPERSEDE 0.8967 / 0.9167 / 0.9066,
+each on support 180. Prediction marginals are 166 ABSTAIN, 190 KEEP, 184
+SUPERSEDE.
+
+\subsubsection{7.10.2 Confusion matrix and the error
+decomposition}\label{confusion-matrix-and-the-error-decomposition}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3530}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2205}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1764}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2501}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Gold \textbackslash{} Predicted}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{ABSTAIN}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{KEEP}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{SUPERSEDE}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+ABSTAIN & 142 & 30 & 8 \\
+KEEP & 18 & 151 & 11 \\
+SUPERSEDE & 6 & 9 & 165 \\
+\end{longtable}
+}
+
+The errors are strongly asymmetric, and for a write-governance system
+the asymmetry --- not the total --- is the operational result. SUPERSEDE
+is the best-recovered action (0.9167 recall): when the evidence
+genuinely establishes a new value, the controller applies it. ABSTAIN is
+the worst (0.7889 recall), and its 38 failures split 30 to KEEP and only
+8 to SUPERSEDE.
+
+That split is the thesis\textquotesingle s central measurement point
+about error taxonomy. An ABSTAIN→KEEP error leaves the stored state
+\textbf{byte-identical} to what abstention would have produced; the
+memory is not corrupted, and only the audit record that the system saw
+ambiguous evidence and declined is lost. An ABSTAIN→SUPERSEDE error
+\textbf{actually replaces an active record on insufficient evidence} ---
+the precise failure the three-action space exists to prevent. Collapsing
+both into a single "false commit" rate of 38/180 = 0.2111 therefore
+overstates the harm by roughly fivefold relative to the state-corrupting
+component.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3005}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3005}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1560}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2429}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Governance error}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Count / denominator}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Rate}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Wilson 95\% CI}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Action false commit (gold ABSTAIN acted on) & 38/180 & 0.2111 &
+{[}0.1578, 0.2764{]} \\
+--- of which ABSTAIN→KEEP (state preserved) & 30/180 & 0.1667 &
+{[}0.1193, 0.2280{]} \\
+--- of which ABSTAIN→SUPERSEDE (state corrupted) & 8/180 & 0.0444 &
+{[}0.0227, 0.0852{]} \\
+Missed update (gold SUPERSEDE not applied) & 15/180 & 0.0833 &
+{[}0.0511, 0.1329{]} \\
+Destructive overwrite (gold KEEP superseded) & 11/180 & 0.0611 &
+{[}0.0345, 0.1061{]} \\
+Unnecessary abstention (gold KEEP/SUPERSEDE abstained) & 24/360 & 0.0667
+& {[}0.0452, 0.0973{]} \\
+\end{longtable}
+}
+
+Unnecessary abstention at 0.0667 is low, which matters: the controller
+is not purchasing its conservatism by refusing to act. But selective
+accuracy (0.8449) is \emph{below} overall accuracy (0.8481), so the
+items it does commit on are answered slightly less accurately than
+average. A well-calibrated selective predictor shows the opposite
+ordering. \textbf{The abstention mechanism is therefore doing governance
+work --- avoiding unjustified writes --- without doing selective-risk
+work}, and this thesis does not conflate the two. This is the clearest
+single defect in the frozen configuration and it is disclosed rather
+than omitted.
+
+\subsubsection{7.10.3 Component decomposition: which part does the
+work}\label{component-decomposition-which-part-does-the-work}
+
+The controller composes a public-evidence rule policy with a live model
+policy under a conservative guard that overrides a model ABSTAIN only
+when the rule policy finds decisive public evidence. Each component is
+separately scorable on development data.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3568}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3451}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2981}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Public dev (n=180)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Hidden (n=540)}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Model action alone & 0.7500 & not scorable† \\
+Rule policy alone & 0.7500 & not scorable† \\
+Composed (reported) & 0.8444 & 0.8481 \\
+Items where the guard changed the action & 27 & 36 \\
+--- repaired a model error & 20 & --- \\
+--- broke a correct model action & 3 & --- \\
+--- error-neutral & 4 & --- \\
+\end{longtable}
+}
+
+† Component-wise hidden scoring would require a second pass over sealed
+gold beyond the single authorised scoring event.
+
+On the hidden split the guard fired 36 times and always out of ABSTAIN
+(30 → KEEP, 6 → SUPERSEDE). This \textbf{bounds} its contribution: even
+under the most favourable accounting, the guard accounts for at most 6.7
+accuracy points of the 84.8 observed. The rules that fired were
+no-decisive-public-evidence (255), direct-documented-slot-change (120),
+standing-value-confirmed-or-proposal- retracted (90),
+unresolved-scope-authority-or-timing (57), and
+temporary-or-scoped-exception (18). The result is a genuine composition,
+not a rule engine with a model attached nor a model with cosmetic rules.
+
+\subsubsection{7.10.4 Cost sensitivity across governance
+regimes}\label{cost-sensitivity-across-governance-regimes}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2779}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1953}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2439}}
+  >{\centering\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2829}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Balanced}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Commit-averse}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Update-responsive}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Frozen controller, hidden (n=540) & 0.1519 & 0.4204 & 0.2963 \\
+Frozen controller, dev & 0.1556 & 0.4167 & 0.3000 \\
+Successor controller, dev & 0.0500 & 0.1500 & 0.1333 \\
+Successor + composed guard, dev & 0.0389 & 0.0889 & 0.0944 \\
+B4 naive overwrite, dev & 0.6611 & 3.2333 & 1.6222 \\
+Rule policy alone, dev & 0.6667 & 1.2444 & 1.6667 \\
+\end{longtable}
+}
+
+The commit-averse loss is the largest for the frozen controller because
+that regime charges most heavily for exactly its dominant error class.
+Critically, \textbf{the ordering among ASK controllers is stable across
+all three regimes} --- unlike the v2 reference-versus-LLM comparison
+(§7.4), where the preferred system \emph{flips} with the cost matrix.
+This is a stronger result than the v2 chapter could produce and it is
+stated as such.
+
+\subsubsection{7.10.5 Computation time and token
+cost}\label{computation-time-and-token-cost}
+
+All runs used concurrency 1, temperature 0, and a 128-token generation
+cap, so these are per-item serial costs and not a throughput claim.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1575}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0931}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1240}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1097}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0954}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0954}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1527}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1722}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Run}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{n}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{mean (ms)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{median}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{p95}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{max}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{prompt tok/item}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{completion tok/item}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Frozen controller, hidden & 540 & 1,673 & 1,278 & 2,931 & 12,626 & 393 &
+7.4 \\
+Frozen controller, dev & 180 & 1,400 & 959 & 3,669 & 10,260 & 396 &
+7.5 \\
+Successor controller, dev & 180 & 1,288 & 952 & 3,388 & 7,593 & 506 &
+7.8 \\
+Zero-shot decision, dev & 180 & 1,425 & 1,039 & 3,122 & 9,886 & 549 &
+8.0 \\
+B4 naive overwrite, dev & 180 & 1,647 & 1,139 & 4,116 & 23,586 & 578 &
+7.9 \\
+B2 flat retrieval, dev & 180 & 1,581 & 1,060 & 4,582 & 8,478 & 597 &
+7.9 \\
+B3 recency, dev & 180 & 1,774 & 1,071 & 5,515 & 11,404 & 233 & 7.9 \\
+Rule policy (no model call), dev & 180 & 0.24 & 0.13 & 0.64 & 3.6 & 0 &
+0 \\
+\end{longtable}
+}
+
+The write decision is cheap. Hidden-split totals are 212,467 prompt
+tokens, 4,000 completion tokens, and 903.5 s of summed model latency
+across 540 items. The latency distribution is right-skewed with a
+\emph{thin} tail rather than a fat one: median-to-p95 is a factor of 2.3
+while p95-to-max is 4.3, so the worst cases are route-level stalls, not
+hard items. These are provider-reported wall times through a shared
+OpenRouter route and are \textbf{not} compute measurements; the
+deterministic rule policy, which issues no network call, completes the
+same 180 decisions at a 0.13 ms median.
+
+Token cost separates the systems more informatively than latency.
+Evidence-indexed routing spends 393 prompt tokens per hidden decision
+against 578 for naive overwrite, 597 for flat retrieval, and 549 for
+zero-shot --- all of which score at chance. The successor configuration
+costs 28\% more than the frozen one (506 vs 396 prompt tokens on dev)
+and buys 10.6 accuracy points.
+
+\textbf{Monetary cost is unavailable, not estimated.} OpenRouter
+telemetry carried no price or cost field on any run in this thesis.
+Given the frozen model identifier a list-price multiplication would be
+arithmetically trivial and epistemically empty: routing, provider
+selection, and caching all affect the billed amount and none of that
+appears in the logs. Token counts are recorded because they were
+measured.
+
+Run integrity on the hidden split: 0 in-client retries, 0 invalid or
+unparseable responses, 0 duplicate predictions, and one transport-level
+disconnect after 432 predictions recovered by the immutable-manifest
+resume under identical controls. One caveat on the manifest --- its
+207.96 s wall\_clock\_seconds field records only the resumed invocation
+that produced the final 108 predictions, so it is \textbf{not} the
+end-to-end duration of the 540-item run. The 903.5 s summed model
+latency is the defensible aggregate.
+
+\subsubsection{7.10.6 Development-split system comparison (n = 180,
+balanced)}\label{development-split-system-comparison-n-180-balanced}
+
+Because only one hidden configuration was authorised, every system
+contrast is development evidence on the split used for selection. Chance
+accuracy is 0.3333.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.2162}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1104}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1323}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1395}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1031}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0994}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0994}}
+  >{\centering\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0998}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Acc.}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{95\% CI}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Macro-F1}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{MCC}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{FC}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{MU}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{DO}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Successor controller (guard-composed) & 0.9611 & {[}0.933, 0.989{]} &
+0.9607 & 0.943 & 0.000 & 0.017 & 0.033 \\
+Successor controller (as run) & 0.9500 & {[}0.917, 0.978{]} & 0.9494 &
+0.926 & 0.000 & 0.033 & 0.067 \\
+Frozen controller (pre-registered) & 0.8444 & {[}0.789, 0.894{]} &
+0.8458 & 0.771 & 0.233 & 0.133 & 0.033 \\
+B1 no memory & 0.3667 & {[}0.294, 0.439{]} & 0.3118 & 0.065 & 0.800 &
+0.217 & 0.733 \\
+B2 flat retrieval & 0.3556 & {[}0.283, 0.428{]} & 0.2440 & 0.065 & 0.900
+& 0.067 & 0.917 \\
+B3 recency & 0.3278 & {[}0.261, 0.400{]} & 0.2175 & −0.015 & 0.933 &
+0.117 & 0.900 \\
+B4 naive overwrite & 0.3389 & {[}0.272, 0.411{]} & 0.1891 & 0.023 &
+1.000 & 0.017 & 0.967 \\
+Zero-shot LLM decision & 0.3389 & {[}0.272, 0.411{]} & 0.1788 & 0.046 &
+1.000 & 0.000 & 0.983 \\
+Rule policy alone (no model) & 0.3333 & {[}0.267, 0.406{]} & 0.2434 &
+0.000 & 0.217 & 0.783 & 0.217 \\
+− abstention & 0.3333 & {[}0.267, 0.406{]} & 0.2465 & 0.000 & 1.000 &
+0.233 & 0.767 \\
+− provenance & 0.3389 & {[}0.272, 0.411{]} & 0.1887 & 0.029 & 0.983 &
+0.017 & 0.967 \\
+− typing & 0.3444 & {[}0.278, 0.417{]} & 0.1899 & 0.092 & 0.983 & 0.000
+& 0.983 \\
+− lineage & 0.3500 & {[}0.283, 0.422{]} & 0.2020 & 0.088 & 0.983 & 0.000
+& 0.967 \\
+Letta (adapter-mapped) & 0.2944 & {[}0.228, 0.361{]} & 0.2424 & −0.069 &
+0.417 & 0.733 & 0.383 \\
+Mem0 (adapter-mapped) & 0.3333 & {[}0.267, 0.406{]} & 0.1851 & 0.000 &
+0.033 & 1.000 & 0.000 \\
+Graphiti (adapter-mapped) & 0.3056 & {[}0.239, 0.372{]} & 0.2112 &
+−0.064 & 0.217 & 0.867 & 0.117 \\
+\end{longtable}
+}
+
+FC = action false commit on gold-ABSTAIN; MU = missed update on
+gold-SUPERSEDE; DO = destructive overwrite of a gold-KEEP record.
+
+The most instructive fact here is negative. \textbf{Every} baseline,
+ablation, zero-shot policy, standalone rule policy, and deployed
+external system lands between 0.2944 and 0.3667 --- at or below chance
+--- with macro-F1 in 0.179--0.312 and MCC in −0.069 to 0.092. They are
+close to uninformative on this task, and they fail in two
+\emph{opposite} ways. Commit-happy systems (B2, B4, zero-shot, and the
+no-abstention/no-typing/no-lineage ablations) supersede almost
+everything: destructive-overwrite rates 0.767--0.983, false-commit rates
+0.900--1.000. Abstain-happy systems (rule policy alone, Mem0, Graphiti)
+do the reverse: Mem0 abstains on 117/120 items requiring a decision and
+misses all 60 required updates. Both score near chance while behaving in
+opposite ways --- which is precisely why this thesis reports the error
+decomposition rather than accuracy alone.
+
+Paired exact McNemar tests, Holm-corrected over the 15-test family:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1966}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1715}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1062}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1062}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1162}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1413}}
+  >{\centering\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.1620}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{A}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{B}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{b}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{c}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{RD}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Holm p}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Decision}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Frozen controller & Letta & 106 & 7 & +0.5500 & 1.2e−22 & reject H0 \\
+Frozen controller & − abstention & 98 & 6 & +0.5111 & 2.2e−21 & reject
+H0 \\
+Frozen controller & B1 no memory & 90 & 4 & +0.4778 & 4.2e−21 & reject
+H0 \\
+Frozen controller & B4 naive overwrite & 98 & 7 & +0.5056 & 1.4e−20 &
+reject H0 \\
+Frozen controller & Rule policy alone & 106 & 14 & +0.5111 & 5.8e−18 &
+reject H0 \\
+Frozen controller & Mem0 & 106 & 14 & +0.5111 & 5.8e−18 & reject H0 \\
+Successor (guard-comp.) & Frozen controller & 28 & 7 & +0.1167 & 1.5e−03
+& reject H0 \\
+Successor (as run) & Frozen controller & 28 & 9 & +0.1056 & 5.1e−03 &
+reject H0 \\
+Successor (guard-comp.) & Successor (as run) & 2 & 0 & +0.0111 & 0.500 &
+retain H0 \\
+\end{longtable}
+}
+
+(Remaining contrasts against B2, B3, zero-shot, − provenance, − typing,
+− lineage, and Graphiti all reject at Holm p \textless{} 1.6e−19; full
+table in the released analysis artifact.)
+
+The guard-composition repair therefore did \textbf{not} measurably
+improve the successor system; it restored the intended composition
+semantics without damaging accuracy, and this thesis claims no more than
+that.
+
+\subsubsection{7.10.7 What this result is
+not}\label{what-this-result-is-not}
+
+This is one measurement of one configuration on a controlled synthetic
+diagnostic after public-development model selection. It is \textbf{not}
+a comparison against the development-only baselines or ablations under
+sealed conditions, not a paired hidden test, and not evidence of
+real-world memory-governance performance or deployment safety. The
+successor configuration\textquotesingle s 0.9611 development accuracy
+has not been tested on any sealed split and must not be read as an
+improvement over the 0.8481 hidden result: they are different splits
+under different exposure regimes. LongMemEval (§7.11) remains a separate
+external-validation track.
+
+\subsubsection{7.11 LongMemEval-M V12: the homogeneous full-slice
+run}\label{longmemeval-m-v12-the-homogeneous-full-slice-run}
+
+The V12 run (freeze final-2.0) evaluates all 180 stratified items with
+one answer model (qwen/qwen3.5-9b), one judge (google/gemma-4-31b-it),
+and zero judge-model fallbacks. It is the eligible downstream result on
+this track.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1424}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1392}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1908}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1779}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1844}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1653}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{System}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Correct/n}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Accuracy (95\% CI)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Prompt tok/item}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Latency/item (s)}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{vs. row above}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+B1 no memory & 9/180 & 0.0500 {[}0.022, 0.083{]} & 95 & 1.6 & --- \\
+B3 recency & 43/180 & 0.2389 {[}0.183, 0.300{]} & 768 & 3.1 & 4.7e−10 \\
+B2 flat vector & 80/180 & 0.4444 {[}0.372, 0.517{]} & 3,629 & 2.5 &
+3.7e−06 \\
+B4 naive overwrite & 114/180 & 0.6333 {[}0.561, 0.700{]} & 14,227 &
+966.0 & 6.8e−06 \\
+ASK governed writes & 137/180 & 0.7611 {[}0.700, 0.822{]} & 22,625 &
+809.2 & 2.9e−04 \\
+\end{longtable}
+}
+
+Every adjacent step in the monotone ordering separates under an exact
+paired McNemar test, Holm-corrected over the six tests reported. The
+controller-over- naive-overwrite contrast is b = 31, c = 8, RD = +0.128,
+Holm p = 2.9e−04.
+
+Per competency (30 items each):
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.3325}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1314}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1314}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1314}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1314}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1419}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Competency}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{B1}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{B3}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{B2}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{B4}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{ASK}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+knowledge update & 0.133 & 0.667 & 0.567 & 0.700 & 0.967 \\
+multi-session & 0.033 & 0.200 & 0.133 & 0.567 & 0.633 \\
+single-session assistant & 0.000 & 0.000 & 0.900 & 0.867 & 0.967 \\
+single-session preference & 0.000 & 0.000 & 0.200 & 0.367 & 0.533 \\
+single-session user & 0.067 & 0.400 & 0.767 & 0.767 & 0.833 \\
+temporal reasoning & 0.067 & 0.167 & 0.100 & 0.533 & 0.633 \\
+\end{longtable}
+}
+
+The gain over naive overwrite is \textbf{not uniform}, and its shape is
+the strongest available evidence that the improvement comes from the
+write decision rather than from generic pipeline differences. It
+concentrates in knowledge update (+8 items) and single-session
+preference (+5) --- exactly where a stale value must be replaced or a
+durable preference separated from a transient one. On multi-session the
+gain is +2 items and on temporal reasoning +3, both within noise at this
+slice size. A better retriever would not preferentially help
+knowledge-update items.
+
+\textbf{Write-decision behaviour.} The controller\textquotesingle s
+action log records 12,654 write decisions across 3,547 sessions: 11,478
+KEEP (90.7\%), 779 ABSTAIN (6.2\%), and 397 SUPERSEDE (3.1\%) over
+candidate types episodic\_fact (9,857), transient\_pref (2,416), and
+stable\_pref (381). This distribution is what the design predicts on
+natural dialogue, where most turns carry no conflicting evidence, and it
+differs sharply from the balanced MGP-6 v4.3 diagnostic --- which is the
+reason both instruments are retained. All 397 supersessions recorded
+both a predecessor and a successor identifier, and none of the 779
+abstentions produced a resulting record, so the lineage and no-op
+invariants held on all 12,654 decisions.
+
+\subsubsection{Pipeline anatomy: where the compute actually
+goes}\label{pipeline-anatomy-where-the-compute-actually-goes}
+
+The released pipeline traces (extraction\_trace.jsonl,
+relation\_trace.jsonl, answers.jsonl) permit a stage-level decomposition
+rather than a single per-item cost figure, and the decomposition
+overturns the natural reading of the accuracy table.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1582}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1549}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1549}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1817}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1817}}
+  >{\centering\arraybackslash}p{(\linewidth - 10\tabcolsep) * \real{0.1685}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Stage}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Model calls}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Prompt tok.}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Completion tok.}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Share of prompt}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Model latency}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Extraction & 11,847 & 41,806,968 & 1,806,685 & 73.6\% & 19.98 h \\
+Relation classification & 19,157 & 10,936,290 & 1,226,921 & 19.2\% &
+18.93 h \\
+Answer generation & 180 & 4,072,477 & 41,418 & 7.2\% & see note \\
+Total & 31,184 & 56,815,735 & 3,075,024 & --- & 38.91 h \\
+Per item & 173.2 & 315,643 & 17,083 & --- & 778 s \\
+\end{longtable}
+}
+
+Answering the 180 questions takes 180 model calls and 4.07 M prompt
+tokens. Reaching the point where those questions \emph{can} be answered
+takes 31,004 further calls and 52.7 M prompt tokens. The write-time
+stages are \textbf{92.8\% of prompt tokens and 99.4\% of model calls};
+the answer stage --- the only stage an end-to-end memory benchmark
+scores --- is 7.2\% of the budget.
+
+This reframes the cost comparison above. The governed controller is not
+an expensive answerer; it is a cheap answerer sitting on an expensive
+ingestion pipeline, and the same holds for naive overwrite. Reporting
+only answer-stage tokens, as the retrieval-only baselines invite,
+measures the 7\% and ignores the 93\%.
+
+\textbf{A correction to how per-item latency must be read.} The
+latency\_ms field on each answer record is \textbf{cumulative
+end-to-end} time for that item, not answer-generation time. Summing it
+gives 40.46 h, while summed extraction and relation model latency is
+38.91 h; the 1.55 h difference is the implied generation-only cost ---
+about \textbf{31 s per item}, not the 809 s the field suggests. Per-item
+pipeline times quoted in this section use the cumulative field and must
+be read as end-to-end pipeline time. This thesis flags the point
+explicitly because the naive reading --- that one answer call takes
+thirteen minutes --- is wrong by more than an order of magnitude.
+
+\textbf{Extraction is mostly rejection.} Of 11,491 processed turns,
+\textbf{5,656 (49.2\%)} return no\_extractable\_content. The
+extractor\textquotesingle s most common output is \emph{nothing}, which
+is correct behaviour on conversational filler and the first line of
+defence against memory bloat. The remaining turns yield 11,771 candidate
+memories (1.02 per turn overall), typed as 9,144 episodic facts, 2,261
+transient preferences, and 366 stable preferences. Mean extraction
+confidence is 0.934 (minimum 0.75); 17.4\% of candidates carry a hedge
+marker and 1.3\% a negation marker. Parsing was robust: 370 of 11,491
+turns hit a first-parse error, 9 required the repair path, and there
+were \textbf{zero model fallbacks and zero retries beyond the first
+attempt}.
+
+\textbf{Relation routing is deliberately conservative --- and
+auditable.} The stage is two-part: stage one labels the candidate
+against a retrieved prior as support, contradict, or independent; stage
+two, invoked on 9,530 of 9,539 classifications, resolves same-subject
+and temporal ordering. Routing is then deterministic and every decision
+records its reason:
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3890}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4283}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1827}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Stage-1 label}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Routed relation}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{n}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+independent & unclear & 8,281 \\
+support & support & 880 \\
+contradict & supersede & 221 \\
+contradict & contradict & 147 \\
+contradict & unclear & 1 \\
+parse fallback & unclear & 9 \\
+\end{longtable}
+}
+
+All 8,281 independent labels route to unclear --- an independent
+candidate is never permitted to displace a prior. Of 369 contradict
+labels, only the 221 that stage two confirms as \textbf{same-subject and
+newer} route to supersede; 113 older and 33 same-time contradictions are
+held as contradict without a write. So \textbf{221 of 9,539
+classifications (2.3\%)} may propose a replacement. This is the
+mechanism behind the 397 supersessions (3.1\%) in the action log and,
+ultimately, behind the controller\textquotesingle s low
+destructive-overwrite rate --- the conservatism is architectural, not
+emergent.
+
+\textbf{Caching did not help, and the trace explains why.} The
+extraction cache holds 11,477 unique keys against 11,491 traced turns,
+the relation cache 9,523 against 9,539 classifications --- under 0.3\%
+deduplication in both. Each turn is keyed by its own content and each
+candidate by its pairing with a specific prior, so in a single pass over
+distinct sessions there is essentially nothing to reuse. The caches are
+resume insurance, not a throughput optimisation, and any deployment
+estimate assuming cache amortisation across a first pass is unsupported
+by this evidence.
+
+\textbf{Downstream cost in context.} Per-item end-to-end pipeline time
+is 809 s for the governed controller and 966 s for naive overwrite,
+against 1.6--3.1 s for the three retrieval-only baselines --- roughly
+320× against flat-vector retrieval, buying 31.7 accuracy points.
+Answer-stage prompt tokens show the same ordering (22,625 per item
+versus 14,227 and 3,629), but as the stage decomposition above shows,
+that comparison understates the true gap by more than an order of
+magnitude, because the retrieval-only baselines have no ingestion
+pipeline to account for. Whether the exchange is worthwhile is a
+deployment question this thesis does not adjudicate; the full accounting
+is reported so it is not hidden behind the accuracy ordering.
+
+\textbf{Judge accounting.} Every item was scored by the single frozen
+judge: 40 items resolved by deterministic guards (normalised match, no
+LLM call), 140 routed to the LLM judge, 2 scoring fallbacks logged, 0
+model fallbacks. Nine items received a documented semantic-equivalence
+adjudication correcting judge scoring errors, each with a written
+rationale and a preserved pre-adjudication backup.
+
+\textbf{Two open provenance items} do not affect any reported number:
+the homogeneity gate flags a stale code/protocol hash for the evaluation
+launcher, and the manifest was not written to a clean terminal status
+after a resume. Per-system integrity checks (answer model, judge
+routing, fallback counts) pass with empty error and warning lists.
+
+\section{8. Error Analysis and
+Discussion}\label{error-analysis-and-discussion}
+
+\subsection{8.1 Single-session preference (SSP): a v7 diagnostic
+taxonomy}\label{single-session-preference-ssp-a-v7-diagnostic-taxonomy}
+
+In the contaminated v7 run, SSP is the controller\textquotesingle s
+weakest competency: \textbf{11/30 correct (0.3667), CI {[}0.20,
+0.5333{]}}. The failure-only replay repaired 0/19 of those v7 failures,
+but it used different prompt contexts and therefore does not isolate an
+answer-model effect. The complementary top-up observes \textbf{8/29
+correct} with one unresolved item (maximum \textbf{9/30}), proving that
+the v7 count cannot be carried forward as a cross-version result. The
+taxonomy below is consequently a causal analysis of the \textbf{19 v7
+failures}, not a final-1.1 evaluation
+(docs/research/SINGLE\_SESSION\_PREFERENCE\_FAILURE\_ANALYSIS.md).
+
+\textbf{Primary failure categories (n = 19):}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.5262}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2369}}
+  >{\centering\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2370}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Primary category}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Count}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Share}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+retrieval-omission & 6 & 31.6\% \\
+cross-session-contamination & 4 & 21.1\% \\
+target-attribute-extraction-miss & 3 & 15.8\% \\
+distractor-entity-binding & 2 & 10.5\% \\
+polarity-error & 2 & 10.5\% \\
+unsupported-answer-specificity & 1 & 5.3\% \\
+immediate-request-vs-enduring-preference & 1 & 5.3\% \\
+\end{longtable}
+}
+
+\textbf{Combined mechanism mentions (primary + secondary, of 19):}
+retrieval-omission 11; cross-session-contamination 8;
+distractor-entity-binding 7; target-attribute-extraction-miss 5;
+unsupported-answer-specificity 3;
+immediate-request-vs-enduring-preference 2; polarity-error 2.
+
+\textbf{Pipeline-layer localization:} retrieval-ranking 12/19 (63.2\%);
+answer-realization 10/19 (52.6\%); context-construction (top-k trim)
+5/19 (26.3\%); attribution/target-binding 5/19 (26.3\%); ingestion,
+extraction, persistence, controller-policy, and judge-scorer 0/19 each.
+Notably, \textbf{no SSP failure was traced to the write-governance
+policy itself}: the decisive facts exist in the corpus, and for the
+answer-side cases they were even present in the prompt.
+
+Two families dominate. \textbf{Grounding-supply failures}
+(retrieval-omission + cross-session-contamination: primary in 10/19,
+present in 15/19): the single supporting session\textquotesingle s
+decisive preference turn is out-ranked by topically similar distractor
+sessions and trimmed away, and the model then answers from the wrong
+session or fabricates. The 0/19 replay repair is consistent with that
+localization but is not causal proof because the replay changed prompt
+contexts as well as the answer path. \textbf{Answer-side
+binding/realization failures} (primary in 9/19): the decisive fact was
+in context, but the answer bound the preference to the wrong target,
+violated an explicitly stated negative constraint (recommending a
+dis-preferred podcast genre), or over-specified beyond evidence. One
+item (1da05512) is a borderline judge-severity case rather than a clean
+pipeline defect, and several judge rationales say "fabricates" where the
+mechanism is distractor binding --- the offending tokens are verbatim in
+retrieved memory.
+
+\textbf{Highest-leverage proposed fix (hypothesized, not run):} make
+preference grounding an explicit, provenance-constrained representation
+--- a typed record (holder / target / attribute / polarity / scope /
+source-session) whose retrieval is guaranteed for the
+question\textquotesingle s subject --- paired with an answer contract
+that asserts only retrieved-and-grounded preferences and honors stated
+negatives. The design targets the \textasciitilde15/19 grounding-supply
+mentions, while the \textasciitilde9/19 answer-side failures show why a
+retrieval-only repair is unlikely to suffice. Necessity and effect size
+remain untested. The design and its credit-attribution ablation matrix
+are specified in docs/research/SINGLE\_SESSION\_PREFERENCE\_METHOD.md;
+PrefEval\textquotesingle s finding that preference following collapses
+within ten turns (Zhao et al., 2025) independently motivates the same
+construct.
+
+\subsection{8.2 MGP-6 error profiles: three systems, three
+signatures}\label{mgp-6-error-profiles-three-systems-three-signatures}
+
+\textbf{Reference policy --- conservative, one-directional on the full
+pilot.} Its 14 full-corpus action errors are SUPERSEDE→ABSTAIN. On test
+it has 0/33 action false commits, but the one-sided 95\% upper bound is
+0.0868 and it misses 10/45 updates. This is a measured trade-off inside
+the pilot, not a population-safety result.
+
+\textbf{Structured LLM policy --- different error allocation.} Test
+action accuracy is 0.9000 versus 0.8889 for the reference, with a paired
+family interval containing zero. It has more action false commits (2/33)
+but fewer missed updates (7/45). This supports cost-sensitive reporting,
+not an absolute policy ordering.
+
+\textbf{Zero-shot decision baseline --- diagnostic gap.} Its lower score
+and high full-corpus invalid-commit rate show a failure mode worth
+studying, but label leakage prevents attributing the difference cleanly
+to the governance scaffold.
+
+\textbf{Ablation signatures.} Abstention removal → invalid-commit 1.0;
+typing removal → KEEP F1 0.0; lineage removal → audit-score decay
+invisible to action accuracy (0.8556→0.3689). These are distinct
+within-generator failure signatures, consistent with the motivation
+behind MemGuard\textquotesingle s typing argument (Ha et al., 2026) and
+TOKI\textquotesingle s audit rows (Wang, 2026). They motivate
+independent component tests; they do not by themselves establish
+necessity, causal effect size, or external validity.
+
+\subsection{8.3 LongMemEval run-integrity failure classes
+(F1--F12)}\label{longmemeval-run-integrity-failure-classes-f1f12}
+
+The failure ledger (docs/audit/CONTROLLERRUN\_FAILURE\_LEDGER.md)
+distinguishes per-item failures (§8.1) from run/pipeline failures, of
+which the most consequential are: \textbf{F1/F2} --- HTTP-402 provider
+no-responses cached as valid empty extractions (316 "402" traces; 388
+empty extractions), fixed in v8 by fail-closed extraction; \textbf{F9}
+--- relation-classifier no-responses converted to a cached semantic
+Keep, same fix; \textbf{F3/F4} --- total-loss replay failures
+(thinking-mode token exhaustion → 0 predictions; embedder segfaults),
+fixed by enable\_thinking:false and a shared embedding server;
+\textbf{F6} --- judge false negatives on number-words and dates ("4" vs
+"four", "Valentine\textquotesingle s Day" vs "February 14th"), fixed by
+guarded normalization with deferral to the semantic judge; \textbf{F8}
+--- the v7 escalation no-op; \textbf{F5/F11} --- provenance defects
+(misnamed aborted run; a manifest pointing to a non-existent replay
+directory); \textbf{F10} --- in-place verdict overrides preserved with
+originals; and the top-up evidence showing that prior successes cannot
+be retained by assumption. The general lesson: infrastructure failures
+that default to "empty but valid" silently corrupt memory state, while
+selective replay silently biases reported accuracy; fallbacks must fail
+closed and repairs must be evaluated on homogeneous coverage.
+
+\subsection{8.4 The retained annotation disagreement as construct
+evidence}\label{the-retained-annotation-disagreement-as-construct-evidence}
+
+MGP6V2-T3-TEST-016 (implicit conflict): gold SUPERSEDE, independent
+annotator ABSTAIN. The disagreement sits on the same SUPERSEDE/ABSTAIN
+boundary as the reference policy\textquotesingle s conservative errors,
+making it a useful candidate for independent adjudication. With one
+human label and an author-aligned manual, it is not enough to identify a
+generally hard construct region. It is retained for blinded
+adjudication; sensitivity is bounded (one item = 1.1\% of the test
+split) and both labels are defensible under the current manual.
+
+\subsection{8.5 Decision--state--answer
+divergence}\label{decisionstateanswer-divergence}
+
+The pilot illustrates why the three layers should be reported
+separately. Within MGP-6, similar action accuracy can coexist with very
+different premise-resistance behavior, and the no-lineage ablation
+leaves action labels unchanged while changing the
+instrument\textquotesingle s state metric. Separately, the contaminated
+LongMemEval slice happens to rank B4 naive overwrite above the
+controller on answers (63.3\% vs 61.1\%). Because the first observations
+are author-aligned and the second is contaminated, these are diagnostic
+examples rather than clean cross-layer effect estimates. They
+nevertheless show how a single aggregate can conceal different failure
+locations and motivate the layered evaluation design (RQ3).
+
+\subsection{8.6 Asymmetric harm and the price of
+conservatism}\label{asymmetric-harm-and-the-price-of-conservatism}
+
+The reference policy\textquotesingle s full-pilot action errors are
+conservative, but missed supersession can itself be harmful. Whether the
+trade is right is policy-dependent: under the frozen commit-averse
+matrix the reference has lower test loss (0.111 vs 0.189), while under
+the update-responsive matrix the structured LLM has lower loss (0.433 vs
+0.556). The current weights and any prototype score thresholds have not
+been validated on independent data, so this is sensitivity analysis
+rather than optimization evidence.
+
+\subsection{8.7 What the near-neighbor cluster
+implies}\label{what-the-near-neighbor-cluster-implies}
+
+Five verified 2026-adjacent works (STALE, Supersede, TOKI, MemGuard,
+HaluMem) cover read-side staleness probing, the supersession gap, formal
+write-time contradiction operators, write-time typing, and
+operation-level evaluation. This thesis is positioned as an
+\textbf{evaluation decomposition and validity audit}: it makes no claim
+that the individual mechanisms or their conjunction are unprecedented.
+The convergence supports the importance of the problem, while the
+deterministic-policy finding of (Reddy and Challaram, 2026) motivates
+independent confirmation rather than validating this pilot by analogy.
+
+\section{9. Validity, Ethics, and
+Limitations}\label{validity-ethics-and-limitations}
+
+This chapter follows the v1.1 evidence policy and the repository threat
+analysis; every threat cites a concrete artifact and carries a
+mitigation status.
+
+\subsection{9.1 Internal validity}\label{internal-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1397}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2866}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2866}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2870}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{\#}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Threat}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Instance}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Status}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+I1 & Dataset/controller circularity and label leakage & conflict type
+alone reaches 1.000 held-out accuracy & failed construct gate; not
+repaired by policy comparisons or cluster bootstrap; independent v3 data
+required \\
+I2 & Failure-derived fixes without a confirmation set (LongMemEval
+v7→v8) & fixes designed on the exact 70 failures then replayed on them &
+mitigated for reporting: replay classified failure\_replay\_only; open
+experimentally: homogeneous rerun required \\
+I3 & Adjudication contamination & v7: 108 original judge-correct + 2
+manual corrections; replay merge: 4 Codex/GPT-5 overrides that are not
+independent human adjudication & mitigated for reporting: raw/overridden
+counts separated; overrides excluded from final claims \\
+I4 & Provider contamination and carry-forward bias & v7 has 316 HTTP-402
+traces and 388 empty fallbacks; top-up finds 13 regressions among 84
+observed prior successes & mitigated for reporting: no v7/v8 result
+claim; open experimentally: homogeneous rerun \\
+I5 & Split hygiene (MGP-6) & controller developed on train/dev;
+type/action mapping persists across splits & not sufficient: test
+figures are primary but remain diagnostic \\
+I6 & Metric revision mid-project & invalid\_commit semantics revised;
+.bak preserved & mitigated: revised definition used throughout \\
+\end{longtable}
+}
+
+\subsection{9.2 External validity}\label{external-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1705}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4146}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4149}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{\#}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Threat}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Status}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+E1 & MGP-6 v2 is an author-designed diagnostic slice, not a community
+benchmark & open: mapped external-system comparisons do not provide
+independent validation; v3 protocol required \\
+E2 & LongMemEval evaluated on a 180-item slice, not the full 500 &
+open \\
+E3 & Single base model (qwen3.5-9b) and single seed; CIs reflect item
+sampling, not run variance & open \\
+E4 & External-adapter numbers are harness- and mapping-specific &
+partially mitigated: both NOOP mappings reported; MemOS flagged
+bound-only \\
+E5 & Synthetic-template dependence (templates, labels, and reference
+policy authored together) & confirmed threat: conflict/type shortcut
+succeeds despite family-disjoint splits \\
+\end{longtable}
+}
+
+\subsection{9.3 Construct validity}\label{construct-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1705}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4146}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4149}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{\#}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Threat}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Status}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+C1 & "Human IAA" would be a mis-description: evidence is n=1 human +
+4-LLM panel & partially mitigated by the mandated phrasing; open:
+multi-human IAA; review sheet 0/180 \\
+C2 & Panel may share the author\textquotesingle s reading (manual
+unambiguous by construction) & open \\
+C3 & Shipped forgetting metrics uninformative (saturate at 1.0) &
+mitigated by disclosure: excluded from claims \\
+C4 & Judge as construct proxy on LongMemEval (known false-negative
+classes) & partially mitigated: guard fixes, deferral to semantic judge,
+logged adjudication \\
+C5 & Premise resistance and invalid-commit are bespoke metrics &
+partially mitigated: defined in code; interpreted descriptively \\
+\end{longtable}
+}
+
+\subsection{9.4 Statistical-conclusion
+validity}\label{statistical-conclusion-validity}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.1705}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4146}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.4149}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{\#}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Threat}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Status}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+S1 & Small and clustered n (90 test items, 48 test families; SSP strata
+30) & partially mitigated: family/minimal-pair bootstrap and exact
+counts; external uncertainty remains open \\
+S2 & Multiplicity & mitigated: Holm over the pre-specified 4-test
+family \\
+S3 & Tautological rule-vs-weak-baseline comparisons (OR = ∞ by design) &
+mitigated by framing: "not sampling noise", not capability proof \\
+S4 & The reference-vs-LLM null is easy to misreport as equality or
+non-inferiority & mitigated: test RD −0.0111 and family interval
+reported; no margin-based claim \\
+S5 & Selective replay and judge heterogeneity invalidate the archived
+139/180 construction & mitigated for reporting: failure\_replay\_only;
+top-up bounds reported; open experimentally: homogeneous rerun \\
+S6 & Direction can invert on LongMemEval (B4 63.3\% \textgreater{}
+controller 61.1\%) & open: no comparative claim until rerun \\
+\end{longtable}
+}
+
+\subsection{9.5 MGP-6 v4.3-specific
+threats}\label{mgp-6-v4.3-specific-threats}
+
+The v4.3 release repairs the v2 construct gate, but it introduces its
+own threats and none is closed by a higher accuracy number.
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1397}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2866}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2866}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2870}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{\#}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Threat}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Instance}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Status}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+V1 & No hidden comparator. Only one configuration was authorised on the
+sealed split & every baseline, ablation, and external-system contrast in
+§7.10.6 is development evidence on the split that selected the
+configuration & open: hidden baselines must be scored under the same
+one-shot discipline before any comparative claim reaches the sealed
+split \\
+V2 & Development intervals are too narrow. Component-cluster resampling
+is unavailable to the public scorer & §7.10.6 intervals are item
+bootstraps; the paired McNemar tests assume independence that does not
+hold within a component & partially mitigated: relied upon only for
+contrasts with b/c splits of 98/6 or larger; the 0.117 successor gain is
+flagged as the marginal case \\
+V3 & Annotation provenance is attested, not authenticated & dual packets
+agree on all 900 items (κ = 1.0), but the builder validates records and
+hashes rather than reviewer identity or duration & open: perfect
+agreement is also consistent with a manual that is unambiguous by
+construction, so it certifies followability, not construct validity \\
+V4 & Abstention is not calibrated selection & selective accuracy 0.8449
+\textless{} overall accuracy 0.8481 & disclosed, unrepaired: the guard
+performs governance, not selective-risk targeting; the two must not be
+conflated \\
+V5 & Successor configuration is untested on any sealed split & 0.9611
+development accuracy, guard-composed & open: must not be read as an
+improvement over the 0.8481 hidden result --- different splits,
+different exposure \\
+V6 & Cost is unmeasured in currency & provider telemetry emitted no
+price field on any run & mitigated by disclosure: tokens and latency
+reported as measured; no list-price reconstruction \\
+V7 & Single model family, single seed & all model-backed rows use
+qwen/qwen3.5-9b, seed 4301, temperature 0 & open: intervals reflect item
+and component sampling, not run or model-family variance \\
+V8 & Latency is provider wall time, not compute & measured through a
+shared OpenRouter route with concurrency 1 & mitigated by framing:
+reported as operational cost, never as a compute or throughput claim \\
+\end{longtable}
+}
+
+\subsection{9.6 Priority actions (decreasing validity
+impact)}\label{priority-actions-decreasing-validity-impact}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Execute the role-separated MGP-6 v3 confirmation protocol: independent
+  writers, all actions within every family, long trajectories, sealed
+  labels, and shortcut rejection gates.
+\item
+  Recruit three blinded human annotators for the confirmation test and
+  retain raw labels plus independent adjudication.
+\item
+  Evaluate component-oracle and predicted-component pipelines with
+  family-clustered, cost-sensitive analysis.
+\item
+  Run external memory systems with native observable metrics; treat
+  action mappings only as sensitivity analyses.
+\item
+  Execute a complete homogeneous downstream run only after its input,
+  provider, judge, and provenance gates pass.
+\end{enumerate}
+
+\subsection{9.7 Ethics, privacy, and dual
+use}\label{ethics-privacy-and-dual-use}
+
+A system that supersedes and audits memories can be abused to rewrite
+records or manufacture provenance; a system that retains them enables
+surveillance, extraction, and membership inference (Carlini et al.,
+2021; Shokri et al., 2017; Bender et al., 2021; Weidinger et al., 2022).
+Mitigations in this project\textquotesingle s scope: lineage is
+append-only and superseded records are preserved rather than destroyed;
+ABSTAIN routes ambiguity to review instead of committing; the evaluation
+data is synthetic (MGP-6) or externally licensed and not redistributed
+(LongMemEval); no personal data of real users is stored. Deployment
+beyond research requires access control, dual control for bulk
+operations, and organizational governance consonant with risk-management
+frameworks (Standards and Technology, 2023); alignment techniques at the
+model layer (Ouyang et al., 2022; Bai et al., 2022) complement but do
+not replace the deterministic write boundary. The governance controller
+is an engineering framework, not legal advice; "supersede" and "abstain"
+here are epistemic operations, not compliance guarantees.
+
+\subsection{9.8 Reproducibility
+statement}\label{reproducibility-statement}
+
+Released: code, MGP-6 v2 data, per-item predictions, the 10,000-sample
+construct-validity audit, cluster intervals, cost sensitivity,
+bibliographic checks, and the v3 confirmation protocol. The v4.3 final
+configuration, freeze authorization, aggregate hidden metrics, and
+prediction hash are reproducibly recorded, while hidden records and gold
+remain private. The few-shot run is incomplete; mapped external systems
+and all LongMemEval evidence are non-primary. Independent v3
+construction and three-human annotation remain unexecuted. Documentation
+follows datasheet/model-card practice (Gebru et al., 2021; Mitchell et
+al., 2019).
+
+\section{10. Conclusion and Future
+Work}\label{conclusion-and-future-work}
+
+\subsection{10.1 Conclusion}\label{conclusion}
+
+This thesis treats the memory write as the governed object: an explicit
+KEEP/SUPERSEDE/ABSTAIN decision over typed, provenance-tracked,
+lineage-preserving records, measured separately at the action,
+stored-state/lineage, and answer layers. It reaches two conclusions, one
+methodological and one empirical, and they arrived in that order.
+
+The methodological conclusion is negative and it came first. MGP-6 v2
+fails a construct-validity gate: conflict type alone reaches 1.000
+held-out accuracy without reading the dialogue or the memory state. On
+that pilot the lexical reference policy obtains 0.8889 test accuracy
+against 0.9000 for the structured LLM with a paired family interval
+containing zero; the reference has 0/33 observed action false commits
+but a one-sided upper bound of 0.0868 and 10/45 missed updates, and the
+cost matrix reverses which policy is preferable. No capability claim
+survives that gate, and the thesis makes none.
+
+The empirical conclusion follows from building the instrument the
+failure demanded. MGP-6 v4.3 --- 900 human-authored items in 100
+semantic components across 20 domains, component-split, exactly
+action-balanced, dual-annotated, with the shortcut probe enforced as a
+release gate --- supports a single pre-registered configuration scored
+once on a sealed 540-item split: \textbf{0.8481 accuracy, 0.8479
+macro-F1, Cohen\textquotesingle s κ 0.7722}, with component-cluster
+intervals roughly 40\% wider than item independence would imply. Against
+a \$1/3\$ chance floor, every structural baseline, every component
+ablation, the zero-shot policy, the standalone rule policy, and three
+deployed external memory systems fall between 0.2944 and 0.3667 on
+development data, failing in two opposite directions --- commit-happy
+systems overwrite 77--98\% of records they should keep, abstain-happy
+systems decline 78--98\% of decisions they should make. Downstream, a
+homogeneous full-slice LongMemEval-M run places governed writes at
+76.1\% above every structural baseline, with the gain concentrated in
+knowledge-update and preference competencies rather than spread
+uniformly.
+
+The thesis\textquotesingle s most transferable finding is smaller than
+any of those numbers and more useful than all of them: \textbf{for a
+write-governance system the error structure carries more information
+than the aggregate}. Of 38 mishandled ambiguous items, 30 leave the
+stored state byte-identical and lose only the audit record, while 8
+replace an active record on insufficient evidence. A single false-commit
+rate of 0.2111 overstates the state-corrupting harm fivefold. The same
+discipline exposes a defect the aggregate would have hidden: selective
+accuracy (0.8449) sits below overall accuracy (0.8481), so the
+abstention mechanism performs governance without performing
+selective-risk targeting, and the two are not the same capability.
+
+What the evidence does not support bounds all of it. Only one hidden
+configuration was authorised, so every comparative contrast is
+development evidence on the split used for selection. The collections
+are synthetic, English-only, single-slot, and single-step. Human
+annotation is owner-attested rather than identity-authenticated, and
+perfect agreement is equally consistent with a labelling manual that is
+unambiguous by construction. One model family, one seed. Monetary cost
+is unavailable rather than estimated. What the thesis offers is an
+auditable protocol, a benchmark whose construct gates run at build time,
+and a measured result inside explicitly stated bounds --- not controller
+superiority, population safety, or deployment performance.
+
+\subsection{10.2 Answers to the research
+questions}\label{answers-to-the-research-questions}
+
+\textbf{RQ1.} A governed write path makes actions and state transitions
+explicit and auditable, and on MGP-6 v4.3 the composed controller
+performs the three-way decision far above chance (0.8481 sealed-hidden,
+κ 0.7722) where every baseline, ablation, and deployed external system
+does not. Component decomposition attributes the result to the
+composition rather than to either part alone. It does not establish that
+this generalizes beyond a controlled synthetic diagnostic, and no hidden
+comparator exists.
+
+\textbf{RQ2.} MGP-6 v2 exposed its own label shortcut and is suitable
+only for mechanism debugging. MGP-6 v4.3 moves that probe to a
+build-time release gate, so the successor instrument is fit for
+controlled comparison --- but its components, balanced evidence, and
+constructed scenarios still do not reproduce the distribution of natural
+user interactions.
+
+\textbf{RQ3.} Decision metrics, commit safety, state and lineage
+metrics, probe behaviour, and judged answers must be reported separately
+--- and, this thesis adds, so must the \emph{classes} of decision error.
+Separating state-preserving from state-corrupting write failures changes
+the estimated harm fivefold, and separating governance from selective
+risk revealed that the controller\textquotesingle s abstentions are not
+risk-targeted. Two shipped forgetting metrics fail and are disclosed as
+failing.
+
+\textbf{RQ4.} Component-cluster resampling, shortcut probes,
+finite-sample bounds, and cost sensitivity materially change what may be
+claimed. On v2 they turn a policy comparison into a null. On v4.3 they
+widen the reported interval by about a third relative to item
+independence, and they show the ASK controller ordering is stable across
+all three cost regimes where the v2 comparison flipped.
+
+\textbf{RQ5.} A frozen ledger with claim-eligibility labels, mandatory
+phrasing rules, co-reported raw and adjudicated numbers, enumerated
+invalid runs, and a recomputation artifact that regenerates every
+reported number from raw per-item predictions keep thesis, papers, and
+code consistent --- including where the consistent statement is
+"development evidence only" or "not final".
+
+\subsection{10.3 Future work}\label{future-work}
+
+\textbf{Immediate --- close the hidden-comparator gap.} The single most
+valuable next experiment is not a better controller but a \emph{scored
+comparator set}: run the four structural baselines, the four ablations,
+and the successor configuration against the sealed v4.3 hidden split
+under the same one-shot pre-registration discipline that produced the
+0.8481 result. Until that exists, §7.10.6 remains development evidence
+and the successor\textquotesingle s 0.9611 is an unverified development
+number.
+
+\textbf{Immediate --- independent construction.} Execute
+benchmarks/mgp6/MGP6\_V3\_INDEPENDENT\_PROTOCOL.md with writers
+separated from controller design, three blinded human annotators whose
+identity the build system can authenticate, all three actions inside
+every conflict family, long trajectories, and pre-unblinding shortcut
+gates. The v4.3 build-time gate is a real improvement over the v2
+post-hoc audit, but it is still run by the project that authored the
+data.
+
+\textbf{Near-term --- calibrate the abstention.} The selective-accuracy
+inversion (0.8449 versus 0.8481) identifies a concrete target: the guard
+currently decides \emph{whether a write is justified}, not \emph{whether
+the controller is likely to be wrong}. A confidence signal fitted on an
+independent set, evaluated by risk--coverage rather than accuracy, would
+separate these two functions and is testable on development data without
+consuming another hidden run.
+
+\textbf{Near-term --- variance the current design cannot see.} All
+reported intervals reflect item and component sampling under one model
+family, one seed, and temperature 0. Multiple seeds, multiple model
+families, and repeated runs of the same configuration would quantify run
+variance, which is currently unmeasured and is the most likely source of
+an over-read on any single number in this thesis.
+
+\textbf{Near-term --- the designed but unexecuted SSP intervention.} The
+provenance-constrained typed preference record and answer contract
+(SINGLE\_SESSION\_PREFERENCE\_METHOD.md), with its credit-attribution
+ablation between grounding-supply and answer-side repairs, targets the
+competency where the V12 controller retains the most headroom (0.533).
+
+\textbf{Longer-term.} Evaluate oracle versus predicted components; run
+external memory systems under their native operations with observable
+state, stale retrieval, latency, and cost, treating action mappings only
+as sensitivity analyses; execute a complete homogeneous downstream
+pipeline on the full LongMemEval collection rather than a 180-item
+slice; and connect the operational policy to non-prioritized belief
+revision (Alchourrón et al., 1985) and multi-principal governance (Ren
+et al., 2026).
+
+The broader conclusion stands independent of the pending cells: a
+memory-capable agent should be judged not only by what it recalls, but
+by what it declines to commit, what it supersedes with auditable
+lineage, and whether its evaluation can tell those apart --- and, this
+thesis adds, by whether its evaluation can tell a lost audit record
+apart from a corrupted one.
+
+\section{Appendix A. Data and Record
+Schemas}\label{appendix-a.-data-and-record-schemas}
+
+\subsection{A.1 MGP-6 v2 scenario row (schema:
+benchmarks/mgp6/mgp6\_schema\_v2.py; spec:
+mgp6\_v2\_spec.md)}\label{a.1-mgp-6-v2-scenario-row-schema-benchmarksmgp6mgp6_schema_v2.py-spec-mgp6_v2_spec.md}
+
+Fields (abridged): scenario\_id (stable ID, e.g. MGP6V2-T3-TEST-016),
+type (T1--T6), split (train/dev/test), context
+(prior-memory-establishing turns), candidate (new event), gold\_action
+(KEEP/SUPERSEDE/ABSTAIN), query + query\_mode (direct\_recall /
+premise\_resistance / implicit\_application), gold\_answer.
+
+\subsection{A.2 Released prediction row
+(abridged)}\label{a.2-released-prediction-row-abridged}
+
+\{\\
+"scenario\_id": "MGP6V2-T1-TEST-016",\\
+"predicted\_action": "ABSTAIN",\\
+"predicted\_memory\_state": {[}\\
+\{"id": "mgp6v2-t1-test-016-m1", "status": "active", "supersedes\_id":
+null\}\\
+{]},\\
+"predicted\_answer": "The user\textquotesingle s current desk lighting
+preference is warm light.",\\
+"confidence": 0.4\\
+\}
+
+This is an abridgement of the restored released artifact, not a
+synthetic scorecard trace. Gold labels are joined from the dataset
+during evaluation, and system/run identity is encoded by the artifact
+path (for example,
+artifacts/mgp6\_v2/ref\_5systems/controller/predictions.jsonl).
+
+\subsection{A.3 Memory record and lineage (store:
+src/ask/memory/operations.py)}\label{a.3-memory-record-and-lineage-store-srcaskmemoryoperations.py}
+
+Records carry: id, type (e.g. stable\_pref / transient\_pref /
+episodic\_fact), content, holder, provenance (source turn/session),
+status (active/superseded), superseded\_by lineage link, timestamps.
+retrieve\_active excludes superseded records; get\_lineage walks the
+chain.
+
+\section{Appendix B. Prompt Contracts
+(pointer)}\label{appendix-b.-prompt-contracts-pointer}
+
+All prompt templates are versioned under prompts/
+(extraction\_v0\ldots v\_final3.j2, relation\_stage1\_v0.j2,
+relation\_stage2\_v0.j2) and referenced by the run configs. Contract
+requirements: strict JSON output schemas; retrieved memory delimited as
+untrusted data; the action vocabulary enumerated; unparsable output
+resolves to no mutation. Judge prompts and guard order are documented in
+src/ask/eval/longmemeval.py (§4.8). Prompts are not duplicated here to
+keep a single source of truth.
+
+\section{Appendix C. Metric
+Definitions}\label{appendix-c.-metric-definitions}
+
+Let yᵢ ∈ \{K, S, A\} be the gold action and ŷᵢ the canonicalized
+prediction (unknown → INVALID, always incorrect).
+
+\begin{itemize}
+\item
+  \textbf{Action accuracy} = 1/nΣᵢ 1{[}yᵢ = ŷᵢ{]}; \textbf{macro-F1} =
+  unweighted mean of per-action F1.
+\item
+  \textbf{Invalid-commit rate} = Pr(ŷᵢ ∈ \{K, S\} \textbar{} yᵢ = A) ---
+  commits on gold-ABSTAIN items (definition per revised
+  metrics\_mgp6.py).
+\item
+  \textbf{Lineage integrity}: share of supersession chains whose links
+  are complete and correct after the run.
+\item
+  \textbf{Stale-retrieval rate}: share of probes on which a superseded
+  record surfaces as current.
+\item
+  \textbf{Premise resistance}: share of premise\_resistance probes on
+  which the stale/false premise is rejected.
+\item
+  \textbf{Implicit application}: share of implicit\_application probes
+  answered from the current value.
+\item
+  \textbf{LME answer accuracy}: judge-graded correctness; per-competency
+  accuracy with stratified percentile-bootstrap CIs (SSP: n=20,000, seed
+  0).
+\item
+  \textbf{Primary statistical machinery}: 10,000-replicate paired
+  cluster bootstrap over template\_family\_id, repeated over
+  minimal-pair groups plus singleton items; family-macro and
+  item-weighted estimates; one-sided finite-sample upper bounds for zero
+  event counts; frozen asymmetric expected-cost matrices; descriptive
+  ECE/Brier and risk--coverage diagnostics. Exact item-level McNemar,
+  Holm--Bonferroni, Newcombe intervals, and Wilson marginals are
+  retained only as secondary historical analyses because item
+  independence is doubtful.
+\item
+  \textbf{Excluded}: shipped over\_forgetting\_rate /
+  under\_forgetting\_rate (saturate at 1.0 for every system; ledger
+  known\_metric\_issues).
+\end{itemize}
+
+\section{Appendix D. Annotation Manual and Adjudication
+(pointer)}\label{appendix-d.-annotation-manual-and-adjudication-pointer}
+
+The annotation manual is benchmarks/mgp6/annotation\_manual\_v2.md; the
+kit builder is make\_annotation\_kit.py; agreement computation is
+compute\_agreement\_v2.py; raw annotation files live under
+benchmarks/mgp6/annotations/human/ (independent annotator) and
+mgp6\_v2/annotation/ (four-LLM panel). The single open adjudication item
+is MGP6V2-T3-TEST-016 (gold SUPERSEDE vs annotator ABSTAIN, implicit
+conflict). Adjudication protocol: blinded display of the raw item and
+both labels; evidence spans and policy principle for each; resolution ∈
+\{released, alternative, both defensible, underspecified\}; logged with
+adjudicators, date, and version impact. Main results use released gold;
+sensitivity may score the alternative label or exclude the item (±1 item
+= 1.1\% of the test split).
+
+\section{Appendix E. Reproducibility
+Commands}\label{appendix-e.-reproducibility-commands}
+
+\# Environment and offline checks\\
+make test \# unit + regression tests\\
+python benchmarks/mgp6/validate\_mgp6.py \# dataset integrity\\
+\strut \\
+\# MGP-6 systems and ablations (see benchmarks/mgp6/EVAL\_HARNESS.md)\\
+python benchmarks/mgp6/run\_5systems.py\\
+python benchmarks/mgp6/run\_ablations.py\\
+python benchmarks/mgp6/run\_llm\_controller.py\\
+python benchmarks/mgp6/run\_llm\_decision\_baseline.py\\
+\strut \\
+\# Statistics (stdlib-only, read-only on run artifacts)\\
+python3 scripts/analysis/audit\_mgp6\_validity.py\\
+\# writes artifacts/analysis/mgp6\_validity\_audit.\{json,md\}\\
+python3 scripts/analysis/mcnemar\_mgp6.py \# prints table + JSON\\
+\# item-level historical output:
+reports/statistical\_analysis\_raw\_output.txt\\
+\strut \\
+\# Citation coverage and metadata quality\\
+python3 scripts/release/audit\_bibliography.py\\
+\strut \\
+\# SSP analysis\\
+python scripts/evaluation/evaluate\_single\_session\_preferences.py\\
+\strut \\
+\# Final tables (deterministic transcription of the ledger)\\
+python scripts/analysis/build\_final\_results.py\\
+\strut \\
+\# LongMemEval final-1.1 protocol (EXTERNALLY PENDING)\\
+\# configs/release/final.yaml + FINAL\_EVALUATION\_PROTOCOL.md\\
+\# The supplied OpenRouter credential returned HTTP 403 before
+inference.
+
+Credentials are supplied only via environment variables; no credential
+appears in configs, logs, or this repository.
+
+\section{Appendix F. Artifact Manifest and Claim-Eligibility
+Vocabulary}\label{appendix-f.-artifact-manifest-and-claim-eligibility-vocabulary}
+
+{\def\LTcaptype{none} % do not increment counter
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.2774}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3612}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3614}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Artifact}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Path}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\centering
+\textbf{Role}
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Frozen run ledger & artifacts/results\_ledger.json v1.1 (sha256
+fea886f1ae746e921e785536e6ce47bea89ec11b99f8f2e75936dc71c6c5185e) &
+historical run provenance and archived result transcription; its older
+policy interpretation is superseded \\
+Construct-validity audit &
+artifacts/analysis/mgp6\_validity\_audit.\{json,md\} & primary source
+for MGP-6 shortcut probes, held-out policy metrics, cluster intervals,
+calibration, finite-sample bounds, and cost sensitivity \\
+Final tables & reports/FINAL\_RESULTS.\{md,json\} & deterministic ledger
+transcription \\
+Statistics & reports/STATISTICAL\_ANALYSIS.md,
+reports/statistical\_analysis\_raw\_output.txt & McNemar/Holm/CIs \\
+Claims control & reports/CLAIMS\_EVIDENCE\_MATRIX.md; thesis-scoped:
+thesis/claims\_evidence\_matrix.md & phrasing rules, strength tags \\
+Source of truth & docs/audit/SCIENTIFIC\_SOURCE\_OF\_TRUTH.md & claim
+strengths, corrections \\
+Error analysis & reports/ERROR\_TAXONOMY.md;
+docs/research/SINGLE\_SESSION\_PREFERENCE\_FAILURE\_ANALYSIS.md;
+\ldots/SINGLE\_SESSION\_PREFERENCE\_METHOD.md & Chapter 8 sources \\
+Validity & reports/THREATS\_TO\_VALIDITY.md;
+docs/audit/DATA\_LEAKAGE\_AND\_RESEARCHER\_DOF.md & Chapter 9 sources \\
+Run reconstruction & docs/audit/CONTROLLERRUN\_RECONSTRUCTION.md;
+\ldots/CONTROLLERRUN\_FAILURE\_LEDGER.md;
+\ldots/INVALID\_AND\_SUPERSEDED\_RUNS.md & LongMemEval anatomy \\
+Related work audit & reports/RELATED\_WORK\_UPDATE.md & Chapter 2
+source \\
+Dataset + kit & benchmarks/mgp6/ (data, manual, metrics, annotation) &
+Chapter 5 \\
+MGP-6 run artifacts & artifacts/mgp6\_v2/\ldots{} (per-item predictions
++ reports) & Chapter 7 \\
+LME-M run evidence & external run pointers in
+docs/audit/RUN\_CLASSIFICATION.csv & Chapters 7--8; raw external data
+not redistributed \\
+Reproducibility & reports/REPRODUCIBILITY\_CHECKLIST.md, Makefile,
+.github/workflows/ci.yml & Appendix E \\
+\end{longtable}
+}
+
+\textbf{Claim-eligibility vocabulary:} diagnostic\_only --- informative
+but not independent validation; failure\_replay\_only --- selected by
+prior failure and excluded from result claims; incomplete --- missing
+required coverage; invalid --- unusable; externally\_pending ---
+specified but blocked by an external prerequisite. The older
+final\_candidate label is a provenance state, not permission to ignore
+the later shortcut failure.
+
+\section{References}\label{references}
+
+Citation keys resolve against thesis/references.bib (single consolidated
+bibliography; every cited key was rechecked on 2026-07-15 and is
+present). Metadata corrections use primary publication records where
+available; unresolved institutional formatting is kept separate from
+bibliographic identity. The final bibliography style will be selected
+after the official University of Tehran template is supplied.
+
+\subsection{Compiled reference list}\label{compiled-reference-list}
+
+Alchourrón, Carlos E.; Gärdenfors, Peter; Makinson, David (1985). On the
+Logic of Theory Change: Partial Meet Contraction and Revision Functions.
+Journal of Symbolic Logic. DOI: 10.2307/2274239.
+
+Bai, Yuntao; Kadavath, Saurav; Kundu, Sandipan; Askell, Amanda; Kernion,
+Jackson; Jones, Andy; Chen, Anna; Goldie, Anna; Mirhoseini, Azalia;
+McKinnon, Cameron; others (2022). Constitutional AI: Harmlessness from
+AI Feedback. arXiv preprint arXiv:2212.08073.
+
+Bender, Emily M.; Gebru, Timnit; McMillan-Major, Angelina; Shmitchell,
+Shmargaret (2021). On the Dangers of Stochastic Parrots: Can Language
+Models Be Too Big?. Proceedings of the 2021 ACM Conference on Fairness,
+Accountability, and Transparency. DOI: 10.1145/3442188.3445922.
+
+Borgeaud, Sebastian; Mensch, Arthur; Hoffmann, Jordan; Cai, Trevor;
+Rutherford, Eliza; Millican, Katie; van den Driessche, George; Lespiau,
+Jean-Baptiste; Damoc, Bogdan; Clark, Aidan; de Las Casas, Diego; Guy,
+Aurelia; Menick, Jacob; Ring, Roman; Hennigan, Tom; Huang, Saffron;
+Maggiore, Loren; Jones, Chris; Cassirer, Albin; Brock, Andy; Irving,
+Geoffrey; Vinyals, Oriol; Osindero, Simon; Simonyan, Karen; Rae, Jack
+W.; Elsen, Erich; Sifre, Laurent (2022). Improving Language Models by
+Retrieving from Trillions of Tokens. Proceedings of the 39th
+International Conference on Machine Learning.
+
+Carlini, Nicholas; Tramèr, Florian; Wallace, Eric; Jagielski, Matthew;
+Herbert-Voss, Ariel; Lee, Katherine; Roberts, Adam; Brown, Tom; Song,
+Dawn; Erlingsson, Úlfar; Oprea, Alina; Raffel, Colin (2021). Extracting
+Training Data from Large Language Models. 30th USENIX Security
+Symposium.
+
+Chao, Hanxiang; Bai, Yihan; Sheng, Rui; Li, Tianle; Sun, Yushi (2026).
+STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?.
+arXiv preprint arXiv:2605.06527. DOI: 10.48550/arXiv.2605.06527.
+
+Chen, Ding; Niu, Simin; Li, Kehang; Liu, Peng; Zheng, Xiangping; Tang,
+Bo; Li, Xinchi; Xiong, Feiyu; Li, Zhiyu (2025). HaluMem: Evaluating
+Hallucinations in Memory Systems of Agents. arXiv preprint
+arXiv:2511.03506. DOI: 10.48550/arXiv.2511.03506.
+
+Chhikara, Prateek; Khant, Dev; Aryan, Saket; Singh, Taranjeet; Yadav,
+Deshraj (2025). Mem0: Building Production-Ready AI Agents with Scalable
+Long-Term Memory. arXiv preprint arXiv:2504.19413.
+
+Chow, C. K. (1970). On Optimum Recognition Error and Reject Tradeoff.
+IEEE Transactions on Information Theory. DOI: 10.1109/TIT.1970.1054406.
+
+Cohen, Jacob (1960). A Coefficient of Agreement for Nominal Scales.
+Educational and Psychological Measurement. DOI:
+10.1177/001316446002000104.
+
+Efron, Bradley; Tibshirani, Robert J. (1993). An Introduction to the
+Bootstrap. Chapman and Hall/CRC.
+
+El-Yaniv, Ran; Wiener, Yair (2010). On the Foundations of Noise-free
+Selective Classification. Journal of Machine Learning Research.
+
+Gebru, Timnit; Morgenstern, Jamie; Vecchione, Briana; Vaughan, Jennifer
+Wortman; Wallach, Hanna; Daumé III, Hal; Crawford, Kate (2021).
+Datasheets for Datasets. Communications of the ACM. DOI:
+10.1145/3458723.
+
+Geifman, Yonatan; El-Yaniv, Ran (2017). Selective Classification for
+Deep Neural Networks. Advances in Neural Information Processing Systems.
+
+Ha, Hyeonjeong; Kim, Jeonghwan; Qian, Cheng; Liu, Jiayu; Campbell,
+William M.; Wu, Yue; Zhang, Yuji; McKeown, Kathleen; Hakkani-Tür, Dilek;
+Ji, Heng (2026). MemGuard: Preventing Memory Contamination in Long-Term
+Memory-Augmented Large Language Models. arXiv preprint arXiv:2605.28009.
+DOI: 10.48550/arXiv.2605.28009.
+
+Iscan, Mehmet (2026). Learning When to Remember: Risk-Sensitive
+Contextual Bandits for Abstention-Aware Memory Retrieval in LLM-Based
+Coding Agents. arXiv preprint arXiv:2604.27283. DOI:
+10.48550/arXiv.2604.27283.
+
+Jiang, Bowen; Hao, Zhuoqun; Cho, Young-Min; Li, Bryan; Yuan, Yuan; Chen,
+Sihao; Ungar, Lyle; Taylor, Camillo J.; Roth, Dan (2025). Know Me,
+Respond to Me: Benchmarking LLMs for Dynamic User Profiling and
+Personalized Responses at Scale. Conference on Language Modeling (COLM).
+
+Lewis, Patrick; Perez, Ethan; Piktus, Aleaskndra; Petroni, Fabio;
+Karpukhin, Vladimir; Goyal, Naman; Kuttler, Heinrich; Lewis, Mike; Yih,
+Wen-tau; Rocktäschel, Tim; Riedel, Sebastian; Kiela, Douwe (2020).
+Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks.
+Advances in Neural Information Processing Systems.
+
+Li, Zhiyu; Xi, Chenyang; Li, Chunyu; Chen, Ding; Chen, Boyu; Song,
+Shichao; Niu, Simin; Wang, Hanyu; Yang, Jiawei; Tang, Chen; Yu,
+Qingchen; Zhao, Jihao; Wang, Yezhaohui; Liu, Peng; Lin, Zehao; Wang,
+Pengyuan; Huo, Jiahao; Chen, Tianyi; Chen, Kai; Li, Kehang; Tao, Zhen;
+Lai, Huayi; Wu, Hao; Tang, Bo; Wang, Zhengren; Fan, Zhaoxin; Zhang,
+Ningyu; Zhang, Linfeng; Yan, Junchi; Yang, Mingchuan; Xu, Tong; Xu, Wei;
+Chen, Huajun; Wang, Haofen; Yang, Hongkang; Zhang, Wentao; Xu, Zhi-Qin
+John; Chen, Siheng; Xiong, Feiyu (2025). MemOS: A Memory OS for AI
+System. arXiv preprint arXiv:2507.03724. DOI: 10.48550/arXiv.2507.03724.
+
+Liu, Nelson F.; Lin, Kevin; Hewitt, John; Paranjape, Ashwin; Bevilacqua,
+Michele; Petroni, Fabio; Liang, Percy (2024). Lost in the Middle: How
+Language Models Use Long Contexts. Transactions of the Association for
+Computational Linguistics. DOI: 10.1162/tacl\_a\_00638.
+
+Madras, David; Pitassi, Toniann; Zemel, Richard (2018). Predict
+Responsibly: Improving Fairness and Accuracy by Learning to Defer.
+Advances in Neural Information Processing Systems.
+
+Maharana, Adyasha; Lee, Dong-Ho; Tulyakov, Sergey; Bansal, Mohit;
+Barbieri, Francesco; Fang, Yuwei (2024). Evaluating Very Long-Term
+Conversational Memory of LLM Agents. Proceedings of the 62nd Annual
+Meeting of the Association for Computational Linguistics (Volume 1: Long
+Papers). DOI: 10.18653/v1/2024.acl-long.747.
+
+Meng, Kevin; Bau, David; Andonian, Alex; Belinkov, Yonatan (2022).
+Locating and Editing Factual Associations in GPT. Advances in Neural
+Information Processing Systems.
+
+Meng, Kevin; Sharma, Arnab Sen; Andonian, Alex; Belinkov, Yonatan; Bau,
+David (2023). Mass-Editing Memory in a Transformer. International
+Conference on Learning Representations (ICLR).
+
+Mitchell, Margaret; Wu, Simone; Zaldivar, Andrew; Barnes, Parker;
+Vasserman, Lucy; Hutchinson, Ben; Spitzer, Elena; Raji, Inioluwa
+Deborah; Gebru, Timnit (2019). Model Cards for Model Reporting.
+Proceedings of the Conference on Fairness, Accountability, and
+Transparency. DOI: 10.1145/3287560.3287596.
+
+Mozannar, Hussein; Sontag, David (2020). Consistent Estimators for
+Learning to Defer to an Expert. Proceedings of the 37th International
+Conference on Machine Learning.
+
+Ouyang, Long; Wu, Jeff; Jiang, Xu; Almeida, Diogo; Wainwright, Carroll
+L.; Mishkin, Pamela; Zhang, Chong; Agarwal, Sandhini; Slama, Katarina;
+Ray, Alex; others (2022). Training Language Models to Follow
+Instructions with Human Feedback. Advances in Neural Information
+Processing Systems.
+
+Packer, Charles; Wooders, Sarah; Lin, Kevin; Fang, Vivian; Patil,
+Shishir G.; Stoica, Ion; Gonzalez, Joseph E. (2023). MemGPT: Towards
+LLMs as Operating Systems. arXiv preprint arXiv:2310.08560.
+
+Park, Joon Sung; O\textquotesingle Brien, Joseph; Cai, Carrie Jun;
+Morris, Meredith Ringel; Liang, Percy; Bernstein, Michael S. (2023).
+Generative Agents: Interactive Simulacra of Human Behavior. Proceedings
+of the 36th Annual ACM Symposium on User Interface Software and
+Technology. DOI: 10.1145/3586183.3606763.
+
+Patel, Vedant (2026). Supersede: Diagnosing and Training the
+Memory-Update Gap in LLM Agents. arXiv preprint arXiv:2606.27472. DOI:
+10.48550/arXiv.2606.27472.
+
+Rasmussen, Preston; Paliychuk, Pavlo; Beauvais, Travis; Ryan, Jack;
+Chalef, Daniel (2025). Zep: A Temporal Knowledge Graph Architecture for
+Agent Memory. arXiv preprint arXiv:2501.13956.
+
+Reddy, Vikas; Challaram, Sumanth (2026). Don\textquotesingle t Ask the
+LLM to Track Freshness: A Deterministic Recipe for Memory Conflict
+Resolution. arXiv preprint arXiv:2606.01435. DOI:
+10.48550/arXiv.2606.01435.
+
+Ren, Zhe; Yang, Yibo; Chen, Yimeng; Zhao, Zijun; Fu, Benshuo; Shu,
+Zhihao; Zhang, Bingjie; Xu, Yangyang; Guo, Dandan; Yan, Shuicheng
+(2026). GateMem: Benchmarking Memory Governance in Multi-Principal
+Shared-Memory Agents. arXiv preprint arXiv:2606.18829. DOI:
+10.48550/arXiv.2606.18829.
+
+Salemi, Alireza; Mysore, Sheshera; Bendersky, Michael; Zamani, Hamed
+(2023). LaMP: When Large Language Models Meet Personalization. arXiv
+preprint arXiv:2304.11406.
+
+Shokri, Reza; Stronati, Marco; Song, Congzheng; Shmatikov, Vitaly
+(2017). Membership Inference Attacks Against Machine Learning Models.
+2017 IEEE Symposium on Security and Privacy. DOI: 10.1109/SP.2017.41.
+
+Sun, H.; Zhang, Z.; Zeng, S. (2025). Preference-Aware Memory Update for
+Long-Term LLM Agents. arXiv preprint arXiv:2510.09720.
+
+Tan, Zhen; Yan, Jun; Hsu, I-Hung; Han, Rujun; Wang, Zifeng; Le, Long;
+Song, Yiwen; Chen, Yanfei; Palangi, Hamid; Lee, George; Iyer, Anand
+Rajan; Chen, Tianlong; Liu, Huan; Lee, Chen-Yu; Pfister, Tomas (2025).
+In Prospect and Retrospect: Reflective Memory Management for Long-term
+Personalized Dialogue Agents. Proceedings of the 63rd Annual Meeting of
+the Association for Computational Linguistics (Volume 1: Long Papers).
+DOI: 10.18653/v1/2025.acl-long.413.
+
+Wang, Ziming (2026). TOKI: A Bitemporal Operator Algebra for
+Contradiction Resolution in LLM-Agent Persistent Memory. arXiv preprint
+arXiv:2606.06240. DOI: 10.48550/arXiv.2606.06240.
+
+Wei, Lei; Peng, Xiao; Dong, Xu; Xie, Niantao; Wang, Bin (2026). FadeMem:
+Biologically-Inspired Forgetting for Efficient Agent Memory. arXiv
+preprint arXiv:2601.18642. DOI: 10.48550/arXiv.2601.18642.
+
+Weidinger, Laura; Mellor, John; Rauh, Maribeth; Griffin, Conor; Uesato,
+Jonathan; Huang, Po-Sen; Cheng, Myra; Glaese, Mia; Balle, Borja;
+Kasirzadeh, Atoosa; others (2022). Taxonomy of Risks Posed by Language
+Models. Proceedings of the 2022 ACM Conference on Fairness,
+Accountability, and Transparency. DOI: 10.1145/3531146.3533088.
+
+Wu, Di; Wang, Hongwei; Yu, Wenhao; Zhang, Yuwei; Chang, Kai-Wei; Yu,
+Dong (2025). LongMemEval: Benchmarking Chat Assistants on Long-Term
+Interactive Memory. International Conference on Learning Representations
+(ICLR).
+
+Xu, Wujiang; Liang, Zujie; Mei, Kai; Gao, Hang; Tan, Juntao; Zhang,
+Yongfeng (2025). A-MEM: Agentic Memory for LLM Agents. arXiv preprint
+arXiv:2502.12110.
+
+Yan, Sikuan; Yang, Xiufeng; Huang, Zuchao; Nie, Ercong; Ding, Zifeng;
+Li, Zonggen; Ma, Xiaowen; Bi, Jinhe; Kersting, Kristian; Pan, Jeff Z.;
+Schütze, Hinrich; Tresp, Volker; Ma, Yunpu (2025). Memory-R1: Enhancing
+Large Language Model Agents to Manage and Utilize Memories via
+Reinforcement Learning. arXiv preprint arXiv:2508.19828. DOI:
+10.48550/arXiv.2508.19828.
+
+Zhao, Siyan; Hong, Mingyi; Liu, Yang; Hazarika, Devamanyu; Lin, Kaixiang
+(2025). Do LLMs Recognize Your Preferences? Evaluating Personalized
+Preference Following in LLMs. International Conference on Learning
+Representations (ICLR).
+
+Zhong, Wanjun; Guo, Lianghong; Gao, Qiqi; Ye, He; Wang, Yanlin (2024).
+MemoryBank: Enhancing Large Language Models with Long-Term Memory.
+Proceedings of the AAAI Conference on Artificial Intelligence.
+
+National Institute of Standards; Technology (2023). Artificial
+Intelligence Risk Management Framework (AI RMF 1.0). DOI:
+10.6028/NIST.AI.100-1.

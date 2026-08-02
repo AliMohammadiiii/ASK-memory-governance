@@ -1,0 +1,2373 @@
+{
+  "hidden_v43": {
+    "n": 540,
+    "accuracy": 0.8481481481481481,
+    "wilson95": [
+      0.8154270561073689,
+      0.8759509069006364
+    ],
+    "cluster_ci_acc": [
+      0.8037037037037037,
+      0.8888888888888888
+    ],
+    "cluster_ci_mf1": [
+      0.8020749634748688,
+      0.889351432442434
+    ],
+    "macro_f1": 0.847872957121512,
+    "mcc": 0.7728426536370914,
+    "kappa": 0.7722222222222221,
+    "balanced_acc": 0.8481481481481481,
+    "confusion": {
+      "ABSTAIN": {
+        "ABSTAIN": 142,
+        "KEEP": 30,
+        "SUPERSEDE": 8
+      },
+      "KEEP": {
+        "ABSTAIN": 18,
+        "KEEP": 151,
+        "SUPERSEDE": 11
+      },
+      "SUPERSEDE": {
+        "ABSTAIN": 6,
+        "KEEP": 9,
+        "SUPERSEDE": 165
+      }
+    },
+    "per_class": {
+      "ABSTAIN": {
+        "precision": 0.8554216867469879,
+        "recall": 0.7888888888888889,
+        "f1": 0.8208092485549133,
+        "support": 180
+      },
+      "KEEP": {
+        "precision": 0.7947368421052632,
+        "recall": 0.8388888888888889,
+        "f1": 0.8162162162162162,
+        "support": 180
+      },
+      "SUPERSEDE": {
+        "precision": 0.8967391304347826,
+        "recall": 0.9166666666666666,
+        "f1": 0.9065934065934065,
+        "support": 180
+      }
+    },
+    "selective_coverage": 0.6926,
+    "selective_accuracy": 0.8449,
+    "safety": {
+      "false_commit": {
+        "count": 38,
+        "denom": 180,
+        "rate": 0.2111111111111111,
+        "wilson95": [
+          0.15784799002801836,
+          0.2764471865544615
+        ]
+      },
+      "missed_update": {
+        "count": 15,
+        "denom": 180,
+        "rate": 0.08333333333333333,
+        "wilson95": [
+          0.05114986207587898,
+          0.13292971953346702
+        ]
+      },
+      "destructive_overwrite": {
+        "count": 11,
+        "denom": 180,
+        "rate": 0.06111111111111111,
+        "wilson95": [
+          0.034462713563883494,
+          0.10610111239796097
+        ]
+      },
+      "unnecessary_abstain": {
+        "count": 24,
+        "denom": 360,
+        "rate": 0.06666666666666667,
+        "wilson95": [
+          0.04520573752705385,
+          0.09727791178072981
+        ]
+      },
+      "keep_to_abstain": {
+        "count": 18,
+        "denom": 180,
+        "rate": 0.1,
+        "wilson95": [
+          0.06419425112414784,
+          0.15252214722082433
+        ]
+      },
+      "abstain_to_keep": {
+        "count": 30,
+        "denom": 180,
+        "rate": 0.16666666666666666,
+        "wilson95": [
+          0.11931179925333334,
+          0.2279518660341434
+        ]
+      },
+      "abstain_to_supersede": {
+        "count": 8,
+        "denom": 180,
+        "rate": 0.044444444444444446,
+        "wilson95": [
+          0.022690093449699883,
+          0.08523691577651844
+        ]
+      },
+      "supersede_to_keep": {
+        "count": 9,
+        "denom": 180,
+        "rate": 0.05,
+        "wilson95": [
+          0.02652513847915603,
+          0.09228080965893767
+        ]
+      },
+      "supersede_to_abstain": {
+        "count": 6,
+        "denom": 180,
+        "rate": 0.03333333333333333,
+        "wilson95": [
+          0.015364790982156571,
+          0.07080434042031097
+        ]
+      },
+      "keep_to_supersede": {
+        "count": 11,
+        "denom": 180,
+        "rate": 0.06111111111111111,
+        "wilson95": [
+          0.034462713563883494,
+          0.10610111239796097
+        ]
+      }
+    },
+    "cost": {
+      "balanced": 0.15185185185185185,
+      "commit_averse": 0.4203703703703704,
+      "update_responsive": 0.2962962962962963
+    },
+    "operational": {
+      "n": 540,
+      "lat_mean": 1673.2324777777776,
+      "lat_med": 1278.2350000000001,
+      "lat_p95": 2931.9997499999995,
+      "lat_p99": 11603.91142,
+      "lat_max": 12625.592,
+      "lat_min": 705.313,
+      "lat_sum_s": 903.545538,
+      "lat_sd": 1546.0182924679439,
+      "ptok": 212467.0,
+      "ctok": 4000.0,
+      "tok_per_item": 400.8648148148148,
+      "fallbacks": 0,
+      "chars_mean": 19.77037037037037
+    },
+    "guard": {
+      "changed": 36,
+      "transitions": {
+        "ABSTAIN->KEEP": 30,
+        "ABSTAIN->SUPERSEDE": 6
+      },
+      "model_actions": {
+        "KEEP": 160,
+        "SUPERSEDE": 178,
+        "ABSTAIN": 202
+      },
+      "policy_actions": {
+        "ABSTAIN": 312,
+        "SUPERSEDE": 120,
+        "KEEP": 108
+      },
+      "final_actions": {
+        "KEEP": 190,
+        "SUPERSEDE": 184,
+        "ABSTAIN": 166
+      },
+      "rules": {
+        "no_decisive_public_evidence": 255,
+        "direct_documented_slot_change": 120,
+        "standing_value_confirmed_or_proposal_retracted": 90,
+        "unresolved_scope_authority_or_timing": 57,
+        "temporary_or_scoped_exception": 18
+      }
+    }
+  },
+  "dev_systems": {
+    "ablation_no_abstain": {
+      "accuracy": 0.3333333333333333,
+      "acc_ci": [
+        0.26666666666666666,
+        0.40555555555555556
+      ],
+      "macro_f1": 0.24651309352040732,
+      "mf1_ci": [
+        0.19449958423304486,
+        0.2978509570405757
+      ],
+      "balanced_acc": 0.3333333333333333,
+      "mcc": 0.0,
+      "kappa": 0.0,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 0,
+          "KEEP": 13,
+          "SUPERSEDE": 47
+        },
+        "KEEP": {
+          "ABSTAIN": 0,
+          "KEEP": 14,
+          "SUPERSEDE": 46
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 14,
+          "SUPERSEDE": 46
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.34146341463414637,
+          "recall": 0.23333333333333334,
+          "f1": 0.27722772277227725,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.33093525179856115,
+          "recall": 0.7666666666666667,
+          "f1": 0.46231155778894467,
+          "support": 60
+        }
+      },
+      "false_commit": 1.0,
+      "false_commit_n": "60/60",
+      "missed_update": 0.23333333333333334,
+      "missed_update_n": "14/60",
+      "unnecessary_abstain": 0.0,
+      "unnecessary_abstain_n": "0/120",
+      "destructive_overwrite": 0.7666666666666667,
+      "destructive_overwrite_n": "46/60"
+    },
+    "ablation_no_lineage": {
+      "accuracy": 0.35,
+      "acc_ci": [
+        0.2833333333333333,
+        0.4222222222222222
+      ],
+      "macro_f1": 0.201975061039414,
+      "mf1_ci": [
+        0.15997377579440364,
+        0.249633173681491
+      ],
+      "balanced_acc": 0.35000000000000003,
+      "mcc": 0.0876309356755479,
+      "kappa": 0.02499999999999999,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 1,
+          "KEEP": 2,
+          "SUPERSEDE": 57
+        },
+        "KEEP": {
+          "ABSTAIN": 0,
+          "KEEP": 2,
+          "SUPERSEDE": 58
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 0,
+          "SUPERSEDE": 60
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 1.0,
+          "recall": 0.016666666666666666,
+          "f1": 0.03278688524590164,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.5,
+          "recall": 0.03333333333333333,
+          "f1": 0.0625,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.34285714285714286,
+          "recall": 1.0,
+          "f1": 0.5106382978723404,
+          "support": 60
+        }
+      },
+      "false_commit": 0.9833333333333333,
+      "false_commit_n": "59/60",
+      "missed_update": 0.0,
+      "missed_update_n": "0/60",
+      "unnecessary_abstain": 0.0,
+      "unnecessary_abstain_n": "0/120",
+      "destructive_overwrite": 0.9666666666666667,
+      "destructive_overwrite_n": "58/60"
+    },
+    "ablation_no_provenance": {
+      "accuracy": 0.3388888888888889,
+      "acc_ci": [
+        0.2722222222222222,
+        0.4111111111111111
+      ],
+      "macro_f1": 0.1887105852788763,
+      "mf1_ci": [
+        0.15174433747921207,
+        0.23107717131456398
+      ],
+      "balanced_acc": 0.33888888888888885,
+      "mcc": 0.029177137194158806,
+      "kappa": 0.008333333333333385,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 1,
+          "KEEP": 1,
+          "SUPERSEDE": 58
+        },
+        "KEEP": {
+          "ABSTAIN": 1,
+          "KEEP": 1,
+          "SUPERSEDE": 58
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 1,
+          "KEEP": 0,
+          "SUPERSEDE": 59
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.3333333333333333,
+          "recall": 0.016666666666666666,
+          "f1": 0.031746031746031744,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.5,
+          "recall": 0.016666666666666666,
+          "f1": 0.03225806451612903,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.33714285714285713,
+          "recall": 0.9833333333333333,
+          "f1": 0.5021276595744681,
+          "support": 60
+        }
+      },
+      "false_commit": 0.9833333333333333,
+      "false_commit_n": "59/60",
+      "missed_update": 0.016666666666666666,
+      "missed_update_n": "1/60",
+      "unnecessary_abstain": 0.016666666666666666,
+      "unnecessary_abstain_n": "2/120",
+      "destructive_overwrite": 0.9666666666666667,
+      "destructive_overwrite_n": "58/60"
+    },
+    "ablation_no_typing": {
+      "accuracy": 0.34444444444444444,
+      "acc_ci": [
+        0.2777777777777778,
+        0.4166666666666667
+      ],
+      "macro_f1": 0.18992515038802404,
+      "mf1_ci": [
+        0.15164520743919885,
+        0.23152596241553056
+      ],
+      "balanced_acc": 0.3444444444444445,
+      "mcc": 0.09166984970282112,
+      "kappa": 0.016666666666666687,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 1,
+          "KEEP": 0,
+          "SUPERSEDE": 59
+        },
+        "KEEP": {
+          "ABSTAIN": 0,
+          "KEEP": 1,
+          "SUPERSEDE": 59
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 0,
+          "SUPERSEDE": 60
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 1.0,
+          "recall": 0.016666666666666666,
+          "f1": 0.03278688524590164,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 1.0,
+          "recall": 0.016666666666666666,
+          "f1": 0.03278688524590164,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.33707865168539325,
+          "recall": 1.0,
+          "f1": 0.5042016806722689,
+          "support": 60
+        }
+      },
+      "false_commit": 0.9833333333333333,
+      "false_commit_n": "59/60",
+      "missed_update": 0.0,
+      "missed_update_n": "0/60",
+      "unnecessary_abstain": 0.0,
+      "unnecessary_abstain_n": "0/120",
+      "destructive_overwrite": 0.9833333333333333,
+      "destructive_overwrite_n": "59/60"
+    },
+    "b1": {
+      "accuracy": 0.36666666666666664,
+      "acc_ci": [
+        0.29444444444444445,
+        0.4388888888888889
+      ],
+      "macro_f1": 0.31181589753018324,
+      "mf1_ci": [
+        0.24201317950254878,
+        0.3786586038451411
+      ],
+      "balanced_acc": 0.3666666666666667,
+      "mcc": 0.06493161732291822,
+      "kappa": 0.04999999999999998,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 12,
+          "KEEP": 3,
+          "SUPERSEDE": 45
+        },
+        "KEEP": {
+          "ABSTAIN": 9,
+          "KEEP": 7,
+          "SUPERSEDE": 44
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 9,
+          "KEEP": 4,
+          "SUPERSEDE": 47
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.4,
+          "recall": 0.2,
+          "f1": 0.26666666666666666,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.5,
+          "recall": 0.11666666666666667,
+          "f1": 0.18918918918918917,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.34558823529411764,
+          "recall": 0.7833333333333333,
+          "f1": 0.47959183673469385,
+          "support": 60
+        }
+      },
+      "false_commit": 0.8,
+      "false_commit_n": "48/60",
+      "missed_update": 0.21666666666666667,
+      "missed_update_n": "13/60",
+      "unnecessary_abstain": 0.15,
+      "unnecessary_abstain_n": "18/120",
+      "destructive_overwrite": 0.7333333333333333,
+      "destructive_overwrite_n": "44/60"
+    },
+    "b2": {
+      "accuracy": 0.35555555555555557,
+      "acc_ci": [
+        0.2833333333333333,
+        0.42777777777777776
+      ],
+      "macro_f1": 0.2439540991931569,
+      "mf1_ci": [
+        0.18907066553129817,
+        0.3025723387234654
+      ],
+      "balanced_acc": 0.35555555555555557,
+      "mcc": 0.0650370681430222,
+      "kappa": 0.033333333333333375,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 6,
+          "KEEP": 2,
+          "SUPERSEDE": 52
+        },
+        "KEEP": {
+          "ABSTAIN": 3,
+          "KEEP": 2,
+          "SUPERSEDE": 55
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 2,
+          "KEEP": 2,
+          "SUPERSEDE": 56
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.5454545454545454,
+          "recall": 0.1,
+          "f1": 0.16901408450704225,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.3333333333333333,
+          "recall": 0.03333333333333333,
+          "f1": 0.0606060606060606,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.34355828220858897,
+          "recall": 0.9333333333333333,
+          "f1": 0.5022421524663677,
+          "support": 60
+        }
+      },
+      "false_commit": 0.9,
+      "false_commit_n": "54/60",
+      "missed_update": 0.06666666666666667,
+      "missed_update_n": "4/60",
+      "unnecessary_abstain": 0.041666666666666664,
+      "unnecessary_abstain_n": "5/120",
+      "destructive_overwrite": 0.9166666666666666,
+      "destructive_overwrite_n": "55/60"
+    },
+    "b3": {
+      "accuracy": 0.3277777777777778,
+      "acc_ci": [
+        0.2611111111111111,
+        0.4
+      ],
+      "macro_f1": 0.21747694511594592,
+      "mf1_ci": [
+        0.16666971573318323,
+        0.27297161067155906
+      ],
+      "balanced_acc": 0.3277777777777778,
+      "mcc": -0.014759176295645252,
+      "kappa": -0.008333333333333302,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 4,
+          "KEEP": 4,
+          "SUPERSEDE": 52
+        },
+        "KEEP": {
+          "ABSTAIN": 4,
+          "KEEP": 2,
+          "SUPERSEDE": 54
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 5,
+          "KEEP": 2,
+          "SUPERSEDE": 53
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.3076923076923077,
+          "recall": 0.06666666666666667,
+          "f1": 0.1095890410958904,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.25,
+          "recall": 0.03333333333333333,
+          "f1": 0.058823529411764705,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.3333333333333333,
+          "recall": 0.8833333333333333,
+          "f1": 0.4840182648401826,
+          "support": 60
+        }
+      },
+      "false_commit": 0.9333333333333333,
+      "false_commit_n": "56/60",
+      "missed_update": 0.11666666666666667,
+      "missed_update_n": "7/60",
+      "unnecessary_abstain": 0.075,
+      "unnecessary_abstain_n": "9/120",
+      "destructive_overwrite": 0.9,
+      "destructive_overwrite_n": "54/60"
+    },
+    "b4": {
+      "accuracy": 0.3388888888888889,
+      "acc_ci": [
+        0.2722222222222222,
+        0.4111111111111111
+      ],
+      "macro_f1": 0.18914807302231237,
+      "mf1_ci": [
+        0.15217031115830595,
+        0.2270077837907791
+      ],
+      "balanced_acc": 0.33888888888888885,
+      "mcc": 0.023346480238675887,
+      "kappa": 0.008333333333333385,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 0,
+          "KEEP": 5,
+          "SUPERSEDE": 55
+        },
+        "KEEP": {
+          "ABSTAIN": 0,
+          "KEEP": 2,
+          "SUPERSEDE": 58
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 1,
+          "SUPERSEDE": 59
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.25,
+          "recall": 0.03333333333333333,
+          "f1": 0.058823529411764705,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.3430232558139535,
+          "recall": 0.9833333333333333,
+          "f1": 0.5086206896551724,
+          "support": 60
+        }
+      },
+      "false_commit": 1.0,
+      "false_commit_n": "60/60",
+      "missed_update": 0.016666666666666666,
+      "missed_update_n": "1/60",
+      "unnecessary_abstain": 0.0,
+      "unnecessary_abstain_n": "0/120",
+      "destructive_overwrite": 0.9666666666666667,
+      "destructive_overwrite_n": "58/60"
+    },
+    "decision_zero_shot": {
+      "accuracy": 0.3388888888888889,
+      "acc_ci": [
+        0.2722222222222222,
+        0.4111111111111111
+      ],
+      "macro_f1": 0.1788199150627993,
+      "mf1_ci": [
+        0.14690702233277853,
+        0.21425202791926054
+      ],
+      "balanced_acc": 0.33888888888888885,
+      "mcc": 0.04589925460215784,
+      "kappa": 0.008333333333333385,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 0,
+          "KEEP": 1,
+          "SUPERSEDE": 59
+        },
+        "KEEP": {
+          "ABSTAIN": 0,
+          "KEEP": 1,
+          "SUPERSEDE": 59
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 0,
+          "SUPERSEDE": 60
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.5,
+          "recall": 0.016666666666666666,
+          "f1": 0.03225806451612903,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.33707865168539325,
+          "recall": 1.0,
+          "f1": 0.5042016806722689,
+          "support": 60
+        }
+      },
+      "false_commit": 1.0,
+      "false_commit_n": "60/60",
+      "missed_update": 0.0,
+      "missed_update_n": "0/60",
+      "unnecessary_abstain": 0.0,
+      "unnecessary_abstain_n": "0/120",
+      "destructive_overwrite": 0.9833333333333333,
+      "destructive_overwrite_n": "59/60"
+    },
+    "live_model_controller": {
+      "accuracy": 0.8444444444444444,
+      "acc_ci": [
+        0.7888888888888889,
+        0.8944444444444445
+      ],
+      "macro_f1": 0.8458035427182433,
+      "mf1_ci": [
+        0.7891193283035897,
+        0.895152856390583
+      ],
+      "balanced_acc": 0.8444444444444444,
+      "mcc": 0.7714313987159899,
+      "kappa": 0.7666666666666665,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 46,
+          "KEEP": 12,
+          "SUPERSEDE": 2
+        },
+        "KEEP": {
+          "ABSTAIN": 4,
+          "KEEP": 54,
+          "SUPERSEDE": 2
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 1,
+          "KEEP": 7,
+          "SUPERSEDE": 52
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.9019607843137255,
+          "recall": 0.7666666666666667,
+          "f1": 0.8288288288288289,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.7397260273972602,
+          "recall": 0.9,
+          "f1": 0.8120300751879699,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.9285714285714286,
+          "recall": 0.8666666666666667,
+          "f1": 0.896551724137931,
+          "support": 60
+        }
+      },
+      "false_commit": 0.23333333333333334,
+      "false_commit_n": "14/60",
+      "missed_update": 0.13333333333333333,
+      "missed_update_n": "8/60",
+      "unnecessary_abstain": 0.041666666666666664,
+      "unnecessary_abstain_n": "5/120",
+      "destructive_overwrite": 0.03333333333333333,
+      "destructive_overwrite_n": "2/60"
+    },
+    "rules_controller": {
+      "accuracy": 0.3333333333333333,
+      "acc_ci": [
+        0.26666666666666666,
+        0.40555555555555556
+      ],
+      "macro_f1": 0.2434293180561837,
+      "mf1_ci": [
+        0.19379292846992038,
+        0.2941812684669827
+      ],
+      "balanced_acc": 0.3333333333333333,
+      "mcc": 0.0,
+      "kappa": 0.0,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 47,
+          "KEEP": 0,
+          "SUPERSEDE": 13
+        },
+        "KEEP": {
+          "ABSTAIN": 47,
+          "KEEP": 0,
+          "SUPERSEDE": 13
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 47,
+          "KEEP": 0,
+          "SUPERSEDE": 13
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.3333333333333333,
+          "recall": 0.7833333333333333,
+          "f1": 0.4676616915422885,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.3333333333333333,
+          "recall": 0.21666666666666667,
+          "f1": 0.2626262626262626,
+          "support": 60
+        }
+      },
+      "false_commit": 0.21666666666666667,
+      "false_commit_n": "13/60",
+      "missed_update": 0.7833333333333333,
+      "missed_update_n": "47/60",
+      "unnecessary_abstain": 0.7833333333333333,
+      "unnecessary_abstain_n": "94/120",
+      "destructive_overwrite": 0.21666666666666667,
+      "destructive_overwrite_n": "13/60"
+    },
+    "successor_live_model_controller": {
+      "accuracy": 0.95,
+      "acc_ci": [
+        0.9166666666666666,
+        0.9777777777777777
+      ],
+      "macro_f1": 0.9493895195544971,
+      "mf1_ci": [
+        0.9150270954027373,
+        0.9778887086416785
+      ],
+      "balanced_acc": 0.9500000000000001,
+      "mcc": 0.925814732559495,
+      "kappa": 0.9249999999999999,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 60,
+          "KEEP": 0,
+          "SUPERSEDE": 0
+        },
+        "KEEP": {
+          "ABSTAIN": 3,
+          "KEEP": 53,
+          "SUPERSEDE": 4
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 2,
+          "SUPERSEDE": 58
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.9523809523809523,
+          "recall": 1.0,
+          "f1": 0.975609756097561,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.9636363636363636,
+          "recall": 0.8833333333333333,
+          "f1": 0.9217391304347826,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.9354838709677419,
+          "recall": 0.9666666666666667,
+          "f1": 0.9508196721311476,
+          "support": 60
+        }
+      },
+      "false_commit": 0.0,
+      "false_commit_n": "0/60",
+      "missed_update": 0.03333333333333333,
+      "missed_update_n": "2/60",
+      "unnecessary_abstain": 0.025,
+      "unnecessary_abstain_n": "3/120",
+      "destructive_overwrite": 0.06666666666666667,
+      "destructive_overwrite_n": "4/60"
+    },
+    "successor_guard_composed": {
+      "accuracy": 0.9611111111111111,
+      "acc_ci": [
+        0.9333333333333333,
+        0.9888888888888889
+      ],
+      "macro_f1": 0.9606929939455758,
+      "mf1_ci": [
+        0.9306607987553298,
+        0.9867077102966507
+      ],
+      "balanced_acc": 0.9611111111111111,
+      "mcc": 0.942583513210668,
+      "kappa": 0.9416666666666665,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 60,
+          "KEEP": 0,
+          "SUPERSEDE": 0
+        },
+        "KEEP": {
+          "ABSTAIN": 4,
+          "KEEP": 54,
+          "SUPERSEDE": 2
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 0,
+          "KEEP": 1,
+          "SUPERSEDE": 59
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.9375,
+          "recall": 1.0,
+          "f1": 0.967741935483871,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.9818181818181818,
+          "recall": 0.9,
+          "f1": 0.9391304347826087,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.9672131147540983,
+          "recall": 0.9833333333333333,
+          "f1": 0.9752066115702478,
+          "support": 60
+        }
+      },
+      "false_commit": 0.0,
+      "false_commit_n": "0/60",
+      "missed_update": 0.016666666666666666,
+      "missed_update_n": "1/60",
+      "unnecessary_abstain": 0.03333333333333333,
+      "unnecessary_abstain_n": "4/120",
+      "destructive_overwrite": 0.03333333333333333,
+      "destructive_overwrite_n": "2/60"
+    },
+    "ext_graphiti": {
+      "accuracy": 0.3055555555555556,
+      "acc_ci": [
+        0.2388888888888889,
+        0.37222222222222223
+      ],
+      "macro_f1": 0.21122185308231822,
+      "mf1_ci": [
+        0.1632936171445155,
+        0.26023196815518734
+      ],
+      "balanced_acc": 0.3055555555555555,
+      "mcc": -0.06381649953194597,
+      "kappa": -0.041666666666666595,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 47,
+          "KEEP": 2,
+          "SUPERSEDE": 11
+        },
+        "KEEP": {
+          "ABSTAIN": 53,
+          "KEEP": 0,
+          "SUPERSEDE": 7
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 50,
+          "KEEP": 2,
+          "SUPERSEDE": 8
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.31333333333333335,
+          "recall": 0.7833333333333333,
+          "f1": 0.44761904761904764,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.3076923076923077,
+          "recall": 0.13333333333333333,
+          "f1": 0.18604651162790697,
+          "support": 60
+        }
+      },
+      "false_commit": 0.21666666666666667,
+      "false_commit_n": "13/60",
+      "missed_update": 0.8666666666666667,
+      "missed_update_n": "52/60",
+      "unnecessary_abstain": 0.8583333333333333,
+      "unnecessary_abstain_n": "103/120",
+      "destructive_overwrite": 0.11666666666666667,
+      "destructive_overwrite_n": "7/60"
+    },
+    "ext_letta": {
+      "accuracy": 0.29444444444444445,
+      "acc_ci": [
+        0.22777777777777777,
+        0.3611111111111111
+      ],
+      "macro_f1": 0.2424289596942212,
+      "mf1_ci": [
+        0.1856347088052263,
+        0.298568894774639
+      ],
+      "balanced_acc": 0.29444444444444445,
+      "mcc": -0.06853966960527237,
+      "kappa": -0.058333333333333286,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 35,
+          "KEEP": 1,
+          "SUPERSEDE": 24
+        },
+        "KEEP": {
+          "ABSTAIN": 35,
+          "KEEP": 2,
+          "SUPERSEDE": 23
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 43,
+          "KEEP": 1,
+          "SUPERSEDE": 16
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.30973451327433627,
+          "recall": 0.5833333333333334,
+          "f1": 0.4046242774566474,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.5,
+          "recall": 0.03333333333333333,
+          "f1": 0.0625,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.25396825396825395,
+          "recall": 0.26666666666666666,
+          "f1": 0.2601626016260163,
+          "support": 60
+        }
+      },
+      "false_commit": 0.4166666666666667,
+      "false_commit_n": "25/60",
+      "missed_update": 0.7333333333333333,
+      "missed_update_n": "44/60",
+      "unnecessary_abstain": 0.65,
+      "unnecessary_abstain_n": "78/120",
+      "destructive_overwrite": 0.38333333333333336,
+      "destructive_overwrite_n": "23/60"
+    },
+    "ext_mem0": {
+      "accuracy": 0.3333333333333333,
+      "acc_ci": [
+        0.26666666666666666,
+        0.40555555555555556
+      ],
+      "macro_f1": 0.18505182760501906,
+      "mf1_ci": [
+        0.1484707440384296,
+        0.2255243686173791
+      ],
+      "balanced_acc": 0.3333333333333333,
+      "mcc": 0.0,
+      "kappa": 0.0,
+      "confusion": {
+        "ABSTAIN": {
+          "ABSTAIN": 58,
+          "KEEP": 2,
+          "SUPERSEDE": 0
+        },
+        "KEEP": {
+          "ABSTAIN": 58,
+          "KEEP": 2,
+          "SUPERSEDE": 0
+        },
+        "SUPERSEDE": {
+          "ABSTAIN": 59,
+          "KEEP": 1,
+          "SUPERSEDE": 0
+        }
+      },
+      "per_class": {
+        "ABSTAIN": {
+          "precision": 0.3314285714285714,
+          "recall": 0.9666666666666667,
+          "f1": 0.4936170212765957,
+          "support": 60
+        },
+        "KEEP": {
+          "precision": 0.4,
+          "recall": 0.03333333333333333,
+          "f1": 0.06153846153846154,
+          "support": 60
+        },
+        "SUPERSEDE": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 60
+        }
+      },
+      "false_commit": 0.03333333333333333,
+      "false_commit_n": "2/60",
+      "missed_update": 1.0,
+      "missed_update_n": "60/60",
+      "unnecessary_abstain": 0.975,
+      "unnecessary_abstain_n": "117/120",
+      "destructive_overwrite": 0.0,
+      "destructive_overwrite_n": "0/60"
+    }
+  },
+  "dev_operational": {
+    "dev:ablation_no_abstain": {
+      "n": 180,
+      "lat_mean": 1652.4003944444441,
+      "lat_med": 1180.1005,
+      "lat_p95": 3493.6640499999917,
+      "lat_p99": 10283.686650000005,
+      "lat_max": 13074.685,
+      "lat_min": 594.143,
+      "lat_sum_s": 297.43207099999995,
+      "lat_sd": 1621.5531494621334,
+      "ptok": 103747.0,
+      "ctok": 1358.0,
+      "tok_per_item": 583.9166666666666,
+      "fallbacks": 0,
+      "chars_mean": 20.86111111111111
+    },
+    "dev:ablation_no_lineage": {
+      "n": 180,
+      "lat_mean": 1689.1459055555554,
+      "lat_med": 1267.4405000000002,
+      "lat_p95": 4435.839699999997,
+      "lat_p99": 9839.511440000013,
+      "lat_max": 16069.527,
+      "lat_min": 635.237,
+      "lat_sum_s": 304.04626299999995,
+      "lat_sd": 1744.648221871982,
+      "ptok": 104467.0,
+      "ctok": 1432.0,
+      "tok_per_item": 588.3277777777778,
+      "fallbacks": 0,
+      "chars_mean": 21.877777777777776
+    },
+    "dev:ablation_no_provenance": {
+      "n": 180,
+      "lat_mean": 1662.2354166666667,
+      "lat_med": 1153.5345,
+      "lat_p95": 4620.257899999992,
+      "lat_p99": 7398.579870000009,
+      "lat_max": 9434.756,
+      "lat_min": 635.451,
+      "lat_sum_s": 299.202375,
+      "lat_sd": 1402.8670203120603,
+      "ptok": 82714.0,
+      "ctok": 1436.0,
+      "tok_per_item": 467.5,
+      "fallbacks": 0,
+      "chars_mean": 21.91111111111111
+    },
+    "dev:ablation_no_typing": {
+      "n": 180,
+      "lat_mean": 1514.7901055555558,
+      "lat_med": 1173.6100000000001,
+      "lat_p95": 2914.182749999998,
+      "lat_p99": 6930.031170000008,
+      "lat_max": 21709.149,
+      "lat_min": 616.118,
+      "lat_sum_s": 272.66221900000005,
+      "lat_sd": 1814.9039473215817,
+      "ptok": 104287.0,
+      "ctok": 1438.0,
+      "tok_per_item": 587.3611111111111,
+      "fallbacks": 0,
+      "chars_mean": 21.961111111111112
+    },
+    "dev:b1": {
+      "n": 180,
+      "lat_mean": 1691.9123222222222,
+      "lat_med": 1149.223,
+      "lat_p95": 5017.300649999995,
+      "lat_p99": 8152.483450000011,
+      "lat_max": 15801.043,
+      "lat_min": 592.028,
+      "lat_sum_s": 304.544218,
+      "lat_sd": 1733.3469707196864,
+      "ptok": 102091.0,
+      "ctok": 1412.0,
+      "tok_per_item": 575.0166666666667,
+      "fallbacks": 0,
+      "chars_mean": 21.27777777777778
+    },
+    "dev:b2": {
+      "n": 180,
+      "lat_mean": 1580.8508444444444,
+      "lat_med": 1059.685,
+      "lat_p95": 4582.003499999989,
+      "lat_p99": 7833.249020000004,
+      "lat_max": 8477.861,
+      "lat_min": 662.04,
+      "lat_sum_s": 284.553152,
+      "lat_sd": 1395.0443520215144,
+      "ptok": 107374.0,
+      "ctok": 1428.0,
+      "tok_per_item": 604.4555555555555,
+      "fallbacks": 0,
+      "chars_mean": 21.711111111111112
+    },
+    "dev:b3": {
+      "n": 180,
+      "lat_mean": 1774.4906888888886,
+      "lat_med": 1071.4475,
+      "lat_p95": 5515.0212999999785,
+      "lat_p99": 10362.853230000006,
+      "lat_max": 11403.863,
+      "lat_min": 571.921,
+      "lat_sum_s": 319.40832399999994,
+      "lat_sd": 1867.68333802686,
+      "ptok": 41863.0,
+      "ctok": 1424.0,
+      "tok_per_item": 240.48333333333332,
+      "fallbacks": 0,
+      "chars_mean": 21.633333333333333
+    },
+    "dev:b4": {
+      "n": 180,
+      "lat_mean": 1647.1301055555555,
+      "lat_med": 1138.9215,
+      "lat_p95": 4115.529749999996,
+      "lat_p99": 9039.768020000007,
+      "lat_max": 23586.058,
+      "lat_min": 677.503,
+      "lat_sum_s": 296.48341899999997,
+      "lat_sd": 2085.862089108641,
+      "ptok": 104107.0,
+      "ctok": 1424.0,
+      "tok_per_item": 586.2833333333333,
+      "fallbacks": 0,
+      "chars_mean": 21.77777777777778
+    },
+    "dev:decision_zero_shot": {
+      "n": 180,
+      "lat_mean": 1425.0097777777776,
+      "lat_med": 1039.2245,
+      "lat_p95": 3121.7091999999934,
+      "lat_p99": 6419.893790000032,
+      "lat_max": 9885.7,
+      "lat_min": 607.263,
+      "lat_sum_s": 256.50176,
+      "lat_sd": 1200.292270176436,
+      "ptok": 98887.0,
+      "ctok": 1441.0,
+      "tok_per_item": 557.3777777777777,
+      "fallbacks": 0,
+      "chars_mean": 21.961111111111112
+    },
+    "dev:live_model_controller": {
+      "n": 180,
+      "lat_mean": 1400.4118500000002,
+      "lat_med": 959.34,
+      "lat_p95": 3668.553349999997,
+      "lat_p99": 7338.270060000017,
+      "lat_max": 10259.861,
+      "lat_min": 609.92,
+      "lat_sum_s": 252.07413300000002,
+      "lat_sd": 1258.962119554144,
+      "ptok": 71302.0,
+      "ctok": 1344.0,
+      "tok_per_item": 403.5888888888889,
+      "fallbacks": 0,
+      "chars_mean": 19.8
+    },
+    "dev:rules_controller": {
+      "n": 180,
+      "lat_mean": 0.23638888888888893,
+      "lat_med": 0.128,
+      "lat_p95": 0.6454499999999995,
+      "lat_p99": 2.188880000000012,
+      "lat_max": 3.626,
+      "lat_min": 0.086,
+      "lat_sum_s": 0.042550000000000004,
+      "lat_sd": 0.41312330445076895,
+      "ptok": 0.0,
+      "ctok": 0.0,
+      "tok_per_item": 0.0,
+      "fallbacks": 0,
+      "chars_mean": 0.0
+    },
+    "dev:successor_live_model_controller": {
+      "n": 180,
+      "lat_mean": 1287.7788555555558,
+      "lat_med": 951.5505,
+      "lat_p95": 3388.1053499999966,
+      "lat_p99": 4575.3138000000035,
+      "lat_max": 7592.631,
+      "lat_min": 601.103,
+      "lat_sum_s": 231.800194,
+      "lat_sd": 918.0513293569225,
+      "ptok": 91102.0,
+      "ctok": 1406.0,
+      "tok_per_item": 513.9333333333333,
+      "fallbacks": 0,
+      "chars_mean": 20.47222222222222
+    },
+    "dev:successor_source": {
+      "n": 180,
+      "lat_mean": 1895.6404277777779,
+      "lat_med": 1262.2154999999998,
+      "lat_p95": 5312.106999999975,
+      "lat_p99": 11793.264670000006,
+      "lat_max": 12996.265,
+      "lat_min": 772.827,
+      "lat_sum_s": 341.215277,
+      "lat_sd": 2014.7129354080926,
+      "ptok": 91102.0,
+      "ctok": 1414.0,
+      "tok_per_item": 513.9777777777778,
+      "fallbacks": 0,
+      "chars_mean": 20.516666666666666
+    },
+    "hidden:live_model_controller": {
+      "n": 540,
+      "lat_mean": 1673.2324777777776,
+      "lat_med": 1278.2350000000001,
+      "lat_p95": 2931.9997499999995,
+      "lat_p99": 11603.91142,
+      "lat_max": 12625.592,
+      "lat_min": 705.313,
+      "lat_sum_s": 903.545538,
+      "lat_sd": 1546.0182924679439,
+      "ptok": 212467.0,
+      "ctok": 4000.0,
+      "tok_per_item": 400.8648148148148,
+      "fallbacks": 0,
+      "chars_mean": 19.77037037037037
+    }
+  },
+  "dev_mcnemar": [
+    {
+      "A": "live_model_controller",
+      "B": "ext_letta",
+      "b": 106,
+      "c": 7,
+      "RD": 0.55,
+      "p": 7.952916585291773e-24,
+      "p_holm": 1.1134083219408482e-22,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ablation_no_abstain",
+      "b": 98,
+      "c": 6,
+      "RD": 0.5111111111111111,
+      "p": 1.5916548600905782e-22,
+      "p_holm": 2.0691513181177517e-21,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "b4",
+      "b": 98,
+      "c": 7,
+      "RD": 0.5055555555555555,
+      "p": 1.2065431169279858e-21,
+      "p_holm": 1.447851740313583e-20,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ablation_no_provenance",
+      "b": 98,
+      "c": 7,
+      "RD": 0.5055555555555555,
+      "p": 1.2065431169279858e-21,
+      "p_holm": 1.447851740313583e-20,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "decision_zero_shot",
+      "b": 99,
+      "c": 8,
+      "RD": 0.5055555555555555,
+      "p": 4.362703388670291e-21,
+      "p_holm": 4.362703388670291e-20,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "b2",
+      "b": 95,
+      "c": 7,
+      "RD": 0.4888888888888889,
+      "p": 7.849647205790365e-21,
+      "p_holm": 7.064682485211329e-20,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ablation_no_typing",
+      "b": 98,
+      "c": 8,
+      "RD": 0.5,
+      "p": 8.07995881983345e-21,
+      "p_holm": 7.064682485211329e-20,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ablation_no_lineage",
+      "b": 97,
+      "c": 8,
+      "RD": 0.49444444444444446,
+      "p": 1.4953374522738916e-20,
+      "p_holm": 1.0467362165917241e-19,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ext_graphiti",
+      "b": 110,
+      "c": 13,
+      "RD": 0.5388888888888889,
+      "p": 2.6124651194145632e-20,
+      "p_holm": 1.567479071648738e-19,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "rules_controller",
+      "b": 106,
+      "c": 14,
+      "RD": 0.5111111111111111,
+      "p": 1.1568090044180289e-18,
+      "p_holm": 5.784045022090144e-18,
+      "reject": true
+    },
+    {
+      "A": "live_model_controller",
+      "B": "ext_mem0",
+      "b": 106,
+      "c": 14,
+      "RD": 0.5111111111111111,
+      "p": 1.1568090044180289e-18,
+      "p_holm": 5.784045022090144e-18,
+      "reject": true
+    },
+    {
+      "A": "successor_guard_composed",
+      "B": "live_model_controller",
+      "b": 28,
+      "c": 7,
+      "RD": 0.11666666666666667,
+      "p": 0.0005082604475319386,
+      "p_holm": 0.0015247813425958157,
+      "reject": true
+    },
+    {
+      "A": "successor_live_model_controller",
+      "B": "live_model_controller",
+      "b": 28,
+      "c": 9,
+      "RD": 0.10555555555555556,
+      "p": 0.0025632079923525453,
+      "p_holm": 0.0051264159847050905,
+      "reject": true
+    },
+    {
+      "A": "successor_guard_composed",
+      "B": "successor_live_model_controller",
+      "b": 2,
+      "c": 0,
+      "RD": 0.011111111111111112,
+      "p": 0.5,
+      "p_holm": 0.5,
+      "reject": false
+    }
+  ],
+  "dev_cost": [
+    {
+      "system": "successor_guard_composed",
+      "balanced": 0.03888888888888889,
+      "commit_averse": 0.08888888888888889,
+      "update_responsive": 0.09444444444444444
+    },
+    {
+      "system": "successor_live_model_controller",
+      "balanced": 0.05,
+      "commit_averse": 0.15,
+      "update_responsive": 0.13333333333333333
+    },
+    {
+      "system": "live_model_controller",
+      "balanced": 0.15555555555555556,
+      "commit_averse": 0.4166666666666667,
+      "update_responsive": 0.3
+    },
+    {
+      "system": "b1",
+      "balanced": 0.6333333333333333,
+      "commit_averse": 2.6666666666666665,
+      "update_responsive": 1.5666666666666667
+    },
+    {
+      "system": "b2",
+      "balanced": 0.6444444444444445,
+      "commit_averse": 3.0555555555555554,
+      "update_responsive": 1.6055555555555556
+    },
+    {
+      "system": "ablation_no_lineage",
+      "balanced": 0.65,
+      "commit_averse": 3.227777777777778,
+      "update_responsive": 1.6111111111111112
+    },
+    {
+      "system": "ablation_no_typing",
+      "balanced": 0.6555555555555556,
+      "commit_averse": 3.2777777777777777,
+      "update_responsive": 1.6388888888888888
+    },
+    {
+      "system": "ablation_no_provenance",
+      "balanced": 0.6611111111111111,
+      "commit_averse": 3.25,
+      "update_responsive": 1.6444444444444444
+    },
+    {
+      "system": "b4",
+      "balanced": 0.6611111111111111,
+      "commit_averse": 3.2333333333333334,
+      "update_responsive": 1.6222222222222222
+    },
+    {
+      "system": "decision_zero_shot",
+      "balanced": 0.6611111111111111,
+      "commit_averse": 3.2944444444444443,
+      "update_responsive": 1.6444444444444444
+    },
+    {
+      "system": "ablation_no_abstain",
+      "balanced": 0.6666666666666666,
+      "commit_averse": 2.9555555555555557,
+      "update_responsive": 1.5944444444444446
+    },
+    {
+      "system": "rules_controller",
+      "balanced": 0.6666666666666666,
+      "commit_averse": 1.2444444444444445,
+      "update_responsive": 1.6666666666666667
+    },
+    {
+      "system": "ext_mem0",
+      "balanced": 0.6666666666666666,
+      "commit_averse": 0.6944444444444444,
+      "update_responsive": 1.6555555555555554
+    },
+    {
+      "system": "b3",
+      "balanced": 0.6722222222222223,
+      "commit_averse": 3.0833333333333335,
+      "update_responsive": 1.6611111111111112
+    },
+    {
+      "system": "ext_graphiti",
+      "balanced": 0.6944444444444444,
+      "commit_averse": 1.1277777777777778,
+      "update_responsive": 1.7055555555555555
+    },
+    {
+      "system": "ext_letta",
+      "balanced": 0.7055555555555556,
+      "commit_averse": 1.7666666666666666,
+      "update_responsive": 1.7777777777777777
+    }
+  ],
+  "lme_v12": {
+    "systems": {
+      "no_memory": {
+        "acc": 0.05,
+        "prompt_tok_total": 17043.0,
+        "prompt_tok_mean": 94.68333333333334,
+        "completion_tok_total": 360.0,
+        "lat_mean_s": 1.558924202798759,
+        "lat_med_s": 1.3903342289995635,
+        "lat_p95_s": 2.991843618448911,
+        "lat_total_h": 0.07794621013993795,
+        "judge_called": 0,
+        "cache_hits": 0,
+        "scoring_fb": 0,
+        "model_fb": 0
+      },
+      "flat_vector": {
+        "acc": 0.4444444444444444,
+        "prompt_tok_total": 653198.0,
+        "prompt_tok_mean": 3628.8777777777777,
+        "completion_tok_total": 983.0,
+        "lat_mean_s": 2.5303174083161544,
+        "lat_med_s": 1.7821930205027456,
+        "lat_p95_s": 6.5062083746546655,
+        "lat_total_h": 0.12651587041580772,
+        "judge_called": 0,
+        "cache_hits": 0,
+        "scoring_fb": 0,
+        "model_fb": 0
+      },
+      "recency": {
+        "acc": 0.2388888888888889,
+        "prompt_tok_total": 138204.0,
+        "prompt_tok_mean": 767.8,
+        "completion_tok_total": 463.0,
+        "lat_mean_s": 3.084593270066802,
+        "lat_med_s": 1.2807589165022364,
+        "lat_p95_s": 3.306236502402311,
+        "lat_total_h": 0.1542296635033401,
+        "judge_called": 0,
+        "cache_hits": 0,
+        "scoring_fb": 0,
+        "model_fb": 0
+      },
+      "naive_overwrite": {
+        "acc": 0.6333333333333333,
+        "prompt_tok_total": 2560885.0,
+        "prompt_tok_mean": 14227.138888888889,
+        "completion_tok_total": 40002.0,
+        "lat_mean_s": 965.9993550369948,
+        "lat_med_s": 962.0720815834975,
+        "lat_p95_s": 1737.2447194232548,
+        "lat_total_h": 48.29996775184974,
+        "judge_called": 0,
+        "cache_hits": 0,
+        "scoring_fb": 0,
+        "model_fb": 0
+      },
+      "ask_controller": {
+        "acc": 0.7611111111111111,
+        "prompt_tok_total": 4072477.0,
+        "prompt_tok_mean": 22624.87222222222,
+        "completion_tok_total": 41418.0,
+        "lat_mean_s": 809.2451550826501,
+        "lat_med_s": 710.8592549165003,
+        "lat_p95_s": 1592.7705642226001,
+        "lat_total_h": 40.4622577541325,
+        "judge_called": 140,
+        "cache_hits": 0,
+        "scoring_fb": 2,
+        "model_fb": 0
+      }
+    },
+    "per_competency": {
+      "no_memory": {
+        "knowledge-update": 0.13333333333333333,
+        "multi-session": 0.03333333333333333,
+        "single-session-assistant": 0.0,
+        "single-session-preference": 0.0,
+        "single-session-user": 0.06666666666666667,
+        "temporal-reasoning": 0.06666666666666667
+      },
+      "flat_vector": {
+        "knowledge-update": 0.5666666666666667,
+        "multi-session": 0.13333333333333333,
+        "single-session-assistant": 0.9,
+        "single-session-preference": 0.2,
+        "single-session-user": 0.7666666666666667,
+        "temporal-reasoning": 0.1
+      },
+      "recency": {
+        "knowledge-update": 0.6666666666666666,
+        "multi-session": 0.2,
+        "single-session-assistant": 0.0,
+        "single-session-preference": 0.0,
+        "single-session-user": 0.4,
+        "temporal-reasoning": 0.16666666666666666
+      },
+      "naive_overwrite": {
+        "knowledge-update": 0.7,
+        "multi-session": 0.5666666666666667,
+        "single-session-assistant": 0.8666666666666667,
+        "single-session-preference": 0.36666666666666664,
+        "single-session-user": 0.7666666666666667,
+        "temporal-reasoning": 0.5333333333333333
+      },
+      "ask_controller": {
+        "knowledge-update": 0.9666666666666667,
+        "multi-session": 0.6333333333333333,
+        "single-session-assistant": 0.9666666666666667,
+        "single-session-preference": 0.5333333333333333,
+        "single-session-user": 0.8333333333333334,
+        "temporal-reasoning": 0.6333333333333333
+      }
+    },
+    "mcnemar": [
+      {
+        "A": "ask_controller",
+        "B": "no_memory",
+        "b": 129,
+        "c": 1,
+        "RD": 0.7111111111111111,
+        "p": 1.924871999471496e-37,
+        "p_holm": 9.624359997357479e-37,
+        "reject": true
+      },
+      {
+        "A": "ask_controller",
+        "B": "recency",
+        "b": 96,
+        "c": 2,
+        "RD": 0.5222222222222223,
+        "p": 3.0620424897058794e-26,
+        "p_holm": 1.2248169958823518e-25,
+        "reject": true
+      },
+      {
+        "A": "ask_controller",
+        "B": "flat_vector",
+        "b": 62,
+        "c": 5,
+        "RD": 0.31666666666666665,
+        "p": 1.4195339782113736e-13,
+        "p_holm": 4.258601934634121e-13,
+        "reject": true
+      },
+      {
+        "A": "naive_overwrite",
+        "B": "flat_vector",
+        "b": 44,
+        "c": 10,
+        "RD": 0.18888888888888888,
+        "p": 3.3856859533720747e-06,
+        "p_holm": 6.771371906744149e-06,
+        "reject": true
+      },
+      {
+        "A": "ask_controller",
+        "B": "naive_overwrite",
+        "b": 31,
+        "c": 8,
+        "RD": 0.12777777777777777,
+        "p": 0.0002940768754342571,
+        "p_holm": 0.0002940768754342571,
+        "reject": true
+      }
+    ],
+    "controller_report": {
+      "abstention_accuracy": 0.8888888888888888,
+      "abstention_n": 9,
+      "answerable_accuracy": 0.7543859649122807,
+      "answerable_n": 171,
+      "baseline_name": "controller",
+      "judge_model_id": "google/gemma-4-31b-it",
+      "judge_models_used": {
+        "google/gemma-4-31b-it": 140
+      },
+      "n_degenerate_answers": 0,
+      "n_deterministic_guards": 40,
+      "n_model_fallbacks": 0,
+      "n_scoring_fallbacks": 2,
+      "n_sessions": 180,
+      "overall_accuracy": 0.7611111111111111,
+      "overall_ci_high": 0.8222222222222222,
+      "overall_ci_low": 0.7
+    },
+    "competency_rows": [
+      {
+        "accuracy": 0.9666666666666667,
+        "accuracy_ci_high": 1.0,
+        "accuracy_ci_low": 0.9,
+        "competency": "knowledge-update",
+        "mean_latency_ms": 1029427.5861802998,
+        "mean_prompt_tokens": 29728.966666666667,
+        "n": 30
+      },
+      {
+        "accuracy": 0.6333333333333333,
+        "accuracy_ci_high": 0.8,
+        "accuracy_ci_low": 0.4666666666666667,
+        "competency": "multi-session",
+        "mean_latency_ms": 958753.4602763664,
+        "mean_prompt_tokens": 29693.466666666667,
+        "n": 30
+      },
+      {
+        "accuracy": 0.9666666666666667,
+        "accuracy_ci_high": 1.0,
+        "accuracy_ci_low": 0.9,
+        "competency": "single-session-assistant",
+        "mean_latency_ms": 541745.6776932003,
+        "mean_prompt_tokens": 21874.2,
+        "n": 30
+      },
+      {
+        "accuracy": 0.5333333333333333,
+        "accuracy_ci_high": 0.7,
+        "accuracy_ci_low": 0.36666666666666664,
+        "competency": "single-session-preference",
+        "mean_latency_ms": 672226.9641236335,
+        "mean_prompt_tokens": 9130.7,
+        "n": 30
+      },
+      {
+        "accuracy": 0.8333333333333334,
+        "accuracy_ci_high": 0.9666666666666667,
+        "accuracy_ci_low": 0.7,
+        "competency": "single-session-user",
+        "mean_latency_ms": 756123.7131748999,
+        "mean_prompt_tokens": 9838.066666666668,
+        "n": 30
+      },
+      {
+        "accuracy": 0.6333333333333333,
+        "accuracy_ci_high": 0.8,
+        "accuracy_ci_low": 0.4666666666666667,
+        "competency": "temporal-reasoning",
+        "mean_latency_ms": 897193.5290475003,
+        "mean_prompt_tokens": 35483.833333333336,
+        "n": 30
+      }
+    ],
+    "totals": {
+      "no_memory": {
+        "total_prompt_tokens": 17043.0,
+        "mean_prompt_tokens": 94.68333333333334,
+        "total_latency_h": 0.07794621013993795,
+        "mean_latency_s": 1.558924202798759
+      },
+      "flat_vector": {
+        "total_prompt_tokens": 653198.0,
+        "mean_prompt_tokens": 3628.8777777777777,
+        "total_latency_h": 0.12651587041580772,
+        "mean_latency_s": 2.5303174083161544
+      },
+      "recency": {
+        "total_prompt_tokens": 138204.0,
+        "mean_prompt_tokens": 767.8,
+        "total_latency_h": 0.1542296635033401,
+        "mean_latency_s": 3.084593270066802
+      },
+      "naive_overwrite": {
+        "total_prompt_tokens": 2560885.0,
+        "mean_prompt_tokens": 14227.138888888889,
+        "total_latency_h": 48.29996775184974,
+        "mean_latency_s": 965.9993550369948
+      },
+      "ask_controller": {
+        "total_prompt_tokens": 4072477.0,
+        "mean_prompt_tokens": 22624.87222222222,
+        "total_latency_h": 40.4622577541325,
+        "mean_latency_s": 809.24515508265
+      }
+    },
+    "write_actions": {
+      "total": 12654,
+      "counts": {
+        "Keep": 11478,
+        "Supersede": 397,
+        "Abstain": 779
+      },
+      "candidate_types": {
+        "transient_pref": 2416,
+        "episodic_fact": 9857,
+        "stable_pref": 381
+      },
+      "sessions": 3547
+    },
+    "pipeline_traces": {
+      "provenance": "attached files verified byte-identical to runs_local/lme_final_controller_v12_qwen_180/controller/ (SHA-256 prefix match on action_log, judgments, judge_cache)",
+      "stages": {
+        "extraction": {
+          "traced_turns": 11491,
+          "model_calls": 11847,
+          "prompt_tokens": 41806968,
+          "completion_tokens": 1806685,
+          "latency_hours": 19.978325762081106,
+          "latency_mean_ms": 6070.901725626064,
+          "latency_median_ms": 3687.757707997662,
+          "latency_p95_ms": 17682.207058099626,
+          "latency_max_ms": 707609.0979580004,
+          "parse_path": {
+            "first": 11108,
+            "null": 374,
+            "repair": 9
+          },
+          "repair_used": 370,
+          "first_parse_error": 370,
+          "model_fallbacks": 0,
+          "retry_attempts_beyond_first": 0,
+          "no_extractable_content": 5656,
+          "memories_extracted": 11771,
+          "type_guess": {
+            "transient_pref": 2261,
+            "episodic_fact": 9144,
+            "stable_pref": 366
+          },
+          "hedge_marker": 2051,
+          "negation_marker": 152,
+          "confidence_mean": 0.9337396992608954,
+          "confidence_min": 0.75
+        },
+        "relation": {
+          "classifications": 9539,
+          "model_calls": 19157,
+          "reached_stage2": 9530,
+          "prompt_tokens": 10936290,
+          "completion_tokens": 1226921,
+          "latency_hours": 18.933778965014422,
+          "latency_mean_ms": 3558.052110145217,
+          "latency_median_ms": 2431.375833000857,
+          "latency_p95_ms": 9720.205358400564,
+          "stage1_labels": {
+            "independent": 8281,
+            "support": 880,
+            "contradict": 369,
+            "None": 9
+          },
+          "final_routed": {
+            "unclear": 8291,
+            "support": 880,
+            "supersede": 221,
+            "contradict": 147
+          },
+          "deterministic_routing_reason": {
+            "independent_routes_to_unclear": 8275,
+            "prompt_labels_used": 1248,
+            "stage2_unavailable": 7,
+            "stage1_parse_fallback": 9
+          },
+          "stage1_to_final": {
+            "independent->unclear": 8281,
+            "support->support": 880,
+            "contradict->supersede": 221,
+            "contradict->contradict": 147,
+            "None->unclear": 9,
+            "contradict->unclear": 1
+          },
+          "contradict_disambiguation": {
+            "temporal=newer,same_subject=True->supersede": 221,
+            "temporal=older,same_subject=True->contradict": 113,
+            "temporal=same,same_subject=True->contradict": 33,
+            "temporal=unknown,same_subject=False->unclear": 1,
+            "temporal=newer,same_subject=False->contradict": 1
+          }
+        },
+        "answer": {
+          "items": 180,
+          "model_calls": 180,
+          "prompt_tokens": 4072477,
+          "completion_tokens": 41418,
+          "cumulative_latency_hours": 40.4622577541325,
+          "latency_semantics": "predictions.latency_ms is CUMULATIVE end-to-end per item (includes upstream extraction+relation), NOT answer-generation time. Implied generation-only time = 40.46h - 38.91h = 1.55h = 31.0 s/item."
+        }
+      },
+      "totals": {
+        "model_calls": 31184,
+        "prompt_tokens": 56815735,
+        "completion_tokens": 3075024,
+        "prompt_share": {
+          "extraction": 0.7358343247693618,
+          "relation": 0.19248699325987775,
+          "answer": 0.07167868197076038
+        },
+        "prompt_tokens_per_item": 315642.97222222225,
+        "model_calls_per_item": 173.24444444444444
+      },
+      "funnel": {
+        "turns_processed": 11491,
+        "memories_extracted": 11771,
+        "relation_classifications": 9539,
+        "write_decisions": 12654,
+        "actions": {
+          "Keep": 11478,
+          "Supersede": 397,
+          "Abstain": 779
+        }
+      },
+      "caches": {
+        "extraction_unique_keys": 11477,
+        "relation_unique_keys": 9523,
+        "note": "cache dedup <0.3%; near-zero reuse because each turn/candidate context is unique"
+      }
+    },
+    "system_comparison": {
+      "systems": {
+        "no_memory": {
+          "system": "B1 no-memory",
+          "accuracy": 0.05,
+          "wilson95": [
+            0.02652513847915603,
+            0.09228080965893767
+          ],
+          "correct": 9,
+          "wrong_answer": 1,
+          "over_refusal": 170,
+          "hallucination_on_unanswerable": 0,
+          "answer_latency_mean_s": 1.558924202798759,
+          "answer_prompt_tok_per_item": 94.68333333333334,
+          "answer_prompt_tok_total": 17043,
+          "ingestion_prompt_tok": null,
+          "total_prompt_tok": 17043,
+          "tok_per_correct_answer": 1893.6666666666667,
+          "ingestion_telemetry": "none (no ingestion stage)"
+        },
+        "flat_vector": {
+          "system": "B2 flat-vector",
+          "accuracy": 0.4444444444444444,
+          "wilson95": [
+            0.37376708578359935,
+            0.5174435250976467
+          ],
+          "correct": 80,
+          "wrong_answer": 30,
+          "over_refusal": 70,
+          "hallucination_on_unanswerable": 0,
+          "answer_latency_mean_s": 2.5303174083161544,
+          "answer_prompt_tok_per_item": 3628.8777777777777,
+          "answer_prompt_tok_total": 653198,
+          "ingestion_prompt_tok": null,
+          "total_prompt_tok": 653198,
+          "tok_per_correct_answer": 8164.975,
+          "ingestion_telemetry": "none (embedding, not LLM extraction)"
+        },
+        "recency": {
+          "system": "B3 recency",
+          "accuracy": 0.2388888888888889,
+          "wilson95": [
+            0.18246595273524363,
+            0.30622391840661317
+          ],
+          "correct": 43,
+          "wrong_answer": 22,
+          "over_refusal": 115,
+          "hallucination_on_unanswerable": 0,
+          "answer_latency_mean_s": 3.084593270066802,
+          "answer_prompt_tok_per_item": 767.8,
+          "answer_prompt_tok_total": 138204,
+          "ingestion_prompt_tok": 43045755,
+          "total_prompt_tok": 43183959,
+          "tok_per_correct_answer": 1004278.1162790698,
+          "ingestion_telemetry": "extraction only"
+        },
+        "naive_overwrite": {
+          "system": "B4 naive-overwrite",
+          "accuracy": 0.6333333333333333,
+          "wilson95": [
+            0.5608324110654338,
+            0.7002621228195753
+          ],
+          "correct": 114,
+          "wrong_answer": 49,
+          "over_refusal": 15,
+          "hallucination_on_unanswerable": 2,
+          "answer_latency_mean_s": 965.9993550369948,
+          "answer_prompt_tok_per_item": 14227.138888888889,
+          "answer_prompt_tok_total": 2560885,
+          "ingestion_prompt_tok": null,
+          "total_prompt_tok": null,
+          "tok_per_correct_answer": null,
+          "ingestion_telemetry": "absent (relation ran, cache-served, no telemetry)"
+        },
+        "ask_controller": {
+          "system": "ASK controller",
+          "accuracy": 0.7611111111111111,
+          "wilson95": [
+            0.6937760815933867,
+            0.8175340472647563
+          ],
+          "correct": 137,
+          "wrong_answer": 25,
+          "over_refusal": 17,
+          "hallucination_on_unanswerable": 1,
+          "answer_latency_mean_s": 809.2451550826501,
+          "answer_prompt_tok_per_item": 22624.87222222222,
+          "answer_prompt_tok_total": 4072477,
+          "ingestion_prompt_tok": 52743258,
+          "total_prompt_tok": 56815735,
+          "tok_per_correct_answer": 414713.39416058396,
+          "ingestion_telemetry": "complete (extraction + relation)"
+        }
+      },
+      "abstention_split": {
+        "n_answerable": 171,
+        "n_unanswerable": 9,
+        "note": "9 sessions carry an _abs suffix and are unanswerable by design; 'correct' on those means correctly declining. Over-refusal is detected by the scorer's [refusal-guard] rationale on ANSWERABLE items."
+      },
+      "per_competency_accuracy": {
+        "B1 no-memory": {
+          "knowledge-update": 0.13333333333333333,
+          "multi-session": 0.03333333333333333,
+          "single-session-assistant": 0.0,
+          "single-session-preference": 0.0,
+          "single-session-user": 0.06666666666666667,
+          "temporal-reasoning": 0.06666666666666667
+        },
+        "B2 flat-vector": {
+          "knowledge-update": 0.5666666666666667,
+          "multi-session": 0.13333333333333333,
+          "single-session-assistant": 0.9,
+          "single-session-preference": 0.2,
+          "single-session-user": 0.7666666666666667,
+          "temporal-reasoning": 0.1
+        },
+        "B3 recency": {
+          "knowledge-update": 0.6666666666666666,
+          "multi-session": 0.2,
+          "single-session-assistant": 0.0,
+          "single-session-preference": 0.0,
+          "single-session-user": 0.4,
+          "temporal-reasoning": 0.16666666666666666
+        },
+        "B4 naive-overwrite": {
+          "knowledge-update": 0.7,
+          "multi-session": 0.5666666666666667,
+          "single-session-assistant": 0.8666666666666667,
+          "single-session-preference": 0.36666666666666664,
+          "single-session-user": 0.7666666666666667,
+          "temporal-reasoning": 0.5333333333333333
+        },
+        "ASK controller": {
+          "knowledge-update": 0.9666666666666667,
+          "multi-session": 0.6333333333333333,
+          "single-session-assistant": 0.9666666666666667,
+          "single-session-preference": 0.5333333333333333,
+          "single-session-user": 0.8333333333333334,
+          "temporal-reasoning": 0.6333333333333333
+        }
+      },
+      "ingestion_finding": {
+        "b3_extraction_prompt_tok": 43045755,
+        "controller_extraction_prompt_tok": 41806968,
+        "b3_vs_controller_extraction_ratio": 1.0296311131675466,
+        "controller_relation_prompt_tok": 10936290,
+        "relation_marginal_over_extraction": 0.26159012535900716,
+        "accuracy_gain_b3_to_controller": 0.5222222222222221,
+        "interpretation": "B3 recency runs a MORE expensive extraction stage than the governed controller (43.0M vs 41.8M prompt tokens) and scores 23.9% against 76.1%. Extraction is the dominant and largely shared cost; the governance machinery (relation classification) is a +26% marginal increment on extraction that accounts for the +52.2-point gap. The 'expensive governance' framing is therefore wrong: what is expensive is ingestion, which every write-time system pays.",
+        "stage_breakdown_prompt_tokens": {
+          "B1 no-memory": {
+            "extraction": 0,
+            "relation": 0,
+            "answer": 17043,
+            "total": 17043
+          },
+          "B2 flat-vector": {
+            "extraction": 0,
+            "relation": 0,
+            "answer": 653198,
+            "total": 653198
+          },
+          "B3 recency": {
+            "extraction": 43045755,
+            "relation": 0,
+            "answer": 138204,
+            "total": 43183959
+          },
+          "B4 naive-overwrite": {
+            "extraction": 0,
+            "relation": 0,
+            "answer": 2560885,
+            "total": 2560885
+          },
+          "ASK controller": {
+            "extraction": 41806968,
+            "relation": 10936290,
+            "answer": 4072477,
+            "total": 56815735
+          }
+        },
+        "total_cost_disclosure": "ASK has the LARGEST total prompt cost (56.8M vs B3's 43.2M) because it is the only system running both extraction and relation. The finding is NOT that ASK is cheaper overall; it is that B3's extraction stage alone (43.0M) exceeds ASK's extraction (41.8M) while scoring 23.9% vs 76.1%, so extraction is the dominant shared cost and governance is a 26% increment on it."
+      }
+    }
+  },
+  "construction": {
+    "release": "4.3.0-human-validated-final",
+    "identity": "human-authored, template-guided, controlled synthetic benchmark",
+    "items": 900,
+    "components": 100,
+    "domains": 20,
+    "splits": {
+      "train": {
+        "items": 180,
+        "components": 20
+      },
+      "dev": {
+        "items": 180,
+        "components": 20
+      },
+      "hidden": {
+        "items": 540,
+        "components": 60
+      }
+    },
+    "record_fields": [
+      "public_id",
+      "memory_before",
+      "dialogue",
+      "evaluation_query",
+      "gold_action"
+    ],
+    "memory_before_fields": [
+      "principal",
+      "memory_slot",
+      "standing_value"
+    ],
+    "public_id_pattern": "^MGP43-[0-9A-F]{20}$",
+    "component_design": {
+      "items_per_component": 9,
+      "structure": "3 dialogue lengths (9/11/13 turns) x 3 gold actions (KEEP/SUPERSEDE/ABSTAIN)",
+      "verified_component_action_balance": "40/40 groups are exactly 3 KEEP / 3 SUPERSEDE / 3 ABSTAIN",
+      "verified_length_action_balance": "each dialogue length is exactly 40 KEEP / 40 SUPERSEDE / 40 ABSTAIN",
+      "shared_standing_value": "all 9 items in a component share one principal, memory_slot, and standing_value",
+      "shared_candidate_value": "all 9 items propose the same candidate value",
+      "identical_evidence_pool": "120/120 (length, component) triples share a byte-identical 6-sentence evidence pool",
+      "label_mechanism": "the 3 actions differ ONLY in which 2 of the 6 pooled sentences the dialogue indexes to the target slot; the 3 indexed pairs exactly partition the 6-sentence pool (verified 80/80 parseable triples, all distinct, all partitioning)"
+    },
+    "shortcut_audit": {
+      "seeds": [
+        4301,
+        4302,
+        4303,
+        4304,
+        4305
+      ],
+      "probes": "word TF-IDF + logistic regression over 12 restricted text views; char TF-IDF over 2 views; punctuation-only and length-only numeric features; decision trees at depths 1-5",
+      "views": [
+        "full_text",
+        "dialogue_only",
+        "query_only",
+        "candidate_only",
+        "previous_turn",
+        "last_two",
+        "target_evidence_only",
+        "memory_only",
+        "user_only",
+        "assistant_only",
+        "first_three",
+        "id_only"
+      ],
+      "thresholds": {
+        "full_text": 0.65,
+        "dialogue_only": 0.65,
+        "query_only": 0.4,
+        "candidate_only": 0.45,
+        "previous_turn": 0.45,
+        "last_two": 0.5,
+        "target_evidence_only": 0.65,
+        "memory_only": 0.4,
+        "user_only": 0.45,
+        "assistant_only": 0.45,
+        "first_three": 0.5,
+        "id_only": 0.4,
+        "punctuation_only": 0.4,
+        "length_only": 0.4,
+        "depth3_tree": 0.6
+      },
+      "fit_protocol": "fitted on TRAIN, evaluated on HIDDEN, component-held-out",
+      "result": "failed_gates = [] (all probes at or below threshold)"
+    },
+    "duplicate_audit": {
+      "exact": "SHA-256 over 7 restricted views; gate fails on ANY cross-split collision in full_text, dialogue_only, candidate_only, previous_turn, last_two",
+      "near": "char TF-IDF (4-6 grams) cosine >= 0.995 on full text, cross-split only",
+      "result": "passed"
+    },
+    "annotation_validation": {
+      "packets": 2,
+      "coverage": 900,
+      "per_row_required": [
+        "schema_version",
+        "annotation_id",
+        "content_hash",
+        "action",
+        "evidence_turn_ids",
+        "rationale",
+        "confidence",
+        "ambiguity_flag",
+        "exclusion_recommendation",
+        "annotator_id",
+        "annotated_at"
+      ],
+      "hard_checks": [
+        "content_hash must match the coordinator binding",
+        "evidence_turn_ids must be non-empty and reference real turns",
+        "rationale >= 20 chars",
+        "confidence in [0,1]",
+        "timezone-aware timestamp",
+        "exact 900-item coverage, no duplicates"
+      ],
+      "on_failure": "RuntimeError, build aborts",
+      "agreement": {
+        "raw": 1.0,
+        "cohen_kappa": 1.0,
+        "exclusions": 0,
+        "adjudications": 0
+      },
+      "ambiguity_flags": 300,
+      "provenance_limit": "builder validates records, hashes, and owner attestation; does NOT authenticate reviewer identity or annotation duration"
+    },
+    "determinism": {
+      "split_seed": 4301,
+      "zip_timestamp": [
+        1980,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "merkle_roots": {
+        "final_gold": "437b2a267cbef631394fecb6b99c480c799aebf6027c5a6c578708ca99e01fbe",
+        "annotations": "a7e59f88655e9fb92522ae4f3725dddfc8d29217ad69161858f46f12d6fc14c6"
+      }
+    },
+    "error_mechanism_test": {
+      "description": "For each dev error by the frozen controller, locate the sibling item (same component, same dialogue length) whose gold action equals the PREDICTED action, and check whether that sibling's indexed evidence pair is present in the erring item's pool but not indexed to the target slot.",
+      "dev_errors": 28,
+      "resolvable": 18,
+      "distractor_capture": 18,
+      "share": 1.0,
+      "interpretation": "Every resolvable dev error is distractor capture: the controller read a sentence that was present in the item but indexed to a different slot. This is precisely the failure mode the component design isolates, so the instrument is measuring what it was built to measure."
+    }
+  }
+}

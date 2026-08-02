@@ -1,0 +1,81 @@
+% !TEX TS-program = xelatex
+% Build from thesis/template/ using: ../latex/tools/build.sh
+% The selected template is kept intact in thesis/template (Git submodule).
+\documentclass[twoside,msc,irfonts]{./tex/tehran-thesis}
+
+\input{../latex/preamble/commands}
+\graphicspath{{./img/}{../../docs/figures/}{../latex/figures/}}
+
+\input{../latex/frontmatter/fa_title}
+\input{../latex/frontmatter/en_title}
+
+\begin{document}
+
+\pagenumbering{adadi}
+\input{../latex/preamble/frontmatter}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\pagenumbering{arabic}
+
+\begin{latin}
+\chapter{Introduction and Research Questions}
+\input{../latex/chapters/01_introduction}
+\chapter{Background and Related Work}
+\input{../latex/chapters/02_related_work}
+\chapter{Problem Formulation}
+\input{../latex/chapters/03_problem_formulation}
+\chapter{ASK Architecture and Implementation}
+\input{../latex/chapters/04_ask_architecture}
+\chapter{MGP-6 v2: The Diagnostic Instrument}
+\input{../latex/chapters/05_mgp6_v2}
+\chapter{Experimental Methodology}
+\input{../latex/chapters/06_methodology}
+\chapter{Results}
+\input{../latex/chapters/07_results}
+\chapter{Error Analysis and Discussion}
+\input{../latex/chapters/08_discussion}
+\chapter{Validity, Ethics, and Limitations}
+\input{../latex/chapters/09_validity_limitations}
+\chapter{Conclusion and Future Work}
+\input{../latex/chapters/10_conclusion}
+\end{latin}
+
+\pagestyle{empty}
+\begin{latin}
+\small
+\onehalfspacing
+\bibliographystyle{plain}
+\bibliography{../latex/references}
+\end{latin}
+\pagestyle{fancy}
+
+\appendix
+% The English appendices use Latin alphabetic labels; this avoids Persian
+% appendix letters being requested from the Latin appendix heading font.
+\renewcommand{\thechapter}{\Alph{chapter}}
+\begin{latin}
+\chapter{Data and Record Schemas}
+\input{../latex/appendices/a_data_record_schemas}
+\chapter{Prompt Contracts}
+\input{../latex/appendices/b_prompt_contracts}
+\chapter{Metric Definitions}
+\input{../latex/appendices/c_metric_definitions}
+\chapter{Annotation Manual and Adjudication}
+\input{../latex/appendices/d_annotation_manual}
+\chapter{Reproducibility Commands}
+\input{../latex/appendices/e_reproducibility}
+\chapter{Artifact Manifest and Claim-Eligibility Vocabulary}
+\input{../latex/appendices/f_artifact_manifest}
+\end{latin}
+\chapter{\rl{خلاصهٔ مبسوط فارسی}}
+\input{../latex/appendices/g_extended_summary_fa}
+\chapter{\rl{واژه‌نامهٔ فارسی--انگلیسی}}
+\input{../latex/appendices/h_terminology_fa}
+
+\begin{latin}
+\latinabstract
+\latinTitlePage
+\end{latin}
+\label{LastPage}
+\end{document}

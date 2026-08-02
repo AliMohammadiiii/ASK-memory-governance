@@ -14,6 +14,8 @@ one-run authorization. The completed prediction file is coverage-validated and
 sealed with a SHA-256 before local-private scoring; tracked reports contain only
 aggregate metrics and hashes, never hidden records, gold, or private mappings.
 
+\subsection{MGP-6 v2 schema}
+
 Each \mgp{} row is a JSON object. Exact field names are grouped below; the
 machine-readable schema remains authoritative.
 \begin{verbatim}
@@ -45,7 +47,7 @@ Every state has $\ge 1$ active record; a preference slot has exactly one active
 \textsf{stable\_pref}; every \texttt{supersedes\_id} points to a retained
 \textsf{superseded} record; \supersede{} retains the predecessor and adds one
 active successor pointing back at it; \keep{} preserves the prior durable record
-(a clear temporary override may be added only as a separate active
+(in the single-slot diagnostic, a clear temporary override may be added only as a separate active
 \textsf{transient\_pref}); \abstain{} leaves the state byte-for-byte equivalent at
 the modeled field level; answers contain an active value and no superseded or
 forbidden value; duplicate equivalent active records are invalid.
@@ -118,6 +120,11 @@ row score: (1) old record marked \textsf{superseded}; (2) new record
 \textsf{active} with correct text; (3) new record's \texttt{supersedes\_id} points
 at the old id; (4) old text no longer active in the slot; (5) exactly one active
 record of the new type in the slot.
+\item[Superseded-memory recoverability] over revisions the system actually
+makes, the fraction for which the prior survives as an inactive
+\textsf{superseded} row and an active successor points back to it. Unlike stale
+retrieval, this separates lineage-preserving supersession from destructive
+overwrite even when both remove the old value from the active set.
 \item[Stale-retrieval rate] over items declaring forbidden-answer patterns,
 the fraction whose predicted answer matches any forbidden pattern; lower
 is better.
@@ -155,6 +162,17 @@ python3 scripts/analysis/audit_mgp6_validity.py
 python3 scripts/release/audit_bibliography.py
 \end{verbatim}
 
+\paragraph{Replay the five-dimensional runtime controller.}
+\begin{verbatim}
+python3 scripts/analysis/analyze_lme_scorecard.py \
+  --action-log \
+  runs_local/lme_final_controller_v12_qwen_180/controller/action_log.jsonl \
+  --output artifacts/analysis/lme_v12_scorecard_analysis.json
+# expects: 12,654 decisions; action/score replay fidelity 1.0000/1.0000.
+\end{verbatim}
+
 \paragraph{Successor protocol.}
-The released v3 design is prospective: it is not evidence that independent
-construction or three-human annotation has occurred.
+V4.3 completes the controlled component redesign and two annotation packets,
+but it is not evidence that independent generation, three-human blinded
+annotation, natural dialogue, or multi-step trajectories have occurred. Those
+remain gates for the next release.

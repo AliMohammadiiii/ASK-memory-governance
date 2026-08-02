@@ -1,0 +1,29 @@
+% AUTO-GENERATED from per-competency rows of each report.json (V12 run).
+\begin{table}[t]
+\centering
+\small
+\caption{Per-competency accuracy in the V12 run ($30$ items per cell). The
+governed controller leads or ties every competency, but its gain over naive
+overwrite is concentrated in knowledge update ($+8$ items) and
+single-session preference ($+5$); the two competencies where both systems
+remain weakest, preference and temporal reasoning, are where write governance
+has the most remaining headroom.}
+\label{tab:lme_competency}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Competency & B1 & B3 & B2 & B4 & ASK \\
+\midrule
+knowledge update & 0.133 & 0.667 & 0.567 & 0.700 & \textbf{0.967} \\
+multi-session & 0.033 & 0.200 & 0.133 & 0.567 & \textbf{0.633} \\
+single-session assistant & 0.000 & 0.000 & 0.900 & 0.867 & \textbf{0.967} \\
+single-session preference & 0.000 & 0.000 & 0.200 & 0.367 & \textbf{0.533} \\
+single-session user & 0.067 & 0.400 & 0.767 & 0.767 & \textbf{0.833} \\
+temporal reasoning & 0.067 & 0.167 & 0.100 & 0.533 & \textbf{0.633} \\
+\midrule
+Overall & 0.050 & 0.239 & 0.444 & 0.633 & \textbf{0.761} \\
+\bottomrule
+\end{tabular}
+\\[2pt]
+{\footnotesize B1 no memory; B3 recency; B2 flat vector; B4 naive overwrite;
+ASK governed writes.}
+\end{table}

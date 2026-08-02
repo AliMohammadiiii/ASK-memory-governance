@@ -1,53 +1,168 @@
-\section{Reference Policies}
+\section{Controllers and Reference Policies}
 \label{sec:method}
 
-The name \ask{} simply abbreviates the three actions
-(\keep/\supersede/\abstain); it is not a claim that the action vocabulary is
-novel. The released pilot includes two policies over this vocabulary and two
-shortcut probes. All commit actions pass through the same deterministic state
-transition and invariant validator.
+The name \ask{} abbreviates the three actions
+(\keep/\supersede/\abstain); it is not a priority claim for the vocabulary.
+Three implementations must be kept distinct. The deployed \lme{} pipeline uses
+the five-dimensional scorecard below. The historical \mgp{} artifact uses a
+lexical reference policy. The \mgpc{} hidden experiment uses the composed
+model--rule controller in Section~\ref{sec:v43controller}. They share the action
+interface and transition layer, but their prediction mechanisms are not
+interchangeable.
 
-\subsection{Transparent reference policy}
+\subsection{Five-dimensional runtime scorecard}
+\label{sec:scorecard}
+
+For every extracted candidate $u$ and compared prior record $m$, the runtime
+records a feature vector
+\[
+\phi(u,m)=(c,e,f,r,\rho).
+\]
+All five dimensions are bounded and inspectable:
+\begin{center}
+\small
+\begin{tabular}{@{}c p{0.76\linewidth}@{}}
+\toprule
+Feature & Operational definition \\
+\midrule
+$c$ & extractor confidence in $[0,1]$ \\
+$e$ & evidence quality: $0.7$ times evidence-span specificity (capped at
+80 characters) plus $0.3$ times deterministic timestamp/turn recency \\
+$f$ & marker burden: $0.5$ for a negation marker and $0.5$ for a hedge
+marker, hence $f\in\{0,0.5,1\}$ \\
+$r$ & signed candidate--prior relation: positive for support, negative for
+contradiction/update pressure, and zero for independent or unclear; temporal
+routing modulates the magnitude \\
+$\rho$ & type stability prior: $0.9$ for stable preference, $0.6$ for
+episodic fact, and $0.3$ for transient preference \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The scorecard computes
+\begin{align}
+S_{\mathrm{sup}} &=
+1.0c + 0.8e - 0.7f + 1.2\max(0,-r) - 0.5\rho, \\
+S_{\mathrm{abs}} &= (1-c) + f + (1-|r|).
+\end{align}
+The action-log compatibility field is named \texttt{s\_rev}; throughout the
+paper it denotes $S_{\mathrm{sup}}$. A decision is made in strict priority
+order:
+\begin{equation}
+\pi(\phi,\tau)=
+\begin{cases}
+\abstain, & S_{\mathrm{abs}}>\theta_{\mathrm{abs}}(\tau),\\
+\supersede, & S_{\mathrm{sup}}>\theta_{\mathrm{sup}}(\tau)
+               \ \wedge\ \max(0,-r)>0,\\
+\keep, & \text{otherwise.}
+\end{cases}
+\label{eq:scorecard}
+\end{equation}
+The separate $r<0$ guard is load-bearing: a high weighted score alone may not
+replace a record unless the relation stage identifies genuine update pressure.
+This makes the action rule more than a scalar threshold and is directly tested
+by the counterfactual replay in Section~\ref{sec:downstream:scorecard}.
+
+\subsection{Memory-type conditioning and the appropriate action}
+\label{sec:typeconditioning}
+
+\begin{center}
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Memory type $\tau$ & $\rho(\tau)$ &
+$\theta_{\mathrm{sup}}(\tau)$ & $\theta_{\mathrm{abs}}(\tau)$ \\
+\midrule
+\textsf{stable\_pref}    & 0.90 & 0.90 & 0.60 \\
+\textsf{episodic\_fact}  & 0.60 & 0.75 & 0.70 \\
+\textsf{transient\_pref} & 0.30 & 0.55 & 0.80 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The thresholds encode a conservative durability ordering. A stable preference
+is hardest to supersede and easiest to abstain on; a transient preference is
+easiest to supersede and requires more uncertainty before abstention; an
+episodic fact lies between them. Within each type, the appropriate action is
+therefore explicit. Insufficient confidence, heavy negation/hedging, or a weak
+relation triggers \abstain{} first; in this threshold schedule an independent
+or unclear relation necessarily takes that branch because
+$S_{\mathrm{abs}}\geq 1$. A sufficiently evidenced, contradictory, newer
+candidate triggers \supersede{}. A supporting candidate, or a contradictory
+candidate that does not clear the supersession rule, takes the residual
+\keep{} branch. These are policy choices encoded in the released
+configuration, not learned clinical or population risk preferences.
+
+\subsection{State transition and lineage}
+
+The operational meaning of \keep{} depends on whether the state permits
+multiple compatible records. In the \lme{} runtime it means
+\emph{admit without invalidating}: the candidate is added as active unless it
+is a near-verbatim duplicate, while the compared prior remains active. In the
+single-slot \mgp{} diagnostics it means \emph{retain the standing value}; the
+durable candidate is not committed, although a clear temporary override may be
+stored as a separate transient record. This distinction is representational,
+not a change in the governance question: \keep{} never invalidates the prior.
+
+On \supersede{}, the transition atomically marks the prior record superseded,
+appends one active successor, and points its \texttt{supersedes\_id} to the
+retained predecessor. On \abstain{}, no candidate record is written. Retrieval
+returns active records by default; superseded history remains queryable for
+audits and explicitly historical questions. The evaluators score these state
+properties independently of the action, so a correct label with corrupted
+lineage is not counted as a correct state transition.
+
+\subsection{Historical v2 lexical reference policy}
 \label{sec:policy}
 
-The reference policy parses the raw perturbation text and prior state with
-auditable lexical predicates. In priority order it (1) \abstain{}s on
+The \mgp{} reference artifact parses the raw perturbation text and prior state
+with auditable lexical predicates. In priority order it (1) \abstain{}s on
 unattributed third-party, laundered, garbled, or unconfirmed evidence; (2)
 \abstain{}s on a hedged temporary candidate; (3) \keep{}s the durable value and
 optionally stores a separate transient note for a clear temporary override; (4)
 \supersede{}s when a usable durable candidate conflicts with the active value;
-and (5) otherwise \abstain{}s. The complete predicates and value parser are
-released in \texttt{benchmarks/mgp6/systems/}.
+and (5) otherwise \abstain{}s. The predicates and value parser are released in
+\texttt{benchmarks/mgp6/systems/}.
 
-This policy is deterministic and inspectable, but it was written against the
-same annotation manual and phrase generator as the pilot. It is therefore a
-\emph{reference implementation of the policy}, not an independently learned
-method. A five-feature weighted scorecard exists in the broader prototype code,
-but it did not generate the reported MGP-6 predictions; we do not describe or
-claim it as the evaluated method. This distinction removes an earlier
-implementation--manuscript mismatch.
-
-\subsection{State transition and lineage}
-
-On \supersede{} the transition marks the prior record superseded, appends one
-active successor, and points its \texttt{supersedes\_id} to the retained
-predecessor. On \keep{} a clear temporary override may be a separate transient
-record; on \abstain{} the modeled state is unchanged. The evaluator scores these
-state properties independently of the action, so a correct action with corrupted
-lineage is not counted as a correct state transition.
+This policy was written against the same annotation manual and phrase generator
+as the pilot. It is a reference implementation, not an independently learned
+method. Crucially, it is \emph{not} the scorecard above. The lexical policy
+generated the v2 prediction artifact; the five-feature scorecard generated the
+\lme{} V12 write log and, through a separate adapter, scores only $0.3333$ on
+the \mgpc{} public development split. We therefore report the scorecard's
+runtime mechanism analysis and the diagnostic's action-labelled evaluation
+separately.
 
 \subsection{Structured and unstructured LLM policies}
 
-We also run the governance decision through a structured LLM policy prompted
-with the typed state, candidate, evidence fields, and the three action
+For \mgp{} we also run the governance decision through a structured LLM policy
+prompted with the typed state, candidate, evidence fields, and the three action
 definitions, and an unstructured zero-shot policy that receives the raw event
 and prior state without that scaffold. Both use
 \texttt{qwen/qwen3.5-9b}. Because the prompt, candidate representation, and
-pilot were author-designed together, even this comparison remains diagnostic.
+pilot were author-designed together, the comparison remains diagnostic. The
+\mgpc{} model--rule composition is specified separately in
+Section~\ref{sec:v43controller}.
+
+\subsection{Auditable implementation}
+
+Every runtime write emits a schema-validated JSONL row containing the five raw
+features, both scores, both thresholds, the action, the candidate and prior
+identifiers, and the resulting-record identifier. This is sufficient to replay
+Equation~\ref{eq:scorecard} without rerunning a model. Structured extraction
+and relation outputs retain raw traces and fail closed on missing provider
+responses rather than caching fabricated emptiness or independence. Writes are
+atomic; active-only retrieval excludes superseded rows; content-addressed
+caches and immutable-manifest checks support resumable runs without changing
+the frozen controls. These mechanisms are implementation and reproducibility
+contributions, not separate learning claims.
 
 \subsection{Shortcut probes}
 
-The type-only and conflict-type-only probes learn a majority action for each
-metadata value on train+dev and apply the lookup unchanged to test. They never
-read the dialogue, prior value, or candidate evidence. Their purpose is to test
-whether the collection rewards scenario recognition without memory reasoning.
+The v2 type-only and conflict-type-only probes learn a majority action for each
+metadata value on train+development and apply the lookup unchanged to test.
+They never read the dialogue, prior value, or candidate evidence. The v4.3
+release extends this principle to a gated suite of restricted-view lexical,
+identifier, punctuation, length, and shallow-tree probes
+(Section~\ref{sec:v43}). Their purpose is to test whether a collection rewards
+scenario recognition without memory reasoning.

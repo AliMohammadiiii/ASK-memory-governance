@@ -1,0 +1,52 @@
+% Project-local command layer for the selected tehran-thesis class.
+% It intentionally avoids optional packages unavailable in the Basic TeX Live
+% distribution (notably glossaries/xindy). The class itself remains untouched.
+\usepackage{amsthm,amssymb,amsmath}
+\usepackage[a4paper,top=40mm,bottom=40mm,outer=25mm,inner=35mm]{geometry}
+\usepackage[final]{graphicx}
+\usepackage{booktabs,longtable,array}
+\usepackage{calc}
+\usepackage{framed}
+\usepackage{rotating}
+\usepackage{tikz}
+\usepackage{listings}
+\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{etoolbox}
+\usepackage{indentfirst}
+\usepackage[pagebackref=false]{hyperref}
+\hypersetup{hidelinks}
+\usepackage[extrafootnotefeatures,localize=on,displaymathdigits=persian]{xepersian}
+
+% Pandoc emits \citep for the retained author--date Markdown citations. The
+% University template's numbered bibliography uses the same citation command.
+\let\citep\cite
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\newcounter{none}
+\providecommand{\pandocbounded}[1]{\resizebox{\linewidth}{!}{#1}}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Highlighting}{}{}
+\newcommand{\NormalTok}[1]{\texttt{#1}}
+\newcommand{\DataTypeTok}[1]{\texttt{#1}}
+\newcommand{\FloatTok}[1]{\texttt{#1}}
+\newcommand{\FunctionTok}[1]{\texttt{#1}}
+\newcommand{\KeywordTok}[1]{\texttt{#1}}
+\newcommand{\OtherTok}[1]{\texttt{#1}}
+\newcommand{\StringTok}[1]{\texttt{#1}}
+
+\settextfont[Path={./font/},BoldFont={IRLotusICEE_Bold.ttf},BoldItalicFont={IRLotusICEE_BoldIranic.ttf},ItalicFont={IRLotusICEE_Iranic.ttf},Scale=1.2]{IRLotusICEE.ttf}
+\setlatintextfont[Path={./font/},BoldFont={LiberationSerif-Bold.ttf},BoldItalicFont={LiberationSerif-BoldItalic.ttf},ItalicFont={LiberationSerif-Italic.ttf},Scale=1]{LiberationSerif-Regular.ttf}
+\setdigitfont[Path={./font/},Scale=1.2]{IRLotusICEE.ttf}
+\defpersianfont\titlefont[Path={./font/},Scale=1]{IRTitr.ttf}
+\font\latintitlefont=cmssbx10 scaled 2300
+
+\renewcommand{\bibname}{References}
+\setlength{\headheight}{16pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\renewcommand{\headrulewidth}{0.5pt}
