@@ -2,9 +2,11 @@
 Persistent language agents can silently corrupt future behavior when they write
 an ambiguous update, retain a stale value, or replace a record without history.
 End-to-end question answering conflates this write decision with extraction,
-retrieval, and generation. We formulate memory writing as \keep,
-lineage-preserving \supersede, or write-time \abstain, and release a layered
-harness that scores the action, resulting state, and later answer separately.
+retrieval, and generation. We introduce ASK, a storage-agnostic protocol that
+formulates memory writing as \keep, lineage-preserving \supersede, or write-time
+\abstain; binds each transition to evidence and configuration identity; and
+makes the decision, state change, lineage, and replay scope auditable. A layered
+evaluator then scores the action, resulting state, and later answer separately.
 On \mgpc, a $900$-item controlled synthetic diagnostic in $100$ surface-matched
 semantic components, one pre-registered configuration run once on the sealed
 $540$-item hidden split reaches $0.8481$ action accuracy and $0.8479$ macro-F1
@@ -33,7 +35,9 @@ classification consume $92.8\%$ of prompt tokens; the scored answer stage is
 only $7.2\%$. Finally, a conflict-type-only lookup reaches $1.000$ held-out
 accuracy on the earlier v2 pilot without reading the dialogue, a measured
 construct failure that motivated v4.3's component split and executable shortcut
-gates. We release per-item predictions, action logs, shortcut audits, cluster
-bootstraps, error decompositions, and latency/token accounting, while making no
-priority, deployment-safety, or population-generalization claim.
+gates. The accompanying artifact records per-item predictions, action logs,
+shortcut audits, cluster bootstraps, error decompositions, and latency/token
+accounting, subject to its explicit public/private and redistribution
+boundaries. We make no priority, deployment-safety, or
+population-generalization claim.
 \end{abstract}

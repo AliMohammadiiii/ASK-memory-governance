@@ -1,0 +1,11 @@
+{
+  "commands": [],
+  "git_head": "51decd61c297cdd2af0f3227e79307baa4df5697",
+  "git_tree": "b1840968621041bc2c88949e3e76a108df51705b",
+  "network_note": "pip package acquisition may use the configured index; research inference is never called",
+  "passed": false,
+  "reason": "clean reproduction requires a frozen clean commit",
+  "schema_version": "1.0",
+  "started_at": "2026-08-02T20:15:58.630867+00:00",
+  "status": "BLOCKED_DIRTY_WORKTREE"
+}

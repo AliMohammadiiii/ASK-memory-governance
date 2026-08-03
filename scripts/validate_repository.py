@@ -13,8 +13,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 SECRET_PATTERNS = (
-    re.compile(r"sk-or-v1-[A-Za-z0-9]{20,}"),
-    re.compile(r"sk-[A-Za-z0-9_-]{24,}"),
+    re.compile(r"(?<![A-Za-z0-9])sk-or-v1-[A-Za-z0-9]{20,}"),
+    re.compile(r"(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{24,}"),
 )
 TEXT_SUFFIXES = {
     ".bib",

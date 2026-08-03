@@ -1,0 +1,14 @@
+path_or_class,classification,public_action,authority,status
+src/ask/**,project_code,include,maintainer,DOCUMENTED
+benchmarks/mgp6/data/mgp6_v2.jsonl,author_dataset,include_with_CC_BY_4_0,human_legal,DOCUMENTED
+benchmarks/mgp6/mgp6_v4_3/**,author_dataset,withhold_pending_explicit_grant,human_legal,BLOCKED
+benchmarks/mgp6/annotations/human/**,independent_annotation,exclude,human_legal,BLOCKED
+benchmarks/mgp6/annotations/model_or_mixed/**,model_output,exclude,human_legal,BLOCKED
+data/external/**,third_party_data,exclude,human_legal,BLOCKED
+runs/**,private_run_evidence,exclude,maintainer,PRIVATE
+runs_local/**,private_run_evidence,exclude,maintainer,PRIVATE
+.private/**,hidden_evaluation,exclude,maintainer,PRIVATE
+claims/**,derived_claim_evidence,include_after_anonymity_scan,machine,PENDING
+artifacts/manifests/**,provenance,include_after_path_scan,machine,PENDING
+paper/**,manuscript,venue_specific_release,human,PENDING
+

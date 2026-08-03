@@ -46,6 +46,9 @@ runs_local/
 inputs_raw/
 audit_workspace/
 final_release/
+final_release.__building__/
+advisor_handoff/
+advisor_handoff.__building__/
 return_package_*.tar.gz
 ask_memory_governance_final_*.zip
 artifacts/raw/

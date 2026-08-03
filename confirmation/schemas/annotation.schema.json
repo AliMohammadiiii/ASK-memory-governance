@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/confirmation-annotation-1.0.json",
+  "title": "Independent ASK annotation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blind_id", "annotator_pseudonym", "action", "confidence", "rationale"],
+  "properties": {
+    "blind_id": {"type": "string", "pattern": "^C[0-9]{6}$"},
+    "annotator_pseudonym": {"type": "string", "minLength": 1},
+    "action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]},
+    "confidence": {"type": "integer", "minimum": 1, "maximum": 5},
+    "rationale": {"type": "string", "minLength": 1},
+    "evidence_spans": {"type": "array", "items": {"type": "string"}}
+  }
+}

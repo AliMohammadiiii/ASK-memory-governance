@@ -24,8 +24,13 @@ ask-memory-governance/
 │   ├── history/             # superseded and dated research snapshots
 │   └── reproduction/        # focused reproduction guides
 ├── artifacts/               # committed evidence, ledgers, and manifests
+├── claims/                  # machine-verifiable claims and source inventory
+├── confirmation/            # blinded prospective confirmation scaffolding
 ├── reports/                 # dated human-readable analytical outputs
 ├── paper/                   # paper sources and publication strategy
+├── publication/             # venue requirements and submission checklists
+├── readiness/               # executable publication-gate definitions
+├── release/                 # public/private, license, and provenance policy
 ├── thesis/                  # thesis sources and administrative placeholders
 ├── presentation/            # defense decks, notes, and deck-specific exports
 └── .github/workflows/       # continuous integration
@@ -42,6 +47,8 @@ ask-memory-governance/
 - Historical notes stay under `docs/history` and do not define current commands.
 - External or private data is referenced by contract and checksum, never
   redistributed by convenience.
+- `advisor_handoff/` and `final_release/` are generated, ignored outputs. They
+  are never authoritative source trees.
 
 Use `git ls-files` for an exact versioned inventory. This document intentionally
 stays concise so it does not become stale after every file addition.

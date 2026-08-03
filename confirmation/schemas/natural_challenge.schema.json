@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/natural-challenge-1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blind_id", "source_class", "predecessor", "candidate", "context", "consent_basis"],
+  "properties": {
+    "blind_id": {"type": "string", "pattern": "^N[0-9]{6}$"},
+    "source_class": {"enum": ["consented_interaction", "public_document", "expert_authored"]},
+    "predecessor": {"type": ["object", "null"]},
+    "candidate": {"type": "object"},
+    "context": {"type": "object"},
+    "consent_basis": {"type": "string", "minLength": 1},
+    "redaction_record": {"type": "array", "items": {"type": "string"}}
+  }
+}

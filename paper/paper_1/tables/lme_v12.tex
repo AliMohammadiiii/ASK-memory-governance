@@ -1,5 +1,6 @@
 % AUTO-GENERATED from runs_local/lme_final_controller_v12_qwen_180/*/report.json
-% and judgments.jsonl. Paired McNemar recomputed per item over the 6-test family.
+% and judgments.jsonl. Paired McNemar recomputed per item over the four
+% predeclared adjacent comparisons.
 \begin{table}[t]
 \centering
 \small
@@ -7,7 +8,7 @@
 answer model \texttt{qwen/qwen3.5-9b}; judge \texttt{google/gemma-4-31b-it};
 $0$ judge-model fallbacks). Accuracy intervals are exact binomial. The last
 column is an exact two-sided McNemar test against the row above, Holm-corrected
-over the six tests reported here: every step in the ordering separates.
+over the four adjacent tests reported here: every step in the ordering separates.
 Latency is \emph{end-to-end per-item pipeline} time, dominated by memory
 ingestion of the item's session history, not by the answer call --- which is
 why the two write-time systems cost three orders of magnitude more per item

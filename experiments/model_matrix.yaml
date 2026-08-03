@@ -1,0 +1,83 @@
+schema_version: "1.0"
+status: BLOCKED_PENDING_PAID_OR_EXTERNAL_EXECUTION
+confirmation_dataset: UNASSIGNED_UNCONSUMED_SET_REQUIRED
+matrix_frozen_before_label_unsealing: false
+paid_inference_authorized: false
+shared_controls:
+  temperature: 0.0
+  seeds: [43017, 43018, 43019]
+  retry_policy: bounded_exponential_v1
+  concurrency: 1
+  response_schema: ask-action-v1
+  prompt_version: UNFROZEN
+  adapter_version: UNFROZEN
+  context_settings: UNFROZEN
+systems:
+  - system_id: qwen_model_only
+    family: Qwen
+    exact_model_id: qwen/qwen3.5-9b
+    provider: UNAUTHORIZED
+    model_snapshot: UNRESOLVED
+    policy: model_only
+    run_authorization: BLOCKED_PENDING_EXPLICIT_APPROVAL
+    status: not_run
+    estimated_calls: null
+    estimated_tokens: null
+    estimated_cost: null
+    observed_cost: null
+    artifact_hashes: []
+  - system_id: gemma_model_only
+    family: Gemma
+    exact_model_id: google/gemma-3-27b-it
+    provider: UNAUTHORIZED
+    model_snapshot: UNRESOLVED
+    policy: model_only
+    run_authorization: BLOCKED_PENDING_EXPLICIT_APPROVAL
+    status: not_run
+    estimated_calls: null
+    estimated_tokens: null
+    estimated_cost: null
+    observed_cost: null
+    artifact_hashes: []
+  - system_id: llama_model_only
+    family: Llama
+    exact_model_id: meta-llama/llama-3.3-70b-instruct
+    provider: UNAUTHORIZED
+    model_snapshot: UNRESOLVED
+    policy: model_only
+    run_authorization: BLOCKED_PENDING_EXPLICIT_APPROVAL
+    status: not_run
+    estimated_calls: null
+    estimated_tokens: null
+    estimated_cost: null
+    observed_cost: null
+    artifact_hashes: []
+  - system_id: mistral_model_only
+    family: Mistral
+    exact_model_id: mistralai/mistral-small-3.1-24b-instruct
+    provider: UNAUTHORIZED
+    model_snapshot: UNRESOLVED
+    policy: model_only
+    run_authorization: BLOCKED_PENDING_EXPLICIT_APPROVAL
+    status: not_run
+    estimated_calls: null
+    estimated_tokens: null
+    estimated_cost: null
+    observed_cost: null
+    artifact_hashes: []
+  - system_id: ask_mgp_composed
+    family: Qwen
+    exact_model_id: qwen/qwen3.5-9b
+    provider: UNAUTHORIZED
+    model_snapshot: UNRESOLVED
+    policy: ask_mgp_composed
+    run_authorization: BLOCKED_PENDING_EXPLICIT_APPROVAL
+    status: not_run
+    estimated_calls: null
+    estimated_tokens: null
+    estimated_cost: null
+    observed_cost: null
+    artifact_hashes: []
+selection_rule: freeze exact versions, prompts, adapters, seeds, call budget, and exclusions before confirmation-label unsealing
+comparability_rule: use identical blinded inputs and declared per-policy budgets; report failed and invalid responses
+

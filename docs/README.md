@@ -6,9 +6,12 @@ research snapshots from competing with current instructions.
 ## Start here
 
 - `../README.md` — project scope, setup, repository map, and release entry point.
-- `architecture.md` — runtime modules and the memory-governance flow.
-- `reproducibility.md` — supported environment, verification gates, and
-  provenance requirements.
+- `../ADVISOR_START_HERE.md` — supervisor reading order and review commands.
+- `ASK_PROTOCOL.md` — normative protocol, transition, and invariant contract.
+- `ADAPTER_CONTRACT.md` — ASK-MGP/ASK-LME trace and replay boundaries.
+- `architecture.md` — protocol/controller/adapter/store/audit separation.
+- `reproducibility.md` — current evidence and clean-reproduction contract.
+- `TMLR_READINESS.md` and `JMLR_READINESS.md` — venue-specific blockers.
 - `reproduce_results.md` — benchmark-specific reproduction commands and evidence
   boundaries.
 - `evaluation_protocol.md` — evaluation semantics and required disclosures.

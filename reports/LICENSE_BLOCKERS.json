@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "status": "BLOCKED_HUMAN_LEGAL_DECISION",
+  "blockers": [
+    "MGP-6 v4.3 has no explicit public redistribution grant in the reviewed source tree",
+    "independent annotation redistribution consent is not recorded",
+    "model-output and rationale redistribution terms are unresolved",
+    "external dataset and external-system output terms require item-level review",
+    "paper and artifact licensing must be reconciled with the selected venue"
+  ],
+  "authoritative_matrix": "release/LICENSE_DECISION_MATRIX.md",
+  "machine_clearance_is_not_legal_approval": true
+}

@@ -1,0 +1,11 @@
+{
+  "claim_scope": "public deterministic path only",
+  "complete_logs_preserved": false,
+  "git_head": "51decd61c297cdd2af0f3227e79307baa4df5697",
+  "git_tree": "b1840968621041bc2c88949e3e76a108df51705b",
+  "report_path": "reports/clean_reproduction.json",
+  "report_sha256": "c3ac45f8db63647a2af3a152de180182a1d8e19626be04625de7ef5aaa549183",
+  "run_id": "preflight-current",
+  "schema_version": "1.0",
+  "status": "BLOCKED_DIRTY_WORKTREE"
+}

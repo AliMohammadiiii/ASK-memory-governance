@@ -1,23 +1,30 @@
-# Architecture
+# ASK architecture
+
+ASK separates five responsibilities:
+
+1. **Candidate formation** produces a typed candidate and evidence references.
+2. **Policy/controller** proposes Keep, Supersede, or Abstain. It may be a
+   scorecard, rule system, model, or guarded composition.
+3. **Adapter** maps system-specific observations into the canonical ASK trace
+   and declares exactly what can be replayed.
+4. **Transition engine** applies storage-mode-specific, deterministic state
+   changes while retaining predecessor records.
+5. **Audit layer** validates evidence/configuration digests, action invariants,
+   lineage, and replay equivalence.
+
+`src/ask/protocol/` is the normative executable core. Existing extraction,
+classification, controller, memory, and evaluation modules remain system
+implementations around that contract.
+
+The end-to-end flow remains:
 
 ```text
-User event
-  -> extraction and typed candidate memory
-  -> relation / evidence analysis
-  -> ASK scorecard or model-backed policy
-  -> KEEP | SUPERSEDE | ABSTAIN
-  -> validated memory-state transition with lineage
-  -> provenance-constrained retrieval
-  -> answer generation and evaluation
+user event -> typed candidate -> relation/evidence analysis -> policy proposal
+-> ASK adapter and trace -> Keep | Supersede | Abstain -> validated transition
+-> provenance-constrained retrieval -> answer generation and evaluation
 ```
 
-Core modules:
-
-- `src/ask/extraction`: candidate extraction and schema recovery.
-- `src/ask/classifier`: relation classification.
-- `src/ask/controller`: features, scorecard, temporal/computation helpers, and active policy.
-- `src/ask/memory`: records, persistence, and operations.
-- `src/ask/pipeline`: end-to-end orchestration.
-- `src/ask/baselines`: no-memory, vector, recency, and overwrite baselines.
-- `src/ask/eval`: LongMemEval and MGP-6 evaluation.
-- `benchmarks/mgp6`: frozen v2 diagnostic, adapters, annotation material, and scorer.
+Core implementation modules are `src/ask/extraction`, `classifier`,
+`controller`, `protocol`, `memory`, `pipeline`, `baselines`, and `eval`.
+Benchmark contracts and scorers are under `benchmarks/`; protocol adapters must
+not make benchmark labels model-facing.

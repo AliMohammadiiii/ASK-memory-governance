@@ -12,15 +12,20 @@ ambiguous statement becomes a durable fact, a stale preference survives, or a
 correction erases its predecessor. End-to-end QA then reveals an error without
 identifying which layer caused it.
 
-We take the write transition itself as the object of evaluation. The action is
-\keep, lineage-preserving \supersede, or write-time \abstain{} over typed,
-provenance-tracked records. This combines established ideas from selective
+We take the write transition itself as the object of governance and evaluation.
+ASK is a protocol rather than a particular controller: it defines \keep,
+lineage-preserving \supersede, and write-time \abstain{} over typed,
+provenance-tracked records; a deterministic transition contract; evidence and
+configuration identities; adapter-declared replay scope; and invariants for
+state and lineage. This combines established ideas from selective
 prediction \citep{chow1970reject,geifman2017selective}, belief revision
 \citep{alchourron1985agm}, and agent memory operations
 \citep{yan2025memoryr1,chhikara2025mem0,wang2026toki}. We claim neither the
 individual operations nor abstention, typing, provenance, and lineage as new.
-The contribution is a harness that makes their decision-, state-, and
-answer-layer consequences separately observable.
+The contribution is their executable protocol-level conjunction and an
+evaluation harness that makes decision-, state-, lineage-, replay-, and
+answer-layer consequences separately observable across different controllers
+and storage semantics.
 
 We exercise the harness on two instruments and report both honestly. The first
 is \mgp, a $180$-item English synthetic pilot authored by the same project that
@@ -33,7 +38,8 @@ The second is its successor, \mgpc: $900$ human-authored, controlled synthetic
 items in $100$ semantic components across $20$ domains, split by component into
 exactly action-balanced train, development, and sealed hidden partitions, with
 duplicate, shortcut, allowlist, and deterministic-build gates passed at release
-and dual human annotation covering every item. A single configuration was
+and two separately completed, owner-attested human annotation packets covering
+every item. A single configuration was
 pre-registered on development data and run once against the sealed hidden
 split. This is still a controlled synthetic diagnostic and still not a
 community benchmark, but its construct-validity gate is enforced at build time
@@ -41,9 +47,13 @@ rather than discovered afterwards.
 
 Our contributions and findings are:
 \begin{enumerate}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
-\item We formalize the three write actions and release a layered evaluator for
-action correctness, state invariants, lineage and superseded-record
-recoverability, stale retrieval, selective risk, and asymmetric write costs.
+\item We specify ASK as a storage-agnostic, controller-independent protocol:
+typed candidates and records; evidence- and configuration-bound decision
+traces; deterministic \keep/\supersede/\abstain{} transitions; retained
+predecessor lineage; adapter-declared replay scope; and executable invariants.
+We release a layered evaluator for action correctness, state invariants,
+lineage and superseded-record recoverability, stale retrieval, selective risk,
+and asymmetric write costs.
 \item We implement the deployed write policy as an auditable five-dimensional
 scorecard over extraction confidence, evidence quality, marker burden, signed
 candidate--prior relation, and type stability. Exact replay of all $12{,}654$
@@ -85,7 +95,10 @@ while a family label determines the answer, and the reason the v4.3 build runs
 this probe as a release gate.
 \end{enumerate}
 
-This reframing turns a weakness into a falsifiable result: an item-level test
+The protocol/controller/dataset separation is load-bearing: ASK defines the
+auditable contract, the scorecard and model--rule composition are policies that
+implement it, and MGP-6 is an evaluation instrument. This reframing also turns
+a weakness into a falsifiable result: an item-level test
 split can look clean while a family label still determines the answer. The
 released artifacts make that failure visible and specify the gate for a
 successor collection: independent construction, all three actions within each

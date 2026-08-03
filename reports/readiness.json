@@ -1,0 +1,202 @@
+{
+  "blocker_count": 16,
+  "blockers": [
+    {
+      "authority": "human_legal",
+      "evidence": "reports/LICENSE_BLOCKERS.json",
+      "gate_id": "licenses_and_redistribution_resolved",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "machine",
+      "evidence": "reports/clean_reproduction.json",
+      "gate_id": "clean_reproduction_passed",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "independent_human_and_machine",
+      "evidence": "confirmation/reports/",
+      "gate_id": "new_confirmation_protocol_completed",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "independent_human",
+      "evidence": "confirmation/adjudication/",
+      "gate_id": "independent_annotation_satisfied",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "machine",
+      "evidence": "reports/anonymous_scan.json",
+      "gate_id": "anonymous_release_scan_passed",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "human",
+      "evidence": "publication/OPENREVIEW_PROFILE_CHECKLIST.md",
+      "gate_id": "authorship_and_openreview_resolved",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "machine_and_human",
+      "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+      "gate_id": "current_venue_constraints_checked",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "independent_human_and_machine",
+      "evidence": "confirmation/natural_challenge/",
+      "gate_id": "natural_write_labelled_evidence_completed",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "independent_human",
+      "evidence": "confirmation/adjudication/",
+      "gate_id": "independent_annotation_completed",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "machine",
+      "evidence": "confirmation/reports/trajectory.json",
+      "gate_id": "trajectory_propagation_and_recovery_evaluated",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "paid_or_external_execution",
+      "evidence": "experiments/model_matrix.yaml",
+      "gate_id": "model_family_breadth_satisfied",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "external_execution",
+      "evidence": "reports/native_systems.json",
+      "gate_id": "cross_storage_or_native_system_evidence_completed",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "independent_human_or_external_execution",
+      "evidence": "reports/judge_robustness.json",
+      "gate_id": "multi_judge_or_human_validation_completed",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "machine_and_external_execution",
+      "evidence": "reports/robustness.json",
+      "gate_id": "robustness_analysis_completed",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "scientific_review",
+      "evidence": "docs/JMLR_READINESS.md",
+      "gate_id": "generalizable_ml_lessons_demonstrated",
+      "venue": "JMLR"
+    },
+    {
+      "authority": "machine_and_human",
+      "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+      "gate_id": "jmlr_compliance_satisfied",
+      "venue": "JMLR"
+    }
+  ],
+  "evaluated_at": "2026-08-03T06:17:41.686522+00:00",
+  "gates": {
+    "jmlr": {
+      "cross_storage_or_native_system_evidence_completed": {
+        "authority": "external_execution",
+        "evidence": "reports/native_systems.json",
+        "passed": false
+      },
+      "formal_core_completed_and_tested": {
+        "authority": "machine",
+        "evidence": "tests/test_ask_protocol.py",
+        "passed": true
+      },
+      "generalizable_ml_lessons_demonstrated": {
+        "authority": "scientific_review",
+        "evidence": "docs/JMLR_READINESS.md",
+        "passed": false
+      },
+      "independent_annotation_completed": {
+        "authority": "independent_human",
+        "evidence": "confirmation/adjudication/",
+        "passed": false
+      },
+      "jmlr_compliance_satisfied": {
+        "authority": "machine_and_human",
+        "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+        "passed": false
+      },
+      "model_family_breadth_satisfied": {
+        "authority": "paid_or_external_execution",
+        "evidence": "experiments/model_matrix.yaml",
+        "passed": false
+      },
+      "multi_judge_or_human_validation_completed": {
+        "authority": "independent_human_or_external_execution",
+        "evidence": "reports/judge_robustness.json",
+        "passed": false
+      },
+      "natural_write_labelled_evidence_completed": {
+        "authority": "independent_human_and_machine",
+        "evidence": "confirmation/natural_challenge/",
+        "passed": false
+      },
+      "robustness_analysis_completed": {
+        "authority": "machine_and_external_execution",
+        "evidence": "reports/robustness.json",
+        "passed": false
+      },
+      "trajectory_propagation_and_recovery_evaluated": {
+        "authority": "machine",
+        "evidence": "confirmation/reports/trajectory.json",
+        "passed": false
+      }
+    },
+    "tmlr": {
+      "anonymous_release_scan_passed": {
+        "authority": "machine",
+        "evidence": "reports/anonymous_scan.json",
+        "passed": false
+      },
+      "authorship_and_openreview_resolved": {
+        "authority": "human",
+        "evidence": "publication/OPENREVIEW_PROFILE_CHECKLIST.md",
+        "passed": false
+      },
+      "clean_reproduction_passed": {
+        "authority": "machine",
+        "evidence": "reports/clean_reproduction.json",
+        "passed": false
+      },
+      "current_venue_constraints_checked": {
+        "authority": "machine_and_human",
+        "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+        "passed": false
+      },
+      "headline_claims_verified": {
+        "authority": "machine",
+        "evidence": "claims/mismatch_report.json",
+        "passed": true
+      },
+      "independent_annotation_satisfied": {
+        "authority": "independent_human",
+        "evidence": "confirmation/adjudication/",
+        "passed": false
+      },
+      "licenses_and_redistribution_resolved": {
+        "authority": "human_legal",
+        "evidence": "reports/LICENSE_BLOCKERS.json",
+        "passed": false
+      },
+      "new_confirmation_protocol_completed": {
+        "authority": "independent_human_and_machine",
+        "evidence": "confirmation/reports/",
+        "passed": false
+      }
+    }
+  },
+  "jmlr_go": false,
+  "schema_version": "1.0",
+  "status": "NO_GO",
+  "tmlr_go": false
+}

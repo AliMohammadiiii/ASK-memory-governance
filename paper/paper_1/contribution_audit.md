@@ -9,6 +9,7 @@ claims.
 
 | Contribution | Repository evidence | Manuscript position |
 |---|---|---|
+| ASK as a storage-agnostic and controller-independent protocol with typed trace/event contracts, deterministic transitions, evidence and configuration identity, declared replay scope, and executable invariants | `src/ask/protocol/`, `schema/ask_transition_event.schema.json`, `tests/test_ask_protocol.py` | Abstract; Sections 1, 3, 5, and 10 |
 | A three-action write-governance formulation that separates state-preserving retention, lineage-preserving replacement, and refusal to commit | `src/ask/controller/`, `src/ask/memory/operations.py` | Sections 1, 3, and 5 |
 | A typed five-dimensional write scorecard over extraction confidence, evidence quality, marker burden, signed relation, and stability prior, with type-conditional thresholds and a discrete relation guard | `src/ask/controller/features.py`, `score.py`, and `policy.py` | Abstract; Sections 1, 5.1, 8.3, 9, and 10 |
 | An exact action-log replay and counterfactual mechanism audit that measures the action dependence of every dimension, the relation guard, and the type channels | `scripts/analysis/analyze_lme_scorecard.py`; `artifacts/analysis/lme_v12_scorecard_analysis.json` | Sections 8.3 and 9; Appendix |
@@ -26,9 +27,10 @@ claims.
 
 The paper does not claim that KEEP/UPDATE/ABSTAIN, typed memory, provenance,
 lineage, selective prediction, or operation-level memory evaluation is novel in
-isolation. The defensible novelty is their executable conjunction:
+isolation. The defensible novelty is their executable protocol-level conjunction:
 
-1. the write transition is the primary evaluation object;
+1. the write transition is the primary governed and evaluated object, with a
+   controller-independent contract;
 2. action, state, lineage, retrieval, and downstream answer consequences remain
    separately observable;
 3. the deployed write rule is inspectable and exactly replayable from logged
@@ -37,6 +39,10 @@ isolation. The defensible novelty is their executable conjunction:
    guard rather than inferred from weights alone; and
 5. a controlled semantic diagnostic and a downstream long-memory benchmark are
    used together, with explicit boundaries on what each can establish.
+
+MGP-6 is evidence for this contract, not the complete contribution. ASK--MGP
+and ASK--LME are adapters with different replay scopes and controller policies;
+neither adapter defines ASK by itself.
 
 The closest feature-based precedent governs retrieval or injection, whereas
 this scorecard governs write-time state transition. Recent memory-update work

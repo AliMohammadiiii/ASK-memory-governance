@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/trajectory-1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["trajectory_id", "initial_memory", "steps", "expected_final_state"],
+  "properties": {
+    "trajectory_id": {"type": "string", "minLength": 1},
+    "initial_memory": {"type": "array", "items": {"type": "object"}},
+    "steps": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate", "expected_action", "recovery_target"],
+        "properties": {
+          "candidate": {"type": "object"},
+          "expected_action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]},
+          "recovery_target": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "expected_final_state": {"type": "array", "items": {"type": "object"}}
+  }
+}

@@ -7,7 +7,13 @@ MYPY ?= $(PYTHON) -m mypy
 
 .PHONY: help setup check release-check test test-fast lint format format-check \
 	typecheck build shell-syntax compile smoke validate-data reproduce-mgp6 \
-	reproduce-longmemeval figures paper paper-audit thesis clean repo-check
+	reproduce-longmemeval figures paper paper-audit thesis clean repo-check \
+	claims verify-claims inventory verify-manifest readiness validate-traces \
+	validate-public-data reproduce-public build-paper-tmlr build-paper-jmlr \
+	anonymous-scan release-audit ci clean-reproduction validate-experiments \
+	verify-paper-artifacts confirmation-authoring-package confirmation-dry-run \
+	confirmation-freeze confirmation-predict confirmation-unseal confirmation-score \
+	advisor-check advisor-package
 
 help:
 	@echo "setup          Install the package and development tools"
@@ -18,6 +24,18 @@ help:
 	@echo "format         Format maintained Python code"
 	@echo "typecheck      Run the supported mypy scope"
 	@echo "build          Build sdist and wheel"
+	@echo "claims         Recompute the private-evidence claim ledger"
+	@echo "verify-claims  Verify the committed claim ledger and mismatches"
+	@echo "inventory      Regenerate the artifact/source inventory"
+	@echo "readiness      Generate the mandatory publication GO/NO-GO report"
+	@echo "release-audit  Run release-boundary and anonymity checks"
+	@echo "clean-reproduction  Verify the public path in a fresh venv from a clean commit"
+	@echo "validate-experiments  Validate the prospective no-execution model matrix"
+	@echo "verify-paper-artifacts  Check headline LaTeX fragments for numeric drift"
+	@echo "confirmation-dry-run  Validate confirmation schemas and blind-packet safeguards"
+	@echo "confirmation-freeze  Freeze only after independent human/legal approval"
+	@echo "advisor-check  Run the offline, privacy-safe supervisor review gate"
+	@echo "advisor-package  Build a sanitized local supervisor review snapshot"
 
 setup:
 	$(PYTHON) -m pip install -U pip
@@ -84,6 +102,81 @@ thesis:
 
 repo-check:
 	$(PYTHON) scripts/validate_repository.py
+
+claims:
+	$(PYTHON) scripts/claims/build_claim_ledger.py
+
+verify-claims:
+	$(PYTHON) scripts/claims/verify_claims.py
+
+inventory:
+	$(PYTHON) scripts/research/build_artifact_inventory.py
+
+verify-manifest:
+	$(PYTHON) scripts/provenance/verify_lme_v12_derived_manifest.py
+
+readiness:
+	$(PYTHON) scripts/check_readiness.py
+
+validate-traces:
+	$(PYTHON) scripts/validation/validate_ask_traces.py
+	$(PYTEST) -q tests/test_ask_protocol.py
+
+validate-public-data:
+	$(PYTHON) scripts/release/validate_public_data.py
+
+validate-experiments:
+	$(PYTHON) scripts/experiments/validate_model_matrix.py
+
+verify-paper-artifacts:
+	$(PYTHON) scripts/paper/verify_generated_outputs.py
+
+confirmation-authoring-package:
+	$(PYTEST) -q tests/test_confirmation_protocol.py
+
+confirmation-dry-run: confirmation-authoring-package
+	@echo 'PASS_DRY_RUN: no labels, prediction, unsealing, or paid inference executed'
+
+confirmation-freeze:
+	$(PYTHON) scripts/confirmation/freeze_protocol.py \
+		--out confirmation/frozen_configs/protocol_commitment.json
+
+confirmation-predict:
+	@echo 'BLOCKED_PENDING_FROZEN_MATRIX_AND_EXPLICIT_EXECUTION_AUTHORIZATION'; exit 1
+
+confirmation-unseal:
+	@echo 'BLOCKED_PENDING_INDEPENDENT_ANNOTATION_AND_ONE_TIME_HUMAN_AUTHORIZATION'; exit 1
+
+confirmation-score:
+	@echo 'BLOCKED_PENDING_AUTHORIZED_UNSEAL'; exit 1
+
+reproduce-public: repo-check test lint format-check typecheck validate-data \
+	validate-public-data validate-traces validate-experiments verify-paper-artifacts
+
+build-paper-tmlr:
+	@test -f paper/tmlr/main.tex || { echo 'BLOCKED: canonical TMLR source is not in paper/tmlr'; exit 1; }
+	cd paper/tmlr && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+
+build-paper-jmlr:
+	@test -f paper/jmlr/main.tex || { echo 'BLOCKED: canonical JMLR source is not in paper/jmlr'; exit 1; }
+	cd paper/jmlr && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+
+anonymous-scan:
+	$(PYTHON) scripts/release/anonymous_scan.py
+
+release-audit: verify-claims verify-manifest validate-public-data anonymous-scan readiness
+
+advisor-check: check verify-claims verify-manifest validate-public-data \
+	validate-traces validate-experiments verify-paper-artifacts anonymous-scan readiness
+
+advisor-package: advisor-check
+	$(PYTHON) scripts/release/build_advisor_handoff.py --replace
+
+clean-reproduction:
+	$(PYTHON) scripts/reproduction/run_clean_reproduction.py
+
+ci: check validate-public-data validate-traces validate-experiments \
+	verify-paper-artifacts readiness
 
 clean:
 	rm -rf build dist .pytest_cache .ruff_cache .mypy_cache htmlcov

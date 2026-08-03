@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/trajectory-result-input-1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["trajectory_id", "steps"],
+  "properties": {
+    "trajectory_id": {"type": "string", "minLength": 1},
+    "steps": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["expected_action", "observed_action", "state_correct"],
+        "properties": {
+          "expected_action": {"enum": ["Abstain", "Keep", "Supersede"]},
+          "observed_action": {"enum": ["Abstain", "Keep", "Supersede"]},
+          "state_correct": {"type": "boolean"},
+          "retrieval_affected": {"type": "boolean"},
+          "stale_retrieval": {"type": "boolean"},
+          "downstream_answer_correct": {"type": "boolean"},
+          "lineage_valid": {"type": "boolean"},
+          "rollback_attempted": {"type": "boolean"},
+          "rollback_succeeded": {"type": ["boolean", "null"]},
+          "recovery_marker": {"type": "boolean"},
+          "governance_cost": {"type": "number", "minimum": 0}
+        }
+      }
+    }
+  }
+}

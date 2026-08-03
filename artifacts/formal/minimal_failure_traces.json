@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "status": "EXECUTABLE_COUNTEREXAMPLE_FIXTURES",
+  "cases": [
+    {
+      "id": "abstain_commits_candidate",
+      "violated_invariant": "Abstain commits no candidate",
+      "minimal_shape": {"action": "Abstain", "before": ["m1"], "after": ["m1", "m2"]},
+      "expected_validator_result": "reject"
+    },
+    {
+      "id": "keep_invalidates_prior",
+      "violated_invariant": "Keep preserves compared prior",
+      "minimal_shape": {"action": "Keep", "prior_before_active": true, "prior_after_active": false},
+      "expected_validator_result": "reject"
+    },
+    {
+      "id": "supersede_dangling_predecessor",
+      "violated_invariant": "Supersede successor resolves to retained predecessor",
+      "minimal_shape": {"action": "Supersede", "successor_predecessor": "missing"},
+      "expected_validator_result": "reject"
+    },
+    {
+      "id": "lineage_cycle",
+      "violated_invariant": "Lineage is acyclic",
+      "minimal_shape": {"edges": [["a", "b"], ["b", "a"]]},
+      "expected_validator_result": "reject"
+    }
+  ]
+}

@@ -64,6 +64,40 @@ def test_public_release_candidates_are_tracked_only(monkeypatch: pytest.MonkeyPa
     assert "--others" not in captured
 
 
+def test_advisor_candidates_can_include_untracked_files(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    release = _load_module("build_final_release_advisor", "scripts/release/build_final_release.py")
+    captured: list[str] = []
+
+    def fake_check_output(command: list[str], **_: object) -> bytes:
+        captured.extend(command)
+        return b"README.md\0"
+
+    monkeypatch.setattr(release.subprocess, "check_output", fake_check_output)
+    assert release.public_candidates(include_untracked=True) == [ROOT / "README.md"]
+    assert "--others" in captured
+    assert "--exclude-standard" in captured
+
+
+def test_public_release_excludes_private_and_local_path_records() -> None:
+    release = _load_module(
+        "build_final_release_boundaries", "scripts/release/build_final_release.py"
+    )
+    assert ".private/" in release.PUBLIC_EXCLUDED_PREFIXES
+    assert "artifacts/mgp6_v43_integration/" in release.PUBLIC_EXCLUDED_PREFIXES
+
+
+def test_secret_pattern_requires_a_token_boundary() -> None:
+    validator = _load_module(
+        "validate_repository_secret_boundary", "scripts/validate_repository.py"
+    )
+    assert all(
+        not pattern.search("ask-memory-governance-advisor") for pattern in validator.SECRET_PATTERNS
+    )
+    assert any(pattern.search("token=sk-" + "a" * 32) for pattern in validator.SECRET_PATTERNS)
+
+
 def test_release_builder_fails_closed_on_dirty_worktree(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

@@ -62,6 +62,26 @@ whose gold action is \abstain, or otherwise violates a state-transition invarian
 (Section~\ref{sec:mgp6}). This is the failure the abstention and provenance
 machinery is designed to prevent.
 
+\subsection{Protocol event and replay contract}
+
+ASK binds each transition to an immutable event
+$z=(a,\mu,i_p,i_u,i_r,i_{\pi},h_C,h_E,h_M,h_{M'})$, where $\mu$ is the
+declared storage mode; $i_p,i_u,i_r,i_{\pi}$ are the compared-prior,
+candidate, resulting-record, and predecessor identifiers; $h_C$ and $h_E$ bind
+the exact configuration and evidence set; and $h_M,h_{M'}$ bind the before and
+after states. An adapter additionally declares whether its trace is sufficient
+to replay only controller composition plus transition, or the final policy plus
+transition. It must not claim to replay upstream model inference from a logged
+final action.
+
+The reference validator requires: \abstain{} makes no commit and preserves
+$h_M=h_{M'}$; \keep{} never invalidates the compared prior; \supersede{}
+retains that prior, creates an active successor, and resolves its predecessor
+edge; identifiers are unique; lineage has neither dangling edges nor cycles;
+and a single-slot state has at most one active record. These are protocol
+correctness conditions, not evidence that the chosen action matches human
+semantics.
+
 \subsection{Four distinctions the formulation makes explicit}
 \label{sec:distinctions}
 

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/ask/claims.schema.json",
+  "title": "ASK machine-verifiable claim ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_by", "verification_timestamp", "claims"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "generated_by": {"type": "string"},
+    "verification_timestamp": {"type": "string", "format": "date-time"},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claim_id", "manuscript_file", "locator", "claim_text",
+          "claim_category", "evidence_source", "source_artifact_path",
+          "source_artifact_sha256", "generating_script", "reproduction_command",
+          "expected_value", "observed_value", "tolerance", "statistical_method",
+          "configuration_id", "status", "verification_timestamp", "notes"
+        ],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^[A-Z0-9_-]+$"},
+          "manuscript_file": {"type": "string"},
+          "locator": {"type": "string"},
+          "claim_text": {"type": "string"},
+          "claim_category": {"type": "string"},
+          "evidence_source": {"type": "string"},
+          "source_artifact_path": {"type": "string"},
+          "source_artifact_sha256": {"type": ["string", "null"]},
+          "generating_script": {"type": "string"},
+          "reproduction_command": {"type": "string"},
+          "expected_value": {},
+          "observed_value": {},
+          "tolerance": {"type": "number", "minimum": 0},
+          "statistical_method": {"type": "string"},
+          "configuration_id": {"type": "string"},
+          "status": {"enum": ["verified", "mismatch", "missing_evidence"]},
+          "verification_timestamp": {"type": "string", "format": "date-time"},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

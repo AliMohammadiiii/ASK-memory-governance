@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/confirmation-item-1.0.json",
+  "title": "ASK blind confirmation item",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blind_id", "predecessor", "candidate", "context"],
+  "properties": {
+    "blind_id": {"type": "string", "pattern": "^C[0-9]{6}$"},
+    "predecessor": {"type": ["object", "null"]},
+    "candidate": {"type": "object"},
+    "context": {"type": "object"},
+    "task_version": {"type": "string"}
+  }
+}

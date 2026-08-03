@@ -1,7 +1,9 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We separated memory writing from the state and answer layers it affects, then
+We specified ASK as a controller- and storage-agnostic protocol for auditable
+memory transitions, separated memory writing from the state and answer layers
+it affects, then
 used that separation in three ways: to expose a failed pilot, to construct a
 better controlled diagnostic, and to inspect the deployed controller at
 decision-level resolution.
@@ -34,9 +36,11 @@ above every structural baseline and $12.8$ points above naive overwrite, with
 the largest gain on knowledge update. Trace accounting adds a second systems
 finding: extraction and relation classification consume $92.8\%$ of prompt
 tokens, while the answer stage conventionally scored by memory benchmarks is
-only $7.2\%$. The contribution is therefore not merely an action vocabulary or
-an accuracy number. It is a reproducible chain from evidence features, through
-an auditable write and lineage transition, to a separately measured answer.
+only $7.2\%$. The contribution is therefore not a dataset, an action
+vocabulary, one controller, or an accuracy number. It is a reproducible
+protocol chain from evidence and frozen configuration, through an
+adapter-declared policy replay and auditable lineage transition, to a
+separately measured answer.
 
 The bounds remain important. The scorecard has no per-write gold on \lme{} and
 scores at chance through the \mgpc{} development adapter; only one v4.3 hidden
@@ -46,6 +50,7 @@ and judge; and monetary cost is unavailable. A credible successor needs
 independent construction, natural multi-step trajectories, blinded multi-human
 labels, and pre-authorised hidden baselines and ablations. Within those limits,
 the paper's novelty is the controlled conjunction and its audit trail:
-three-way write governance, typed evidence scoring, lineage-preserving state,
-construct-validity gates, exact decision replay, and layer-separated
-evaluation --- not priority for any individual mechanism.
+three-way write governance, evidence/configuration-bound traces,
+adapter-declared replay scope, lineage-preserving state, construct-validity
+gates, exact decision replay, and layer-separated evaluation --- not priority
+for any individual mechanism.

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ask.example/schemas/confirmation-adjudication-1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["blind_id", "original_actions", "adjudicated_action", "reason", "adjudicator_pseudonym"],
+  "properties": {
+    "blind_id": {"type": "string", "pattern": "^C[0-9]{6}$"},
+    "original_actions": {"type": "array", "minItems": 2, "items": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]}},
+    "adjudicated_action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]},
+    "reason": {"type": "string", "minLength": 1},
+    "adjudicator_pseudonym": {"type": "string", "minLength": 1}
+  }
+}

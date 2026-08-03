@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/ask/transition-event.schema.json",
+  "title": "ASK TransitionEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "event_id",
+    "action",
+    "store_mode",
+    "prior_record_id",
+    "candidate_record_id",
+    "resulting_record_id",
+    "predecessor_record_id",
+    "configuration",
+    "evidence_digest",
+    "before_digest",
+    "after_digest",
+    "keep_admitted_candidate",
+    "metadata"
+  ],
+  "properties": {
+    "event_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "action": {"enum": ["Abstain", "Keep", "Supersede"]},
+    "store_mode": {"enum": ["single_slot_versioned", "multi_record", "temporal_event"]},
+    "prior_record_id": {"type": ["string", "null"]},
+    "candidate_record_id": {"type": ["string", "null"]},
+    "resulting_record_id": {"type": ["string", "null"]},
+    "predecessor_record_id": {"type": ["string", "null"]},
+    "configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["configuration_id", "adapter_version", "sha256"],
+      "properties": {
+        "configuration_id": {"type": "string", "minLength": 1},
+        "adapter_version": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "evidence_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "before_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "after_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "keep_admitted_candidate": {"type": "boolean"},
+    "metadata": {"type": "object"}
+  }
+}

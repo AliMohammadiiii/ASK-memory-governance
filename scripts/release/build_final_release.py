@@ -20,14 +20,19 @@ OUTER_NAME = "ask_memory_governance_final_2026-07-15.zip"
 
 PUBLIC_EXCLUDED_PREFIXES = (
     ".git/",
+    ".private/",
     ".serena/",
     ".venv/",
+    "advisor_handoff/",
+    "advisor_handoff.__building__/",
+    "artifacts/mgp6_v43_integration/",
     "audit_workspace/",
     "build/",
     "data/external/",
     "dist/",
     "docs/history/",
     "final_release/",
+    "final_release.__building__/",
     "inputs_raw/",
     "phd_application/",
     "presentation/",
@@ -93,18 +98,18 @@ def copy_tree(source: Path, target: Path, *, exclude_parts: set[str] | None = No
         copy_file(path, target / path.relative_to(source))
 
 
-def public_candidates() -> list[Path]:
-    """Return only Git-tracked files eligible for the public repository."""
-    listed = subprocess.check_output(
-        [
-            "git",
-            "-C",
-            str(ROOT),
-            "ls-files",
-            "--cached",
-            "-z",
-        ]
-    )
+def public_candidates(*, include_untracked: bool = False) -> list[Path]:
+    """Return Git-visible files eligible for a sanitized repository snapshot.
+
+    Formal public releases use the default tracked-only mode. The advisor
+    snapshot may explicitly include current untracked, unignored candidates so
+    that a pre-commit review contains the complete proposed change set.
+    """
+    command = ["git", "-C", str(ROOT), "ls-files", "--cached"]
+    if include_untracked:
+        command.extend(["--others", "--exclude-standard"])
+    command.append("-z")
+    listed = subprocess.check_output(command)
     candidates: list[Path] = []
     for raw in listed.split(b"\0"):
         if not raw:
@@ -191,8 +196,8 @@ def write_repository_file_manifest(repo: Path) -> None:
 
 def scan_public_repository(repo: Path) -> None:
     secret_patterns = (
-        re.compile(r"sk-or-v1-[A-Za-z0-9]{20,}"),
-        re.compile(r"sk-[A-Za-z0-9_-]{24,}"),
+        re.compile(r"(?<![A-Za-z0-9])sk-or-v1-[A-Za-z0-9]{20,}"),
+        re.compile(r"(?<![A-Za-z0-9])sk-[A-Za-z0-9_-]{24,}"),
     )
     forbidden_text = (str(Path.home()),)
     forbidden_names = {

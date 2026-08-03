@@ -1,0 +1,77 @@
+schema_version: "1.0"
+
+tmlr:
+  headline_claims_verified:
+    passed: true
+    authority: machine
+    evidence: claims/mismatch_report.json
+  licenses_and_redistribution_resolved:
+    passed: false
+    authority: human_legal
+    evidence: reports/LICENSE_BLOCKERS.json
+  clean_reproduction_passed:
+    passed: false
+    authority: machine
+    evidence: reports/clean_reproduction.json
+  new_confirmation_protocol_completed:
+    passed: false
+    authority: independent_human_and_machine
+    evidence: confirmation/reports/
+  independent_annotation_satisfied:
+    passed: false
+    authority: independent_human
+    evidence: confirmation/adjudication/
+  anonymous_release_scan_passed:
+    passed: false
+    authority: machine
+    evidence: reports/anonymous_scan.json
+  authorship_and_openreview_resolved:
+    passed: false
+    authority: human
+    evidence: publication/OPENREVIEW_PROFILE_CHECKLIST.md
+  current_venue_constraints_checked:
+    passed: false
+    authority: machine_and_human
+    evidence: publication/VENUE_REQUIREMENTS_SNAPSHOT.md
+
+jmlr:
+  formal_core_completed_and_tested:
+    passed: true
+    authority: machine
+    evidence: tests/test_ask_protocol.py
+  natural_write_labelled_evidence_completed:
+    passed: false
+    authority: independent_human_and_machine
+    evidence: confirmation/natural_challenge/
+  independent_annotation_completed:
+    passed: false
+    authority: independent_human
+    evidence: confirmation/adjudication/
+  trajectory_propagation_and_recovery_evaluated:
+    passed: false
+    authority: machine
+    evidence: confirmation/reports/trajectory.json
+  model_family_breadth_satisfied:
+    passed: false
+    authority: paid_or_external_execution
+    evidence: experiments/model_matrix.yaml
+  cross_storage_or_native_system_evidence_completed:
+    passed: false
+    authority: external_execution
+    evidence: reports/native_systems.json
+  multi_judge_or_human_validation_completed:
+    passed: false
+    authority: independent_human_or_external_execution
+    evidence: reports/judge_robustness.json
+  robustness_analysis_completed:
+    passed: false
+    authority: machine_and_external_execution
+    evidence: reports/robustness.json
+  generalizable_ml_lessons_demonstrated:
+    passed: false
+    authority: scientific_review
+    evidence: docs/JMLR_READINESS.md
+  jmlr_compliance_satisfied:
+    passed: false
+    authority: machine_and_human
+    evidence: publication/VENUE_REQUIREMENTS_SNAPSHOT.md

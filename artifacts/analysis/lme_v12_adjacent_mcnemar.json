@@ -1,0 +1,55 @@
+{
+  "comparisons": [
+    {
+      "b": 34,
+      "better": "b3",
+      "c": 0,
+      "holm_adjusted_p": 4.656612873077393e-10,
+      "lower": "b1",
+      "paired_n": 180,
+      "raw_exact_two_sided_p": 1.1641532182693481e-10,
+      "risk_difference": 0.18888888888888888
+    },
+    {
+      "b": 48,
+      "better": "b2",
+      "c": 11,
+      "holm_adjusted_p": 3.7248846785353784e-06,
+      "lower": "b3",
+      "paired_n": 180,
+      "raw_exact_two_sided_p": 1.2416282261784595e-06,
+      "risk_difference": 0.20555555555555555
+    },
+    {
+      "b": 44,
+      "better": "b4",
+      "c": 10,
+      "holm_adjusted_p": 6.77137190674415e-06,
+      "lower": "b2",
+      "paired_n": 180,
+      "raw_exact_two_sided_p": 3.385685953372075e-06,
+      "risk_difference": 0.18888888888888888
+    },
+    {
+      "b": 31,
+      "better": "controller",
+      "c": 8,
+      "holm_adjusted_p": 0.0002940768754342571,
+      "lower": "b4",
+      "paired_n": 180,
+      "raw_exact_two_sided_p": 0.0002940768754342571,
+      "risk_difference": 0.12777777777777777
+    }
+  ],
+  "family_definition": "four predeclared adjacent comparisons in B1<B3<B2<B4<ASK order",
+  "family_size": 4,
+  "schema_version": "1.0",
+  "source_sha256": {
+    "b1": "52e530ae038413547cd640bfd8eddd3ddd64a453d1a0bc0c136a3b127546d85e",
+    "b2": "9f61c91b4e4b1d1b5157b26863d95f52da07b90a228f14798af2af6ea1122079",
+    "b3": "3a3d7dbe16f45ff32719f09beb963948203289718fa6202e597a5272174a1bdb",
+    "b4": "2e61898f0ec3c0cb23b2ae79d11a8f384717a666ba4f9e4a5439021315bc71d7",
+    "controller": "d2c6b00c261335dfdc23fe2945a42f111349c68ed7bc0f825dff8ed8c6e1beb1"
+  },
+  "status": "VERIFIED_ADDITIVE_CORRECTION"
+}

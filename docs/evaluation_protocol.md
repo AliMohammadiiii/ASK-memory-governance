@@ -1,5 +1,10 @@
 # Evaluation Protocol
 
+> Historical protocol note: the MGP-6 v1/v2 and partial LongMemEval statements
+> below are retained for lineage. For current claim eligibility use
+> `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`, `docs/EXPERIMENT_LINEAGE.md`, and
+> the machine ledger under `claims/`. They supersede this older snapshot.
+
 This repository treats benchmark artifacts as evidence only when both the run
 directory and `ARTIFACT_MANIFEST.md` mark them as usable.
 

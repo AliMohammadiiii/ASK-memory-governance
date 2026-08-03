@@ -1,0 +1,16 @@
+schema_version: "1.0"
+status: NOT_EXECUTED
+preregistered_before_labels: false
+primary_endpoint: action_macro_f1
+secondary_endpoints:
+  - action_accuracy
+  - abstain_precision
+  - false_commit_rate
+  - lineage_integrity
+unit_of_analysis: independent_item_or_declared_trajectory_cluster
+minimum_independent_annotators_per_item: 2
+adjudication_preserves_original_rows: true
+seed: 43017
+paid_inference_authorized: false
+human_legal_approval: false
+
