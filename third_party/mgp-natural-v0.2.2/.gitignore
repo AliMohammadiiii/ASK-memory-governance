@@ -1,0 +1,36 @@
+# Private, raw, gated, or identity-bearing material
+.private/
+data/raw/**
+data/interim/**
+data/derived/**
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/derived/.gitkeep
+
+# Credentials and local environment
+.env
+.env.*
+*.key
+*.pem
+*.token
+.huggingface/
+
+# Generated Python/build artifacts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+
+# Generated release artifacts
+release/*.zip
+release/*.tar.gz
+paper/*.pdf
+

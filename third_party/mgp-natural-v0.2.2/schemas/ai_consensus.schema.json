@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/mgp-natural/ai_consensus.schema.json",
+  "title": "MGP-Natural AI-provisional consensus",
+  "type": "object",
+  "required": [
+    "schema_version", "blind_id", "ai_tag", "annotation_status",
+    "human_verified", "requires_human_review", "source_pass_ids",
+    "source_pass_sha256", "exclude", "action", "confidence",
+    "evidence_turn_ids", "rationale", "action_votes"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "blind_id": {"type": "string"},
+    "ai_tag": {"const": "AI"},
+    "annotation_status": {"const": "AI_ADJUDICATED_PROVISIONAL_NOT_GOLD"},
+    "human_verified": {"const": false},
+    "requires_human_review": {"const": true},
+    "source_pass_ids": {"type": "array", "minItems": 3, "uniqueItems": true},
+    "source_pass_sha256": {"type": "array", "minItems": 3},
+    "exclude": {"type": "boolean"},
+    "action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN", null]},
+    "confidence": {"type": "integer", "minimum": 1, "maximum": 5},
+    "evidence_turn_ids": {"type": "array", "items": {"type": "string"}},
+    "rationale": {"type": "string"},
+    "action_votes": {"type": "object"}
+  },
+  "additionalProperties": true
+}
+

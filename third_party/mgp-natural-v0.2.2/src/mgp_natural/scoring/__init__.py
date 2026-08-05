@@ -1,0 +1,2 @@
+"""Fail-closed benchmark scoring."""
+

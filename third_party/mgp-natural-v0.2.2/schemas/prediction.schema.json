@@ -1,0 +1,73 @@
+{
+  "$id": "https://example.org/mgp-natural/prediction.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "enum": [
+        "KEEP",
+        "SUPERSEDE",
+        "ABSTAIN"
+      ]
+    },
+    "blind_id": {
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1,
+      "minimum": 0,
+      "type": "number"
+    },
+    "evidence_turn_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "lineage_relations": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "probabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "ABSTAIN": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "KEEP": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "SUPERSEDE": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "KEEP",
+        "SUPERSEDE",
+        "ABSTAIN"
+      ],
+      "type": "object"
+    },
+    "resulting_value": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "blind_id",
+    "action"
+  ],
+  "type": "object"
+}
+

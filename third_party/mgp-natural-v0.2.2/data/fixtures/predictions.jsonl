@@ -1,0 +1,4 @@
+{"action":"KEEP","blind_id":"MGP-000001-AAAABBBB","evidence_turn_ids":["T001","T003"],"resulting_value":"concise"}
+{"action":"SUPERSEDE","blind_id":"MGP-000002-CCCCDDDD","evidence_turn_ids":["T003"],"resulting_value":"final.csv"}
+{"action":"KEEP","blind_id":"MGP-000003-EEEEFFFF","evidence_turn_ids":["T003"],"resulting_value":"cleaned.csv"}
+

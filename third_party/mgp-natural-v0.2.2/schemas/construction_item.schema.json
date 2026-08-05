@@ -1,0 +1,184 @@
+{
+  "$id": "https://example.org/mgp-natural/construction_item.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "blind_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "candidate_turn_id": {
+      "type": "string"
+    },
+    "candidate_value": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "construction_status": {
+      "const": "CANDIDATE"
+    },
+    "constructor_provisional_action": {
+      "enum": [
+        "KEEP",
+        "SUPERSEDE",
+        "ABSTAIN"
+      ]
+    },
+    "constructor_provisional_resulting_value": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "constructor_rationale": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "context_turn_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "continuity_keys_private": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "dialogue": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "turn_id": {
+            "pattern": "^T[0-9A-Za-z_-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "turn_id",
+          "role",
+          "text"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "item_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "lineage_relation_private": {
+      "type": "string"
+    },
+    "memory_slot": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "type": "string"
+    },
+    "principal_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "prior_evidence_turn_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "prior_value": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "privacy_status": {
+      "enum": [
+        "PENDING_HUMAN_REVIEW",
+        "AUTOMATED_REDACTION_APPLIED",
+        "HUMAN_REVIEW_PASSED",
+        "REJECTED"
+      ]
+    },
+    "rejection_reason": {
+      "type": "null"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "scope": {
+      "enum": [
+        "SESSION_TASK_STATE",
+        "CROSS_SESSION_TASK_STATE",
+        "SESSION_INTERACTION_PREFERENCE",
+        "CROSS_SESSION_USER_PREFERENCE",
+        "ARTIFACT_STATE",
+        "CORRECTION_STATE",
+        "UNCERTAINTY_STATE",
+        "EDITORIAL_DECISION",
+        "CONTENT_INCLUSION",
+        "CONTENT_REMOVAL",
+        "WORDING_STATE",
+        "SOURCE_STATUS",
+        "CONSENSUS_STATE",
+        "DISPUTE_STATE",
+        "REVISION_STATE",
+        "DELETION_RESTORATION",
+        "EDITORIAL_UNCERTAINTY"
+      ]
+    },
+    "source_locator_private": {
+      "type": "object"
+    },
+    "source_track": {
+      "enum": [
+        "STUDYCHAT",
+        "WIKICONV"
+      ]
+    },
+    "stage1_signals": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "item_id",
+    "blind_id",
+    "source_track",
+    "scope",
+    "principal_type",
+    "memory_slot",
+    "prior_value",
+    "candidate_value",
+    "dialogue",
+    "prior_evidence_turn_ids",
+    "candidate_turn_id",
+    "context_turn_ids",
+    "constructor_provisional_action",
+    "constructor_provisional_resulting_value",
+    "constructor_rationale",
+    "source_locator_private",
+    "continuity_keys_private",
+    "privacy_status",
+    "construction_status",
+    "rejection_reason"
+  ],
+  "title": "MGP-Natural private construction item",
+  "type": "object"
+}
+
