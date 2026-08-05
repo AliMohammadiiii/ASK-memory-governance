@@ -6,6 +6,8 @@ set -euo pipefail
 REPO_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." >/dev/null 2>&1 && pwd)"
 cd "$REPO_ROOT"
 
+git submodule update --init --recursive
+
 PYTHON_BIN="${ASK_PYTHON:-}"
 if [[ -z "$PYTHON_BIN" ]]; then
   for candidate in python3.12 python3.11 python3; do

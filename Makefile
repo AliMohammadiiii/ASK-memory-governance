@@ -39,6 +39,7 @@ help:
 	@echo "advisor-package  Build a sanitized local supervisor review snapshot"
 
 setup:
+	git submodule update --init --recursive
 	$(PYTHON) -m pip install -U pip
 	$(PYTHON) -m pip install -e '.[dev]'
 
