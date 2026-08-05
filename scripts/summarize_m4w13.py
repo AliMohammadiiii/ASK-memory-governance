@@ -51,12 +51,15 @@ def _report_warnings(run_dir: Path, report: dict[str, Any]) -> list[str]:
             warnings.append(f"{path} has {len(rows)} rows, expected {expected_n}")
     judged_accuracy = _judgment_accuracy(run_dir)
     reported_accuracy = report.get("overall_accuracy")
-    if judged_accuracy is not None and reported_accuracy is not None:
-        if abs(float(reported_accuracy) - judged_accuracy) > 1e-12:
-            warnings.append(
-                f"{run_dir / 'report.json'} accuracy={reported_accuracy} does not "
-                f"match judgments.jsonl accuracy={judged_accuracy}"
-            )
+    if (
+        judged_accuracy is not None
+        and reported_accuracy is not None
+        and abs(float(reported_accuracy) - judged_accuracy) > 1e-12
+    ):
+        warnings.append(
+            f"{run_dir / 'report.json'} accuracy={reported_accuracy} does not "
+            f"match judgments.jsonl accuracy={judged_accuracy}"
+        )
     return warnings
 
 

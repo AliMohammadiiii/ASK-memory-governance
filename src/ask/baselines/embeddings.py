@@ -653,8 +653,7 @@ class OpenAICompatibleEmbedder:
         for attempt in range(self.max_retries + 1):
             try:
                 with _urlopen(req, url=url, timeout=self.timeout_s) as resp:
-                    data = json.loads(resp.read().decode("utf-8"))
-                    return data
+                    return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as exc:
                 last_exc = exc
                 body = ""

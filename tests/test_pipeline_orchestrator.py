@@ -748,8 +748,7 @@ def test_competency_aware_preference_retrieval_keeps_user_session_coherent() -> 
     )
     prior = LongMemEvalSession(
         session_id="s-prior",
-        turns=user_turns
-        + (LongMemEvalTurn(role="assistant", content="assistant-only distractor"),),
+        turns=(*user_turns, LongMemEvalTurn(role="assistant", content="assistant-only distractor")),
         question="",
         gold_answer="",
         competency="single-session-preference",

@@ -224,16 +224,16 @@ def build_md(data: dict[str, Any]) -> str:
     lines.append("")
 
     # ---- LongMemEval -------------------------------------------------- #
-    l = data["longmemeval_m"]
-    lds = l.get("dataset") or {}
+    longmemeval = data["longmemeval_m"]
+    lds = longmemeval.get("dataset") or {}
     lines.append("## LongMemEval-M (no final-candidate result)")
     lines.append("")
     lines.append(f"- slice: {lds.get('slice')}")
-    lines.append(f"- {l['headline_disclosure']}")
+    lines.append(f"- {longmemeval['headline_disclosure']}")
     lines.append("")
     lines.append("| Run | status / n | correct | accuracy / bound | claim_eligibility |")
     lines.append("|---|---|---|---|---|")
-    for r in l["rows"]:
+    for r in longmemeval["rows"]:
         status_n = r.get("status") or r.get("n") or r.get("n_observed") or "-"
         accuracy = r.get("accuracy")
         if accuracy is None:

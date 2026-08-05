@@ -19,9 +19,11 @@ def main() -> int:
         if not all(row.values()):
             problems.append(f"matrix row {index} has an empty field")
         path = row["path_or_class"]
-        if path.startswith((".private/", "runs/", "runs_local/", "data/external/")):
-            if row["public_action"] != "exclude":
-                problems.append(f"private class is not excluded: {path}")
+        if (
+            path.startswith((".private/", "runs/", "runs_local/", "data/external/"))
+            and row["public_action"] != "exclude"
+        ):
+            problems.append(f"private class is not excluded: {path}")
     blocker_report = json.loads(BLOCKERS.read_text(encoding="utf-8"))
     if blocker_report.get("status") != "BLOCKED_HUMAN_LEGAL_DECISION":
         problems.append("legal blocker status was unexpectedly cleared")

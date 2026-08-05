@@ -671,7 +671,7 @@ def _render_note(reports: list[tuple[str, dict[str, Any]]], *, path: Path, limit
             f"{_pct(report['over_forgetting_rate'])} | {_pct(report['under_forgetting_rate'])} |"
         )
     lines.extend(["", "## Threshold Ordering"])
-    for alias, report in reports:
+    for _alias, report in reports:
         if report["baseline"] != "controller":
             continue
         ordering = report["threshold_ordering"]

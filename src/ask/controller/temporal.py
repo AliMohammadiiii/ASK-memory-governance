@@ -22,10 +22,10 @@ from datetime import date
 __all__ = [
     "TemporalKind",
     "classify_temporal_question",
+    "format_iso",
     "is_temporal_question",
     "parse_dates",
     "parse_session_timestamp",
-    "format_iso",
 ]
 
 TemporalKind = str  # "duration_between" | "relative_ago" | "order" | "none"

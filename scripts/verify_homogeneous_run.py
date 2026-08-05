@@ -492,7 +492,7 @@ def main(argv: list[str] | None = None) -> int:
         judges = ",".join(r.get("judge_models") or ["?"])
         models = ",".join(r.get("answer_models") or ["?"])
         print(
-            f"{r['system']:<12}{status:<8}{str(r.get('n_sessions', '-')):>5}"
+            f"{r['system']:<12}{status:<8}{r.get('n_sessions', '-')!s:>5}"
             f"{acc_s:>8}  {judges} / {models}"
         )
         for e in r["errors"]:

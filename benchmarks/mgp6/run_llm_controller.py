@@ -180,7 +180,7 @@ def predict(scenario: dict[str, Any]) -> dict[str, Any]:
 
 
 def load_scenarios(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in path.open(encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
 def done_ids(path: Path) -> set[str]:

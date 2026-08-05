@@ -79,7 +79,7 @@ Fill the columns in `annotation_sheet.csv` and save as
 
 
 def load_rows(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in path.open(encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
 def flatten_dialogue(msgs: list[dict[str, Any]]) -> str:

@@ -40,9 +40,9 @@ MGP6V43_RUNNABLE_SYSTEMS = MGP6V43_SYSTEMS + MGP6V43_SUCCESSOR_SYSTEMS
 MODEL_BACKED_SYSTEMS = frozenset(
     system for system in MGP6V43_RUNNABLE_SYSTEMS if system != "rules_controller"
 )
-SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
-    system: VALID_ACTIONS for system in MGP6V43_RUNNABLE_SYSTEMS
-}
+SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = dict.fromkeys(
+    MGP6V43_RUNNABLE_SYSTEMS, VALID_ACTIONS
+)
 SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
 SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
 ADAPTER_VERSION = "ask.mgp6_v43_adapter.v3"
@@ -723,7 +723,7 @@ def _per_class(confusion: Mapping[str, Mapping[str, int]]) -> dict[str, dict[str
 def score_actions(gold: Mapping[str, str], predictions: Mapping[str, str]) -> dict[str, Any]:
     if set(gold) != set(predictions):
         raise MGP6V43Error("cannot score mismatched ID coverage")
-    confusion = {actual: {predicted: 0 for predicted in VALID_ACTIONS} for actual in VALID_ACTIONS}
+    confusion = {actual: dict.fromkeys(VALID_ACTIONS, 0) for actual in VALID_ACTIONS}
     for public_id in sorted(gold):
         confusion[gold[public_id]][predictions[public_id]] += 1
     per_class = _per_class(confusion)

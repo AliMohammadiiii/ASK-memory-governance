@@ -37,12 +37,21 @@ def _sha256(path: Path) -> str:
 def main() -> int:
     p = argparse.ArgumentParser()
     p.add_argument("--repo", default="xiaowu0162/longmemeval-cleaned")
-    p.add_argument("--dataset", choices=("s", "m"), default="s",
-                   help="Which release to download (selects the default filename).")
-    p.add_argument("--filename", default=None,
-                   help="Override the upstream filename (defaults by --dataset).")
-    p.add_argument("--out", type=Path, default=None,
-                   help="Output path (defaults to /content/longmemeval/<filename>).")
+    p.add_argument(
+        "--dataset",
+        choices=("s", "m"),
+        default="s",
+        help="Which release to download (selects the default filename).",
+    )
+    p.add_argument(
+        "--filename", default=None, help="Override the upstream filename (defaults by --dataset)."
+    )
+    p.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Output path (defaults to /content/longmemeval/<filename>).",
+    )
     args = p.parse_args()
 
     filename = args.filename or _DEFAULT_FILENAMES[args.dataset]

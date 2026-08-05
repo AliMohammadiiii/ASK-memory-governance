@@ -195,7 +195,7 @@ def state_records(scenario: dict[str, Any], texts: list[str]) -> list[dict[str, 
 
 
 def load_scenarios(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in path.open(encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
 def done_ids(path: Path) -> set[str]:
@@ -246,7 +246,7 @@ def run_scenario(adapter: ExternalAdapter, scenario: dict[str, Any], k: int) -> 
 def finalize(out: Path, scenarios_by_id: dict[str, dict[str, Any]]) -> None:
     """Emit metrics_mgp6-compatible prediction files under both mappings."""
     raw_path = out / "raw_results.jsonl"
-    rows = [json.loads(l) for l in raw_path.open(encoding="utf-8") if l.strip()]
+    rows = [json.loads(line) for line in raw_path.open(encoding="utf-8") if line.strip()]
     for mapping, fname in (
         ("KEEP", "predictions.jsonl"),
         ("ABSTAIN", "predictions_noop_abstain.jsonl"),

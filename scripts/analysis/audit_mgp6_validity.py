@@ -281,7 +281,7 @@ def expected_cost(
         "commit_averse": {"false_commit": 5.0, "missed_update": 1.0, "other": 2.0},
         "update_responsive": {"false_commit": 2.0, "missed_update": 5.0, "other": 2.0},
     }
-    totals = {name: 0.0 for name in regimes}
+    totals = dict.fromkeys(regimes, 0.0)
     for row in rows:
         gold = row["gold_action"]
         predicted = predictions.get(row["scenario_id"], {}).get("predicted_action", "INVALID")

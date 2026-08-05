@@ -43,7 +43,7 @@ def _load(path: Path) -> dict[str, Any]:
 def _bar(count: int, total: int, width: int = 24) -> str:
     if total <= 0:
         return ""
-    filled = int(round(width * count / total))
+    filled = round(width * count / total)
     return "#" * filled + "." * (width - filled)
 
 
@@ -101,14 +101,14 @@ def main() -> None:
     # Prefer stored aggregates; recompute from items as a cross-check.
     prim = Counter(r["primary_category"] for r in items)
     seco = Counter(c for r in items for c in r.get("secondary_categories", []))
-    layer = Counter(l for r in items for l in r.get("pipeline_layers", []))
+    layer = Counter(layer for row in items for layer in row.get("pipeline_layers", []))
     comb: Counter = Counter()
     for r in items:
         comb[r["primary_category"]] += 1
         for c in r.get("secondary_categories", []):
             comb[c] += 1
 
-    _print_table("Primary category (n=%d items)" % n, dict(prim), n)
+    _print_table(f"Primary category (n={n} items)", dict(prim), n)
     _print_table("Secondary category (label occurrences)", dict(seco), n)
     _print_table("Combined primary+secondary mentions", dict(comb), n)
     _print_table("Pipeline layer localization (items touching layer)", dict(layer), n)

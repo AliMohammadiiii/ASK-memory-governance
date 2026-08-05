@@ -207,7 +207,7 @@ def test_complete_run_requires_report_rows_and_matching_command(tmp_path: Path) 
 
     complete, reason = _is_complete_run(
         run_dir=run_dir,
-        cmd=cmd + ["--controller-memory-top-k", "24"],
+        cmd=[*cmd, "--controller-memory-top-k", "24"],
         expected_rows=expected_rows,
     )
     assert not complete

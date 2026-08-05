@@ -277,8 +277,8 @@ def bootstrap_accuracy_ci(
             s += arr[rng.randrange(n)]
         means.append(s / n)
     means.sort()
-    lo_idx = int(math.floor((alpha / 2) * n_resamples))
-    hi_idx = int(math.ceil((1 - alpha / 2) * n_resamples)) - 1
+    lo_idx = math.floor((alpha / 2) * n_resamples)
+    hi_idx = math.ceil((1 - alpha / 2) * n_resamples) - 1
     lo_idx = max(0, min(lo_idx, n_resamples - 1))
     hi_idx = max(0, min(hi_idx, n_resamples - 1))
     return (means[lo_idx], means[hi_idx])
@@ -741,12 +741,14 @@ def normalized_substring_grade(*, predicted: str, gold: str, competency: str) ->
     LongMemEval-published judge (eval_protocol.md §3) should remove all
     grades routed through this fallback.
     """
-    if _is_abstention_competency(competency) or _looks_like_abstention_gold(gold):
+    # Some synthetic abstention golds are positive placeholder statements. Those
+    # cases deliberately fall through to token-set matching unless the prediction
+    # itself is a refusal.
+    if (
+        _is_abstention_competency(competency) or _looks_like_abstention_gold(gold)
+    ) and _looks_like_refusal(predicted):
         # Heuristic: a correct abstention answer hedges or refuses.
-        if _looks_like_refusal(predicted):
-            return True, "[substring-fallback] abstention: prediction declines/hedges"
-        # Some abstention golds in the synthetic slice are positive statements
-        # (placeholder format); fall through to token-set match in that case.
+        return True, "[substring-fallback] abstention: prediction declines/hedges"
 
     pred_tokens = _normalize_text(predicted)
     gold_tokens = _normalize_text(gold)

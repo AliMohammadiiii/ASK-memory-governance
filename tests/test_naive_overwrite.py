@@ -49,7 +49,7 @@ def test_naive_overwrite_deletes_prior_without_lineage(tmp_path: Path) -> None:
     assert answer.extras["action_counts"]["Supersede"] == 1
 
     rows = [json.loads(line) for line in log_path.read_text(encoding="utf-8").splitlines()]
-    overwrite = [row for row in rows if row["action"] == "Supersede"][0]
+    overwrite = next(row for row in rows if row["action"] == "Supersede")
     assert overwrite["feature_c"] is None
     assert overwrite["s_rev"] is None
     assert "deleted prior" in overwrite["rationale"]
