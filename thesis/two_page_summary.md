@@ -5,7 +5,7 @@
 Persistent memory turns an agent utterance into a durable side effect. A new
 statement may be compatible with memory, may supersede a stale record, or may be
 too ambiguous to commit. This thesis represents that boundary with three
-explicit actions—KEEP, SUPERSEDE, ABSTAIN—over typed, provenance-tracked records
+explicit actions-KEEP, SUPERSEDE, ABSTAIN-over typed, provenance-tracked records
 with supersession lineage. It evaluates the write action, resulting state, and
 later answer separately.
 

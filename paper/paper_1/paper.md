@@ -88,7 +88,7 @@ algorithm.
 #### Write-time conflict resolution and lineage.
 
 Zep/Graphiti (Rasmussen et al. 2025) invalidates contradicted graph
-edges with bi-temporal timestamps rather than deleting them — the
+edges with bi-temporal timestamps rather than deleting them, the
 strongest shipped prior on supersession-with-history. TOKI (Wang 2026)
 argues, formally, that contradiction resolution *is* write-time
 concurrency control, and types the heuristic family (including an
@@ -124,7 +124,7 @@ recognition of stale beliefs and shares MGP-6 v2’s construct names
 abstention, or lineage. The Supersede environment (Patel 2026) isolates
 the answer-level “supersession gap” on LongMemEval-M and trains the
 behavior end-to-end. GateMem (Ren et al. 2026) uses the phrase “memory
-governance” for authorization across principals — a different axis from
+governance” for authorization across principals, a different axis from
 our epistemic write correctness. LongMemEval (Wu et al. 2025) and LoCoMo
 (Maharana et al. 2024) are end-to-end QA benchmarks that cannot
 attribute a failure to the write decision. MGP-6 v2 operationalizes
@@ -159,9 +159,9 @@ and TOKI for retained history; MemGuard and MemOS for typing;
 deterministic policy work including Reddy and Challaram (2026); and
 HaluMem and STALE for evaluation. We therefore make the narrower
 contribution claim that this work operationalizes and audits an explicit
-three-way policy — <span class="smallcaps">Keep</span>,
+three-way policy, <span class="smallcaps">Keep</span>,
 <span class="smallcaps">Supersede</span>, or
-<span class="smallcaps">Abstain</span> — over typed, provenance-tracked
+<span class="smallcaps">Abstain</span>, over typed, provenance-tracked
 records with supersession lineage, and evaluates that implementation at
 three separate layers: decision, stored state/lineage, and downstream
 answer. The controlled conjunction, its validity checks, and the
@@ -398,9 +398,9 @@ active-only answers), and a released corpus prints
 
 We score two families of metric (full definitions in
 Appendix <a href="#app:metrics" data-reference-type="ref"
-data-reference="app:metrics">13</a>): *decision-level* — action
+data-reference="app:metrics">13</a>): *decision-level*, action
 accuracy, per-action and macro-F1, and the action false-commit rate on
-gold-<span class="smallcaps">Abstain</span> items — and *memory-state* —
+gold-<span class="smallcaps">Abstain</span> items, and *memory-state* -
 state invalid-commit on gold-<span class="smallcaps">Abstain</span>
 items, five-condition lineage integrity on
 <span class="smallcaps">Supersede</span> items, and stale-retrieval rate
@@ -438,15 +438,15 @@ genuine multi-annotator human release is future work
 (Section <a href="#sec:limitations" data-reference-type="ref"
 data-reference="sec:limitations">8</a>). The panel and the single
 annotator may share the manual’s reading because the labelling policy is
-unambiguous by construction — a construct-validity caveat we carry
+unambiguous by construction, a construct-validity caveat we carry
 explicitly.
 
 ## Construction grounding
 
-Scenario *shapes* were informed by inspecting real corpora — LongMemEval
+Scenario *shapes* were informed by inspecting real corpora, LongMemEval
 knowledge-update items and its false-premise (`_abs`) questions, Memora
 operation chains, GateMem’s machine-readable judge structure, and named
-confidence-laundering patterns — but every released row is a newly
+confidence-laundering patterns, but every released row is a newly
 authored synthetic paraphrase; no source content is reused. This grounds
 the failure modes without importing personal data, and it is the reason
 MGP-6 v2 shares construct names (implicit conflict, premise resistance)
@@ -838,10 +838,10 @@ Annotation evidence has two components
 (Section <a href="#sec:annotation" data-reference-type="ref"
 data-reference="sec:annotation">4.6</a>), reported separately and never
 conflated: (a) **one independent human annotator** over the $`90`$-item
-test split — raw agreement $`0.9889`$ ($`\text{CI}\,[0.9667,1.0]`$),
+test split, raw agreement $`0.9889`$ ($`\text{CI}\,[0.9667,1.0]`$),
 Cohen’s $`\kappa = 0.98146`$ ($`\text{CI}\,[0.93997,1.0]`$), macro-F1
 $`0.9913`$, one disagreement (`MGP6V2-T3-TEST-016`); and (b) a
-**four-model audit panel** over the same items — Fleiss
+**four-model audit panel** over the same items, Fleiss
 $`\kappa = 0.9815`$, majority vote matching gold on all $`90`$ ($`88`$
 unanimous). The $`180`$-row human review sheet is unfilled; a
 multi-annotator human release is future work.
