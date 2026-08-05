@@ -18,6 +18,7 @@ from collections import deque
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from ask.extraction import Extractor
 from ask.extraction.schema import ExtractionOutput
@@ -50,7 +51,7 @@ def test_missing_flag_with_empty_items_infers_true() -> None:
 
 def test_explicit_inconsistent_flag_still_rejected() -> None:
     """Tolerance is only for the *missing* field; explicit contradiction stays strict."""
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         ExtractionOutput.model_validate({"items": [], "no_extractable_content": False})
 
 
