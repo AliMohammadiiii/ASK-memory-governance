@@ -2,6 +2,7 @@ PYTHON ?= python3
 PYTEST ?= $(PYTHON) -m pytest
 RUFF ?= $(PYTHON) -m ruff
 MYPY ?= $(PYTHON) -m mypy
+MAINTAINED_PYTHON := src tests scripts benchmarks deploy/download_longmemeval_s.py thesis/latex/tools
 
 .DEFAULT_GOAL := help
 
@@ -52,18 +53,17 @@ test-fast:
 	$(PYTEST) -q -m 'not slow and not network'
 
 lint:
-	$(RUFF) check src tests scripts benchmarks
+	$(RUFF) check $(MAINTAINED_PYTHON)
 
 format:
-	$(RUFF) format src tests scripts benchmarks
-	$(RUFF) check --fix src tests scripts benchmarks
+	$(RUFF) format $(MAINTAINED_PYTHON)
+	$(RUFF) check --fix $(MAINTAINED_PYTHON)
 
 format-check:
-	$(RUFF) format --check src tests scripts benchmarks
+	$(RUFF) format --check $(MAINTAINED_PYTHON)
 
 typecheck:
-	$(MYPY) --follow-imports=skip src/ask/controller src/ask/memory \
-		src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py
+	$(MYPY) src/ask
 
 build:
 	$(PYTHON) -m build
@@ -73,7 +73,7 @@ shell-syntax:
 	git ls-files -z '*.sh' | xargs -0 bash -n
 
 compile:
-	$(PYTHON) -m compileall -q src scripts benchmarks tests
+	$(PYTHON) -m compileall -q $(MAINTAINED_PYTHON)
 
 smoke:
 	$(PYTHON) scripts/run_mgp6.py --systems no_memory --limit 1 --dry-run

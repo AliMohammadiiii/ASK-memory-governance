@@ -1,0 +1,28 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: Ruff lint maintained Python
+        entry: scripts/precommit_python.sh -m ruff check
+        language: system
+        types: [python]
+        files: >-
+          ^(src|tests|scripts|benchmarks)/|^deploy/download_longmemeval_s\.py$|^thesis/latex/tools/
+      - id: ruff-format-check
+        name: Ruff format maintained Python
+        entry: scripts/precommit_python.sh -m ruff format --check
+        language: system
+        types: [python]
+        files: >-
+          ^(src|tests|scripts|benchmarks)/|^deploy/download_longmemeval_s\.py$|^thesis/latex/tools/
+      - id: shell-syntax
+        name: Bash syntax
+        entry: bash -n
+        language: system
+        types: [shell]
+      - id: repository-contract
+        name: Repository and public-boundary contract
+        entry: scripts/precommit_python.sh scripts/validate_repository.py
+        language: system
+        pass_filenames: false
+        always_run: true
