@@ -66,6 +66,9 @@ help:
 	@echo "pre-commit  Run all pinned local hooks"
 
 setup:
+	@if git rev-parse --git-dir >/dev/null 2>&1; then \
+		git submodule update --init --recursive; \
+	fi
 	@if [ ! -x .venv/bin/python ]; then \
 		$(PYTHON) -m venv .venv; \
 	fi

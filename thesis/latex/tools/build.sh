@@ -5,6 +5,13 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 THESIS_DIR=$(cd -- "$SCRIPT_DIR/../.." && pwd)
 REPO_ROOT=$(cd -- "$THESIS_DIR/.." && pwd)
 PYTHON_BIN=${PYTHON:-python3}
+TEMPLATE_CLASS="$THESIS_DIR/template/tex/tehran-thesis.cls"
+
+if [[ ! -f "$TEMPLATE_CLASS" ]]; then
+  echo "missing pinned thesis template: $TEMPLATE_CLASS" >&2
+  echo "run 'make setup' to initialize the thesis/template submodule" >&2
+  exit 1
+fi
 
 if [[ "${1:-}" == "--refresh-sources" ]]; then
   cd "$REPO_ROOT"
