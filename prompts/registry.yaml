@@ -1,0 +1,92 @@
+schema_version: prompt-registry-1.0
+prompts:
+  - id: extraction-v0
+    version: "0"
+    purpose: Initial memory extraction experiment
+    status: historical
+    path: prompts/extraction_v0.j2
+    sha256: 4bfd3635169b58b0343b6958cf3f2f63857fc26d9988602e6a56d598dc755fbb
+    related_experiments: [M2W5]
+    related_results: [docs/history/research_notes/m2w5_iteration_log.md]
+    supersedes: null
+    superseded_by: extraction-v1
+  - id: extraction-v1
+    version: "1"
+    purpose: Revised memory extraction experiment
+    status: historical
+    path: prompts/extraction_v1.j2
+    sha256: 5e23f0ccaf78cf19b66054f8a3abf05f22583aec37e638177ab9817fd60283ea
+    related_experiments: [M2W5]
+    related_results: [docs/history/research_notes/m2w5_iteration_log.md]
+    supersedes: extraction-v0
+    superseded_by: extraction-v2
+  - id: extraction-v2
+    version: "2"
+    purpose: Revised memory extraction experiment
+    status: historical
+    path: prompts/extraction_v2.j2
+    sha256: 9e6c549a74a5a58de869f7cb33308f9268a0db62139e59cb965d55f9ea5b1c9a
+    related_experiments: [M2W5]
+    related_results: [docs/history/research_notes/m2w5_iteration_log.md]
+    supersedes: extraction-v1
+    superseded_by: extraction-v3
+  - id: extraction-v3
+    version: "3"
+    purpose: Revised memory extraction experiment
+    status: historical
+    path: prompts/extraction_v3.j2
+    sha256: e48795fd11d1b146714b5ec84d655ec55cc3e18aa89dba43ff13cd5ce6c74078
+    related_experiments: [M2W5]
+    related_results: []
+    supersedes: extraction-v2
+    superseded_by: extraction-final
+  - id: extraction-final
+    version: final-1
+    purpose: First finalized extraction prompt
+    status: historical
+    path: prompts/extraction_v_final.j2
+    sha256: 148f6f992e6ec7cf9becb733cf72b363f4a061f8b88f0b70180e084eff96513d
+    related_experiments: [M2W5]
+    related_results: [docs/history/research_notes/m2w5_summary.md]
+    supersedes: extraction-v3
+    superseded_by: extraction-final2
+  - id: extraction-final2
+    version: final-2
+    purpose: Extraction prompt used by the MGP-6 runner
+    status: active
+    path: prompts/extraction_v_final2.j2
+    sha256: 52ed8e5d0202727cbcd2088b3f1d367e6b880af5ffa7ecd33618a88483fd8d3c
+    related_experiments: [MGP-6]
+    related_results: [reports/mgp6_v2/main_report.json]
+    supersedes: extraction-final
+    superseded_by: null
+  - id: extraction-final3
+    version: final-3
+    purpose: Extraction prompt used by the LongMemEval baseline runner
+    status: active
+    path: prompts/extraction_v_final3.j2
+    sha256: a85b00dda30fd65e42ecf6ebfec3827bf57ccb8d1f5a5675e7e1dcf49baa9c6b
+    related_experiments: [LongMemEval]
+    related_results: [artifacts/longmemeval]
+    supersedes: null
+    superseded_by: null
+  - id: relation-stage1-v0
+    version: "0"
+    purpose: First-stage relation classification
+    status: active
+    path: prompts/relation_stage1_v0.j2
+    sha256: 547dc2f8f33a5d5a994a65f75b40a686d7f8762ffa03e8e729ce13fd5055e95e
+    related_experiments: [MGP-6, LongMemEval]
+    related_results: [reports/mgp6_v2/main_report.json]
+    supersedes: null
+    superseded_by: null
+  - id: relation-stage2-v0
+    version: "0"
+    purpose: Second-stage relation classification
+    status: active
+    path: prompts/relation_stage2_v0.j2
+    sha256: 547786a6a40ee8a8ef8b1d5e97e4153b4bd2830afdc2b7e567176837d4f6b56b
+    related_experiments: [MGP-6, LongMemEval]
+    related_results: [reports/mgp6_v2/main_report.json]
+    supersedes: null
+    superseded_by: null
