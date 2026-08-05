@@ -15,6 +15,7 @@ from typing import Any
 _THIS = Path(__file__).resolve()
 sys.path.insert(0, str(_THIS.parents[1] / "src"))
 
+from ask.endpoints import validate_http_endpoint  # noqa: E402
 from ask.eval.m4w15 import (  # noqa: E402
     assemble_threshold_report,
     build_main_table,
@@ -43,7 +44,8 @@ T4_MODELS = {
 
 
 def _installed_ollama_models(host: str) -> set[str]:
-    with urllib.request.urlopen(f"{host.rstrip('/')}/api/tags", timeout=30) as resp:
+    endpoint = validate_http_endpoint(host).rstrip("/")
+    with urllib.request.urlopen(f"{endpoint}/api/tags", timeout=30) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
     return {str(model.get("name") or model.get("model")) for model in payload.get("models", [])}
 

@@ -28,18 +28,30 @@ from graphiti_core.cross_encoder.client import CrossEncoderClient
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
+from common import (  # noqa: E402
+    ALLOW_INSECURE_HTTP,
+    ExternalAdapter,
+    WriteObservation,
+    run_external,
+    validate_http_endpoint,
+)
 
 MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
 
-BASE_URL = os.environ.get(
-    "MGP6_BASE_URL",
-    "https://openrouter.ai/api/v1",
+BASE_URL = validate_http_endpoint(
+    os.environ.get(
+        "MGP6_BASE_URL",
+        "https://openrouter.ai/api/v1",
+    ),
+    allow_insecure_http=ALLOW_INSECURE_HTTP,
 )
 
-EMBED_URL = os.environ.get(
-    "GRAPHITI_EMBED_URL",
-    os.environ.get("MGP6_EMBED_BASE_URL", "http://localhost:8100/v1"),
+EMBED_URL = validate_http_endpoint(
+    os.environ.get(
+        "GRAPHITI_EMBED_URL",
+        os.environ.get("MGP6_EMBED_BASE_URL", "http://localhost:8100/v1"),
+    ),
+    allow_insecure_http=ALLOW_INSECURE_HTTP,
 )
 
 EMBED_MODEL = os.environ.get(

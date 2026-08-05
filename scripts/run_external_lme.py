@@ -50,6 +50,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from ask.baselines.base import BaselineAnswer  # noqa: E402
 from ask.data.longmemeval import load_longmemeval_s  # noqa: E402
+from ask.endpoints import validate_http_endpoint  # noqa: E402
 from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
 from ask.eval.longmemeval import (  # noqa: E402
     GradeResult,
@@ -64,7 +65,10 @@ sys.path.insert(0, str(MGP6_DIR / "external"))
 sys.path.insert(0, str(MGP6_DIR))
 
 ANSWER_MODEL = os.environ.get("LME_EXT_ANSWER_MODEL", "qwen/qwen3.5-9b")
-BASE_URL = os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+BASE_URL = validate_http_endpoint(
+    os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1"),
+    allow_insecure_http=os.environ.get("MGP6_ALLOW_INSECURE_HTTP") == "1",
+).rstrip("/")
 API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
 ANSWER_SYSTEM = """You are a helpful assistant answering a question about a \

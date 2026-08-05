@@ -53,11 +53,18 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE.parents[2] / "src"))
 
 from systems.extractor import read_evidence  # noqa: E402
 
+from ask.endpoints import validate_http_endpoint  # noqa: E402
+
 ANSWER_MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
-BASE_URL = os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+ALLOW_INSECURE_HTTP = os.environ.get("MGP6_ALLOW_INSECURE_HTTP") == "1"
+BASE_URL = validate_http_endpoint(
+    os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1"),
+    allow_insecure_http=ALLOW_INSECURE_HTTP,
+).rstrip("/")
 API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
 # Same neutral answer contract as run_llm_controller.py, for comparability.
