@@ -265,7 +265,9 @@ def _normalize_cleaned_record(raw: dict, line_no: int) -> LongMemEvalSession:
         raise ValueError(f"line {line_no}: malformed cleaned LongMemEval record ({exc})") from exc
 
     corpus_sessions = []
-    for idx, (support_id, turns_raw) in enumerate(zip(haystack_ids, haystack_sessions)):
+    for idx, (support_id, turns_raw) in enumerate(
+        zip(haystack_ids, haystack_sessions, strict=True)
+    ):
         default_timestamp = str(haystack_dates[idx]) if idx < len(haystack_dates) else None
         turns = tuple(
             _normalize_turn(turn, default_timestamp=default_timestamp) for turn in turns_raw
@@ -345,7 +347,7 @@ def _iter_json_array(path: Path) -> Iterator[LongMemEvalSession]:
     ``ijson`` is unavailable.
     """
     try:
-        import ijson  # type: ignore
+        import ijson  # type: ignore[import-not-found]
     except ModuleNotFoundError:
         size_mb = path.stat().st_size / (1024 * 1024)
         if size_mb > 64:
@@ -359,7 +361,7 @@ def _iter_json_array(path: Path) -> Iterator[LongMemEvalSession]:
         with path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)
         if not isinstance(data, list):
-            raise ValueError("expected a top-level JSON array or JSONL")
+            raise ValueError("expected a top-level JSON array or JSONL") from None
         for i, raw in enumerate(data, start=1):
             yield _normalize_record(raw, line_no=i)
         return
@@ -485,7 +487,7 @@ def sample_slice(
     del rng  # not used after this; the per-bucket RNG above is what matters
 
     # Apply floors (capped by bucket size).
-    quotas: dict[str, int] = {k: 0 for k in buckets}
+    quotas: dict[str, int] = dict.fromkeys(buckets, 0)
     remaining = n
     for k, floor in floors.items():
         if k not in buckets:

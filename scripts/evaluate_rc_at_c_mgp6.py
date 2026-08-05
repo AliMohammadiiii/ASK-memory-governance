@@ -14,6 +14,7 @@ import struct
 import sys
 import zlib
 from datetime import UTC, datetime
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
@@ -163,7 +164,7 @@ def _write_png(path: Path, points: list[tuple[float, float, str]]) -> None:
     line(margin_left, height - margin_bottom, width - margin_right, height - margin_bottom, axis)
 
     coords = [(sx(x), sy(y)) for x, y, _label in points]
-    for (x0, y0), (x1, y1) in zip(coords, coords[1:]):
+    for (x0, y0), (x1, y1) in pairwise(coords):
         line(x0, y0, x1, y1, curve)
     for x, y in coords:
         circle(x, y, 5, curve)

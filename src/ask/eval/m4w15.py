@@ -204,7 +204,7 @@ def plot_rc_curve(
     png_path.parent.mkdir(parents=True, exist_ok=True)
     fig, ax = plt.subplots(figsize=(6.2, 4.2))
     ax.plot(xs, ys, marker="o", linewidth=1.8)
-    for x, y, theta in zip(xs, ys, labels):
+    for x, y, theta in zip(xs, ys, labels, strict=True):
         if theta in {0.0, 0.5, 1.0}:
             ax.annotate(
                 f"{theta:.2f}", (x, y), textcoords="offset points", xytext=(4, 5), fontsize=8

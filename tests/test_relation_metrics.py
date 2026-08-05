@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import pytest
+
 from ask.classifier.metrics import confusion_counts, per_label_metrics
 
 
@@ -20,3 +22,13 @@ def test_per_label_metrics() -> None:
     assert rows["support"].recall == 0.5
     assert rows["support"].f1 == 2 / 3
     assert rows["contradict"].f1 is None
+
+
+def test_confusion_counts_rejects_unpaired_inputs() -> None:
+    with pytest.raises(ValueError, match="shorter"):
+        confusion_counts(["support", "contradict"], ["support"])
+
+
+def test_per_label_metrics_rejects_unpaired_inputs() -> None:
+    with pytest.raises(ValueError, match="shorter"):
+        per_label_metrics(["support", "contradict"], ["support"])

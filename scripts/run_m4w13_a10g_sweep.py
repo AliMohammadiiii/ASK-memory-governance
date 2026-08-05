@@ -344,7 +344,7 @@ def _stage_summary(
         controller_validation = next(
             (
                 validation
-                for validation, system in zip(system_validations, systems)
+                for validation, system in zip(system_validations, systems, strict=True)
                 if system == "controller"
             ),
             system_validations[0] if system_validations else None,

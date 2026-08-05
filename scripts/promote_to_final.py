@@ -68,7 +68,7 @@ def _predictions(run_root: Path, alias: str) -> dict[str, str]:
 
 
 def _paired_bootstrap(controller_ok: list[int], b4_ok: list[int], n_boot: int, seed: int):
-    diff = [c - b for c, b in zip(controller_ok, b4_ok)]
+    diff = [c - b for c, b in zip(controller_ok, b4_ok, strict=True)]
     n = len(diff)
     rng = random.Random(seed)
     boots = []

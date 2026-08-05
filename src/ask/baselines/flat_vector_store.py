@@ -195,7 +195,7 @@ class FlatVectorStore:
         """
         try:
             import faiss  # type: ignore[import-not-found]
-        except ImportError:
+        except ImportError as exc:
             # No faiss in this environment (e.g. a fresh Colab kernel). Fall
             # back to an exact numpy inner-product index, which is equivalent
             # to IndexFlatIP at this scale. Only the default "Flat" factory can
@@ -205,7 +205,7 @@ class FlatVectorStore:
                 raise RuntimeError(
                     f"index_factory={self.index_factory!r} requires faiss-cpu; "
                     "install with: pip install 'faiss-cpu>=1.8,<2'"
-                )
+                ) from exc
             return _NumpyFlatIPIndex(dim)
         # Use the dim we've recorded for this store (set in __post_init__
         # and re-affirmed on each `clear()`). Reading from the embedder
@@ -290,7 +290,7 @@ class FlatVectorStore:
         # I = row indices. Already sorted descending by score.
         scores, idxs = self._index.search(q, eff_k)
         out: list[RetrievedItem] = []
-        for rank, (score, idx) in enumerate(zip(scores[0], idxs[0])):
+        for rank, (score, idx) in enumerate(zip(scores[0], idxs[0], strict=True)):
             if int(idx) < 0:
                 # FAISS returns -1 for "no result" slots; possible at
                 # eff_k > ntotal which we guard against, but defensive.

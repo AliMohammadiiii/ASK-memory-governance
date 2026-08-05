@@ -48,7 +48,7 @@ from typing import Any
 # Action canonicalisation (mirrors mgp6_v2/metrics_mgp6.py)
 # ---------------------------------------------------------------------------
 ACTIONS = ("KEEP", "SUPERSEDE", "ABSTAIN")
-PREDICTION_OUTCOMES = ACTIONS + ("INVALID_COMMIT", "INVALID")
+PREDICTION_OUTCOMES = (*ACTIONS, "INVALID_COMMIT", "INVALID")
 
 
 def canonical_action(raw: Any) -> str:
@@ -59,7 +59,7 @@ def canonical_action(raw: Any) -> str:
 def load_gold(path: Path) -> dict[str, dict[str, str]]:
     gold: dict[str, dict[str, str]] = {}
     with path.open(encoding="utf-8") as fh:
-        for ln, line in enumerate(fh, 1):
+        for _line_no, line in enumerate(fh, 1):
             if not line.strip():
                 continue
             row = json.loads(line)
@@ -76,7 +76,7 @@ def load_predictions(path: Path) -> dict[str, str]:
     """scenario_id -> canonical predicted_action."""
     preds: dict[str, str] = {}
     with path.open(encoding="utf-8") as fh:
-        for ln, line in enumerate(fh, 1):
+        for _line_no, line in enumerate(fh, 1):
             if not line.strip():
                 continue
             row = json.loads(line)
@@ -315,7 +315,7 @@ def main(argv: list[str] | None = None) -> int:
     results = [compare(a, preds[a], b, preds[b], gold) for a, b in family]
     holm_adj = holm([r["mcnemar_exact_p"] for r in results])
 
-    for r, padj in zip(results, holm_adj):
+    for r, padj in zip(results, holm_adj, strict=True):
         r["holm_adjusted_p"] = padj
 
     for i, r in enumerate(results, 1):
