@@ -9,6 +9,7 @@ MAINTAINED_PYTHON := src tests scripts benchmarks deploy/download_longmemeval_s.
 .PHONY: help setup check release-check test test-fast lint format format-check \
 	typecheck build shell-syntax compile smoke validate-data reproduce-mgp6 \
 	reproduce-longmemeval figures paper paper-audit thesis clean repo-check \
+	manuscript-check thesis-template \
 	claims verify-claims inventory verify-manifest readiness validate-traces \
 	validate-public-data reproduce-public build-paper-tmlr build-paper-jmlr \
 	anonymous-scan release-audit ci clean-reproduction validate-experiments \
@@ -37,6 +38,8 @@ help:
 	@echo "confirmation-freeze  Freeze only after independent human/legal approval"
 	@echo "advisor-check  Run the offline, privacy-safe supervisor review gate"
 	@echo "advisor-package  Build a sanitized local supervisor review snapshot"
+	@echo "paper           Compile the complete canonical paper"
+	@echo "thesis          Compile the complete canonical thesis"
 
 setup:
 	git submodule update --init --recursive
@@ -45,7 +48,7 @@ setup:
 
 check: repo-check lint format-check typecheck compile test-fast shell-syntax
 
-release-check: check test validate-data build paper-audit
+release-check: check test validate-data build paper-audit manuscript-check
 
 test:
 	$(PYTEST) -q
@@ -91,15 +94,21 @@ reproduce-longmemeval:
 figures:
 	@echo 'Figure sources are under docs/figures; regenerate from machine-readable reports before submission.'
 
-paper:
-	@echo 'Paper sources are under paper/. Compile after selecting the official venue template.'
+manuscript-check:
+	$(PYTHON) scripts/validation/build_manuscripts.py --check
+
+paper: manuscript-check
+	$(PYTHON) scripts/validation/build_manuscripts.py --kind paper
 
 paper-audit:
 	$(PYTHON) scripts/analysis/audit_mgp6_validity.py
 	$(PYTHON) scripts/release/audit_bibliography.py
 
-thesis:
-	@echo 'Thesis source is under thesis/. Institutional metadata remains explicit placeholders.'
+thesis-template:
+	git submodule update --init --recursive thesis/template
+
+thesis: manuscript-check thesis-template
+	$(PYTHON) scripts/validation/build_manuscripts.py --kind thesis
 
 repo-check:
 	$(PYTHON) scripts/validate_repository.py
