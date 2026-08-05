@@ -80,6 +80,25 @@ def test_advisor_candidates_can_include_untracked_files(
     assert "--exclude-standard" in captured
 
 
+def test_advisor_cleaner_rejects_paths_outside_generated_targets(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.syspath_prepend(str(ROOT / "scripts/release"))
+    advisor = _load_module(
+        "build_advisor_handoff_cleaner", "scripts/release/build_advisor_handoff.py"
+    )
+    with pytest.raises(SystemExit, match="refusing to remove"):
+        advisor.safely_remove_generated(tmp_path)
+
+
+def test_embedding_server_defaults_to_local_and_does_not_trust_remote_code() -> None:
+    server = _load_module("serve_embeddings_defaults", "scripts/serve_embeddings.py")
+    args = server.build_parser().parse_args([])
+    assert args.host == "127.0.0.1"
+    assert args.revision is None
+    assert args.trust_remote_code is False
+
+
 def test_public_release_excludes_private_and_local_path_records() -> None:
     release = _load_module(
         "build_final_release_boundaries", "scripts/release/build_final_release.py"

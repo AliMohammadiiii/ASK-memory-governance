@@ -46,7 +46,7 @@ Reproduction anchors: statistics in `reports/STATISTICAL_ANALYSIS.md` and
 | C3 | The historical 77.2% (139/180) LongMemEval construction. | failure_replay_only (not a result) | ledger; failure-replay artifact; Modal top-up | "A selection-biased carry-forward construction of 77.2% that is contradicted by the non-empty top-up (96/154 raw observed; full-180 bound 53.3%-67.8%)." It may appear only to explain invalid evidence. |
 | C4 | The v7 controller is diagnostic-only (110/180, 61.1%), provider-contaminated (316 HTTP-402, 388 empty fallbacks). | supported | ledger (v7/controller); `docs/audit/CONTROLLERRUN_FAILURE_LEDGER.md` F1 | "The v7 run is diagnostic-only owing to provider contamination." |
 | C5 | On the contaminated v7 slice, naive-overwrite (63.3%) outperforms the controller (61.1%). | supported | ledger (v7 b4 vs controller); source-of-truth §1 | "Under the contaminated v7 configuration the controller did not beat naive overwrite; no comparative LongMemEval claim is currently supported." |
-| C6 | The governance controller improves long-horizon end-task accuracy over baselines. | future_work | — (no clean run exists) | Do not claim. Requires the frozen homogeneous full-180 rerun (`FINAL_EVALUATION_PROTOCOL.md`). |
+| C6 | The governance controller improves long-horizon end-task accuracy over baselines. | future_work |, (no clean run exists) | Do not claim. Requires the frozen homogeneous full-180 rerun (`FINAL_EVALUATION_PROTOCOL.md`). |
 
 ## D. Framing / method claims
 
@@ -61,10 +61,10 @@ Reproduction anchors: statistics in `reports/STATISTICAL_ANALYSIS.md` and
 
 ## Phrasing rules (must-follow)
 
-1. Never write "MGP-6 benchmark" — always "author-designed diagnostic slice".
-2. Never write "multi-annotator / human inter-annotator agreement" — "one
+1. Never write "MGP-6 benchmark", always "author-designed diagnostic slice".
+2. Never write "multi-annotator / human inter-annotator agreement", "one
    independent annotator plus a four-model audit panel".
-3. Never write "the rule controller outperforms the LLM controller" — the
+3. Never write "the rule controller outperforms the LLM controller", the
    difference is non-significant (Holm p 0.29).
 4. The 77.2% appears only as a selection-biased `failure_replay_only` construction with judge
    composition and the pending-rerun caveat; never as an abstract headline.

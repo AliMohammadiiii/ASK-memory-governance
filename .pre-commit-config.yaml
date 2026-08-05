@@ -1,0 +1,27 @@
+minimum_pre_commit_version: "4.6.0"
+exclude: '^(artifacts/|docs/history/|third_party/|thesis/template/|research/MASTER_EXECUTION_PROMPT\.md|claims/source_inventory\.json)'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-case-conflict
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: '^(benchmarks/mgp6/(annotation_kit_test|annotations)/|claims/|configs/|constraints/|docs/figures/|experiments/|paper/.*/tables/|prompts/.*\.j2$|presentation/.*\.inspect\.ndjson$|reports/tables/)'
+      - id: mixed-line-ending
+        args: [--fix=lf]
+        exclude: '^(benchmarks/mgp6/(annotation_kit_test|annotations)/|claims/|configs/|constraints/|docs/figures/|experiments/|paper/.*/tables/|prompts/.*\.j2$|presentation/.*\.inspect\.ndjson$|reports/tables/)'
+      - id: trailing-whitespace
+        exclude: '^(benchmarks/mgp6/(annotation_kit_test|annotations)/|claims/|configs/|constraints/|docs/figures/|experiments/|paper/.*/tables/|prompts/.*\.j2$|presentation/.*\.inspect\.ndjson$|reports/tables/)'
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format

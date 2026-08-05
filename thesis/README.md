@@ -4,16 +4,16 @@ This directory contains an **English review draft**, not an institution-ready su
 
 ## Deliverables
 
-- `MASTERS_THESIS_ASK_MGP6.md` — complete English master draft.
-- `two_page_summary.md` — compact research summary.
-- `contribution_summary.md` — defensible contribution and non-claim boundary.
-- `defense_questions.md` — oral-defense preparation.
-- `claims_evidence_matrix.md` — thesis-scoped claim gate.
-- `THESIS_NUMBER_AUDIT.md` — ledger v1.1 number audit.
-- `frontmatter/` — Persian abstract/summary/terminology and administrative placeholders.
-- `references.bib` and `references/README.md` — consolidated bibliography and audit notes.
-- `compiled/ASK_Masters_Thesis_English_Review_Draft.docx` — editable review copy.
-- `compiled/ASK_Masters_Thesis_English_Review_Draft.pdf` — rendered review copy.
+- `MASTERS_THESIS_ASK_MGP6.md`, complete English master draft.
+- `two_page_summary.md`, compact research summary.
+- `contribution_summary.md`, defensible contribution and non-claim boundary.
+- `defense_questions.md`, oral-defense preparation.
+- `claims_evidence_matrix.md`, thesis-scoped claim gate.
+- `THESIS_NUMBER_AUDIT.md`, ledger v1.1 number audit.
+- `frontmatter/`, Persian abstract/summary/terminology and administrative field status.
+- `references.bib` and `references/README.md`, consolidated bibliography and audit notes.
+- `compiled/ASK_Masters_Thesis_English_Review_Draft.docx`, editable review copy.
+- `compiled/ASK_Masters_Thesis_English_Review_Draft.pdf`, rendered review copy.
 
 ## Evidence status
 
@@ -21,7 +21,7 @@ MGP-6 v2 policy results are diagnostic: conflict type alone reaches 1.000 held-o
 
 MGP-6 v4.3 is a controlled synthetic successor release with 900 items,
 component-held-out train/dev/hidden splits, public/private separation, and
-owner-attested dual-human completion. Its single frozen final configuration
+owner-attested dual-human completion. Its single recorded final configuration
 completed the 540-item hidden procedure with aggregate accuracy 0.8481 and
 macro-F1 0.8479; component-bootstrap intervals and the prediction hash are
 reported in the thesis. This result is limited to the controlled synthetic

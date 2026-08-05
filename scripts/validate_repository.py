@@ -55,9 +55,7 @@ FORBIDDEN_DUPLICATES = (
     "benchmarks/mgp6/annotations/model_or_mixed/mgp6_v2(1).jsonl",
     "benchmarks/mgp6/annotations/model_or_mixed/independent_annotations_test.csv",
 )
-HISTORICAL_ARTIFACT_ALLOWLIST = {
-    "paper/paper_1/sections/08_downstream_analysis.tex.bak_v11",
-}
+HISTORICAL_ARTIFACT_ALLOWLIST: set[str] = set()
 FALLBACK_EXCLUDED_PARTS = {
     ".git",
     ".mypy_cache",
@@ -118,7 +116,7 @@ def project_versions(root: Path) -> dict[str, str | None]:
     citation = (root / "CITATION.cff").read_text(encoding="utf-8")
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     citation_match = re.search(r"(?m)^version:\s*[\"']?([^\"'\s]+)", citation)
-    changelog_match = re.search(r"(?m)^##\s+(\d+\.\d+\.\d+)\s+—", changelog)
+    changelog_match = re.search(r"(?m)^##\s+(\d+\.\d+\.\d+)\s*[,\-]\s+", changelog)
     return {
         "pyproject.toml": str(pyproject["project"]["version"]),
         "CITATION.cff": citation_match.group(1) if citation_match else None,
@@ -131,7 +129,9 @@ def project_release_dates(root: Path) -> dict[str, str | None]:
     citation = (root / "CITATION.cff").read_text(encoding="utf-8")
     changelog = (root / "CHANGELOG.md").read_text(encoding="utf-8")
     citation_match = re.search(r"(?m)^date-released:\s*(\d{4}-\d{2}-\d{2})\s*$", citation)
-    changelog_match = re.search(r"(?m)^##\s+\d+\.\d+\.\d+\s+—\s+(\d{4}-\d{2}-\d{2})\s*$", changelog)
+    changelog_match = re.search(
+        r"(?m)^##\s+\d+\.\d+\.\d+\s*[,\-]\s+(\d{4}-\d{2}-\d{2})\s*$", changelog
+    )
     return {
         "CITATION.cff": citation_match.group(1) if citation_match else None,
         "CHANGELOG.md": changelog_match.group(1) if changelog_match else None,

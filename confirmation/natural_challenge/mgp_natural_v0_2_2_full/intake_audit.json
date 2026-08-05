@@ -1,0 +1,53 @@
+{
+  "archive_safety": {
+    "annotation_bundle_zip_integrity_checked": true,
+    "duplicate_member_names_rejected": true,
+    "encrypted_members_rejected": true,
+    "symbolic_link_members_rejected": true,
+    "unsafe_paths_rejected": true
+  },
+  "artifact_id": "mgp-natural-v0.2.2-full-source-intake",
+  "claim_boundary": {
+    "annotations_embedded": false,
+    "conversation_text_embedded": false,
+    "mixed_track_headline_allowed": false,
+    "natural_gold_available": false,
+    "publication_eligible": false,
+    "raw_sources_embedded": false,
+    "source_identifiers_embedded": false
+  },
+  "input_file_count": 18,
+  "input_layout": "PRIVATE_DERIVED_WORKSPACE",
+  "input_root_recorded_as": "$MGP_NATURAL_FULL_INPUTS",
+  "nonsecret_input_set_sha256": "5d07bbcdf105404a4669c3ec31710a9d156d312aaa1f84ed995869a04c02f112",
+  "private_workflow": {
+    "annotation_mapping_count_not_reported": true,
+    "privacy_finding_row_count": 4706,
+    "private_secret_material_present_not_hashed": true,
+    "redaction_log_row_count": 485
+  },
+  "raw_source_archive_integrity_verified": false,
+  "required_gates": {
+    "independent_annotation_and_adjudication": "PENDING_HUMAN_DECISION",
+    "manual_privacy_review": "PENDING_HUMAN_DECISION",
+    "protocol_freeze_before_annotation": "PENDING_HUMAN_DECISION",
+    "raw_source_archive_reacquisition_and_integrity_review": "PENDING_MACHINE_REVIEW",
+    "rights_and_redistribution_review": "PENDING_HUMAN_DECISION",
+    "track_specific_continuity_splits": "PENDING_MACHINE_AND_HUMAN_REVIEW"
+  },
+  "schema_version": "ask-mgpn-full-intake/v1",
+  "source_tracks": {
+    "studychat": {
+      "kind": "natural_human_llm_educational_interaction",
+      "private_row_count": 16851,
+      "private_split_row_count": 431,
+      "redacted_constructor_item_count": 431
+    },
+    "wikiconv": {
+      "kind": "natural_human_human_editorial_conversation",
+      "private_row_count": 54,
+      "redacted_constructor_item_count": 54
+    }
+  },
+  "status": "QUARANTINED_PRIVATE_DERIVED_WORKSPACE"
+}

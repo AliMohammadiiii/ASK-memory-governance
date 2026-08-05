@@ -11,7 +11,12 @@ mapping) and **answer** metrics; artifact/lineage reported as **N/A**.
 | Letta (MemGPT) | Packer et al. 2023 (arXiv:2310.08560) | `run_letta.py` | Docker letta server (BETA) |
 | MemOS | Li et al. 2025 (arXiv:2507.03724) | `run_memos.py` | key via OPENAI_* env (BETA) |
 
-Install: `pip install -r external/requirements-external.txt`
+Install these research-only adapters in a dedicated environment as documented
+in `external/requirements-external.txt` and the exact
+`../../../constraints/external-baselines-py312.txt` lock. Do not combine that environment with
+the maintained `.[ml]` extra because MemoryOS requires an older Transformers
+major version. Use only recorded model sources, provide no production secrets,
+and treat the environment as untrusted after loading external checkpoints.
 
 Every runner: resumable, isolated store per scenario, same answerer backbone
 (`MGP6_MODEL`, default qwen/qwen3.5-9b) except Letta (native agent answers,
@@ -44,7 +49,7 @@ adapters with the SAME judge/report machinery as the internal systems.
 Framework verified end-to-end with a stub adapter against
 `metrics_mgp6.py` (schema-compatible); Mem0/Graphiti adapters are built
 against pinned wheels (2.0.11 / 0.29.2); Letta/MemOS are BETA (SDK surfaces
-move quickly — check the smoke run before launching the corpus).
+move quickly, check the smoke run before launching the corpus).
 
 ## MGP-6 v4.3 public-development integration
 

@@ -3,6 +3,7 @@
 # (config flip; harness is model-agnostic).
 
 model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
+model_revision: null       # set to an immutable commit hash for recorded runs
 fallback_model_id: "Qwen/Qwen2.5-7B-Instruct"
 
 dtype: "bfloat16"          # bfloat16 (A100) | float16 (V100) | float32 (CPU/debug)

@@ -21,4 +21,3 @@ The reference engine rejects duplicate IDs, dangling predecessors, lineage
 cycles, multiple active records in single-slot mode, action/trace divergence,
 and digest mismatches. Its scope is auditability and transition correctness,
 not a guarantee that a controller chose the semantically correct action.
-

@@ -6,11 +6,11 @@
 
 ## Pacing
 
-- Slides 1–4: 4 minutes — establish the write-governance problem and the narrow research gap.
-- Slides 5–10: 7 minutes — define the actions, architecture, controller, lineage, diagnostic, and protocol.
-- Slides 11–15: 7 minutes — completed MGP-6 results, ablations, adapters, and annotation evidence.
-- Slides 16–19: 5 minutes — negative downstream evidence, SSP analysis, errors, and limitations.
-- Slide 20: 1–2 minutes — answer the research question and close.
+- Slides 1–4: 4 minutes, establish the write-governance problem and the narrow research gap.
+- Slides 5–10: 7 minutes, define the actions, architecture, controller, lineage, diagnostic, and protocol.
+- Slides 11–15: 7 minutes, completed MGP-6 results, ablations, adapters, and annotation evidence.
+- Slides 16–19: 5 minutes, negative downstream evidence, SSP analysis, errors, and limitations.
+- Slide 20: 1–2 minutes, answer the research question and close.
 
 ## Rehearsal checks
 

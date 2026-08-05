@@ -32,14 +32,14 @@ bash deploy/run_mgp6_v2_5systems.sh
 ## Run the real LLM controller (needs an API key)
 
 ```bash
-export OPENROUTER_API_KEY=sk-or-...
 bash deploy/run_mgp6_v2_llm.sh          # resumable; safe to interrupt/rerun
 # -> runs/llm_qwen35_9b/controller/{predictions.jsonl,report.json}
 # -> runs/combined/ANALYSIS.md , comparison.json   (all six systems together)
 ```
 
-Swap the model with `MGP6_MODEL=...` (any OpenAI-compatible chat model). The
-judge model is irrelevant to MGP-6 v2 scoring.
+Load `OPENROUTER_API_KEY` from the approved secret manager before execution.
+Set `MGP6_MODEL` to an exact OpenAI-compatible provider model identifier when
+overriding the recorded default. The judge model is irrelevant to MGP-6 v2 scoring.
 
 ## Files
 

@@ -19,6 +19,7 @@ from ask.inference.llm import (
     StructuredLLM,
     StructuredLLMError,
     _extract_first_json_object,
+    _supports_non_causal_fallback,
     build_llm,
 )
 
@@ -176,3 +177,19 @@ def test_huggingface_llm_construction_does_not_load_weights() -> None:
     # Internal handles must be None until generate() runs.
     assert h._tokenizer is None
     assert h._model is None
+
+
+def test_inference_config_accepts_immutable_model_revision() -> None:
+    revision = "a" * 40
+    cfg = InferenceConfig(model_id="example/model", model_revision=revision)
+    assert cfg.model_revision == revision
+
+
+def test_non_architecture_load_error_does_not_trigger_model_fallback() -> None:
+    accelerate_error = ValueError("Using a device_map requires accelerate")
+    architecture_error = ValueError(
+        "Unrecognized configuration class ExampleConfig for this kind of AutoModel"
+    )
+
+    assert _supports_non_causal_fallback(accelerate_error) is False
+    assert _supports_non_causal_fallback(architecture_error) is True

@@ -13,14 +13,13 @@ and the cleaned source JSON. Neither dataset is redistributed.
 
 ```bash
 cd ask-memory-governance
-export OPENROUTER_API_KEY='<your-valid-key>'
-export LONGMEMEVAL_DATA='/absolute/path/to/longmemeval_m_full.jsonl'
-export LONGMEMEVAL_SRC='/absolute/path/to/longmemeval_m_cleaned.json'
+export LONGMEMEVAL_DATA="${PWD}/.private/longmemeval/longmemeval_m_full.jsonl"
+export LONGMEMEVAL_SRC="${PWD}/.private/longmemeval/longmemeval_m_cleaned.json"
 
 # Two-item API sanity check first.
 bash scripts/evaluation/run_longmemeval_final.sh --smoke
 
-# Frozen 180-item × five-system run.
+# Precommitted 180-item × five-system run.
 bash scripts/evaluation/run_longmemeval_final.sh --full
 
 # If interrupted, continue without rewriting scored items.
@@ -55,7 +54,7 @@ Share `final_summary.json`, `controller_accuracy_gate.json`, and `manifest.json`
 when diagnosing a controller-only final run.
 
 Do not add a LongMemEval headline until the homogeneity verifier and controller
-accuracy gate pass and the result ledger is rebuilt under the frozen claim gate.
+accuracy gate pass and the result ledger is rebuilt under the recorded claim gate.
 
 ## 3. Thesis and defense administration
 
@@ -78,3 +77,22 @@ accuracy gate pass and the result ledger is rebuilt under the frozen claim gate.
 - Create the real public Git remote and follow `GIT_PUSH_GUIDE.md`.
 - Select a publication venue, obtain its current official template, and adapt the
   canonical manuscript without changing result-status labels.
+
+## 6. MGP-Natural confirmation and source acquisition
+
+- Complete a human review of the Wikipedia revision-specific attribution,
+  share-alike, modification-notice, privacy, and redistribution requirements.
+- Record the lawful basis, consent status where applicable, redaction log, and
+  data-minimization decision before giving the private packet to annotators.
+- Record the protocol, role registry, packet commitment, and manual before any
+  annotation. Obtain at least three independent annotations per valid item and
+  use a separate adjudicator for disagreements.
+- Do not use the current 24/6/6 split for evaluation. Collect enough new,
+  continuity-disjoint source components to create a valid held-out split before
+  reporting model results.
+- For a real assistant-chat pilot, pursue gated StudyChat access first and use
+  dialogue text only after a new privacy and rights review. Treat Wikipedia
+  Talk/WikiConv as the human-human editorial track. Do not download or package
+  any other corpus solely on an automated license classification.
+- Keep `mgpn-natural-package-public` blocked until all human gates and the
+  independent-split audit pass.

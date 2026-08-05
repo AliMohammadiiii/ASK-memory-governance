@@ -1,4 +1,4 @@
-# Single-Session-Preference (SSP) Failure Analysis — LongMemEval-M / ASK controller
+# Single-Session-Preference (SSP) Failure Analysis, LongMemEval-M / ASK controller
 
 **Scope.** Error analysis of the `single-session-preference` competency in the
 ASK memory-governance controller's LongMemEval-M evaluation. Evidence-first: every
@@ -56,7 +56,7 @@ whether the decisive fact was actually available to the answerer.
 
 This matches, at finer grain, the v7 `ANALYSIS_REPORT.md §3.3` observation that
 SSP failures show "rubric-shaped profiles with off-rubric or fabricated
-specifics" — the profiles are shaped correctly, but the *content* is wrong.
+specifics", the profiles are shaped correctly, but the *content* is wrong.
 
 ## 4. Taxonomy with counts
 
@@ -99,25 +99,25 @@ Combined primary + secondary mentions (how often a mechanism appears at all):
 
 ## 5. Illustrative examples (verbatim, trimmed)
 
-**(a) cross-session-contamination — wrong session answered faithfully** `75832dbd`
+**(a) cross-session-contamination, wrong session answered faithfully** `75832dbd`
 - Q: "Can you recommend some recent publications or conferences that I might find interesting?"
 - GOLD: "…recent research papers, articles, or conferences that focus on artificial intelligence in healthcare, particularly … deep learning for medical image analysis. They would not be interested in general AI topics…"
 - MODEL: "…publications or conferences focused on **environmental sustainability, climate change**, and academic research methodology…"
 - Evidence: the correct AI-in-healthcare session (`answer_d87a6ef8`) was not surfaced; a distractor session (`2cea94dc`) literally states "User is interested in environmental sustainability and climate change," and the model answered from it.
 
-**(b) distractor-entity-binding — wrong entity name pulled from a distractor** `75f70248`
+**(b) distractor-entity-binding, wrong entity name pulled from a distractor** `75f70248`
 - Q: "I've been sneezing quite a bit lately. Do you think it might be my living room?"
 - GOLD: "…consider the potential impact of their cat, **Luna**, and her shedding … recent deep clean of the living room…"
 - MODEL: "…managing cat allergens and dust in the living room, specifically leveraging their existing cat named **Whiskers**…"
-- Evidence: both "Luna" and "Whiskers" exist in the corpus; the "Luna" turn was dropped in ranking/trim while the distractor "Whiskers" survived. This is **contamination, not free fabrication** — "Whiskers" is verbatim in the retrieved memory, and the answer prompt explicitly forbids inventing names.
+- Evidence: both "Luna" and "Whiskers" exist in the corpus; the "Luna" turn was dropped in ranking/trim while the distractor "Whiskers" survived. This is **contamination, not free fabrication**, "Whiskers" is verbatim in the retrieved memory, and the answer prompt explicitly forbids inventing names.
 
-**(c) polarity-error — recommends an explicitly dis-preferred option** `1c0ddc50`
+**(c) polarity-error, recommends an explicitly dis-preferred option** `1c0ddc50`
 - Q: "Can you suggest some activities I can do during my commute to work?"
 - GOLD: "…listening to new podcasts or audiobooks, especially the genre **beyond true crime or self-improvement**, such as history. … would not prefer general podcast topics such as true crime or self-improvement…"
 - MODEL: "…listening to history or **self-improvement** podcasts (such as 'Hardcore History' or 'The Mindful Kind')…"
 - Evidence: the history-interest turn was surfaced, but the model still folded in "self-improvement," an explicitly excluded genre (pulled from distractor `9345f7dc_1`).
 
-**(d) target-attribute-extraction-miss — decisive comparison ignored despite being in context** `95228167`
+**(d) target-attribute-extraction-miss, decisive comparison ignored despite being in context** `95228167`
 - Q: "Any tips on what to look for in a new guitar?"
 - GOLD: "…highlight the differences between **Fender Stratocaster and Gibson Les Paul** electric guitars, such as the feel of the neck, weight, and sound profile…"
 - MODEL: "…a new guitar that align with their existing Fender Stratocaster and **ukulele**, … the Jack Johnson and Jason Mraz style … **dry climate needs regarding humidity control**…"
@@ -149,7 +149,7 @@ to *persistence*, or to a *judge-scorer* error strong enough to overturn a verdi
 (see §7): there is no typed preference object to prioritize during retrieval or to
 constrain the answer.
 
-## 7. Root-cause synthesis — the single highest-leverage change
+## 7. Root-cause synthesis, the single highest-leverage change
 
 **Diagnosis.** SSP items in LongMemEval-M establish a preference in *one*
 supporting session, embedded in many topically similar distractor sessions

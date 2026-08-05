@@ -1,0 +1,20 @@
+{
+  "annotation_authorized": false,
+  "bundle": {
+    "manifest_entry_count": 4,
+    "member_count": 5,
+    "member_modes_private": true,
+    "private_mapping_absent": true,
+    "zip_integrity_passed": true
+  },
+  "item_count": 36,
+  "packet_reproduced_from_parent": true,
+  "packet_schema_error_count": 0,
+  "packet_semantic_error_count": 0,
+  "private_mapping_commitment_verified": true,
+  "prohibited_key_count": 0,
+  "publication_eligible": false,
+  "schema_version": "1.0",
+  "source_and_protocol_hashes_verified": true,
+  "status": "PASS_PRIVATE_DRAFT_VERIFICATION"
+}

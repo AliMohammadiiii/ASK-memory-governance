@@ -10,7 +10,7 @@ instance cites a concrete artifact; every threat carries a mitigation status of
 
 ---
 
-## 1. Internal validity — does the design support the causal story?
+## 1. Internal validity, does the design support the causal story?
 
 | # | Threat | Concrete instance | Status |
 |---|---|---|---|
@@ -23,7 +23,7 @@ instance cites a concrete artifact; every threat carries a mitigation status of
 
 ---
 
-## 2. External validity — does it generalise beyond this setup?
+## 2. External validity, does it generalise beyond this setup?
 
 | # | Threat | Concrete instance | Status |
 |---|---|---|---|
@@ -35,7 +35,7 @@ instance cites a concrete artifact; every threat carries a mitigation status of
 
 ---
 
-## 3. Construct validity — are we measuring what we claim?
+## 3. Construct validity, are we measuring what we claim?
 
 | # | Threat | Concrete instance | Status |
 |---|---|---|---|
@@ -47,7 +47,7 @@ instance cites a concrete artifact; every threat carries a mitigation status of
 
 ---
 
-## 4. Statistical-conclusion validity — are the inferences sound?
+## 4. Statistical-conclusion validity, are the inferences sound?
 
 | # | Threat | Concrete instance | Status |
 |---|---|---|---|
@@ -62,7 +62,7 @@ instance cites a concrete artifact; every threat carries a mitigation status of
 
 ## 5. Priority actions (in decreasing order of validity impact)
 
-1. **Execute the role-separated MGP-6 v3 protocol** — independent writers, all actions inside every family, long trajectories, sealed labels, and shortcut rejection gates.
+1. **Execute the role-separated MGP-6 v3 protocol**, independent writers, all actions inside every family, long trajectories, sealed labels, and shortcut rejection gates.
 2. **Recruit three blinded human annotators plus independent adjudication** for v3.
 3. **Evaluate oracle and predicted components with native external-system operations** and family-clustered, cost-sensitive analysis.
 4. **Execute the frozen homogeneous full-180 LongMemEval rerun** only after input, provider, judge, and provenance gates pass.

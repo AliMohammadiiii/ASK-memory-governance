@@ -1,0 +1,23 @@
+schema_version: "1.0"
+external_calls_authorized: false
+silent_fallback: false
+baselines:
+  - no-memory
+  - recency
+  - overwrite
+  - flat-retrieval
+  - deterministic-rule
+  - zero-shot-language-model
+  - structured-mgp-controller
+  - oracle-evidence
+  - oracle-action-state-reconstruction
+protocols:
+  - studychat_to_studychat
+  - wikiconv_to_wikiconv
+  - studychat_to_wikiconv_zero_shot
+  - wikiconv_to_studychat_zero_shot
+  - combined_train_separate_tests
+  - leave_scope_out
+  - leave_user_group_out
+  - leave_editorial_component_out
+

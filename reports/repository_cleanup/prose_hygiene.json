@@ -1,0 +1,18 @@
+{
+  "files_scanned": 278,
+  "status": "PASS",
+  "style_note": "Weak lexical signals are advisory and are not treated as authorship evidence.",
+  "style_signal_count": 23,
+  "style_signals_per_1000_words": 0.117,
+  "style_terms": {
+    "additionally": 6,
+    "crucial": 1,
+    "cutting-edge": 1,
+    "enduring": 2,
+    "landscape": 4,
+    "robust": 8,
+    "underscore": 1
+  },
+  "total_words": 196360,
+  "violations": []
+}

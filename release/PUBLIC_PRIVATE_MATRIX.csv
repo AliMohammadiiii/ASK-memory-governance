@@ -4,6 +4,15 @@ benchmarks/mgp6/data/mgp6_v2.jsonl,author_dataset,include_with_CC_BY_4_0,human_l
 benchmarks/mgp6/mgp6_v4_3/**,author_dataset,withhold_pending_explicit_grant,human_legal,BLOCKED
 benchmarks/mgp6/annotations/human/**,independent_annotation,exclude,human_legal,BLOCKED
 benchmarks/mgp6/annotations/model_or_mixed/**,model_output,exclude,human_legal,BLOCKED
+external MGP-Natural v0.1.0 ZIP,third_party_candidate,exclude,human_legal,QUARANTINED
+confirmation/natural_challenge/mgp_natural_v0_1_0/*.json,aggregate_audit_evidence,include_after_path_scan,machine,PENDING
+confirmation/natural_challenge/mgp_natural_v0_2_2_full/*.json,aggregate_private_workspace_receipt,include_after_path_scan,machine,PENDING
+third_party/mgp-natural-v0.2.2/**,vendored_Apache_2_software,include_with_original_notice,maintainer,DOCUMENTED
+.private/mgp_natural_v0_2_2/**,source_derived_workspace_and_secrets,exclude,maintainer,PRIVATE
+reports/MGP_NATURAL_*,scoped_audit_and_source_decisions,include_after_citation_and_path_scan,human,PENDING
+.private/mgp_natural/**,blind_packet_mapping_and_annotations,exclude,maintainer,PRIVATE
+future MGP-Natural independent annotations,independent_annotation,exclude_until_consent_and_adjudication,human_legal,BLOCKED
+third-party real-chat corpora,third_party_data,exclude_and_link_upstream_only,human_legal,BLOCKED
 data/external/**,third_party_data,exclude,human_legal,BLOCKED
 runs/**,private_run_evidence,exclude,maintainer,PRIVATE
 runs_local/**,private_run_evidence,exclude,maintainer,PRIVATE
@@ -11,4 +20,3 @@ runs_local/**,private_run_evidence,exclude,maintainer,PRIVATE
 claims/**,derived_claim_evidence,include_after_anonymity_scan,machine,PENDING
 artifacts/manifests/**,provenance,include_after_path_scan,machine,PENDING
 paper/**,manuscript,venue_specific_release,human,PENDING
-

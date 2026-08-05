@@ -15,4 +15,3 @@ Status: `BLOCKED_HUMAN_DECISION`
 - [ ] Run clean reproduction and claim verification from the frozen release.
 - [ ] Confirm the CC BY 4.0 submission license is acceptable to every author.
 - [ ] Upload only the frozen, hashed PDF and anonymous supplement.
-

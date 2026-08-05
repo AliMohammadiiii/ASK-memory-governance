@@ -1,6 +1,6 @@
 # Scientific source of truth
 
-## Superseding addendum — 2026-07-27
+## Superseding addendum, 2026-07-27
 
 The LongMemEval “no final result” statement in Section 2 records the state of
 the audit on 2026-07-15 and is no longer current. The homogeneous V12 run

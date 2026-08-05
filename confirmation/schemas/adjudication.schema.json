@@ -3,12 +3,40 @@
   "$id": "https://ask.example/schemas/confirmation-adjudication-1.0.json",
   "type": "object",
   "additionalProperties": false,
-  "required": ["blind_id", "original_actions", "adjudicated_action", "reason", "adjudicator_pseudonym"],
+  "required": [
+    "blind_id",
+    "original_actions",
+    "original_exclusion_count",
+    "original_annotation_sha256",
+    "reason",
+    "adjudicator_pseudonym"
+  ],
   "properties": {
-    "blind_id": {"type": "string", "pattern": "^C[0-9]{6}$"},
-    "original_actions": {"type": "array", "minItems": 2, "items": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]}},
+    "blind_id": {"type": "string", "pattern": "^[CN][0-9]{6}$"},
+    "original_actions": {
+      "type": "array",
+      "items": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]}
+    },
+    "original_exclusion_count": {"type": "integer", "minimum": 0},
+    "original_annotation_sha256": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
     "adjudicated_action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]},
+    "adjudicated_exclusion_reason": {"type": "string", "minLength": 1},
     "reason": {"type": "string", "minLength": 1},
     "adjudicator_pseudonym": {"type": "string", "minLength": 1}
-  }
+  },
+  "oneOf": [
+    {
+      "required": ["adjudicated_action"],
+      "not": {"required": ["adjudicated_exclusion_reason"]}
+    },
+    {
+      "required": ["adjudicated_exclusion_reason"],
+      "not": {"required": ["adjudicated_action"]}
+    }
+  ]
 }

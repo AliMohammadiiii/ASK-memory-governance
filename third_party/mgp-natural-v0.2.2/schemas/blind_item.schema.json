@@ -1,0 +1,106 @@
+{
+  "$id": "https://example.org/mgp-natural/blind_item.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "annotation_questions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "blind_id": {
+      "pattern": "^MGP-[0-9]{6}-[A-F0-9]{8}$",
+      "type": "string"
+    },
+    "candidate_turn_id": {
+      "type": "string"
+    },
+    "dialogue": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "text": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "turn_id": {
+            "pattern": "^T[0-9A-Za-z_-]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "turn_id",
+          "role",
+          "text"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "memory_slot": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "principal_type": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "prior_value": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "scope": {
+      "enum": [
+        "SESSION_TASK_STATE",
+        "CROSS_SESSION_TASK_STATE",
+        "SESSION_INTERACTION_PREFERENCE",
+        "CROSS_SESSION_USER_PREFERENCE",
+        "ARTIFACT_STATE",
+        "CORRECTION_STATE",
+        "UNCERTAINTY_STATE",
+        "EDITORIAL_DECISION",
+        "CONTENT_INCLUSION",
+        "CONTENT_REMOVAL",
+        "WORDING_STATE",
+        "SOURCE_STATUS",
+        "CONSENSUS_STATE",
+        "DISPUTE_STATE",
+        "REVISION_STATE",
+        "DELETION_RESTORATION",
+        "EDITORIAL_UNCERTAINTY"
+      ]
+    },
+    "source_track": {
+      "enum": [
+        "STUDYCHAT",
+        "WIKICONV"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "blind_id",
+    "source_track",
+    "scope",
+    "principal_type",
+    "memory_slot",
+    "prior_value",
+    "dialogue",
+    "candidate_turn_id",
+    "annotation_questions"
+  ],
+  "title": "MGP-Natural blind annotation item",
+  "type": "object"
+}
+

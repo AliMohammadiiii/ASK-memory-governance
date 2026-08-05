@@ -25,7 +25,7 @@ numerically higher, and the data support neither superiority nor non-inferiority
 
 ---
 
-## 1. MGP-6 v2 — historical item-level paired tests (secondary, n = 180)
+## 1. MGP-6 v2, historical item-level paired tests (secondary, n = 180)
 
 These full-corpus tests include training and development items, assume item-level
 independence that the template analysis rejects, and operate on a dataset whose
@@ -50,7 +50,7 @@ inferential basis of the paper or thesis.
   and by an item-level paired bootstrap (10 000 reps, seed 20260712). Marginal
   accuracies carry Wilson score 95% CIs.
 
-Per-system marginal accuracy (canonicalised, full corpus) — matches the ledger exactly:
+Per-system marginal accuracy (canonicalised, full corpus), matches the ledger exactly:
 
 | System | Correct / n | Accuracy | Wilson 95% CI |
 |---|---|---|---|
@@ -83,7 +83,7 @@ Full 2×2 concordance tables (e = both correct, b = A-only, c = B-only, d = both
    single item** where B2 or B4 is uniquely correct. The odds ratio is therefore
    infinite and the exact p-values are astronomically small (1.6e-27, 3.6e-43).
    This is the expected consequence of a design in which the rule controller
-   encodes the labelling policy and B2/B4 cannot express supersession/abstention —
+   encodes the labelling policy and B2/B4 cannot express supersession/abstention -
    it is expected and **partly tautological** (see Reviewer-2 audit, "baseline fairness").
 2. **Rule controller vs LLM controller: NOT significant (Holm p = 0.286).** The
    raw gap is only 3.3 pp (14 vs 8 discordant items), the RD 95% CIs straddle 0
@@ -91,7 +91,7 @@ Full 2×2 concordance tables (e = both correct, b = A-only, c = B-only, d = both
    claim the rule controller beats a capable LLM controller on overall action
    accuracy.** The defensible controller-vs-LLM claim is *qualitative* and lives
    elsewhere: premise-resistance 1.0 vs 0.0889 and invalid-commit 0.0 vs 0.0758
-   (different, non-accuracy metrics — reported descriptively, not tested here).
+   (different, non-accuracy metrics, reported descriptively, not tested here).
 3. **LLM controller vs zero-shot decision is descriptive despite the small item-level p-value.**
    The historical full-corpus gap is large, but prompt structure and policy
    scaffolding are evaluated on a shortcut-leaking author-designed collection.
@@ -108,7 +108,7 @@ Full 2×2 concordance tables (e = both correct, b = A-only, c = B-only, d = both
   (invalid-commit rate 0.0). On held-out test the action false-commit count is
   0/33, but its one-sided 95% upper bound is 0.0868; this is not a safety guarantee.
 - Test-split-only figures (n=90): rule controller 0.8889 / macro-F1 0.9145
-  (vs full-corpus 0.9222 / 0.9399) — report both, never full-corpus alone.
+  (vs full-corpus 0.9222 / 0.9399), report both, never full-corpus alone.
 - Annotation agreement is inferential evidence about the *labels*, not the systems:
   1 human annotator over 90 test items, raw agreement 0.9889 [0.9667, 1.0], Cohen's
   κ 0.98146 [0.93997, 1.0], 1 disagreement (`MGP6V2-T3-TEST-016`); plus a 4-LLM
@@ -117,7 +117,7 @@ Full 2×2 concordance tables (e = both correct, b = A-only, c = B-only, d = both
 
 ---
 
-## 2. LongMemEval-M — diagnostic only, no new comparative claims
+## 2. LongMemEval-M, diagnostic only, no new comparative claims
 
 **Per the source of truth and the leakage audit, no LongMemEval number is final and
 no comparative superiority claim is statistically supported.** I therefore compute
@@ -127,13 +127,13 @@ ledger are restated, each with its `claim_eligibility` label.
 | Run | n | correct | accuracy | CI (as recorded) | claim_eligibility |
 |---|---|---|---|---|---|
 | v8 failure-replay construction (after overrides) | 180 | 139 | 0.7722 | historical bootstrap, not inferentially valid for a complete v8 run | failure_replay_only |
-| v8 failure-replay construction (raw) | 180 | 135 | 0.7500 | — | failure_replay_only |
-| v7 controller (post-adjudication) | 180 | 110 | 0.6111 | — | diagnostic_only |
-| v7 controller (pre-adjudication) | 180 | 108 | 0.6000 | — | diagnostic_only |
-| v8 nothink replay (70 selected v7 failures) | 70 | 25 | 0.3571 | — | failure_replay_only |
+| v8 failure-replay construction (raw) | 180 | 135 | 0.7500 |, | failure_replay_only |
+| v7 controller (post-adjudication) | 180 | 110 | 0.6111 |, | diagnostic_only |
+| v7 controller (pre-adjudication) | 180 | 108 | 0.6000 |, | diagnostic_only |
+| v8 nothink replay (70 selected v7 failures) | 70 | 25 | 0.3571 |, | failure_replay_only |
 | v8 Modal top-up | 84 observed of 110 | 71 | 0.8452 observed-only | combined raw 96/154; full-180 bound [0.533, 0.678] | incomplete |
 | single-session-preference (v7) | 30 | 11 | 0.3667 | [0.20, 0.5333] bootstrap (n=20000, seed 0) | diagnostic_only |
-| single-session-preference (top-up attempt) | 29 observed of 30 | 8 | — | maximum 9/30 | incomplete |
+| single-session-preference (top-up attempt) | 29 observed of 30 | 8 |, | maximum 9/30 | incomplete |
 
 Statistical reasons these cannot support a comparative claim (from the audit docs):
 

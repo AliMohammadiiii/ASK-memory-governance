@@ -1,0 +1,99 @@
+{
+  "$id": "https://example.org/mgp-natural/adjudication.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "adjudicator_pseudonym": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "blind_id": {
+      "type": "string"
+    },
+    "final_action": {
+      "enum": [
+        "KEEP",
+        "SUPERSEDE",
+        "ABSTAIN",
+        null
+      ]
+    },
+    "final_evidence_turn_ids": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "final_exclude": {
+      "type": "boolean"
+    },
+    "final_exclusion_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "final_resulting_value": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "manual_version": {
+      "const": "1.0-prospective"
+    },
+    "protocol_version": {
+      "const": "1.0-prospective"
+    },
+    "rationale": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0"
+    },
+    "source_action_multiset": {
+      "items": {
+        "enum": [
+          "KEEP",
+          "SUPERSEDE",
+          "ABSTAIN"
+        ]
+      },
+      "type": "array"
+    },
+    "source_annotation_hashes": {
+      "items": {
+        "pattern": "^[a-f0-9]{64}$",
+        "type": "string"
+      },
+      "minItems": 3,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "source_exclusion_count": {
+      "minimum": 0,
+      "type": "integer"
+    }
+  },
+  "required": [
+    "schema_version",
+    "manual_version",
+    "protocol_version",
+    "blind_id",
+    "adjudicator_pseudonym",
+    "source_annotation_hashes",
+    "source_action_multiset",
+    "source_exclusion_count",
+    "final_exclude",
+    "final_exclusion_reason",
+    "final_action",
+    "final_evidence_turn_ids",
+    "final_resulting_value",
+    "rationale"
+  ],
+  "title": "Additive MGP adjudication",
+  "type": "object"
+}
+

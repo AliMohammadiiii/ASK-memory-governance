@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Generate modular LaTeX sources from the retained thesis review materials.
+"""Explicitly refresh modular LaTeX chapters from retained Markdown sources.
 
-The LaTeX files produced by this script are the authoritative typesetting
-sources.  The Markdown and DOCX review materials remain read-only inputs until
-the thesis is formally submitted, which keeps every claim and table traceable.
+The maintained LaTeX project is authoritative. Run this converter only when a
+reviewed Markdown change is intentionally being transferred into that project.
 """
 
 from __future__ import annotations
@@ -123,33 +122,8 @@ def build_master() -> None:
     )
 
 
-def build_support_material() -> None:
-    """Convert every other thesis Markdown/DOCX item for traceable retention.
-
-    These review aids are intentionally not included in the submitted thesis;
-    their TeX versions live beside the source chapters for a fully LaTeX-based
-    workflow without mixing administrative review material into the manuscript.
-    """
-    excluded = {MASTER, THESIS / "frontmatter" / "abstract_fa.md", THESIS / "frontmatter" / "extended_summary_fa.md", THESIS / "frontmatter" / "terminology_fa.md"}
-    for source in sorted(THESIS.rglob("*.md")):
-        if source in excluded or LATEX in source.parents or TEMPLATE in source.parents:
-            continue
-        relative = source.relative_to(THESIS).with_suffix(".tex")
-        write(LATEX / "support" / relative, pandoc(source.read_text(encoding="utf-8")))
-
-    for source in sorted((THESIS / "compiled").glob("*.docx")):
-        result = subprocess.run(
-            [PANDOC, "--from=docx", "--to=latex", "--natbib", str(source)],
-            text=True,
-            check=True,
-            capture_output=True,
-        )
-        write(LATEX / "support" / "word" / f"{source.stem}.tex", result.stdout)
-
-
 def main() -> None:
     build_master()
-    build_support_material()
     shutil.copy2(THESIS / "references.bib", LATEX / "references.bib")
 
 

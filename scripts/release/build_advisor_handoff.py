@@ -100,10 +100,20 @@ def build_snapshot() -> tuple[Path, int]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
+    action = parser.add_mutually_exclusive_group()
+    action.add_argument(
         "--replace", action="store_true", help="replace only the generated advisor handoff"
     )
+    action.add_argument(
+        "--clean", action="store_true", help="remove only generated advisor handoff outputs"
+    )
     args = parser.parse_args()
+
+    if args.clean:
+        safely_remove_generated(STAGE)
+        safely_remove_generated(OUT)
+        print("removed generated advisor handoff outputs")
+        return 0
 
     if OUT.exists() and not args.replace:
         raise SystemExit(f"{OUT} exists; pass --replace to rebuild it")

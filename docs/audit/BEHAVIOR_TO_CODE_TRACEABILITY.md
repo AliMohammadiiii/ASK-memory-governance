@@ -1,4 +1,4 @@
-# Behavior → Code Traceability — LongMemEval-M Controller
+# Behavior → Code Traceability, LongMemEval-M Controller
 
 Maps each observed behavior class from the LongMemEval-M runs to the responsible
 code in the canonical repo (`ask-memory-governance/src/ask/...`) and the tests
@@ -42,9 +42,9 @@ Roots: `RUNS = external://Master/ask_controller/runs`,
 |---|---|---|---|
 | Insert active memory | `…_v7/controller/_shard*/` sqlite state | `SRC/memory/operations.py:34` `insert_active` | `TESTS/test_memory_operations.py::test_insert_n_items_active_count_equals_n_and_ids_monotonic` |
 | Supersede + lineage link (prior→inactive) | Supersede 402× (action log) | `operations.py:76` `supersede`, `:234` `get_lineage` | `TESTS/test_supersede.py`, `test_memory_operations.py::test_supersede_flips_prior_inserts_replacement_and_writes_relation`, `::test_lineage_three_step_chain` |
-| Atomic supersede / double-supersede raises | — | `operations.py:76,146` | `TESTS/test_memory_operations.py::test_supersede_is_atomic_under_forced_exception`, `::test_supersede_double_supersede_raises_loudly` |
-| Evict (no lineage) | — | `operations.py:155` `supersede_evict` | `TESTS/test_memory_operations.py::test_supersede_evict_*` |
-| Models / schema | — | `SRC/memory/models.py`, `SRC/memory/db.py` | `TESTS/test_schema.py` |
+| Atomic supersede / double-supersede raises |, | `operations.py:76,146` | `TESTS/test_memory_operations.py::test_supersede_is_atomic_under_forced_exception`, `::test_supersede_double_supersede_raises_loudly` |
+| Evict (no lineage) |, | `operations.py:155` `supersede_evict` | `TESTS/test_memory_operations.py::test_supersede_evict_*` |
+| Models / schema |, | `SRC/memory/models.py`, `SRC/memory/db.py` | `TESTS/test_schema.py` |
 
 ## 4. Retrieval / ranking
 
@@ -97,7 +97,7 @@ Roots: `RUNS = external://Master/ask_controller/runs`,
   `failed_ids == replay ids`, overrides ⊆ replay). This is the script that
   produces the historical, ineligible 139/180 construction.
 - **SSP grounding (F12)** has behavioral evidence
-  (`adjudication_audit.csv`) but no code path that repairs it — the fix attempts
+  (`adjudication_audit.csv`) but no code path that repairs it, the fix attempts
   (per-competency prompt, session-diverse context) are covered by tests, yet the
   selected replay repaired 0/19; independent top-up evidence leaves no stable
   full-dataset SSP score (8/29 resolved, one unresolved; maximum 9/30).

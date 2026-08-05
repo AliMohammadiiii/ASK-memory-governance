@@ -18,4 +18,3 @@ consent, freeze order, identify the corresponding author, and record the date.
 
 Do not infer authorship from Git history, acknowledgements, funding, annotation,
 or tool use.
-

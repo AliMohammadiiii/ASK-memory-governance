@@ -4,7 +4,7 @@ Each entry: forbidden claim → why it fails → what to say instead (if anythin
 
 **N1. "MGP-6 is a comprehensive benchmark" (or "benchmark" without qualification).**
 Fails on evidence: 180 author-designed scenarios, one independent annotator (identity by author attestation), LLM audit panel is not human IAA, human review sheet 0/180 filled, two shipped metrics (over-/under-forgetting) saturate and are uninformative (SOT §1). Fails on literature: STALE (400 expert-validated scenarios) and HaluMem (15k memory points) occupy the "comprehensive" space.
-Instead: "author-designed diagnostic slice (180 scenarios)" — always.
+Instead: "author-designed diagnostic slice (180 scenarios)", always.
 
 **N2. "State of the art on LongMemEval" / any LongMemEval superiority or competitiveness claim.**
 Fails on evidence: no LongMemEval number is final. The 77.2% value is a selection-biased carry-forward construction with heterogeneous judges and four Codex/GPT-5 overrides mislabeled as human. The non-empty top-up finds 13 regressions among 84 re-evaluated carried-forward items; combined raw evidence is 96/154 and the full-180 bound is 53.3%-67.8%. The contaminated v7 comparison has naive overwrite (63.3%) above the controller (61.1%).
@@ -18,7 +18,7 @@ Instead: A3 in ALLOWED (the measured diagnostic effect of abstain-on-write, with
 Fails on evidence: zero deployment or user-facing evaluation; MGP-6 is synthetic; LongMemEval runs were operationally unstable (316 HTTP-402 traces, 388 empty-extraction fallbacks). Fails on literature: the security/safety governance space (GateMem, MemGuard, memory-poisoning line, arXiv:2604.16548) addresses threat models ASK never tests (poisoning, multi-principal access, deletion compliance).
 Instead: "a governance layer aimed at epistemic write correctness; security threat models are out of scope."
 
-**N5. Any claim resting on diagnostic-only LongMemEval evidence** — including "the controller improves downstream QA", "governance helps on LongMemEval", "77.2% demonstrates effectiveness", or using v7/v8 numbers in a comparison table without their diagnostic labels.
+**N5. Any claim resting on diagnostic-only LongMemEval evidence**, including "the controller improves downstream QA", "governance helps on LongMemEval", "77.2% demonstrates effectiveness", or using v7/v8 numbers in a comparison table without their diagnostic labels.
 Fails on evidence: ledger status for every LongMemEval row is `diagnostic_only`, `failure_replay_only`, `invalid`, `incomplete`, or `externally_pending`; none is `final_candidate`.
 Instead: report as labeled diagnostics; the defensible downstream statement is the failure analysis (C2, D1).
 

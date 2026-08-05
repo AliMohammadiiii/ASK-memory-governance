@@ -9,7 +9,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 
 ---
 
-## A1. Novelty — "isn't this just a rules heuristic?"
+## A1. Novelty, "isn't this just a rules heuristic?"
 
 - **Attack.** The headline system is a hand-written rule controller that encodes
   KEEP/SUPERSEDE/ABSTAIN over typed memories. A deterministic policy that scores
@@ -23,8 +23,8 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
   which component prevents which failure (no_abstain → invalid-commit 1.0;
   no_provenance → 0.606; no_typing → KEEP-F1 0.0), and (ii) evidence that the same
   benefit transfers to an *LLM* controller (0.8889) and beats an unstructured
-  zero-shot decision baseline (0.700, Holm p 1.6e-05). The framework — not the
-  rule instantiation — is the claim.
+  zero-shot decision baseline (0.700, Holm p 1.6e-05). The framework, not the
+  rule instantiation, is the claim.
 - **Weaken/drop.** Drop any framing that the rule controller is a general-capability
   result. Lead with the *ablation* and the *LLM-controller > zero-shot* result.
 
@@ -34,7 +34,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
   self-authored; results reflect the author's imagination, not the world.
 - **Evidence.** n=180 (60/30/90 split); 6 types × 30; `template_family_id` tracked
   per item; positioned as a diagnostic slice.
-- **Honest response.** Correct — MGP-6 is explicitly a diagnostic slice, not a
+- **Honest response.** Correct, MGP-6 is explicitly a diagnostic slice, not a
   benchmark. It is used for *mechanism isolation* (ablations, error direction), and
   every table is labelled as such. External adapters (Mem0/Letta/Graphiti/MemOS)
   are run on the same items to give a non-self-authored comparison surface.
@@ -84,7 +84,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 - **Weaken/drop.** Lead with test-split figures; present full-corpus only as a
   labelled secondary column.
 
-## A6. Baseline fairness — are B1–B4 straw men?
+## A6. Baseline fairness, are B1–B4 straw men?
 
 - **Attack.** B1 (no-memory), B2 (flat retrieval), B3 (recency), B4
   (naive-overwrite) are weak by construction; beating them is trivial and the c=0
@@ -98,7 +98,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 - **Weaken/drop.** Don't headline "beats all baselines by 50+ points". Headline the
   zero-shot comparison; present B1–B4 as ablative context.
 
-## A7. External-adapter fairness — mapping freedom + MemOS
+## A7. External-adapter fairness, mapping freedom + MemOS
 
 - **Attack.** The NOOP→ABSTAIN vs NOOP→KEEP choice lets the analyst pick the
   favourable number, and MemOS's 0.144 is unfair because its adapter can't express
@@ -110,10 +110,10 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
   both numbers are in the ledger and the favourable one is labelled "upper bound".
   MemOS is explicitly `bound_only_structural_limitation`, not a capability claim.
 - **Weaken/drop.** Present external adapters as an *upper-bound* comparison with the
-  mapping shown; drop any "ASK beats MemOS" phrasing — MemOS's number is a harness
+  mapping shown; drop any "ASK beats MemOS" phrasing, MemOS's number is a harness
   artifact.
 
-## A8. Statistical power — n=180, SSP n=30
+## A8. Statistical power, n=180, SSP n=30
 
 - **Attack.** n=180 (and n=30 per LME competency) is underpowered; the SSP CI
   [0.20, 0.53] is uselessly wide.
@@ -138,7 +138,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 - **Weaken/drop.** The value appears only while reconstructing invalid evidence,
   always beside the top-up contradiction; it cannot be a result or headline.
 
-## A10. Missing full-benchmark evaluation — 500-item LongMemEval vs 180 slice
+## A10. Missing full-benchmark evaluation, 500-item LongMemEval vs 180 slice
 
 - **Attack.** LongMemEval has 500 items; a 180-item stratified slice is not the
   benchmark and cannot support benchmark claims.
@@ -148,13 +148,13 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 - **Weaken/drop.** Drop "evaluated on LongMemEval-M" as if it were the full set;
   say "a stratified 180-item slice of LongMemEval-M".
 
-## A11. Causal attribution — v8 fixes never confirmed on an untouched set
+## A11. Causal attribution, v8 fixes never confirmed on an untouched set
 
 - **Attack.** The v7→v8 fixes were designed on the exact 70 failures and replayed on
   the same 70; the improvement is a training-on-the-test-set artifact.
 - **Evidence.** Leakage audit §1; failure ledger F12/F13; 0/19 selected SSP
   failures repaired; 13/84 carried-forward successes regress in the top-up.
-- **Honest response.** Conceded — there is no untouched LongMemEval confirmation set.
+- **Honest response.** Conceded, there is no untouched LongMemEval confirmation set.
   The replay is diagnostic, not confirmatory. The frozen homogeneous rerun is the
   required next step and is explicitly outstanding.
 - **Weaken/drop.** Drop any "v8 fixes improved LongMemEval by X" causal claim. The
@@ -177,7 +177,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 
 ## A13. Salami-slicing risk
 
-- **Attack.** MGP-6, LongMemEval slice, SSP taxonomy, external adapters — this looks
+- **Attack.** MGP-6, LongMemEval slice, SSP taxonomy, external adapters, this looks
   like one modest result sliced into several papers.
 - **Evidence.** A single controller, a single evidence base, one ledger.
 - **Honest response.** These are facets of one contribution (a governance formulation
@@ -190,18 +190,18 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 
 ## Five most damaging findings (ranked)
 
-1. **A11/A3 — no untouched confirmation set + rule/label circularity.** The two
+1. **A11/A3, no untouched confirmation set + rule/label circularity.** The two
    strongest results are structurally compromised: the LongMemEval 77.2% is a
    contradicted carry-forward construction, and the MGP-6 0.9222 comes
    from a system aligned with the labels it is graded against. Neither is a clean
    generalisation result.
-2. **A9 — the 77.2% headline is selection-biased and empirically contradicted**:
+2. **A9, the 77.2% headline is selection-biased and empirically contradicted**:
    the top-up finds 13 regressions and bounds the attempted full result below it.
-3. **A6/A1 — the decisive baseline gaps are one-directional (c=0)** against weak
+3. **A6/A1, the decisive baseline gaps are one-directional (c=0)** against weak
    baselines; the only non-circular competitive win is LLM-controller > zero-shot.
 4. **The rule controller is NOT statistically better than the LLM controller**
-   (Holm p 0.286) — the "rules win" story does not survive its own significance test.
-5. **A12 — on the only external task the controller did not beat naive overwrite**
+   (Holm p 0.286), the "rules win" story does not survive its own significance test.
+5. **A12, on the only external task the controller did not beat naive overwrite**
    (61.1% vs 63.3%) and SSP is 36.7%, undercutting a strong safety/efficacy framing.
 
 ---
@@ -210,7 +210,7 @@ rhetorical: every number traces to the ledger or audit docs. Ends with the
 
 | Claim | Tag |
 |---|---|
-| Removing abstention drives MGP-6 invalid-commit to 1.0 and accuracy to 0.5556; removing provenance drives invalid-commit to 0.606 — components are load-bearing for distinct failures (ablation, n=180). | **verified** |
+| Removing abstention drives MGP-6 invalid-commit to 1.0 and accuracy to 0.5556; removing provenance drives invalid-commit to 0.606, components are load-bearing for distinct failures (ablation, n=180). | **verified** |
 | The rule controller makes only conservative errors on MGP-6 (14 SUPERSEDE→ABSTAIN, invalid-commit 0.0). | **verified** |
 | A structured (zero-shot) LLM decision baseline is significantly improved by the governance formulation: LLM controller 0.8889 vs zero-shot 0.700, RD +0.189, McNemar Holm p 1.6e-05. | **verified** |
 | The rule controller (0.9222) and the LLM controller (0.8889) are statistically indistinguishable on MGP-6 action accuracy (Holm p 0.286). | **verified** (a null, and it must be stated as such) |

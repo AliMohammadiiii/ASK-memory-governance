@@ -73,21 +73,21 @@ points at an artifact; every "Partial/Pending" names exactly what is missing.
 |---|---|---|
 | Are claim-eligibility labels attached to every result? | **Yes** | Ledger + `FINAL_RESULTS.md/json`; `CLAIMS_EVIDENCE_MATRIX.md`. |
 | Are invalid/superseded runs quarantined? | **Yes** | `docs/audit/INVALID_AND_SUPERSEDED_RUNS.md`. |
-| Is a manifest/provenance chain present? | **Partial** | `artifacts/manifests/` checksums; **but** the v8 adjudicated `manifest.json` records a non-existent `replay_run` path (failure ledger F11) — the manifest is not a runnable recipe as written. |
+| Is a manifest/provenance chain present? | **Partial** | `artifacts/manifests/` checksums; **but** the v8 adjudicated `manifest.json` records a non-existent `replay_run` path (failure ledger F11), the manifest is not a runnable recipe as written. |
 
 ---
 
 ## Pending items (explicit)
 
-1. **Pending** — homogeneous full-180 LongMemEval rerun under the frozen v8 config
+1. **Pending**, homogeneous full-180 LongMemEval rerun under the frozen v8 config
    (single primary judge, prepaid credit). Blocks every final LME claim.
-2. **Pending** — complete pre-specified few-shot (6-shot) MGP-6 run. The 174
+2. **Pending**, complete pre-specified few-shot (6-shot) MGP-6 run. The 174
    observed predictions have been coverage-aligned with six `INVALID` rows, but
    the source run remains incomplete.
-3. **Pending** — full 500-item LongMemEval evaluation.
-4. **Pending** — role-separated MGP-6 v3 construction and hidden confirmation;
+3. **Pending**, full 500-item LongMemEval evaluation.
+4. **Pending**, role-separated MGP-6 v3 construction and hidden confirmation;
    a family holdout over v2 cannot repair the persistent label shortcut.
-5. **Pending** — three blinded human annotators and independent adjudication for v3.
-6. **Pending** — multi-seed / multi-base-model runs; compute (GPU-hours/cost) table.
-7. **Fix-before-release** — correct the v8 adjudicated `manifest.json` `replay_run`
+5. **Pending**, three blinded human annotators and independent adjudication for v3.
+6. **Pending**, multi-seed / multi-base-model runs; compute (GPU-hours/cost) table.
+7. **Fix-before-release**, correct the v8 adjudicated `manifest.json` `replay_run`
    path (F11); rotate the exposed API key; replace `OWNER` placeholders.

@@ -16,6 +16,7 @@ __pycache__/
 coverage.xml
 htmlcov/
 .venv/
+.venv-*/
 venv/
 ENV/
 env/
@@ -37,7 +38,7 @@ pip-wheel-metadata/
 *.key
 
 # Local datasets and large run artifacts
-.private/benchmarks/mgp6/v4.3/
+.private/
 data/external/
 data/longmemeval_m_cleaned.json
 data/slices/longmemeval_m_full.jsonl
@@ -45,6 +46,7 @@ runs/
 runs_local/
 inputs_raw/
 audit_workspace/
+/tmp/
 final_release/
 final_release.__building__/
 advisor_handoff/
@@ -95,9 +97,8 @@ thesis/compiled/
 *.lot
 /paper/paper_1/*.pdf
 /paper/paper_1.zip
+/benchmarks/mgp6.zip
 /artifacts/analysis/*.pdf
 thesis/**/compiled/*.docx
 thesis/**/compiled/*.pdf
-
-# Preserved local manuscript backup (not an active paper source)
-paper/paper_1/sections/08_downstream_analysis.tex.bak_v11
+/thesis/latex/compiled/

@@ -1,7 +1,7 @@
 # گزارش جامع ارزیابی مقاله، مسیر انتشار، برنامه اصلاح و ممیزی نوآوری
 
-**مقاله:** *Beyond Recall: A Layered Diagnostic for Write-Time Memory Governance in Language Agents*  
-**نسخه بررسی‌شده:** PDF چهل‌وسه‌صفحه‌ای به‌همراه منبع LaTeX، فایل منابع، ماتریس ادعا-شواهد، ممیزی سهم علمی و پاسخ شبیه‌سازی‌شده به داوران  
+**مقاله:** *Beyond Recall: A Layered Diagnostic for Write-Time Memory Governance in Language Agents*
+**نسخه بررسی‌شده:** PDF چهل‌وسه‌صفحه‌ای به‌همراه منبع LaTeX، فایل منابع، ماتریس ادعا-شواهد، ممیزی سهم علمی و پاسخ شبیه‌سازی‌شده به داوران
 **تاریخ ارزیابی:** ۲۸ ژوئیه ۲۰۲۶
 
 ---
@@ -458,7 +458,7 @@ Gate نهایی:
 
 دو گزینه:
 
-**گزینه A – توصیه‌شده:** evaluation-first؛ همه policyها case study و baseline هستند.  
+**گزینه A – توصیه‌شده:** evaluation-first؛ همه policyها case study و baseline هستند.
 **گزینه B:** policy واحد constrained/learned روی MGP-6 و LongMemEval و حداقل یک benchmark دیگر.
 
 ### P0-5: رفع اشکال scorecard
@@ -810,9 +810,9 @@ TMLR rolling است و اجازه revision در طول review می‌دهد، ا
 - در صورت موفقیت سریع آزمایش‌ها، AAMAS 2027–GAAI را هدف بگیرید؛
 - در غیر این صورت نسخه قوی‌تر را بدون عجله به TMLR یا مسیر Q1 یعنی TIST/KBS بفرستید.
 
-**گزینه با بیشترین شانس علمی برای کار فعلی پس از اصلاح:** TMLR.  
-**گزینه با بهترین تطابق و deadline نزدیک:** AAMAS 2027–GAAI.  
-**گزینه Q1 محافظه‌کارانه:** ACM TIST، سپس Knowledge-Based Systems.  
+**گزینه با بیشترین شانس علمی برای کار فعلی پس از اصلاح:** TMLR.
+**گزینه با بهترین تطابق و deadline نزدیک:** AAMAS 2027–GAAI.
+**گزینه Q1 محافظه‌کارانه:** ACM TIST، سپس Knowledge-Based Systems.
 **گزینه پرارزش ولی پرریسک:** TACL یا NeurIPS 2027 E&D.
 
 ### شرط ارسال واقعی

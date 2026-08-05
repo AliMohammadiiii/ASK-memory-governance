@@ -26,7 +26,7 @@ This checklist separates repository-complete review work from University of Tehr
 - [ ] Human bibliography audit: titles, complete author lists, venues, years, DOIs/URLs.
 - [ ] Apply the citation style required by the University of Tehran template.
 
-## C. Administrative fields — external
+## C. Administrative fields, external
 
 - [ ] Obtain the current official University of Tehran thesis template and regulations.
 - [ ] Candidate full legal name (English and Persian).
@@ -38,7 +38,7 @@ This checklist separates repository-complete review work from University of Tehr
 - [ ] Acknowledgements and dedication approved by the candidate.
 - [ ] Ethics/approval statement confirmed with the department.
 
-## D. Institutional layout — external
+## D. Institutional layout, external
 
 - [ ] Transfer the English review draft into the official template.
 - [ ] Confirm paper size, margins, fonts, binding gutter, and section order.

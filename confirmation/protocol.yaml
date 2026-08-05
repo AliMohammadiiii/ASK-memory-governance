@@ -8,9 +8,12 @@ secondary_endpoints:
   - false_commit_rate
   - lineage_integrity
 unit_of_analysis: independent_item_or_declared_trajectory_cluster
-minimum_independent_annotators_per_item: 2
+minimum_independent_annotators_per_item: 3
 adjudication_preserves_original_rows: true
-seed: 43017
+adjudication_complete_coverage_required: true
+adjudicator_separate_from_item_annotators: true
+analysis_seed: 43017
+blinding_algorithm: HMAC-SHA256_with_private_256_bit_secret
+blinding_secret_location: private_reveal_record_only
 paid_inference_authorized: false
 human_legal_approval: false
-

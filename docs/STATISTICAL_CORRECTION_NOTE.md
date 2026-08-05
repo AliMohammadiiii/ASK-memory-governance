@@ -16,4 +16,3 @@ The correction changes the family-size wording, not any displayed adjusted
 p-value or the ASK-versus-B4 conclusion. The historical derived analysis report
 is preserved; `artifacts/analysis/lme_v12_adjacent_mcnemar.json` is the
 authoritative additive correction.
-

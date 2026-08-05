@@ -10,4 +10,3 @@ Use pseudonyms in annotation artifacts, minimize collected data, document
 consent/redaction, and keep the reveal map outside public artifacts. Hashes are
 identifiers, not automatic anonymization. See `SECURITY.md` for vulnerability
 reporting.
-

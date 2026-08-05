@@ -1,4 +1,4 @@
-# MGP-6 v2 — Human Independent Annotation Agreement
+# MGP-6 v2, Human Independent Annotation Agreement
 
 ## Primary result
 
@@ -33,4 +33,3 @@
 - Author gold: **SUPERSEDE**
 - Human annotator: **ABSTAIN**
 - Perturbation event: `Stereo is the default output across my audio devices.`
-

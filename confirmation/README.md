@@ -16,11 +16,14 @@ Required sequence:
 1. Freeze hypotheses, primary metrics, exclusions, model/controller versions,
    sample size, and analysis plan before inspecting confirmation labels.
 2. Build and audit the label-free packet with `build_blind_packet.py`.
+   Store its private reveal map only below `.private/`; the builder rejects a
+   mapping path outside that boundary.
 3. Obtain explicit participation and redistribution consent; do not place
    identities in the repository.
-4. Collect at least two independent annotations per item, plus confidence and
+4. Collect at least three independent annotations per item, plus confidence and
    rationale, using `annotation.schema.json`.
-5. Adjudicate disagreements without modifying original rows.
+5. Produce complete additive adjudication with a separate adjudicator, without
+   modifying original rows. Record explicit exclusions as well as actions.
 6. Reveal the committed mapping only after annotation is frozen.
 7. Run the preregistered analysis and emit a signed report under `reports/`.
 

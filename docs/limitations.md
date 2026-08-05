@@ -16,6 +16,31 @@ A four-model panel is an audit, not a replacement for human annotation. The
 prospective v3 protocol requires independent data authors and three blinded
 human annotators; that protocol has not yet been executed.
 
+MGP-Natural v0.1.0 is a separate 36-item feasibility seed built from Wikipedia
+editorial-discussion excerpts. It contains 76 normalized excerpt rows, not 76
+verified native dialogue turns. All actions are single-curator provisional
+labels. The supplied blind packet exposes a field that recovers all 36 labels,
+and direct source IDs join it to the seed. The corrected derived packet removes
+those fields, but no independent annotation has yet occurred.
+
+The declared 24/6/6 split is not suitable for held-out reporting. Linking items
+by shared page family or contributor yields only two continuity components with
+sizes 35 and 1. No split of this seed can provide three independent partitions.
+The seed therefore cannot support confidence intervals, leaderboard ranking,
+population claims, or a natural personal-assistant performance result. Source
+selection and exact text normalization also lack a complete reconstruction
+ledger.
+
+MGP-Natural v0.2.2 adds a two-track construction implementation for StudyChat
+and WikiConv, but the supplied `full` directory is a private derived workspace,
+not the original raw-source archive set. Its aggregate receipt records 16,851
+StudyChat rows, 431 redacted StudyChat construction items, and 54 redacted
+WikiConv construction items. These are workflow counts, not independent gold
+examples or a performance result. Raw-source integrity is unverified, the
+workspace contains private blinding material, and all legal, manual-privacy,
+protocol-freeze, independent-annotation, adjudication, and continuity-split
+gates remain open. There is no mixed-track headline score.
+
 The MGP-6 system rows are mostly single-run evaluations. Template-family and
 minimal-pair cluster bootstrap better reflect within-collection dependence but
 cannot repair external-validity or data-generation bias. The intervals do not
@@ -68,6 +93,15 @@ the independent annotator's two raw per-item CSVs until redistribution consent i
 documented; only aggregate, non-identifying statistics and source hashes are
 retained. Model-generated rationales may be subject to upstream provider terms.
 See `LICENSE-DATA.md`.
+
+The MGP-Natural parent archive and derived private packet are not public-release
+artifacts. Wikipedia-derived excerpts require revision-specific attribution,
+share-alike, modification-notice, and privacy review. Candidate real-chat
+corpora have source-specific restrictions and are not included merely because
+their metadata advertises an open license.
+
+The vendored MGP-Natural v0.2.2 software is Apache-2.0 code only. It conveys no
+rights to its source conversations, annotations, mappings, or derived text.
 
 ## Claim boundary
 
