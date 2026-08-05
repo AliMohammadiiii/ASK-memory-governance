@@ -77,6 +77,8 @@ checkpoints/
 .idea/
 .vscode/
 .serena/
+.private/
+tmp/
 
 # Local agent audit reports
 reports/code_quality_audit/
