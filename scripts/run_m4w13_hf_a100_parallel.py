@@ -224,21 +224,30 @@ def _prefetch_models(args: argparse.Namespace) -> None:
         _log("model prefetch skipped")
         return
 
-    model_ids = {args.hf_model}
+    models = {(args.hf_model, args.hf_revision or "")}
     for model_id in (args.extractor_model, args.classifier_model):
         if model_id:
-            model_ids.add(model_id)
+            models.add((model_id, args.hf_revision or ""))
     if args.judge_backend in {"hf", "huggingface"}:
-        model_ids.add(args.judge_model or args.hf_model)
+        models.add((args.judge_model or args.hf_model, args.hf_revision or ""))
     if args.embedder_backend == "sentence_transformer":
-        model_ids.add(getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL)
+        models.add(
+            (
+                getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL,
+                getattr(args, "embedder_st_revision", None) or "",
+            )
+        )
 
-    code = "from huggingface_hub import snapshot_download\nimport sys\nsnapshot_download(sys.argv[1])\n"
+    code = (
+        "from huggingface_hub import snapshot_download\n"
+        "import sys\n"
+        "snapshot_download(sys.argv[1], revision=sys.argv[2] or None)\n"
+    )
     env = _base_env(args)
-    for model_id in sorted(model_ids):
+    for model_id, revision in sorted(models):
         start = time.monotonic()
         _log(f"prefetch start: {model_id}")
-        subprocess.run([_preferred_python(), "-c", code, model_id], check=True, env=env)
+        subprocess.run([_preferred_python(), "-c", code, model_id, revision], check=True, env=env)
         _log(f"prefetch done: {model_id} in {time.monotonic() - start:.1f}s")
 
 
@@ -249,6 +258,7 @@ def _smoke_load_quality_model(args: argparse.Namespace) -> None:
         "from ask.inference.llm import HuggingFaceLLM, InferenceConfig\n"
         "llm = HuggingFaceLLM(InferenceConfig(\n"
         f"    model_id={args.hf_model!r}, dtype={args.hf_dtype!r}, "
+        f"model_revision={args.hf_revision!r}, "
         f"device_map={args.hf_device_map!r}, load_in_4bit={args.hf_load_in_4bit!r},\n"
         f"    trust_remote_code={args.hf_trust_remote_code!r}, "
         f"max_seq_len={args.hf_max_seq_len!r}, backend='huggingface'))\n"

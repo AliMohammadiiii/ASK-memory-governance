@@ -320,6 +320,7 @@ def _split_csv(value: str | None) -> tuple[str, ...]:
 def _hf_config(args: argparse.Namespace, model_id: str) -> InferenceConfig:
     return InferenceConfig(
         model_id=model_id,
+        model_revision=args.hf_revision,
         dtype=args.hf_dtype,
         device_map=args.hf_device_map,
         load_in_4bit=args.hf_load_in_4bit,
@@ -366,6 +367,7 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
             timeout_s=args.judge_timeout_s,
             response_format="json" if args.judge_json_format else None,
             think=args.judge_think,
+            hf_revision=args.hf_revision,
             hf_dtype=args.hf_dtype,
             hf_device_map=args.hf_device_map,
             hf_load_in_4bit=args.hf_load_in_4bit,
@@ -382,6 +384,7 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
             timeout_s=args.judge_timeout_s,
             response_format="json" if args.judge_json_format else None,
             think=args.judge_think,
+            hf_revision=args.hf_revision,
             hf_dtype=args.hf_dtype,
             hf_device_map=args.hf_device_map,
             hf_load_in_4bit=args.hf_load_in_4bit,
@@ -467,6 +470,8 @@ def _build_embedder(args: argparse.Namespace):
     embedder_kwargs: dict[str, Any] = {"device": args.embedder_device}
     if getattr(args, "embedder_st_model", None):
         embedder_kwargs["model_id"] = args.embedder_st_model
+    if getattr(args, "embedder_st_revision", None):
+        embedder_kwargs["revision"] = args.embedder_st_revision
     if getattr(args, "embedder_trust_remote_code", False):
         embedder_kwargs["trust_remote_code"] = True
     if getattr(args, "embedder_task", None):
@@ -920,6 +925,11 @@ def main() -> int:
         "retrieval embedder (default: all-MiniLM-L6-v2). E.g. "
         "jinaai/jina-embeddings-v5-text-small — needs "
         "--embedder-trust-remote-code and a recent transformers.",
+    )
+    p.add_argument(
+        "--embedder-st-revision",
+        default=None,
+        help="Exact source revision for the sentence-transformer model.",
     )
     p.add_argument(
         "--embedder-trust-remote-code",
@@ -1600,6 +1610,11 @@ def main() -> int:
     )
     p.add_argument(
         "--hf-model", default="Qwen/Qwen2.5-3B-Instruct", help="HuggingFace model id for --hf runs."
+    )
+    p.add_argument(
+        "--hf-revision",
+        default=None,
+        help="Exact source revision for directly loaded model weights.",
     )
     p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
     p.add_argument("--hf-device-map", default="auto")

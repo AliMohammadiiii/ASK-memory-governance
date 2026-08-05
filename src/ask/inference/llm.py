@@ -70,6 +70,8 @@ class LLMResponse:
 class InferenceConfig:
     model_id: str
     fallback_model_id: str | None = None
+    model_revision: str | None = None
+    fallback_model_revision: str | None = None
     dtype: str = "bfloat16"  # bfloat16 | float16 | float32
     device_map: str = "auto"
     use_flash_attn_2: bool = False
@@ -120,7 +122,9 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
     raw = yaml.safe_load(p.read_text(encoding="utf-8"))
     return InferenceConfig(
         model_id=str(raw["model_id"]),
+        model_revision=raw.get("model_revision"),
         fallback_model_id=raw.get("fallback_model_id"),
+        fallback_model_revision=raw.get("fallback_model_revision"),
         dtype=str(raw.get("dtype", "bfloat16")),
         device_map=str(raw.get("device_map", "auto")),
         use_flash_attn_2=bool(raw.get("use_flash_attn_2", False)),
@@ -231,6 +235,7 @@ class HuggingFaceLLM:
             return
         cache_key = (
             self.config.model_id,
+            self.config.model_revision,
             self.config.dtype,
             self.config.device_map,
             self.config.use_flash_attn_2,
@@ -266,6 +271,8 @@ class HuggingFaceLLM:
             "trust_remote_code": self.config.trust_remote_code,
             "low_cpu_mem_usage": True,
         }
+        if self.config.model_revision is not None:
+            load_kwargs["revision"] = self.config.model_revision
         if self.config.use_flash_attn_2:
             load_kwargs["attn_implementation"] = "flash_attention_2"
         if self.config.load_in_4bit:
@@ -284,7 +291,9 @@ class HuggingFaceLLM:
             self.config.load_in_4bit,
         )
         self._tokenizer = AutoTokenizer.from_pretrained(
-            self.model_id, trust_remote_code=self.config.trust_remote_code
+            self.model_id,
+            trust_remote_code=self.config.trust_remote_code,
+            revision=self.config.model_revision,
         )
         # Make sure pad_token is defined for batched generation paths.
         if self._tokenizer.pad_token_id is None:
@@ -658,7 +667,11 @@ def build_llm(
     if use_fallback:
         if cfg.fallback_model_id is None:
             raise ValueError("no fallback_model_id configured")
-        cfg = dataclasses.replace(cfg, model_id=cfg.fallback_model_id)
+        cfg = dataclasses.replace(
+            cfg,
+            model_id=cfg.fallback_model_id,
+            model_revision=cfg.fallback_model_revision,
+        )
     if cfg.backend == "ollama":
         from .ollama import OllamaLLM
 

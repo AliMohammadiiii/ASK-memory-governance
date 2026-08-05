@@ -37,6 +37,7 @@ class JudgeBackendConfig:
     timeout_s: float = 900.0
     response_format: str | dict[str, Any] | None = "json"
     think: bool | str | None = False
+    hf_revision: str | None = None
     hf_dtype: str = "float16"
     hf_device_map: str = "auto"
     hf_load_in_4bit: bool = False
@@ -75,6 +76,7 @@ class JudgeBackendConfig:
             timeout_s=float(judge.get("timeout_s", 900.0)),
             response_format=response_format,
             think=judge.get("think", False),
+            hf_revision=judge.get("hf_revision"),
             hf_dtype=str(judge.get("hf_dtype", "float16")),
             hf_device_map=str(judge.get("hf_device_map", "auto")),
             hf_load_in_4bit=bool(judge.get("hf_load_in_4bit", False)),
@@ -152,6 +154,7 @@ def build_judge_backend(
         return HuggingFaceLLM(
             InferenceConfig(
                 model_id=config.model_id,
+                model_revision=config.hf_revision,
                 dtype=config.hf_dtype,
                 device_map=config.hf_device_map,
                 load_in_4bit=config.hf_load_in_4bit,

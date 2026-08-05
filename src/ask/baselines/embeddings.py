@@ -139,7 +139,7 @@ def role_tag(role: str, content: str) -> str:
 # every `TurnEmbedder` instance with the same `(model_id, device)` reuses
 # the same loaded weights.
 
-_MODEL_CACHE: dict[tuple[str, str, bool], Any] = {}
+_MODEL_CACHE: dict[tuple[str, str | None, str, bool], Any] = {}
 
 
 _REMOTE_IMPORT_SHIM_APPLIED = False
@@ -219,10 +219,15 @@ def _resolve_sentence_transformer_device(device: str) -> str:
     return requested
 
 
-def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = False) -> Any:
+def _get_or_load_model(
+    model_id: str,
+    device: str,
+    trust_remote_code: bool = False,
+    revision: str | None = None,
+) -> Any:
     """Lazy-load the sentence-transformers model the first time it's needed."""
     resolved_device = _resolve_sentence_transformer_device(device)
-    key = (model_id, resolved_device, bool(trust_remote_code))
+    key = (model_id, revision, resolved_device, bool(trust_remote_code))
     if key in _MODEL_CACHE:
         return _MODEL_CACHE[key]
     try:
@@ -237,11 +242,17 @@ def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = Fal
         # jina-embeddings-v5 (EuroBERT) trips a transformers get_imports bug;
         # see _apply_remote_code_import_shim. No-op for plain models.
         _apply_remote_code_import_shim()
+    load_kwargs: dict[str, Any] = {
+        "device": resolved_device,
+        "trust_remote_code": trust_remote_code,
+    }
+    if revision is not None:
+        load_kwargs["revision"] = revision
     try:
-        model = SentenceTransformer(
-            model_id, device=resolved_device, trust_remote_code=trust_remote_code
-        )
-    except TypeError:
+        model = SentenceTransformer(model_id, **load_kwargs)
+    except TypeError as exc:
+        if revision is not None:
+            raise RuntimeError("the installed sentence-transformers cannot pin a revision") from exc
         # Very old sentence-transformers without the trust_remote_code kwarg.
         model = SentenceTransformer(model_id, device=resolved_device)
     _MODEL_CACHE[key] = model
@@ -289,6 +300,7 @@ class TurnEmbedder:
     """
 
     model_id: str = _DEFAULT_MODEL_ID
+    revision: str | None = None
     device: str = _DEFAULT_DEVICE
     batch_size: int = _DEFAULT_BATCH_SIZE
     # Custom-architecture embedders (e.g. jinaai/jina-embeddings-v5-*) need
@@ -342,7 +354,12 @@ class TurnEmbedder:
 
     def _ensure_loaded(self) -> None:
         if self._model is None:
-            self._model = _get_or_load_model(self.model_id, self.device, self.trust_remote_code)
+            self._model = _get_or_load_model(
+                self.model_id,
+                self.device,
+                self.trust_remote_code,
+                self.revision,
+            )
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Embed a list of strings. Always returns L2-normalized float32 rows.
