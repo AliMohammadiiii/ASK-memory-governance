@@ -138,17 +138,16 @@ def project_release_dates(root: Path) -> dict[str, str | None]:
     }
 
 
-def validate_repository(root: Path = ROOT) -> list[str]:
-    errors: list[str] = []
-
+def _validate_required_paths(root: Path, errors: list[str]) -> None:
     for relative in REQUIRED_PATHS:
         if not (root / relative).exists():
             errors.append(f"missing required path: {relative}")
-
     for relative in FORBIDDEN_DUPLICATES:
         if (root / relative).exists():
             errors.append(f"redundant canonical-data copy: {relative}")
 
+
+def _validate_release_metadata(root: Path, errors: list[str]) -> None:
     try:
         versions = project_versions(root)
     except (KeyError, OSError, SyntaxError, ValueError, tomllib.TOMLDecodeError) as exc:
@@ -169,21 +168,28 @@ def validate_repository(root: Path = ROOT) -> list[str]:
             )
             errors.append(f"release date mismatch: {rendered}")
 
-    for path in candidate_paths(root):
-        if not path.is_file():
-            continue
-        relative = path.relative_to(root).as_posix()
-        if relative not in HISTORICAL_ARTIFACT_ALLOWLIST and (
-            ".bak" in path.name or path.name == ".DS_Store"
-        ):
-            errors.append(f"repository pollution: {relative}")
-        if path.suffix.lower() not in TEXT_SUFFIXES or path.stat().st_size >= 8_000_000:
-            continue
-        text = path.read_text(encoding="utf-8", errors="ignore")
-        for pattern in SECRET_PATTERNS:
-            if pattern.search(text):
-                errors.append(f"possible embedded secret: {relative}")
 
+def _scan_candidate(root: Path, path: Path, errors: list[str]) -> None:
+    if not path.is_file():
+        return
+    relative = path.relative_to(root).as_posix()
+    if relative not in HISTORICAL_ARTIFACT_ALLOWLIST and (
+        ".bak" in path.name or path.name == ".DS_Store"
+    ):
+        errors.append(f"repository pollution: {relative}")
+    if path.suffix.lower() not in TEXT_SUFFIXES or path.stat().st_size >= 8_000_000:
+        return
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    if any(pattern.search(text) for pattern in SECRET_PATTERNS):
+        errors.append(f"possible embedded secret: {relative}")
+
+
+def validate_repository(root: Path = ROOT) -> list[str]:
+    errors: list[str] = []
+    _validate_required_paths(root, errors)
+    _validate_release_metadata(root, errors)
+    for path in candidate_paths(root):
+        _scan_candidate(root, path, errors)
     return errors
 
 

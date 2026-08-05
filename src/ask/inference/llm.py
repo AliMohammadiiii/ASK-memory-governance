@@ -470,7 +470,14 @@ def _extract_first_json_object(text: str) -> str:
     start = text.find("{")
     if start < 0:
         raise ValueError("no JSON object found in model output")
+    end = _balanced_json_object_end(text, start)
+    if end is None:
+        raise ValueError("unterminated JSON object in model output")
+    return text[start:end]
 
+
+def _balanced_json_object_end(text: str, start: int) -> int | None:
+    """Return the exclusive end of a balanced object starting at ``start``."""
     depth = 0
     in_string = False
     escaped = False
@@ -484,7 +491,6 @@ def _extract_first_json_object(text: str) -> str:
             elif ch == '"':
                 in_string = False
             continue
-
         if ch == '"':
             in_string = True
         elif ch == "{":
@@ -492,9 +498,8 @@ def _extract_first_json_object(text: str) -> str:
         elif ch == "}":
             depth -= 1
             if depth == 0:
-                return text[start : idx + 1]
-
-    raise ValueError("unterminated JSON object in model output")
+                return idx + 1
+    return None
 
 
 def _iter_json_objects(text: str) -> list[str]:
@@ -505,31 +510,11 @@ def _iter_json_objects(text: str) -> list[str]:
         start = text.find("{", idx)
         if start < 0:
             break
-        depth = 0
-        in_string = False
-        escaped = False
-        for pos in range(start, len(text)):
-            ch = text[pos]
-            if in_string:
-                if escaped:
-                    escaped = False
-                elif ch == "\\":
-                    escaped = True
-                elif ch == '"':
-                    in_string = False
-                continue
-            if ch == '"':
-                in_string = True
-            elif ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    objects.append(text[start : pos + 1])
-                    idx = pos + 1
-                    break
-        else:
+        end = _balanced_json_object_end(text, start)
+        if end is None:
             break
+        objects.append(text[start:end])
+        idx = end
     return objects
 
 

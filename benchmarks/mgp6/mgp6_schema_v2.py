@@ -91,6 +91,110 @@ class JudgeSpec(BaseModel):
         return patterns
 
 
+def _validate_memory_state(
+    state_name: str,
+    state: list[MemoryRecord],
+    semantic_slot: str,
+) -> None:
+    ids = [record.id for record in state]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"duplicate memory id in {state_name}")
+    if any(record.semantic_slot != semantic_slot for record in state):
+        raise ValueError(f"all {state_name} records must use the example slot")
+    if not any(record.status == "active" for record in state):
+        raise ValueError(f"{state_name} needs at least one active memory")
+    state_by_id = {record.id: record for record in state}
+    for record in state:
+        if record.supersedes_id is None:
+            continue
+        target = state_by_id.get(record.supersedes_id)
+        if target is None:
+            raise ValueError(f"dangling supersedes_id in {state_name}: {record.supersedes_id}")
+        if target.status != "superseded" or target.id == record.id:
+            raise ValueError(
+                f"{state_name} supersedes_id must target a different superseded record"
+            )
+    stable_active = [
+        record for record in state if record.type == "stable_pref" and record.status == "active"
+    ]
+    if any(record.type == "stable_pref" for record in state) and len(stable_active) != 1:
+        raise ValueError(f"{state_name} must have exactly one active stable memory for the slot")
+
+
+def _validate_supersede_transition(
+    initial_memory_state: list[MemoryRecord],
+    gold_memory_state: list[MemoryRecord],
+    active: list[MemoryRecord],
+) -> None:
+    initial_active = {
+        record.id: record for record in initial_memory_state if record.status == "active"
+    }
+    replaced = [
+        record
+        for record in gold_memory_state
+        if record.id in initial_active and record.status == "superseded"
+    ]
+    successors = [record for record in active if record.supersedes_id in initial_active]
+    if len(replaced) != 1 or len(successors) != 1:
+        raise ValueError("SUPERSEDE requires exactly one retained predecessor and one successor")
+    predecessor = replaced[0]
+    initial_predecessor = initial_active[predecessor.id]
+    if predecessor.model_copy(update={"status": "active"}) != initial_predecessor:
+        raise ValueError("SUPERSEDE may change only the predecessor status")
+    successor = successors[0]
+    if successor.supersedes_id != predecessor.id or successor.type != predecessor.type:
+        raise ValueError("SUPERSEDE successor must replace the retained same-type predecessor")
+    if memory_value(successor.text).casefold() == memory_value(predecessor.text).casefold():
+        raise ValueError("SUPERSEDE successor must contain a different value")
+
+
+def _validate_keep_transition(
+    initial_memory_state: list[MemoryRecord],
+    active: list[MemoryRecord],
+) -> None:
+    initial_active = {
+        record.id: record for record in initial_memory_state if record.status == "active"
+    }
+    gold_active = {record.id: record for record in active}
+    if any(record_id not in gold_active for record_id in initial_active):
+        raise ValueError("KEEP must preserve every initially active memory")
+    if any(gold_active[record_id] != record for record_id, record in initial_active.items()):
+        raise ValueError("KEEP may not mutate a preserved active memory")
+    added = [record for record in active if record.id not in initial_active]
+    if any(record.type != "transient_pref" for record in added):
+        raise ValueError("KEEP may add only a separate transient_pref")
+    if any(record.supersedes_id is not None for record in added):
+        raise ValueError("a transient KEEP record cannot supersede durable memory")
+
+
+def _validate_answer_contract(
+    expected: str,
+    forbidden_patterns: list[str],
+    judge_spec: JudgeSpec,
+    active: list[MemoryRecord],
+    gold_memory_state: list[MemoryRecord],
+) -> None:
+    if any(re.search(pattern, expected) for pattern in forbidden_patterns):
+        raise ValueError("expected_answer matches a forbidden pattern")
+    if not set(forbidden_patterns).issubset(judge_spec.not_include):
+        raise ValueError("judge_spec.not_include must contain all forbidden patterns")
+    if not all(re.search(pattern, expected) for pattern in judge_spec.include):
+        raise ValueError("expected_answer must match every judge_spec.include regex")
+    if any(re.search(pattern, expected) for pattern in judge_spec.not_include):
+        raise ValueError("expected_answer matches judge_spec.not_include")
+    active_values = [memory_value(record.text) for record in active]
+    if not any(value.casefold() in expected.casefold() for value in active_values):
+        raise ValueError("expected_answer must use at least one active memory value")
+    stale_values = [
+        memory_value(record.text) for record in gold_memory_state if record.status == "superseded"
+    ]
+    for value in stale_values:
+        if value.casefold() in expected.casefold():
+            raise ValueError("expected_answer uses a superseded value")
+        if not any(re.search(pattern, value) for pattern in judge_spec.not_include):
+            raise ValueError("judge_spec.not_include must cover every superseded value")
+
+
 class MGP6Example(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -156,131 +260,29 @@ class MGP6Example(BaseModel):
             raise ValueError("expected_answer cannot be blank")
         if not re.fullmatch(r"[a-z][a-z0-9_]*", self.semantic_slot):
             raise ValueError("example semantic_slot must be lower snake_case")
-
         for state_name, state in (
             ("initial_memory_state", self.initial_memory_state),
             ("gold_memory_state", self.gold_memory_state),
         ):
-            ids = [record.id for record in state]
-            if len(ids) != len(set(ids)):
-                raise ValueError(f"duplicate memory id in {state_name}")
-            if any(record.semantic_slot != self.semantic_slot for record in state):
-                raise ValueError(f"all {state_name} records must use the example slot")
-            if not any(record.status == "active" for record in state):
-                raise ValueError(f"{state_name} needs at least one active memory")
-            state_by_id = {record.id: record for record in state}
-            for record in state:
-                if record.supersedes_id is None:
-                    continue
-                target = state_by_id.get(record.supersedes_id)
-                if target is None:
-                    raise ValueError(
-                        f"dangling supersedes_id in {state_name}: {record.supersedes_id}"
-                    )
-                if target.status != "superseded" or target.id == record.id:
-                    raise ValueError(
-                        f"{state_name} supersedes_id must target a different superseded record"
-                    )
-            if any(record.type == "stable_pref" for record in state):
-                stable_active = [
-                    record
-                    for record in state
-                    if record.type == "stable_pref" and record.status == "active"
-                ]
-                if len(stable_active) != 1:
-                    raise ValueError(
-                        f"{state_name} must have exactly one active stable memory for the slot"
-                    )
-
+            _validate_memory_state(state_name, state, self.semantic_slot)
         active = [record for record in self.gold_memory_state if record.status == "active"]
-        if not active:
-            raise ValueError("gold_memory_state needs at least one active memory")
-
-        stable_slots = {
-            record.semantic_slot
-            for record in self.gold_memory_state
-            if record.type == "stable_pref"
-        }
-        for slot in stable_slots:
-            stable_active = [
-                record
-                for record in active
-                if record.type == "stable_pref" and record.semantic_slot == slot
-            ]
-            if len(stable_active) != 1:
-                raise ValueError("each stable-pref slot must have exactly one active stable memory")
-
-        gold_by_id = {record.id: record for record in self.gold_memory_state}
-        for record in self.gold_memory_state:
-            if record.supersedes_id is None:
-                continue
-            target = gold_by_id.get(record.supersedes_id)
-            if target is None:
-                raise ValueError(f"dangling supersedes_id: {record.supersedes_id}")
-            if target.status != "superseded" or target.id == record.id:
-                raise ValueError("supersedes_id must point to a different superseded record")
-
-        initial_active = {r.id: r for r in self.initial_memory_state if r.status == "active"}
-        gold_active = {r.id: r for r in active}
         if self.gold_action == "SUPERSEDE":
-            replaced = [
-                r
-                for r in self.gold_memory_state
-                if r.id in initial_active and r.status == "superseded"
-            ]
-            successors = [r for r in active if r.supersedes_id in initial_active]
-            if len(replaced) != 1 or len(successors) != 1:
-                raise ValueError(
-                    "SUPERSEDE requires exactly one retained predecessor and one successor"
-                )
-            predecessor = replaced[0]
-            initial_predecessor = initial_active[predecessor.id]
-            if predecessor.model_copy(update={"status": "active"}) != initial_predecessor:
-                raise ValueError("SUPERSEDE may change only the predecessor status")
-            successor = successors[0]
-            if successor.supersedes_id != predecessor.id or successor.type != predecessor.type:
-                raise ValueError(
-                    "SUPERSEDE successor must replace the retained same-type predecessor"
-                )
-            if memory_value(successor.text).casefold() == memory_value(predecessor.text).casefold():
-                raise ValueError("SUPERSEDE successor must contain a different value")
+            _validate_supersede_transition(
+                self.initial_memory_state,
+                self.gold_memory_state,
+                active,
+            )
         elif self.gold_action == "KEEP":
-            missing = [rid for rid in initial_active if rid not in gold_active]
-            if missing:
-                raise ValueError("KEEP must preserve every initially active memory")
-            if any(gold_active[rid] != record for rid, record in initial_active.items()):
-                raise ValueError("KEEP may not mutate a preserved active memory")
-            added = [r for r in active if r.id not in initial_active]
-            if any(r.type != "transient_pref" for r in added):
-                raise ValueError("KEEP may add only a separate transient_pref")
-            if any(r.supersedes_id is not None for r in added):
-                raise ValueError("a transient KEEP record cannot supersede durable memory")
+            _validate_keep_transition(self.initial_memory_state, active)
         elif self.gold_memory_state != self.initial_memory_state:
             raise ValueError("ABSTAIN must leave the memory state unchanged")
-
-        for pattern in self.forbidden_answer_patterns:
-            if re.search(pattern, expected):
-                raise ValueError("expected_answer matches a forbidden pattern")
-        if not set(self.forbidden_answer_patterns).issubset(self.judge_spec.not_include):
-            raise ValueError("judge_spec.not_include must contain all forbidden patterns")
-        if not all(re.search(pattern, expected) for pattern in self.judge_spec.include):
-            raise ValueError("expected_answer must match every judge_spec.include regex")
-        if any(re.search(pattern, expected) for pattern in self.judge_spec.not_include):
-            raise ValueError("expected_answer matches judge_spec.not_include")
-
-        active_values = [memory_value(record.text) for record in active]
-        if not any(value.casefold() in expected.casefold() for value in active_values):
-            raise ValueError("expected_answer must use at least one active memory value")
-        stale_values = [
-            memory_value(record.text)
-            for record in self.gold_memory_state
-            if record.status == "superseded"
-        ]
-        for value in stale_values:
-            if value.casefold() in expected.casefold():
-                raise ValueError("expected_answer uses a superseded value")
-            if not any(re.search(pattern, value) for pattern in self.judge_spec.not_include):
-                raise ValueError("judge_spec.not_include must cover every superseded value")
+        _validate_answer_contract(
+            expected,
+            self.forbidden_answer_patterns,
+            self.judge_spec,
+            active,
+            self.gold_memory_state,
+        )
         return self
 
 

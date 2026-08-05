@@ -13,7 +13,13 @@ from typing import Any, cast
 from jinja2 import Template
 from pydantic import ValidationError
 
-from ..inference.llm import LLM, LLMResponse, StructuredLLM, StructuredLLMError
+from ..inference.llm import (
+    LLM,
+    LLMResponse,
+    StructuredLLM,
+    StructuredLLMError,
+    _balanced_json_object_end,
+)
 from .schema import EvidenceSpan, ExtractedItem, ExtractionOutput
 
 _JSON_OBJECT_RE = re.compile(r"\{[\s\S]*\}", re.MULTILINE)
@@ -326,41 +332,18 @@ def _salvage_truncated_items(text: str) -> dict[str, Any] | None:
             break
         if text[i] != "{":
             break
-        depth = 0
-        in_str = False
-        esc = False
-        obj_end = -1
-        j = i
-        while j < n:
-            c = text[j]
-            if in_str:
-                if esc:
-                    esc = False
-                elif c == "\\":
-                    esc = True
-                elif c == '"':
-                    in_str = False
-            elif c == '"':
-                in_str = True
-            elif c == "{":
-                depth += 1
-            elif c == "}":
-                depth -= 1
-                if depth == 0:
-                    obj_end = j
-                    break
-            j += 1
-        if obj_end == -1:
+        obj_end = _balanced_json_object_end(text, i)
+        if obj_end is None:
             # Trailing object was cut off: stop and keep what completed.
             break
-        chunk = text[i : obj_end + 1]
+        chunk = text[i:obj_end]
         try:
             candidate = json.loads(chunk)
             ExtractedItem.model_validate(candidate)
         except (json.JSONDecodeError, ValueError):
             break
         salvaged.append(candidate)
-        i = obj_end + 1
+        i = obj_end
     if not salvaged:
         return None
     return {
