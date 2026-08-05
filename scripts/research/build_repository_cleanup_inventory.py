@@ -342,7 +342,12 @@ def build_rows(*, baseline: bool) -> tuple[list[dict[str, object]], list[dict[st
 def write_csv(path: Path, columns: list[str], rows: list[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=columns, extrasaction="ignore")
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=columns,
+            extrasaction="ignore",
+            lineterminator="\n",
+        )
         writer.writeheader()
         writer.writerows(rows)
 
