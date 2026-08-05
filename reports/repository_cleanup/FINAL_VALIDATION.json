@@ -1,0 +1,116 @@
+{
+  "schema_version": "repository-modernization-validation-1.0",
+  "evaluated_at": "2026-08-05T17:05:00Z",
+  "starting_commit": "2452e97a9992779d28fd202b3b91a9c25ae91fab",
+  "branch": "chore/repository-modernization",
+  "status": "PASS_LOCAL_CONDITIONAL",
+  "publication_readiness": "NO_GO",
+  "checks": [
+    {
+      "name": "offline_release_gate",
+      "command": "make release-check PYTHON=.venv/bin/python",
+      "status": "PASS",
+      "details": "Ruff, formatting, mypy, compileall, shell syntax, tests, strict benchmark validation, build, wheel inspection, validity audit, and bibliography audit passed"
+    },
+    {
+      "name": "tests",
+      "command": "pytest",
+      "status": "PASS",
+      "details": "610 passed and 14 documented skips"
+    },
+    {
+      "name": "pre_commit",
+      "command": "python -m pre_commit run --all-files",
+      "status": "PASS"
+    },
+    {
+      "name": "prose_hygiene",
+      "command": "python scripts/validation/validate_prose_hygiene.py",
+      "status": "PASS",
+      "details": "281 maintained files; zero strong leakage violations; weak lexical density 0.116 per 1000 words"
+    },
+    {
+      "name": "prompt_registry",
+      "command": "python scripts/validation/validate_prompt_registry.py",
+      "status": "PASS",
+      "details": "9 prompt paths, hashes, and lineage records"
+    },
+    {
+      "name": "document_paths",
+      "command": "python scripts/validation/validate_document_paths.py",
+      "status": "PASS"
+    },
+    {
+      "name": "claims",
+      "command": "make verify-claims verify-manifest",
+      "status": "PASS",
+      "details": "26 claims with zero mismatches; derived manifest verified"
+    },
+    {
+      "name": "public_boundary",
+      "command": "make validate-public-data anonymous-scan",
+      "status": "PASS_BOUNDARY_DECLARATION",
+      "details": "No boundary problem; legal clearance remains false"
+    },
+    {
+      "name": "package_clean_install",
+      "command": "pip install dist/ask_memory_governance-0.2.0-py3-none-any.whl",
+      "status": "PASS",
+      "details": "Python 3.12 imported ask 0.2.0 outside the repository and found packaged resources"
+    },
+    {
+      "name": "dependency_audit_core",
+      "command": "pip-audit -r constraints/repro-py312.txt",
+      "status": "PASS",
+      "details": "No known vulnerabilities"
+    },
+    {
+      "name": "ml_dependency_resolution",
+      "command": "make hf-compat PYTHON=<isolated-python-3.12>",
+      "status": "PASS",
+      "details": "Exact ML lock validated Transformers 5.14.1, sentence-transformers 5.6.1, and torch 2.13.0; 68 targeted tests passed with 2 documented opt-in skips; live local generation, judging, embeddings, service, and runner paths passed"
+    },
+    {
+      "name": "external_adapter_environment",
+      "command": "pip install -c constraints/external-baselines-py312.txt -r benchmarks/mgp6/external/requirements-external.txt",
+      "status": "PASS_IMPORT_COMPATIBILITY",
+      "details": "Exact Python 3.12 lock passed pip check and imported MemoryOS, Mem0, Graphiti, and Letta adapters under Transformers 4.57.6; native provider-backed comparisons were not run"
+    },
+    {
+      "name": "paper",
+      "command": "make paper",
+      "status": "PASS",
+      "details": "44 pages; references resolve"
+    },
+    {
+      "name": "thesis",
+      "command": "make thesis",
+      "status": "PASS",
+      "details": "157 pages; no undefined citation or reference warning"
+    },
+    {
+      "name": "readiness",
+      "command": "make readiness",
+      "status": "NO_GO_EXPECTED",
+      "details": "16 external or human-controlled publication blockers"
+    }
+  ],
+  "not_run": [
+    "paid provider inference",
+    "GPU model execution",
+    "private-data evaluation",
+    "independent human annotation or adjudication",
+    "native external-system comparison",
+    "public release or push",
+    "clean-clone validation of the final ledger commit"
+  ],
+  "inventory": {
+    "baseline_regular_files": 1096,
+    "final_regular_files": 1103,
+    "disposition_rows": 1096,
+    "pending_dispositions": 0,
+    "migration_rows": 17,
+    "hash_identical_archives": 13
+  },
+  "working_tree_clean": false
+}
