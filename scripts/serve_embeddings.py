@@ -9,7 +9,7 @@ on one GPU is the bottleneck anyway; sentence-transformers batches each call.
 Run:
   PYTHONPATH=src python scripts/serve_embeddings.py \
     --model jinaai/jina-embeddings-v5-text-small --task retrieval \
-    --device cuda --host 0.0.0.0 --port 8100
+    --device cuda --trust-remote-code --port 8100
 
 Then point the eval at it:
   run_baseline ... --embedder-backend openai_compatible \
@@ -33,6 +33,7 @@ _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"
 _DEVICE_INFO: dict[str, object] = {}
 _LOCK = threading.Lock()
+_MAX_REQUEST_BYTES = 64 * 1024 * 1024
 
 
 def _torch_device_info(requested_device: str) -> dict[str, object]:
@@ -99,6 +100,12 @@ class _Handler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
+            if length < 0 or length > _MAX_REQUEST_BYTES:
+                self._send(
+                    413,
+                    {"error": f"request body exceeds {_MAX_REQUEST_BYTES} bytes"},
+                )
+                return
             req = json.loads(self.rfile.read(length) or b"{}")
         except (ValueError, json.JSONDecodeError) as exc:
             self._send(400, {"error": f"bad request: {exc}"})
@@ -141,15 +148,18 @@ class _Handler(BaseHTTPRequestHandler):
         return
 
 
-def main() -> int:
-    global _DEVICE_INFO, _EMBEDDER, _MODEL_NAME
+def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser()
     p.add_argument("--model", default="jinaai/jina-embeddings-v5-text-small")
     p.add_argument("--served-name", default="jina")
     p.add_argument("--task", default="retrieval")
     p.add_argument("--prompt-name", default=None)
     p.add_argument("--device", default="cuda")
-    p.add_argument("--trust-remote-code", action="store_true", default=True)
+    p.add_argument(
+        "--trust-remote-code",
+        action="store_true",
+        help="Allow model-repository Python code. Disabled unless explicitly requested.",
+    )
     p.add_argument(
         "--batch-size",
         type=int,
@@ -167,11 +177,29 @@ def main() -> int:
         "Jina v5 is Qwen3-based; long turns can OOM a T4 unless "
         "they are truncated.",
     )
-    p.add_argument("--host", default="0.0.0.0")
+    p.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind address. Use 0.0.0.0 only on an explicitly protected network.",
+    )
     p.add_argument("--port", type=int, default=8100)
-    args = p.parse_args()
+    p.add_argument(
+        "--max-request-bytes",
+        type=int,
+        default=64 * 1024 * 1024,
+        help="Reject larger request bodies before reading them into memory.",
+    )
+    return p
+
+
+def main(argv: list[str] | None = None) -> int:
+    global _DEVICE_INFO, _EMBEDDER, _MAX_REQUEST_BYTES, _MODEL_NAME
+    args = build_parser().parse_args(argv)
+    if args.max_request_bytes <= 0:
+        raise SystemExit("--max-request-bytes must be positive")
 
     _MODEL_NAME = args.served_name
+    _MAX_REQUEST_BYTES = args.max_request_bytes
     _DEVICE_INFO = _torch_device_info(args.device)
     print(
         f"[embed-server] torch/device info: {json.dumps(_DEVICE_INFO, sort_keys=True)}", flush=True

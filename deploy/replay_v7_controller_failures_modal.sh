@@ -100,7 +100,7 @@ if [[ "${DRY_RUN}" != "1" ]]; then
       printf '[modal-failure-replay] embed command:'
       printf ' %q' "${PYTHON}" scripts/serve_embeddings.py \
         --model "${EMBED_MODEL}" --served-name "${EMBED_SERVED_NAME}" \
-        --device cpu --batch-size 128 --max-seq-length 256 \
+        --device cpu --trust-remote-code --batch-size 128 --max-seq-length 256 \
         --host "${EMBED_HOST}" --port "${EMBED_PORT}"
       printf '\n\n'
     } >> "${EMBED_LOG}"
@@ -108,6 +108,7 @@ if [[ "${DRY_RUN}" != "1" ]]; then
       --model "${EMBED_MODEL}" \
       --served-name "${EMBED_SERVED_NAME}" \
       --device cpu \
+      --trust-remote-code \
       --batch-size 128 \
       --max-seq-length 256 \
       --host "${EMBED_HOST}" \
