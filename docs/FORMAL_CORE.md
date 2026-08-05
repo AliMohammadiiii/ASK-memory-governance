@@ -31,4 +31,3 @@ single-slot mode. Minimal counterexamples are in
 The propositions cease to apply if a trace omits required inputs, configuration
 changes, identifiers are remapped, evidence is mutable, the transition has
 side-effects outside modeled state, or the adapter overstates its replay scope.
-

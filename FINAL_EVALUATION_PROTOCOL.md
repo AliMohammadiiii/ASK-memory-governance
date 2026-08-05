@@ -22,14 +22,14 @@ single homogeneous LongMemEval-M rerun defined here.
 
 Two tracks, one frozen protocol.
 
-### 1.1 MGP-6 v2 — final tables ALREADY LOCKED
+### 1.1 MGP-6 v2, final tables ALREADY LOCKED
 All MGP-6 v2 headline numbers are final-candidate quality and are frozen in the
 ledger (recomputed 2026-07-12 from 180-line prediction files by
 `benchmarks/mgp6/metrics_mgp6.py`). The final tables are *regenerated*, not
 re-run, from the ledger by `scripts/analysis/build_final_results.py`. The
 remaining MGP-6 checks are local (no hosted model needed):
 
-- **Few-shot (6-shot) decision baseline metric recompute — completed, run incomplete.**
+- **Few-shot (6-shot) decision baseline metric recompute, completed, run incomplete.**
   Coverage-aware rescoring over 180 gold items (174 predictions plus six
   aligned as INVALID) gives 0.7833 action accuracy and 0.7692 macro-F1. The
   frozen output is `runs_local/mgp6_few6_rescore/few6_report.json`. Because the
@@ -38,7 +38,7 @@ remaining MGP-6 checks are local (no hosted model needed):
 - **Verification rescore** of the locked rows (defensive; confirms the ledger
   values reproduce from the archived predictions).
 
-### 1.2 LongMemEval-M — homogeneous rerun is the ONLY path to a final number
+### 1.2 LongMemEval-M, homogeneous rerun is the ONLY path to a final number
 **No existing LongMemEval number is final.** The reported 77.2% (139/180) is a
 selection-biased `failure_replay_only` construction: 110 retained v7 successes
 (judge Gemma-4-31b-it, produced under a provider-contaminated run) + 25 machine

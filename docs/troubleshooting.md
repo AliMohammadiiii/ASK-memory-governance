@@ -32,10 +32,11 @@ Create/authorize a replacement key in the account, export it only in the current
 shell, and run the two-item smoke before the full evaluation:
 
 ```bash
-export OPENROUTER_API_KEY='...'
-export LONGMEMEVAL_DATA='/absolute/path/to/the/frozen-180-slice.jsonl'
+export LONGMEMEVAL_DATA="${PWD}/.private/longmemeval/longmemeval_m_full.jsonl"
 bash scripts/evaluation/run_longmemeval_final.sh --smoke
 ```
+
+Load `OPENROUTER_API_KEY` from the approved secret manager before the smoke run.
 
 Never paste a real key into a config, command history committed to Git, issue,
 paper artifact, or review archive. The run wrapper records only key presence.
@@ -45,7 +46,7 @@ paper artifact, or review archive. The run wrapper records only key presence.
 HTTP 402 is an account-wide insufficient-credit failure. The client stops
 request and shard retries immediately after detecting it; repeated retries
 cannot repair the balance. Fund the account, then resume the same immutable run
-directory. The frozen V12 policy uses only `google/gemma-4-31b-it` as judge and
+directory. The recorded V12 policy uses only `google/gemma-4-31b-it` as judge and
 has no model fallback. The evaluator records the requested/actual judge,
 attempt count, and raw-response hash; the homogeneity verifier rejects any
 model substitution or missing provenance.

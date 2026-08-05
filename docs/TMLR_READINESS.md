@@ -11,4 +11,3 @@ anonymous release scan, authorship/OpenReview, and final human venue review.
 The paper should lead with ASK as the protocol/audit contribution, distinguish
 the MGP controller composition from the protocol, label MGP-6 as controlled
 synthetic evidence, and disclose V12 provenance limitations.
-

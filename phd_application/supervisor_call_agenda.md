@@ -1,7 +1,7 @@
 # Prospective-supervisor call agenda
 
-**Purpose:** Test intellectual fit, identify a viable scope, and agree next steps.  
-**Suggested length:** 25-30 minutes.  
+**Purpose:** Test intellectual fit, identify a viable scope, and agree next steps.
+**Suggested length:** 25-30 minutes.
 **Status:** Planning document only; it does not imply that a call or supervision agreement exists.
 
 ## 1. Opening and objective - 2 minutes
@@ -65,4 +65,3 @@ Clarify the novelty boundary: the proposed contribution is a longitudinal task a
 - Supervision availability status:
 - Permission-to-name status:
 - Follow-up date:
-

@@ -68,8 +68,8 @@ remain local evidence and must not be copied into a public branch or release.
 
 The independent annotator's raw per-item labels are not covered by the author's CC BY declaration without documented permission from that contributor. LICENSE-DATA.md says the public release withholds the raw label and disagreement files, but both files are currently tracked:
 
-- benchmarks/mgp6/annotations/human/human_independent_annotations_test.csv — 2,605 bytes; SHA-256 dbc649d7c846a9c8a187ffca34dd68e802ac9c0f9fcccd66994a789b121facd9
-- benchmarks/mgp6/annotations/human/human_vs_author_disagreements.csv — 675 bytes; SHA-256 bb98a34e09ed3d9f6cda4bfe5be6f7cf2de85d4c1d9a31792d8e44e743602182
+- benchmarks/mgp6/annotations/human/human_independent_annotations_test.csv, 2,605 bytes; SHA-256 dbc649d7c846a9c8a187ffca34dd68e802ac9c0f9fcccd66994a789b121facd9
+- benchmarks/mgp6/annotations/human/human_vs_author_disagreements.csv, 675 bytes; SHA-256 bb98a34e09ed3d9f6cda4bfe5be6f7cf2de85d4c1d9a31792d8e44e743602182
 
 The final public directory and its nested ZIP exclude both files. They retain
 only the aggregate report/summary and
@@ -134,13 +134,13 @@ Exclude unless separately cleared:
 
 Final local gate status:
 
-1. real public-host URLs — **user action**; no host was fabricated;
-2. workstation-specific paths in the public set — **pass**;
-3. raw-annotation exclusion — **pass**; written consent is required only to add them;
-4. explicit sanitized snapshot rather than recursive workspace copy — **pass**;
-5. secret/path/excluded-file scan and ZIP integrity checks — **pass**;
-6. per-file manifest, internal checksums, outer ZIP SHA-256, validation report, and license inventory — **pass**; and
-7. clean-directory extraction, tests, strict schema check, build, and isolated install — **pass**.
+1. real public-host URLs, **user action**; no host was fabricated;
+2. workstation-specific paths in the public set, **pass**;
+3. raw-annotation exclusion, **pass**; written consent is required only to add them;
+4. explicit sanitized snapshot rather than recursive workspace copy, **pass**;
+5. secret/path/excluded-file scan and ZIP integrity checks, **pass**;
+6. per-file manifest, internal checksums, outer ZIP SHA-256, validation report, and license inventory, **pass**; and
+7. clean-directory extraction, tests, strict schema check, build, and isolated install, **pass**.
 
 The local sanitized artifact is complete. Creating the real remote and adding
 host metadata are external publication steps; they do not alter the scientific

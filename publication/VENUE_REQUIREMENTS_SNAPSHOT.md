@@ -60,4 +60,3 @@ gate fails, use TMLR. Choose JMLR only if every gate passes and the final paper
 states general ML lessons rather than presenting a narrow application artifact.
 
 Human re-check: `BLOCKED_HUMAN_DECISION`
-

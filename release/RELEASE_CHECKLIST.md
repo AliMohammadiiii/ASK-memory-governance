@@ -13,4 +13,3 @@ Status: `NO_GO`
 - [ ] Independently inspect the built archive, not only the source tree.
 - [ ] Freeze authorship, venue declarations, artifact DOI/URL, and citation.
 - [ ] Re-run `scripts/check_readiness.py`; release only on the intended GO state.
-

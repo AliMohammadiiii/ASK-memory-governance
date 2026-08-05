@@ -12,4 +12,3 @@ coverage, confusion matrix, per-slice uncertainty, and deviations. Trajectory
 analysis must cluster by trajectory and separately report error propagation and
 recovery. Do not select a headline threshold or multiplicity family after
 seeing confirmation outcomes.
-

@@ -13,12 +13,12 @@ bootstrap), `src/ask/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
 
 ---
 
-## 1. Confidence intervals — stratified bootstrap
+## 1. Confidence intervals, stratified bootstrap
 
 - **Resamples:** 10,000. **Seed:** 0. **Method:** stratified percentile bootstrap
   (2.5% / 97.5% percentiles).
 - **Strata:**
-  - MGP-6: `(type, gold_action)` — the strata already used by
+  - MGP-6: `(type, gold_action)`, the strata already used by
     `metrics_mgp6.BootstrapReporter` (resample within each stratum, with
     replacement, preserving stratum sizes).
   - LongMemEval: `competency` (6 strata x 30). SSP-only selections are a single
@@ -29,7 +29,7 @@ bootstrap), `src/ask/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
 - Note: the shipped MGP-6 scorer defaults to 1,000 bootstrap iterations for speed;
   the **final** CIs are recomputed at 10,000 (`--bootstrap 10000`) with seed 0.
 
-## 2. Paired system comparisons — exact McNemar
+## 2. Paired system comparisons, exact McNemar
 
 - For two systems evaluated on the **same items**, build the 2x2 discordance table
   (a_only_correct, b_only_correct) and compute the **exact two-sided McNemar
@@ -69,7 +69,7 @@ family; SSP family) to the McNemar p-values, sorted ascending, threshold
 2. controller **vs** b2 (flat-vector)
 
 ### 4c. SSP ablation family (m = 6; on the 30 SSP items, paired vs baseline arm A)
-Full method (arm F) **vs each** of arms A (baseline), B, C, D, E, G — i.e. the
+Full method (arm F) **vs each** of arms A (baseline), B, C, D, E, G, i.e. the
 five contrasts F-vs-{A,B,C,D,E} plus F-vs-G, per
 `docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md`. (Runs only after the PROPOSED
 correction code is implemented; see the run matrix statuses.)
@@ -87,7 +87,7 @@ confirmatory result.
 - For SSP rates (unsupported-preference, cross-person contamination): risk
   difference vs baseline with paired-bootstrap CI.
 
-## 6. Decision rule — diagnostic -> verified
+## 6. Decision rule, diagnostic -> verified
 
 A claim is **upgraded from diagnostic to verified** only when ALL hold:
 

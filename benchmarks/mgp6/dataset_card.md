@@ -51,6 +51,7 @@ Do not use MGP-6 v2 to claim broad assistant quality, real-user safety, demograp
 
 The data is synthetic, English-only, compact, and single-author designed. Type balance is diagnostic while action balance is intentionally unequal. Surface naturalization does not make the corpus conversationally representative. The test split reduces template leakage but does not replace external validation. Human review columns are supplied and synchronized with this release, but multi-annotator agreement has not yet been measured. Any public benchmark claim would require independent annotation, adjudication, documented agreement, broader domains, and a release review.
 
-## Citation
+## Citation status
 
-Citation placeholder: author, thesis title, institution, and year to be added after thesis deposit.
+No archival citation is assigned before thesis deposit. Cite the repository
+commit and dataset version when reporting pre-deposit results.

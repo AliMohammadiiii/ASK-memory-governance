@@ -1,4 +1,4 @@
-# Colab / T4 runbook — LongMemEval-S 50 controller (Ollama, quality fixes)
+# Colab / T4 runbook, LongMemEval-S 50 controller (Ollama, quality fixes)
 
 This runs the LongMemEval-S 50-session controller evaluation on local Ollama
 models on a Colab **T4**, with the 2026-06-08 accuracy + latency fixes enabled
@@ -16,7 +16,7 @@ uploaded = files.upload()
 %cd ask_controller_mgp6_t4_colab
 ```
 
-## 2. Run (final — controller, full 50, A10/L4 optimized)
+## 2. Run (final, controller, full 50, A10/L4 optimized)
 
 The defaults are already tuned for a 24 GB GPU (A10 / L4). This is the exact
 run command:
@@ -37,12 +37,12 @@ LLM evaluation.
 
 The pipeline interleaves `extraction (llama) -> relation (phi) -> answer (qwen)`
 many times per question. With only **one** loaded model, Ollama unload/reloads
-on every call — that thrashing, not inference, was the dominant cost on the
+on every call, that thrashing, not inference, was the dominant cost on the
 first run (~285 s/question with the GPU near 0%). Keeping all three role models
 resident kills the thrash, and `SESSION_WORKERS`/`NUM_PARALLEL` fill the idle
 GPU with concurrent questions. `EMBEDDER_DEVICE=cuda` moves the MiniLM retrieval
 embedder off the 2 CPU cores. `SESSION_WORKERS=3` runs 3 disjoint session shards
-as independent processes then merges — per-session grades are identical to
+as independent processes then merges, per-session grades are identical to
 serial, only wall-clock drops.
 
 ### Hardware overrides
@@ -53,14 +53,14 @@ serial, only wall-clock drops.
   bash deploy/run_colab_m4w13_t4_ollama.sh
 ```
 
-If CPU saturates with the workers, raise the CPU reservation to 4 cores — CPU is
+If CPU saturates with the workers, raise the CPU reservation to 4 cores, CPU is
 cheap next to the GPU, and finishing faster lowers total cost.
 
 What `QUALITY=t4` turns on (T4-affordable levels of the validated knobs):
-- `--controller-include-assistant-context` — recovers the ~32% single-session-assistant questions
-- `--controller-prior-top-k 3` with `--controller-prior-similarity-threshold 0.45` — lets **Supersede** fire (knowledge-update) while the cosine gate keeps per-question latency bounded
-- `--k 10`, `--controller-retrieval-neighbor-window 1`, `--answer-retry-on-unknown` — recall + fewer spurious "Unknown"
-- `--controller-temporal-scaffold`, `--controller-computation-answerer` — real question-date scaffolding plus deterministic date/numeric/list answers when evidence is unambiguous
+- `--controller-include-assistant-context`, recovers the ~32% single-session-assistant questions
+- `--controller-prior-top-k 3` with `--controller-prior-similarity-threshold 0.45`, lets **Supersede** fire (knowledge-update) while the cosine gate keeps per-question latency bounded
+- `--k 10`, `--controller-retrieval-neighbor-window 1`, `--answer-retry-on-unknown`, recall + fewer spurious "Unknown"
+- `--controller-temporal-scaffold`, `--controller-computation-answerer`, real question-date scaffolding plus deterministic date/numeric/list answers when evidence is unambiguous
 
 The script installs deps, installs+starts Ollama with the requested loaded-model
 and parallelism settings, pulls `qwen3.5:9b`, `llama3.2:3b`, `phi3.5:3.8b`,

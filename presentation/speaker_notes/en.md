@@ -1,4 +1,4 @@
-# Speaker notes — English defense
+# Speaker notes, English defense
 
 ## 1. Governing Long-Term Memory Before Retrieval
 
@@ -60,7 +60,7 @@ Explain why adapter comparisons need two mappings. These values describe behavio
 
 Be precise about annotation. There is one independent annotator, not a multi-human panel. The four-model agreement study is a model audit and must never be described as human inter-annotator agreement.
 
-## 16. LongMemEval has no final result—and the 77.2% construction is rejected
+## 16. LongMemEval has no final result-and the 77.2% construction is rejected
 
 Treat this as a negative-result slide. The decisive top-up found 13 regressions among 84 previously successful items. Even the most favorable bound cannot reach 77.2 percent.
 
@@ -80,46 +80,46 @@ Do not rush this slide. The thesis makes a narrow supported claim and preserves 
 
 Close by answering the research question: an interpretable governed write path can make memory revision explicit and measurable, but the evidence supports a controlled diagnostic claim, not a final downstream superiority claim.
 
-## 21. Backup — formal decision and failure definitions
+## 21. Backup, formal decision and failure definitions
 
 Use this backup if asked for notation or metric definitions. Clarify that premise resistance and invalid-commit rate are project-defined diagnostic metrics.
 
-## 22. Backup — baseline mechanisms and what each can express
+## 22. Backup, baseline mechanisms and what each can express
 
 Use when a committee member asks whether baselines are capability-matched. They are reference mechanisms designed to isolate memory policies, not broad system rankings.
 
-## 23. Backup — statistical tests and inferential scope
+## 23. Backup, statistical tests and inferential scope
 
 Mention exact paired two-sided McNemar tests, Holm correction across the prespecified family, and paired risk differences. No LongMemEval hypothesis test is valid for the incomplete heterogeneous evidence.
 
-## 24. Backup — annotation agreement and the single boundary case
+## 24. Backup, annotation agreement and the single boundary case
 
 The disagreement sits on the same SUPERSEDE/ABSTAIN boundary as the controller’s conservative errors. It is retained with an explicit blinded-adjudication protocol.
 
-## 25. Backup — leakage controls and researcher degrees of freedom
+## 25. Backup, leakage controls and researcher degrees of freedom
 
 Use this slide to answer leakage concerns. The largest researcher degree of freedom was the LongMemEval failure-replay construction; the audit explicitly rejects it and preserves the contradiction from the complementary top-up.
 
-## 26. Backup — why the LongMemEval evidence is diagnostic only
+## 26. Backup, why the LongMemEval evidence is diagnostic only
 
 Explain selection bias visually. Replaying only failures and retaining all old successes can inflate the merged score. The top-up directly tests that assumption and finds regressions.
 
-## 27. Backup — external action mappings
+## 27. Backup, external action mappings
 
 Use this table if asked for exact adapter values. Repeat that both mappings are disclosed and MemOS is not included as a final-candidate capability result.
 
-## 28. Backup — nearest conceptual neighbors narrow the novelty claim
+## 28. Backup, nearest conceptual neighbors narrow the novelty claim
 
 State the allowed novelty claim: operationalization and controlled layered evaluation of this combination. Do not claim invention of update actions, abstention, lineage, provenance, or memory governance.
 
-## 29. Backup — ethical and deployment risks
+## 29. Backup, ethical and deployment risks
 
 Clarify that governance here is epistemic, not a legal-compliance guarantee. Deployment requires organizational access control and privacy policy beyond this research prototype.
 
-## 30. Backup — additional complete MGP-6 results
+## 30. Backup, additional complete MGP-6 results
 
 The six-shot row is coverage-aware: six missing predictions are aligned as INVALID. It remains incomplete and is excluded from completed-run inferential comparisons.
 
-## 31. Backup — architecture and code ownership follow the evaluation layers
+## 31. Backup, architecture and code ownership follow the evaluation layers
 
 Point to the repository structure if implementation questions arise: src/ask contains the library; scripts contain frozen runners and verification; benchmarks contain the redistributable MGP-6 diagnostic; artifacts and reports contain ledgers and audit outputs.

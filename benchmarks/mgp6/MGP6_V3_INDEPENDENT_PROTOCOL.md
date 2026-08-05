@@ -1,6 +1,6 @@
 # MGP-6 v3 independent confirmation protocol
 
-Status: **pre-registered design; not executed**  
+Status: **pre-registered design; not executed**
 Purpose: replace the author-designed MGP-6 v2 pilot with an independently
 constructed confirmation set that can test evidence reasoning rather than
 scenario-family recognition.

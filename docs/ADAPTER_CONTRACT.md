@@ -18,4 +18,3 @@ records immutable configuration and evidence identities; emits a typed
 Adapters must never read hidden labels during prediction, silently change the
 frozen policy, omit fallbacks, or claim broader replay than their logged fields
 support.
-

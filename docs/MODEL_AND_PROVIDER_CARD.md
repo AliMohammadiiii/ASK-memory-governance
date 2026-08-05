@@ -9,4 +9,3 @@ limitation.
 No paid inference is authorized by the repository. Provider-output
 redistribution is blocked until `release/MODEL_OUTPUT_RIGHTS.md` is resolved.
 The current model-family matrix is prospective and marked not run.
-

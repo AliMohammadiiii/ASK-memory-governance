@@ -41,4 +41,3 @@ not merely a larger diagnostic or more baselines.
 No venue has a defensible guaranteed acceptance probability. Inflating claims,
 hiding negative evidence, or treating templates as completed work would reduce
 rather than increase the real acceptance chance.
-

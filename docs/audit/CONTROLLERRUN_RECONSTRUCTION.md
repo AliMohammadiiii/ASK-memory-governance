@@ -1,4 +1,4 @@
-# Controller Run Reconstruction — LongMemEval-M
+# Controller Run Reconstruction, LongMemEval-M
 
 **Purpose.** Reconstruct, stage by stage, the exact pipeline path that produced
 the reported LongMemEval-M controller numbers, and document how the headline
@@ -108,7 +108,7 @@ extraction, judging, and scoring. Stages in execution order:
   `_compute_answer` (`:2535`), `_aggregation_scaffold` (`:2568`, disabled in v8),
   `_ordinal_list_evidence` (`:2645`). Unknown-retry via
   `_answer_needs_retry` (`:3115`) and `answer_escalation_llm`
-  (a genuinely stronger model **only** if configured — see §3).
+  (a genuinely stronger model **only** if configured, see §3).
 
 ### 1.9 Judge requests / fallbacks
 - `LongMemEvalGrader.grade()` (`src/ask/eval/longmemeval.py:646`) applies, in
@@ -199,7 +199,7 @@ Per `runs/lme_m_openrouter_qwen_gemma_minilm_strat30_seed0_v7/ANALYSIS_REPORT.md
 - **11,505** extraction traces total; **736** carry an `error` field.
 - **316** of those errors contain `402` (HTTP 402 insufficient-credit); the
   report states "at least 315".
-- **388** traces are empty extractions with **zero** model responses — provider
+- **388** traces are empty extractions with **zero** model responses, provider
   no-responses that v7 cached as valid "no memory" judgments.
 - At least **12** cascade relaunches; relation no-responses were likewise
   converted to `independent/unclear` (a cached Keep).

@@ -1,4 +1,4 @@
-# MGP-6 v2 — Multi-Model Annotation Agreement Report
+# MGP-6 v2, Multi-Model Annotation Agreement Report
 
 ## Scope
 
@@ -57,23 +57,23 @@ This report compares four independent model-produced annotation files against th
 ### MGP6V2-T1-TEST-017
 - Author gold: **SUPERSEDE**
 - Perturbation: `Fruit based breakfasts have become my weekday routine.`
-- Gemini Pro: **SUPERSEDE** (confidence 0.98) — The user asserts that fruit-based breakfasts are now their weekday routine. This durable change in habit replaces the prior preference for savory breakfasts.
-- GPT Sol High: **ABSTAIN** (confidence 0.74) — The user reports a weekday breakfast routine rather than a general breakfast preference. A fruit-based weekday habit can coexist with an overall savory preference, so a same-slot replacement is not sufficiently established.
-- Kimi: **SUPERSEDE** (confidence 0.95) — The user's later statement reliably establishes a new durable standing value for the same memory dimension, implicitly invalidating the prior value.
-- Z: **SUPERSEDE** (confidence 0.95) — The user states fruit based breakfasts have become their weekday routine, a durable same-slot claim that supersedes the prior savory preference.
+- Gemini Pro: **SUPERSEDE** (confidence 0.98), The user asserts that fruit-based breakfasts are now their weekday routine. This durable change in habit replaces the prior preference for savory breakfasts.
+- GPT Sol High: **ABSTAIN** (confidence 0.74), The user reports a weekday breakfast routine rather than a general breakfast preference. A fruit-based weekday habit can coexist with an overall savory preference, so a same-slot replacement is not sufficiently established.
+- Kimi: **SUPERSEDE** (confidence 0.95), The user's later statement reliably establishes a new durable standing value for the same memory dimension, implicitly invalidating the prior value.
+- Z: **SUPERSEDE** (confidence 0.95), The user states fruit based breakfasts have become their weekday routine, a durable same-slot claim that supersedes the prior savory preference.
 - Adjudication note: the key question is whether a **weekday routine** necessarily occupies the same mutually exclusive slot as the broader `breakfast_style_preference`. The 3–1 majority supports `SUPERSEDE`, but the dissent identifies a plausible scope mismatch.
 
 ### MGP6V2-T2-TEST-016
 - Author gold: **SUPERSEDE**
 - Perturbation: `The renewal notice for my subscription is dated the 20th.`
-- Gemini Pro: **SUPERSEDE** (confidence 0.95) — The user shares new, specific evidence from a renewal notice that places the subscription renewal on the 20th. This updates and replaces the previously held date.
-- GPT Sol High: **ABSTAIN** (confidence 0.96) — The date printed on a renewal notice is not necessarily the subscription's renewal day. The event therefore does not clearly update the same semantic fact as the stored 18th renewal day.
-- Kimi: **SUPERSEDE** (confidence 0.95) — The user's later statement reliably provides updated factual information for the same episodic memory slot, establishing the new value as current.
-- Z: **SUPERSEDE** (confidence 0.93) — The user reports the renewal notice for their subscription is dated the 20th, a reliable same-slot durable claim that supersedes the prior 18th value.
+- Gemini Pro: **SUPERSEDE** (confidence 0.95), The user shares new, specific evidence from a renewal notice that places the subscription renewal on the 20th. This updates and replaces the previously held date.
+- GPT Sol High: **ABSTAIN** (confidence 0.96), The date printed on a renewal notice is not necessarily the subscription's renewal day. The event therefore does not clearly update the same semantic fact as the stored 18th renewal day.
+- Kimi: **SUPERSEDE** (confidence 0.95), The user's later statement reliably provides updated factual information for the same episodic memory slot, establishing the new value as current.
+- Z: **SUPERSEDE** (confidence 0.93), The user reports the renewal notice for their subscription is dated the 20th, a reliable same-slot durable claim that supersedes the prior 18th value.
 - Adjudication note: the phrase **“renewal notice … is dated the 20th”** may refer to the notice's document date rather than the subscription renewal day. This is a substantive same-slot ambiguity and should be manually reviewed or the item wording clarified.
 
 ## Recommended paper interpretation
 
-The four-model audit shows extremely high consistency with the existing labels, but it should not be reported as human inter-annotator agreement. For a paper, report it as an **LLM-based multi-model annotation audit** if retained. To satisfy the stronger claim in the runbook—independent annotation with Cohen's κ as a human reliability check—obtain at least one blinded human annotation pass over the 90 test items and then compute human-vs-author κ and adjudicate disagreements.
+The four-model audit shows extremely high consistency with the existing labels, but it should not be reported as human inter-annotator agreement. For a paper, report it as an **LLM-based multi-model annotation audit** if retained. To satisfy the stronger claim in the runbook-independent annotation with Cohen's κ as a human reliability check-obtain at least one blinded human annotation pass over the 90 test items and then compute human-vs-author κ and adjudicate disagreements.
 
 The two identified disagreement cases are useful quality-control findings. They should be adjudicated before freezing the final gold labels, because both dissent rationales concern semantic scope or referent identity rather than arbitrary model error.

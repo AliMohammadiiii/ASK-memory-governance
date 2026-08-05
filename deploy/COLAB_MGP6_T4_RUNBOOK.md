@@ -88,4 +88,3 @@ Send the result zip printed by the script. It includes:
 - `promotion_gate.txt`
 - generated `NOTES/m4w14_mgp6_results.md`
 - active config and prompt files
-

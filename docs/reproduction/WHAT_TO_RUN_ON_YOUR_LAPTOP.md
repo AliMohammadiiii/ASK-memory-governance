@@ -98,29 +98,31 @@ bash scripts/evaluation/run_single_session_preferences.sh
 ```
 bash scripts/evaluation/run_longmemeval_final.sh --dry-run
 ```
-- Purpose: confirm the frozen command assembles and prints the models/judge in
+- Purpose: confirm the recorded command assembles and prints the models/judge in
   use, without calling any model.
 - Workload: none (prints plan).
-- Success: prints the frozen config (main model qwen/qwen3.5-9b; only judge
+- Success: prints the recorded config (main model qwen/qwen3.5-9b; only judge
   google/gemma-4-31b-it with no model fallback; MiniLM cpu; seed 0)
   and the SAMPLE range; executes nothing.
 
-## 6. Homogeneous LongMemEval-M rerun (HOSTED — the required run)
+## 6. Homogeneous LongMemEval-M rerun (HOSTED, the required run)
 
 ```
+export LONGMEMEVAL_DATA="${PWD}/.private/longmemeval/longmemeval_m_full.jsonl"
+
 # tiny end-to-end sanity first (hits the API; 2 items):
-OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl \
-  bash scripts/evaluation/run_longmemeval_final.sh --smoke
+bash scripts/evaluation/run_longmemeval_final.sh --smoke
 
 # the full run:
-OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl \
-  bash scripts/evaluation/run_longmemeval_final.sh --full
+bash scripts/evaluation/run_longmemeval_final.sh --full
 
-# controller-only final-candidate run through the identical frozen path:
-OPENROUTER_API_KEY=sk-or-... LONGMEMEVAL_DATA=data/slices/longmemeval_m_full.jsonl \
-  bash scripts/evaluation/run_longmemeval_final.sh --full --controller-only
+# controller-only final-candidate run through the identical recorded path:
+bash scripts/evaluation/run_longmemeval_final.sh --full --controller-only
 ```
-- Purpose: the frozen full-180, 5-system (controller,b4,b3,b2,b1), one-config,
+
+Load `OPENROUTER_API_KEY` from the approved secret manager before these hosted runs.
+
+- Purpose: the recorded full-180, 5-system (controller,b4,b3,b2,b1), one-config,
   one-judge-policy V12 engineering confirmation. Because V11 outcomes informed
   the fixes, this reused-slice run is post-hoc; a new untouched holdout is needed
   to establish a confirmatory final LongMemEval result.

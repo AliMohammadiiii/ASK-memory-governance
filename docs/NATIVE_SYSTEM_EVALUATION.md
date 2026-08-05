@@ -21,4 +21,3 @@ No new native empirical execution was authorized in this pass. JMLR
 cross-storage evidence remains blocked until exact backend versions, services,
 licenses, controls, complete run artifacts, and contract-test results are
 frozen and independently reviewed.
-

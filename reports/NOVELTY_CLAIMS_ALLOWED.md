@@ -9,8 +9,8 @@ handling, lineage, typing, abstention, and operation-level evaluation.
 
 ## A. Core conjunction
 
-**A1. Allowed.** “We operationalize a three-way write policy—KEEP, lineage-
-preserving SUPERSEDE, or write-time ABSTAIN—over typed, provenance-tracked
+**A1. Allowed.** “We operationalize a three-way write policy-KEEP, lineage-
+preserving SUPERSEDE, or write-time ABSTAIN-over typed, provenance-tracked
 records and evaluate the write decision separately from stored state/lineage,
 retrieval, and downstream answers.”
 
