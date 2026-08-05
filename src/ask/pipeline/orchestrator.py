@@ -22,8 +22,6 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
-
 from ..audit import ActionLogWriter
 from ..baselines.base import BaselineAnswer
 from ..baselines.embeddings import Embedder, TurnEmbedder
@@ -34,6 +32,7 @@ from ..baselines.flat_vector_store import (
 from ..baselines.flat_vector_store import (
     MemoryItem as RetrievalMemoryItem,
 )
+from ..baselines.prompts import build_prompt_environment
 from ..classifier import CandidateMemory, PriorMemory, RelationOutput
 from ..controller.active import (
     DEFAULT_SCORECARD_CONFIG,
@@ -345,8 +344,6 @@ def _extract_final_answer(text: str) -> str:
     return lines[-1] if lines else raw
 
 
-_PROMPT_DIR = Path(__file__).resolve().parents[1] / "baselines" / "prompts"
-
 # --- Prompt-budget guard (M4W13 context-saturation fix) --------------------
 # Background: on the failed-slice T4 runs some answer prompts filled the entire
 # Ollama context window (`prompt_tokens >= num_ctx`), so the model had no room
@@ -460,17 +457,6 @@ class CandidateContext:
     turn_id: str
     timestamp: str | None
     source_turn: str
-
-
-def build_jinja_env() -> Environment:
-    return Environment(
-        loader=FileSystemLoader(str(_PROMPT_DIR)),
-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
 
 
 def turn_payload(
@@ -679,7 +665,7 @@ class ControllerOrchestrator:
 
     def __post_init__(self) -> None:
         self.embedder = self.embedder or TurnEmbedder(device="cpu")
-        self._env = build_jinja_env()
+        self._env = build_prompt_environment()
         self._template = self._env.get_template(self.prompt_template)
         self._action_log_started = self.append_action_log
         self._next_log_id = _next_jsonl_id(self.action_log_path) if self.append_action_log else 1
@@ -1749,9 +1735,7 @@ class ControllerOrchestrator:
         conf = getattr(candidate.item, "extraction_confidence", None)
         if conf is not None and float(conf) < self.escalation_extraction_confidence:
             return True
-        if self._marker_burden(candidate) > self.escalation_marker_burden:
-            return True
-        return False
+        return self._marker_burden(candidate) > self.escalation_marker_burden
 
     @staticmethod
     def _marker_burden(candidate: CandidateContext) -> float:
@@ -2901,10 +2885,9 @@ class ControllerOrchestrator:
             ):
                 value += 0.12
             competency = (getattr(session, "competency", "") or "").casefold()
-            if "assistant" in competency and hit.item.role == "assistant":
-                value += 0.03
-            elif any(name in competency for name in ("user", "preference")) and (
-                hit.item.role == "user"
+            if ("assistant" in competency and hit.item.role == "assistant") or (
+                any(name in competency for name in ("user", "preference"))
+                and (hit.item.role == "user")
             ):
                 value += 0.03
             return value
@@ -3175,12 +3158,11 @@ class ControllerOrchestrator:
             classify_compute_intent(session.question) is ComputeIntent.ORDINAL_LIST_ITEM
         ):
             evidence.extend(self._ordinal_list_evidence(session))
-        computed = compute_answer(
+        return compute_answer(
             session.question,
             evidence,
             question_date=session.question_date,
         )
-        return computed
 
     def _aggregation_scaffold(
         self, session: LongMemEvalSession, retrieved: list[RetrievedItem]
@@ -3618,7 +3600,7 @@ def _append_lexical_complement(
     n_docs = len(cand_items)
     seen = {(hit.item.session_id, hit.item.turn_idx, hit.item.text) for hit in retrieved}
     scored: list[tuple[float, RetrievalMemoryItem]] = []
-    for item, overlap in zip(cand_items, item_overlaps):
+    for item, overlap in zip(cand_items, item_overlaps, strict=True):
         if not overlap:
             continue
         score = sum(math.log(1.0 + n_docs / df[tok]) for tok in overlap)
@@ -3631,7 +3613,7 @@ def _append_lexical_complement(
         scored.append((score, item))
     scored.sort(key=lambda pair: -pair[0])
     out = list(retrieved)
-    for score, item in scored[:cap]:
+    for _score, item in scored[:cap]:
         seen.add((item.session_id, item.turn_idx, item.text))
         out.append(RetrievedItem(item=item, score=0.25, rank=len(out)))
     return out

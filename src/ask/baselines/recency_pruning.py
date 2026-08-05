@@ -57,8 +57,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
-
 from ask.audit import ActionLogWriter
 from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, memory_session_ids
 from ask.inference.llm import LLM
@@ -81,6 +79,7 @@ from .base import BaselineAnswer
 from .embeddings import Embedder, TurnEmbedder
 from .flat_vector_store import FlatVectorStore
 from .flat_vector_store import MemoryItem as RetrievalItem
+from .prompts import build_prompt_environment
 
 # Match the flat-vector + no-memory system prompt verbatim. Cross-baseline
 # comparisons must not be confounded by system-prompt wording.
@@ -92,18 +91,6 @@ DEFAULT_SYSTEM_PROMPT = (
 
 _DEFAULT_K = 5
 _DEFAULT_CAPACITY = 50
-_PROMPT_DIR = Path(__file__).resolve().parent / "prompts"
-
-
-def _build_jinja_env() -> Environment:
-    return Environment(
-        loader=FileSystemLoader(str(_PROMPT_DIR)),
-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
 
 
 def _next_action_log_id(path: Path | None) -> int:
@@ -357,7 +344,7 @@ class RecencyPruningBaseline:
             raise ValueError(f"capacity must be > 0; got {self.capacity}")
         if self.k <= 0:
             raise ValueError(f"k must be > 0; got {self.k}")
-        self._env = _build_jinja_env()
+        self._env = build_prompt_environment()
         self._template = self._env.get_template(self.prompt_template)
         # The action_log writer for the FIRST answer() call uses mode='w'
         # (truncate); subsequent calls use mode='a' (append). The
@@ -667,7 +654,7 @@ class RecencyPruningBaseline:
                 actives_now = retrieve_active(conn)
                 # We need the trivial-extracted item metadata to render
                 # provenance — recover it by id from `admitted`.
-                admitted_by_id = {db_id: itm for db_id, itm in admitted}
+                admitted_by_id = dict(admitted)
                 retrieval_items: list[RetrievalItem] = []
                 for active in actives_now:
                     if active.id is None:
