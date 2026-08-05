@@ -7,7 +7,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 MGP6Type = Literal["T1", "T2", "T3", "T4", "T5", "T6"]
 MGP6GoldAction = Literal["KEEP", "SUPERSEDE", "ABSTAIN"]
@@ -96,7 +96,7 @@ def load_mgp6_jsonl(path: str | Path) -> list[MGP6Scenario]:
                 raise ValueError(f"line {line_no}: invalid JSON") from exc
             try:
                 scenarios.append(MGP6Scenario.model_validate(raw))
-            except Exception as exc:
+            except ValidationError as exc:
                 raise ValueError(f"line {line_no}: invalid MGP-6 scenario") from exc
     return scenarios
 

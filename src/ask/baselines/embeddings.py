@@ -173,7 +173,7 @@ def _apply_remote_code_import_shim() -> None:
         return
     try:
         from transformers import dynamic_module_utils  # type: ignore[import-not-found]
-    except Exception:
+    except ImportError:
         return
 
     _original_get_imports = dynamic_module_utils.get_imports
@@ -191,11 +191,11 @@ def _torch_cuda_is_available() -> bool:
     """Return whether the installed torch build can actually use CUDA."""
     try:
         import torch  # type: ignore[import-not-found]
-    except Exception:
+    except ImportError:
         return False
     try:
         return bool(torch.cuda.is_available())
-    except Exception:
+    except (AssertionError, RuntimeError):
         return False
 
 
@@ -328,7 +328,7 @@ class TurnEmbedder:
                 if callable(fn):
                     try:
                         value = fn()
-                    except Exception:
+                    except (AttributeError, RuntimeError, TypeError, ValueError):
                         value = None
                     if value:
                         dim = int(value)

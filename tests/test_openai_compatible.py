@@ -184,6 +184,25 @@ def test_openai_compatible_reads_retry_after_from_openrouter_error_body() -> Non
     assert _retry_after_from_body(body) == "7"
 
 
+def test_task_validator_programming_error_does_not_trigger_model_fallback() -> None:
+    def broken_validator(_text, _parsed):  # noqa: ANN001
+        raise TypeError("validator defect")
+
+    llm = OpenAICompatibleLLM(
+        model_id="primary-model",
+        base_url="http://localhost:3001/v1",
+        api_key="key",
+        fallback_model_ids=("backup-model",),
+        task_validator=broken_validator,
+    )
+
+    with patch("urllib.request.urlopen", return_value=_response(_chat("ok"))) as mock:
+        with pytest.raises(TypeError, match="validator defect"):
+            llm.generate("Say ok.")
+
+    assert mock.call_count == 1
+
+
 def test_openai_compatible_falls_back_after_transient_retries_exhausted() -> None:
     llm = OpenAICompatibleLLM(
         model_id="busy-model",

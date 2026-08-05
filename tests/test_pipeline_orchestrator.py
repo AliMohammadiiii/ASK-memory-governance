@@ -12,7 +12,12 @@ from ask.baselines.embeddings import FakeEmbedder
 from ask.baselines.flat_vector_store import MemoryItem, RetrievedItem
 from ask.classifier import RelationOutput
 from ask.data.longmemeval import LongMemEvalCorpusSession, LongMemEvalSession, LongMemEvalTurn
-from ask.extraction import EvidenceSpan, ExtractedItem, ExtractionOutput
+from ask.extraction import (
+    EvidenceSpan,
+    ExtractedItem,
+    ExtractionOutput,
+    ExtractionUnavailableError,
+)
 from ask.inference.fake import FakeLLM
 from ask.memory.models import ControllerAction
 from ask.pipeline import ControllerOrchestrator
@@ -96,7 +101,7 @@ class BrokenExtractor:
 
     def extract(self, turn, window, *, max_new_tokens=512, temperature=0.0, seed=0):
         self.calls += 1
-        raise RuntimeError("schema echo")
+        raise ExtractionUnavailableError("schema echo")
 
 
 class EmptyExtractor:

@@ -89,7 +89,7 @@ def test_m4w14_real_traces_recover_majority_of_discarded_items() -> None:
     for row in rows:
         try:
             output = _validate_any_json_object(row["first_pass_text"], ExtractionOutput)
-        except Exception:
+        except ValueError:
             continue
         if output.items:
             new_with_items += 1

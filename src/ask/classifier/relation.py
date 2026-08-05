@@ -11,7 +11,7 @@ from typing import Any
 
 from jinja2 import Template
 
-from ..inference.llm import LLM, LLMResponse, StructuredLLM
+from ..inference.llm import LLM, LLMResponse, StructuredLLM, StructuredLLMError
 from .schema import (
     CandidateMemory,
     FinalRelation,
@@ -97,7 +97,7 @@ class RelationClassifier:
                 temperature=temperature,
                 seed=seed,
             )
-        except Exception as exc:
+        except StructuredLLMError as exc:
             stage1_responses = _responses_since(traced_llm, response_count_before)
             output = RelationOutput(
                 logical_relation="independent",
@@ -140,7 +140,7 @@ class RelationClassifier:
                 temperature=temperature,
                 seed=seed,
             )
-        except Exception as exc:
+        except StructuredLLMError as exc:
             stage2_responses = _responses_since(traced_llm, response_count_before)
             stage2 = Stage2Output(
                 temporal="unknown",

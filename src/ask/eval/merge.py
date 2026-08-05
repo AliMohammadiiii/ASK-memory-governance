@@ -46,7 +46,7 @@ def grade_from_dict(row: dict[str, Any]) -> GradeResult | None:
         return None
     try:
         return GradeResult(**payload)
-    except Exception:
+    except (TypeError, ValueError):
         return None
 
 

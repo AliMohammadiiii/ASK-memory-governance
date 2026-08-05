@@ -634,7 +634,7 @@ class StructuredLLM:
     ) -> str:
         try:
             schema_dump = json.dumps(schema.model_json_schema(), indent=2)
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             schema_dump = str(schema)
         return (
             "Your previous response could not be parsed. "

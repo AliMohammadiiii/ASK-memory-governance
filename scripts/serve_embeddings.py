@@ -41,7 +41,7 @@ def _torch_device_info(requested_device: str) -> dict[str, object]:
     info: dict[str, object] = {"requested_device": requested_device}
     try:
         import torch  # type: ignore[import-not-found]
-    except Exception as exc:  # noqa: BLE001
+    except (ImportError, OSError, RuntimeError) as exc:
         info["torch_import_error"] = f"{type(exc).__name__}: {exc}"
         return info
     info["torch_version"] = getattr(torch, "__version__", "unknown")
@@ -52,7 +52,7 @@ def _torch_device_info(requested_device: str) -> dict[str, object]:
     if cuda_available:
         try:
             info["cuda_device_name"] = torch.cuda.get_device_name(0)
-        except Exception as exc:  # noqa: BLE001
+        except (AssertionError, RuntimeError) as exc:
             info["cuda_device_name_error"] = f"{type(exc).__name__}: {exc}"
     return info
 
@@ -66,12 +66,12 @@ def _model_device_summary(model: object) -> str:
         module_device = getattr(module, "device", None)
         if module_device is not None:
             return str(module_device)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         pass
     try:
         for param in model.parameters():  # type: ignore[attr-defined]
             return str(param.device)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         pass
     return "unknown"
 

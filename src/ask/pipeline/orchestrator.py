@@ -23,6 +23,8 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+from pydantic import ValidationError
+
 from ..audit import ActionLogWriter
 from ..baselines.base import BaselineAnswer
 from ..baselines.embeddings import Embedder, TurnEmbedder
@@ -68,7 +70,13 @@ from ..controller.temporal import (
     reference_date,
 )
 from ..data.longmemeval import LongMemEvalSession, LongMemEvalTurn, memory_session_ids
-from ..extraction import EvidenceSpan, ExtractedItem, ExtractionOutput, empty_extraction_output
+from ..extraction import (
+    EvidenceSpan,
+    ExtractedItem,
+    ExtractionOutput,
+    ExtractionUnavailableError,
+    empty_extraction_output,
+)
 from ..inference.llm import LLM
 from ..memory import (
     ActionLogEntry,
@@ -393,7 +401,7 @@ def _load_token_encoder() -> Any | None:
         import tiktoken
 
         return tiktoken.get_encoding("cl100k_base")
-    except Exception:  # noqa: BLE001 — any import/lookup failure -> char fallback
+    except (AttributeError, ImportError, KeyError, ValueError):
         return None
 
 
@@ -410,7 +418,7 @@ def _estimate_prompt_tokens(text: str) -> int:
     if _TOKEN_ENCODER is not None:
         try:
             return int(len(_TOKEN_ENCODER.encode(text)) * 1.05) + 1
-        except Exception:  # noqa: BLE001
+        except (KeyError, RuntimeError, TypeError, ValueError):
             pass
     return int(len(text) / _CHARS_PER_TOKEN_ESTIMATE * _TOKEN_ESTIMATE_SAFETY) + 1
 
@@ -1351,7 +1359,7 @@ class ControllerOrchestrator:
                 continue
             try:
                 self._extraction_cache[key] = ExtractionOutput.model_validate(output)
-            except Exception:
+            except ValidationError:
                 continue
 
     def _load_relation_cache_file(self, path: Path | None) -> None:
@@ -1364,7 +1372,7 @@ class ControllerOrchestrator:
                 continue
             try:
                 self._relation_cache[key] = RelationOutput.model_validate(output)
-            except Exception:
+            except ValidationError:
                 continue
 
     def _load_extraction_trace_file(self, path: Path) -> None:
@@ -1385,7 +1393,7 @@ class ControllerOrchestrator:
                 self._extraction_cache[self._extraction_key(turn)] = (
                     ExtractionOutput.model_validate(output)
                 )
-            except Exception:
+            except ValidationError:
                 continue
 
     def _load_relation_trace_file(self, path: Path) -> None:
@@ -1418,7 +1426,7 @@ class ControllerOrchestrator:
                         prior_timestamp=prior.get("timestamp"),
                     )
                 ] = RelationOutput.model_validate(output)
-            except Exception:
+            except ValidationError:
                 continue
 
     def _process_session(
@@ -1530,7 +1538,7 @@ class ControllerOrchestrator:
                 temperature=0.0,
                 seed=self.seed,
             )
-        except Exception as exc:
+        except ExtractionUnavailableError as exc:
             if self.fail_on_extraction_error:
                 raise
             # Local models can occasionally emit unrecoverable structured output
@@ -3197,7 +3205,7 @@ class ControllerOrchestrator:
             resp = self.llm.generate(
                 prompt, max_new_tokens=self.max_new_tokens, temperature=0.0, seed=self.seed
             )
-        except Exception:  # noqa: BLE001 — scaffold is best-effort
+        except (OSError, TimeoutError, RuntimeError):
             return None
         items = _parse_json_array(resp.text)
         if not items:

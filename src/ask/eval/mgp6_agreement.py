@@ -9,6 +9,8 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from .mgp6_schema import MGP6AdvisorAnnotation, MGP6Scenario, load_mgp6_jsonl
 
 FIELDS = ("gold_action", "gold_memory_state", "expected_answer")
@@ -33,7 +35,7 @@ def load_advisor_annotations(path: str | Path) -> dict[str, MGP6AdvisorAnnotatio
                 continue
             try:
                 annotation = MGP6AdvisorAnnotation.model_validate(json.loads(line))
-            except Exception as exc:
+            except (json.JSONDecodeError, ValidationError) as exc:
                 raise ValueError(f"line {line_no}: invalid advisor annotation: {exc}") from exc
             if annotation.scenario_id in rows:
                 raise ValueError(f"duplicate advisor annotation: {annotation.scenario_id}")

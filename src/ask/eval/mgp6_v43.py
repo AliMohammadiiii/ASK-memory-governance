@@ -17,7 +17,7 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ask.controller.active import FeatureSnapshot, decide, rho
 
@@ -177,7 +177,7 @@ def load_public_records(path: str | Path, *, require_gold: bool = True) -> list[
             continue
         try:
             record = MGP6V43Record.model_validate_json(line)
-        except Exception as exc:  # Pydantic supplies the useful validation detail.
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid public record") from exc
         if require_gold and record.gold_action is None:
             raise MGP6V43Error(f"{path}:{line_no}: missing development gold_action")
@@ -624,7 +624,7 @@ def parse_action_response(raw_response: str) -> str:
         return MGP6V43Prediction.model_validate(
             {"public_id": "MGP43-00000000000000000000", **value}
         ).action
-    except Exception as exc:
+    except ValidationError as exc:
         raise MGP6V43Error("response does not contain a valid action") from exc
 
 
@@ -637,7 +637,7 @@ def load_predictions(path: str | Path, expected_ids: Iterable[str]) -> list[MGP6
             continue
         try:
             predictions.append(MGP6V43Prediction.model_validate_json(line))
-        except Exception as exc:
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid prediction") from exc
     ids = [prediction.public_id for prediction in predictions]
     duplicates = sorted(item_id for item_id, count in Counter(ids).items() if count > 1)
@@ -680,7 +680,7 @@ def load_predictions_allow_partial(path: str | Path) -> list[MGP6V43Prediction]:
             continue
         try:
             record = MGP6V43Prediction.model_validate_json(line)
-        except Exception as exc:
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid prediction") from exc
         if record.public_id in seen:
             raise MGP6V43Error(f"{path}:{line_no}: duplicate resumed prediction")

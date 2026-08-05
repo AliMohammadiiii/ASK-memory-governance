@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ask.endpoints import validate_http_endpoint
 
@@ -93,6 +93,10 @@ class LLMCallLogRow(BaseModel):
 
 class OpenAICompatibleFatalError(RuntimeError):
     """Account/auth failure that another model retry cannot recover from."""
+
+
+class OpenAICompatibleRequestError(RuntimeError):
+    """Recoverable transport or response-contract failure."""
 
 
 @dataclass
@@ -193,7 +197,7 @@ class OpenAICompatibleLLM:
                 # only repeats paid requests and then causes every shard restart
                 # to do the same work again.
                 raise
-            except Exception as exc:
+            except (OpenAICompatibleRequestError, ValidationError, IndexError) as exc:
                 last_error = exc
                 self._write_log(
                     LLMCallLogRow(
@@ -223,7 +227,9 @@ class OpenAICompatibleLLM:
             # text but failed a strict gate. Downstream structured wrappers can
             # still repair or report the parse failure.
             return last_response
-        raise RuntimeError(f"OpenAI-compatible request failed for all models: {last_error}")
+        raise OpenAICompatibleRequestError(
+            f"request failed for all configured models: {last_error}"
+        ) from last_error
 
     def _generate_once(
         self,
@@ -415,7 +421,7 @@ class OpenAICompatibleLLM:
                     error = f"embedded HTTP {status} error from {url}: {body_excerpt}"
                     if status == 402:
                         raise OpenAICompatibleFatalError(error)
-                    raise RuntimeError(error)
+                    raise OpenAICompatibleRequestError(error)
                 self._sleep_before_retry(attempt, None, body)
             except urllib.error.HTTPError as exc:
                 body = ""
@@ -436,7 +442,7 @@ class OpenAICompatibleLLM:
                     error = f"HTTP {exc.code} from {url}: {body_excerpt}"
                     if exc.code == 402:
                         raise OpenAICompatibleFatalError(error) from exc
-                    raise RuntimeError(error) from exc
+                    raise OpenAICompatibleRequestError(error) from exc
                 self._sleep_before_retry(attempt, exc.headers.get("Retry-After"), body)
             except urllib.error.URLError as exc:
                 logger.warning(
@@ -447,9 +453,9 @@ class OpenAICompatibleLLM:
                     exc,
                 )
                 if attempt >= attempts:
-                    raise RuntimeError(f"request failed at {url}: {exc}") from exc
+                    raise OpenAICompatibleRequestError(f"request failed at {url}: {exc}") from exc
                 self._sleep_before_retry(attempt, None, None)
-        raise RuntimeError(f"request failed at {url}: exhausted retry attempts")
+        raise OpenAICompatibleRequestError(f"request failed at {url}: exhausted retry attempts")
 
     def _sleep_before_retry(
         self,
@@ -469,10 +475,7 @@ class OpenAICompatibleLLM:
     def _task_pass(self, text: str, parsed_json: dict[str, Any] | None) -> tuple[bool, str | None]:
         if self.task_validator is None:
             return True, None
-        try:
-            return self.task_validator(text, parsed_json)
-        except Exception as exc:
-            return False, f"task validator raised {type(exc).__name__}: {exc}"
+        return self.task_validator(text, parsed_json)
 
     def _write_log(self, row: LLMCallLogRow) -> None:
         if self.log_path is None:
