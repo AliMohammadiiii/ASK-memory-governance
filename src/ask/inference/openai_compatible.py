@@ -19,6 +19,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from ask.endpoints import validate_http_endpoint
+
 from .llm import LLMResponse, _strip_think_blocks
 from .openai_headers import openai_compatible_headers
 
@@ -135,6 +137,13 @@ class OpenAICompatibleLLM:
     # guard is OFF and an oversized prompt is rejected by vLLM with HTTP 400
     # ("maximum context length is N tokens").
     num_ctx: int | None = None
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     def generate(
         self,

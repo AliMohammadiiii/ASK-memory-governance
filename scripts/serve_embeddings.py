@@ -28,6 +28,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 if "src" not in sys.path:
     sys.path.insert(0, "src")
 from ask.baselines.embeddings import TurnEmbedder  # noqa: E402
+from ask.endpoints import validate_bind_address  # noqa: E402
 
 _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"
@@ -184,6 +185,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument("--port", type=int, default=8100)
     p.add_argument(
+        "--allow-non-loopback",
+        action="store_true",
+        help="Explicitly permit binding outside the local loopback interface.",
+    )
+    p.add_argument(
         "--max-request-bytes",
         type=int,
         default=64 * 1024 * 1024,
@@ -197,6 +203,14 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.max_request_bytes <= 0:
         raise SystemExit("--max-request-bytes must be positive")
+    try:
+        validate_bind_address(
+            args.host,
+            args.port,
+            allow_non_loopback=args.allow_non_loopback,
+        )
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
     _MODEL_NAME = args.served_name
     _MAX_REQUEST_BYTES = args.max_request_bytes

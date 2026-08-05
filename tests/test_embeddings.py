@@ -114,6 +114,7 @@ def test_ollama_embedder_uses_api_embed_and_normalizes(monkeypatch) -> None:
     e = OllamaEmbedder(
         model_id="llama3.2:3b",
         host="http://ollama.test",
+        allow_insecure_http=True,
         timeout_s=12.0,
         batch_size=2,
     )
@@ -164,6 +165,7 @@ def test_openai_compatible_embedder_uses_v1_embeddings_and_normalizes(
     e = OpenAICompatibleEmbedder(
         model_id="auto",
         base_url="http://freellmapi.test/v1",
+        allow_insecure_http=True,
         api_key="key",
         timeout_s=9.0,
         batch_size=2,
@@ -256,6 +258,7 @@ def test_openai_compatible_embedder_splits_by_batch_chars(monkeypatch) -> None:
     e = OpenAICompatibleEmbedder(
         model_id="bge-m3",
         base_url="http://freellmapi.test/v1",
+        allow_insecure_http=True,
         api_key="key",
         batch_size=10,
         max_batch_chars=4,

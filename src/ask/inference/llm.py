@@ -31,6 +31,8 @@ import pydantic
 import yaml
 from pydantic import BaseModel
 
+from ask.endpoints import validate_http_endpoint
+
 _PYDANTIC_AVAILABLE = True
 
 
@@ -83,6 +85,17 @@ class InferenceConfig:
     openai_base_url: str = "http://localhost:3001/v1"
     openai_api_key_env: str = "FREELLMAPI_KEY"
     openai_timeout_s: float = 120.0
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.ollama_host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
+        validate_http_endpoint(
+            self.openai_base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
 
 def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
@@ -120,6 +133,7 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
         openai_base_url=str(raw.get("openai_base_url", "http://localhost:3001/v1")),
         openai_api_key_env=str(raw.get("openai_api_key_env", "FREELLMAPI_KEY")),
         openai_timeout_s=float(raw.get("openai_timeout_s", 120.0)),
+        allow_insecure_http=bool(raw.get("allow_insecure_http", False)),
     )
 
 
@@ -661,7 +675,11 @@ def build_llm(
     if cfg.backend == "ollama":
         from .ollama import OllamaLLM
 
-        return OllamaLLM(model_id=cfg.model_id, host=cfg.ollama_host)
+        return OllamaLLM(
+            model_id=cfg.model_id,
+            host=cfg.ollama_host,
+            allow_insecure_http=cfg.allow_insecure_http,
+        )
     if cfg.backend in {"openai_compatible", "openai-compatible", "openai"}:
         from .openai_compatible import OpenAICompatibleLLM
 
@@ -670,6 +688,7 @@ def build_llm(
             base_url=cfg.openai_base_url,
             api_key_env=cfg.openai_api_key_env,
             timeout_s=cfg.openai_timeout_s,
+            allow_insecure_http=cfg.allow_insecure_http,
         )
     if cfg.backend == "huggingface":
         return HuggingFaceLLM(cfg)

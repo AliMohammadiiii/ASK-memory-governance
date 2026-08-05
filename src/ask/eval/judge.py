@@ -13,6 +13,7 @@ from typing import Any, Literal
 
 import yaml
 
+from ask.endpoints import validate_http_endpoint
 from ask.inference.llm import LLM, InferenceConfig
 
 JudgeBackend = Literal[
@@ -47,6 +48,17 @@ class JudgeBackendConfig:
     openai_timeout_s: float = 120.0
     openai_log_path: str | None = None
     openai_include_raw_responses: bool = False
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.ollama_host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
+        validate_http_endpoint(
+            self.openai_base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> JudgeBackendConfig:
@@ -74,6 +86,7 @@ class JudgeBackendConfig:
             openai_timeout_s=float(judge.get("openai_timeout_s", 120.0)),
             openai_log_path=judge.get("openai_log_path"),
             openai_include_raw_responses=bool(judge.get("openai_include_raw_responses", False)),
+            allow_insecure_http=bool(judge.get("allow_insecure_http", False)),
         )
 
 
@@ -110,6 +123,7 @@ def build_judge_backend(
             timeout_s=config.timeout_s,
             response_format=config.response_format,
             think=config.think,
+            allow_insecure_http=config.allow_insecure_http,
         )
 
     if config.backend == "openai_compatible":
@@ -127,6 +141,7 @@ def build_judge_backend(
             require_json=bool(config.response_format),
             log_path=Path(config.openai_log_path) if config.openai_log_path else None,
             include_raw_response=config.openai_include_raw_responses,
+            allow_insecure_http=config.allow_insecure_http,
         )
 
     if config.backend in {"huggingface", "hf"}:

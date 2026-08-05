@@ -44,14 +44,14 @@ from typing import Any, Protocol, runtime_checkable
 import numpy as np
 from pydantic import BaseModel, ConfigDict
 
+from ask.endpoints import is_loopback_host, validate_http_endpoint
 from ask.inference.openai_headers import openai_compatible_headers
-
-_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
 
 
 def _is_loopback_url(url: str) -> bool:
     """Return whether *url* targets this machine's loopback interface."""
-    return urllib.parse.urlparse(url).hostname in _LOOPBACK_HOSTS
+    host = urllib.parse.urlparse(url).hostname
+    return bool(host and is_loopback_host(host))
 
 
 def _urlopen(
@@ -408,8 +408,15 @@ class OllamaEmbedder:
     truncate: bool = True
     max_retries: int = 5
     backoff_s: float = 2.0
+    allow_insecure_http: bool = False
 
     _embedding_dim: int | None = field(default=None, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     @property
     def embedding_dim(self) -> int:
@@ -535,9 +542,16 @@ class OpenAICompatibleEmbedder:
     min_interval_s: float = 0.0
     max_batch_chars: int = 0
     extra_headers: dict[str, str] = field(default_factory=dict)
+    allow_insecure_http: bool = False
 
     _embedding_dim: int | None = field(default=None, init=False, repr=False)
     _last_request_at: float = field(default=0.0, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     @property
     def embedding_dim(self) -> int:

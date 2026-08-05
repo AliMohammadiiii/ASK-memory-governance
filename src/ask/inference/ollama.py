@@ -31,6 +31,8 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 
+from ask.endpoints import validate_http_endpoint
+
 from .llm import LLMResponse
 
 # 5xx responses Ollama can emit during cold-start / runner-restart windows.
@@ -75,6 +77,13 @@ class OllamaLLM:
     # Ollama 0.24+ reasoning models can spend the whole token budget on hidden
     # thinking and return empty content; callers can pass False to suppress it.
     think: bool | str | None = None
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     def generate(
         self,

@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ask.endpoints import validate_http_endpoint
+
 from .llm import LLMResponse
 from .openai_compatible import _parse_strict_json_object
 
@@ -32,6 +34,13 @@ class OpenModelMessagesLLM:
     include_raw_response: bool = False
     extra_headers: dict[str, str] = field(default_factory=dict)
     _next_key_index: int = field(default=0, init=False, repr=False)
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     def generate(
         self,
