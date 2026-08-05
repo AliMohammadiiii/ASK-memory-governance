@@ -49,11 +49,15 @@ class EnvironmentValidationError(RuntimeError):
     """Raised when a specialist environment contract is incomplete."""
 
 
-def validate_lock(path: Path) -> int:
+def _display_path(path: Path) -> Path:
     try:
-        display_path = path.relative_to(ROOT)
+        return path.relative_to(ROOT)
     except ValueError:
-        display_path = path
+        return path
+
+
+def validate_lock(path: Path) -> int:
+    display_path = _display_path(path)
     if not path.is_file():
         raise EnvironmentValidationError(f"missing exact lock: {display_path}")
     package_count = 0
