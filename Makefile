@@ -10,6 +10,7 @@ MAINTAINED_PYTHON := src tests scripts benchmarks deploy/download_longmemeval_s.
 	typecheck build shell-syntax compile smoke validate-data reproduce-mgp6 \
 	reproduce-longmemeval figures paper paper-audit thesis clean repo-check \
 	manuscript-check thesis-template \
+	specialist-locks \
 	claims verify-claims inventory verify-manifest readiness validate-traces \
 	validate-public-data reproduce-public build-paper-tmlr build-paper-jmlr \
 	anonymous-scan release-audit ci clean-reproduction validate-experiments \
@@ -40,6 +41,7 @@ help:
 	@echo "advisor-package  Build a sanitized local supervisor review snapshot"
 	@echo "paper           Compile the complete canonical paper"
 	@echo "thesis          Compile the complete canonical thesis"
+	@echo "specialist-locks  Validate exact specialist dependency locks"
 
 setup:
 	git submodule update --init --recursive
@@ -48,7 +50,7 @@ setup:
 
 check: repo-check lint format-check typecheck compile test-fast shell-syntax
 
-release-check: check test validate-data build paper-audit manuscript-check
+release-check: check test validate-data build paper-audit manuscript-check specialist-locks
 
 test:
 	$(PYTEST) -q
@@ -96,6 +98,10 @@ figures:
 
 manuscript-check:
 	$(PYTHON) scripts/validation/build_manuscripts.py --check
+
+specialist-locks:
+	$(PYTHON) scripts/validation/validate_specialist_environment.py --profile ml --lock-only
+	$(PYTHON) scripts/validation/validate_specialist_environment.py --profile adapters --lock-only
 
 paper: manuscript-check
 	$(PYTHON) scripts/validation/build_manuscripts.py --kind paper

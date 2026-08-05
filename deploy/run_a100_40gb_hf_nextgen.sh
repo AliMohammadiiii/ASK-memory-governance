@@ -4,7 +4,7 @@
 # separate from the verified Qwen2.5-7B / MiniLM run in
 # run_a100_40gb_hf_final.sh:
 #
-#   * It builds an ISOLATED venv (.venv_nextgen) from deploy/requirements_nextgen.txt
+#   * It builds an ISOLATED venv (.venv_nextgen) from the exact maintained lock
 #     so the newer torch/transformers/peft never touch the pinned .venv.
 #   * It does NOT use the max-a100-40gb quality preset (that preset hard-codes
 #     Qwen2.5-7B + MiniLM). Every strong controller knob is passed explicitly.
@@ -29,9 +29,11 @@ DATASET="${DATASET:-m}"
 SYSTEMS="${SYSTEMS:-b1,b2,b3,b4,controller}"
 MAX_WORKERS="${MAX_WORKERS:-1}"
 HF_MODEL="${HF_MODEL:-Qwen/Qwen3.5-9B}"
+HF_REVISION="${HF_REVISION:-}"
 HF_DTYPE="${HF_DTYPE:-bfloat16}"
 HF_MAX_SEQ_LEN="${HF_MAX_SEQ_LEN:-8192}"
 EMBEDDER_MODEL="${EMBEDDER_MODEL:-jinaai/jina-embeddings-v5-text-small}"
+EMBEDDER_REVISION="${EMBEDDER_REVISION:-}"
 SLICE="${SLICE:-data/slices/longmemeval_${DATASET}_full.jsonl}"
 OUT="${OUT:-runs/lme_${DATASET}_full_hf_nextgen_qwen35_9b_jina_seed0}"
 VENV="${VENV:-.venv_nextgen}"
@@ -45,25 +47,23 @@ if ! nvidia-smi --query-gpu=name,memory.total --format=csv,noheader 2>/dev/null;
   [ "${ALLOW_NO_GPU:-0}" = "1" ] || exit 1
 fi
 
-# 2) Isolated venv with the next-gen stack.
-PYBIN=""
-for cand in python3.12 python3.11; do
-  command -v "$cand" >/dev/null 2>&1 && { PYBIN="$cand"; break; }
-done
-[ -z "${PYBIN}" ] && python3 -c 'import sys; sys.exit(0 if sys.version_info[:2]>=(3,11) else 1)' 2>/dev/null && PYBIN=python3
-[ -z "${PYBIN}" ] && { echo "[nextgen] ERROR: need Python >=3.11"; exit 1; }
-if [ ! -x "${VENV}/bin/python" ] || ! "${VENV}/bin/python" -c 'import sys; sys.exit(0 if sys.version_info[:2]>=(3,11) else 1)' 2>/dev/null; then
+# 2) Isolated CPython 3.12 environment with the exact maintained stack.
+PYBIN="$(command -v python3.12 || true)"
+if [ ! -x "${VENV}/bin/python" ] || ! "${VENV}/bin/python" -c 'import sys; sys.exit(0 if sys.version_info[:2]==(3,12) else 1)' 2>/dev/null; then
+  [ -z "${PYBIN}" ] && { echo "[nextgen] ERROR: need CPython 3.12"; exit 1; }
   rm -rf "${VENV}"
   "${PYBIN}" -m venv "${VENV}"
 fi
 source "${VENV}/bin/activate"
-python -m pip install --upgrade pip wheel "setuptools<82"
-if [ "${FORCE_REINSTALL:-0}" = "1" ] || ! python -c 'import torch,transformers,sentence_transformers,peft' 2>/dev/null; then
-  python -m pip install -e .            # base deps only (no [ml] pins)
-  python -m pip install -r deploy/requirements_nextgen.txt
+python -m pip install --upgrade pip
+if [ "${FORCE_REINSTALL:-0}" = "1" ] || ! python scripts/validation/validate_specialist_environment.py --profile ml >/dev/null 2>&1; then
+  python -m pip install --require-hashes -r constraints/maintained-ml-py312.lock
+  python -m pip install -e . --no-deps
 else
   echo "[nextgen] next-gen stack already present (FORCE_REINSTALL=1 to override)"
 fi
+python -m pip check
+python scripts/validation/validate_specialist_environment.py --profile ml
 python - <<'PY'
 import torch, transformers
 print(f"[nextgen] torch={torch.__version__} transformers={transformers.__version__} "
@@ -84,6 +84,9 @@ fi
 
 # 4) Offline switches + prefetch handling.
 PREFETCH_ARGS=()
+REVISION_ARGS=()
+[ -n "${HF_REVISION}" ] && REVISION_ARGS+=(--hf-revision "${HF_REVISION}")
+[ -n "${EMBEDDER_REVISION}" ] && REVISION_ARGS+=(--embedder-st-revision "${EMBEDDER_REVISION}")
 if [ "${OFFLINE:-0}" = "1" ]; then
   export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
   PREFETCH_ARGS+=(--no-prefetch)
@@ -98,6 +101,7 @@ python scripts/run_m4w13_hf_a100_parallel.py \
   --systems "${SYSTEMS}" \
   --max-workers "${MAX_WORKERS}" \
   --hf-model "${HF_MODEL}" \
+  "${REVISION_ARGS[@]}" \
   --hf-dtype "${HF_DTYPE}" \
   --hf-max-seq-len "${HF_MAX_SEQ_LEN}" \
   --hf-trust-remote-code \
