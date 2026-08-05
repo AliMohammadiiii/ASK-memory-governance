@@ -224,21 +224,30 @@ def _prefetch_models(args: argparse.Namespace) -> None:
         _log("model prefetch skipped")
         return
 
-    model_ids = {args.hf_model}
+    model_revisions = {args.hf_model: args.hf_revision}
     for model_id in (args.extractor_model, args.classifier_model):
         if model_id:
-            model_ids.add(model_id)
+            model_revisions[model_id] = args.hf_revision
     if args.judge_backend in {"hf", "huggingface"}:
-        model_ids.add(args.judge_model or args.hf_model)
+        model_revisions[args.judge_model or args.hf_model] = args.hf_revision
     if args.embedder_backend == "sentence_transformer":
-        model_ids.add(getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL)
+        model_revisions[getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL] = (
+            args.embedder_revision
+        )
 
-    code = "from huggingface_hub import snapshot_download\nimport sys\nsnapshot_download(sys.argv[1])\n"
+    code = (
+        "from huggingface_hub import snapshot_download\n"
+        "import sys\n"
+        "revision = None if sys.argv[2] == '-' else sys.argv[2]\n"
+        "snapshot_download(sys.argv[1], revision=revision)\n"
+    )
     env = _base_env(args)
-    for model_id in sorted(model_ids):
+    for model_id, revision in sorted(model_revisions.items()):
         start = time.monotonic()
-        _log(f"prefetch start: {model_id}")
-        subprocess.run([_preferred_python(), "-c", code, model_id], check=True, env=env)
+        _log(f"prefetch start: {model_id} revision={revision or 'default'}")
+        subprocess.run(
+            [_preferred_python(), "-c", code, model_id, revision or "-"], check=True, env=env
+        )
         _log(f"prefetch done: {model_id} in {time.monotonic() - start:.1f}s")
 
 
@@ -248,12 +257,13 @@ def _smoke_load_quality_model(args: argparse.Namespace) -> None:
     code = (
         "from ask.inference.llm import HuggingFaceLLM, InferenceConfig\n"
         "llm = HuggingFaceLLM(InferenceConfig(\n"
-        "    model_id=%r, dtype=%r, device_map=%r, load_in_4bit=%r,\n"
+        "    model_id=%r, model_revision=%r, dtype=%r, device_map=%r, load_in_4bit=%r,\n"
         "    trust_remote_code=%r, max_seq_len=%r, backend='huggingface'))\n"
         "resp = llm.generate('Return OK.', max_new_tokens=1, temperature=0.0, seed=0)\n"
         "print('[quality-smoke] loaded', resp.model_id, 'tokens', resp.completion_tokens)\n"
         % (
             args.hf_model,
+            args.hf_revision,
             args.hf_dtype,
             args.hf_device_map,
             args.hf_load_in_4bit,
@@ -806,6 +816,11 @@ def main() -> int:
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct")
     p.add_argument(
+        "--hf-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision shared by maintained LLM paths.",
+    )
+    p.add_argument(
         "--judge-backend",
         choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
         default="same_as_answerer",
@@ -837,6 +852,11 @@ def main() -> int:
         default=None,
         help="Override the sentence-transformers retrieval model id "
         "(e.g. jinaai/jina-embeddings-v5-text-small).",
+    )
+    p.add_argument(
+        "--embedder-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision for the sentence-transformers model.",
     )
     p.add_argument(
         "--embedder-trust-remote-code",

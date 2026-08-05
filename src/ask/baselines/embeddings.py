@@ -131,12 +131,12 @@ def role_tag(role: str, content: str) -> str:
 # Module-level singleton cache                                           #
 # --------------------------------------------------------------------- #
 #
-# Keyed by `(model_id, device)` because a future caller might want one
+# Keyed by `(model_id, revision, device, trust_remote_code)` because a future caller might want one
 # CPU embedder and one CUDA embedder side-by-side. Within one process,
 # every `TurnEmbedder` instance with the same `(model_id, device)` reuses
 # the same loaded weights.
 
-_MODEL_CACHE: dict[tuple[str, str, bool], Any] = {}
+_MODEL_CACHE: dict[tuple[str, str | None, str, bool], Any] = {}
 
 
 _REMOTE_IMPORT_SHIM_APPLIED = False
@@ -219,10 +219,15 @@ def _resolve_sentence_transformer_device(device: str) -> str:
     return requested
 
 
-def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = False) -> Any:
+def _get_or_load_model(
+    model_id: str,
+    device: str,
+    revision: str | None = None,
+    trust_remote_code: bool = False,
+) -> Any:
     """Lazy-load the sentence-transformers model the first time it's needed."""
     resolved_device = _resolve_sentence_transformer_device(device)
-    key = (model_id, resolved_device, bool(trust_remote_code))
+    key = (model_id, revision, resolved_device, bool(trust_remote_code))
     if key in _MODEL_CACHE:
         return _MODEL_CACHE[key]
     try:
@@ -239,7 +244,10 @@ def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = Fal
         _apply_remote_code_import_shim()
     try:
         model = SentenceTransformer(
-            model_id, device=resolved_device, trust_remote_code=trust_remote_code
+            model_id,
+            device=resolved_device,
+            revision=revision,
+            trust_remote_code=trust_remote_code,
         )
     except TypeError:
         # Very old sentence-transformers without the trust_remote_code kwarg.
@@ -285,10 +293,11 @@ class TurnEmbedder:
     The model is loaded lazily (first `embed()` call) so test suites and
     the harness can construct the embedder without paying the model
     download. Loaded weights are shared across instances via a
-    module-level singleton keyed by `(model_id, device)`.
+    module-level singleton keyed by `(model_id, revision, device, trust_remote_code)`.
     """
 
     model_id: str = _DEFAULT_MODEL_ID
+    revision: str | None = None
     device: str = _DEFAULT_DEVICE
     batch_size: int = _DEFAULT_BATCH_SIZE
     # Custom-architecture embedders (e.g. jinaai/jina-embeddings-v5-*) need
@@ -342,7 +351,12 @@ class TurnEmbedder:
 
     def _ensure_loaded(self) -> None:
         if self._model is None:
-            self._model = _get_or_load_model(self.model_id, self.device, self.trust_remote_code)
+            self._model = _get_or_load_model(
+                self.model_id,
+                self.device,
+                self.revision,
+                self.trust_remote_code,
+            )
 
     def embed(self, texts: list[str]) -> np.ndarray:
         """Embed a list of strings. Always returns L2-normalized float32 rows.

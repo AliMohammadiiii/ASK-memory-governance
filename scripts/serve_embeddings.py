@@ -9,7 +9,7 @@ on one GPU is the bottleneck anyway; sentence-transformers batches each call.
 Run:
   PYTHONPATH=src python scripts/serve_embeddings.py \
     --model jinaai/jina-embeddings-v5-text-small --task retrieval \
-    --device cuda --host 0.0.0.0 --port 8100
+    --device cuda --trust-remote-code --host 127.0.0.1 --port 8100
 
 Then point the eval at it:
   run_baseline ... --embedder-backend openai_compatible \
@@ -20,14 +20,11 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-if "src" not in sys.path:
-    sys.path.insert(0, "src")
-from ask.baselines.embeddings import TurnEmbedder  # noqa: E402
+from ask.baselines.embeddings import TurnEmbedder
 
 _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"
@@ -141,15 +138,19 @@ class _Handler(BaseHTTPRequestHandler):
         return
 
 
-def main() -> int:
-    global _DEVICE_INFO, _EMBEDDER, _MODEL_NAME
+def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser()
     p.add_argument("--model", default="jinaai/jina-embeddings-v5-text-small")
+    p.add_argument(
+        "--revision",
+        default=None,
+        help="Optional immutable Hugging Face commit revision for model loading.",
+    )
     p.add_argument("--served-name", default="jina")
     p.add_argument("--task", default="retrieval")
     p.add_argument("--prompt-name", default=None)
     p.add_argument("--device", default="cuda")
-    p.add_argument("--trust-remote-code", action="store_true", default=True)
+    p.add_argument("--trust-remote-code", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument(
         "--batch-size",
         type=int,
@@ -167,9 +168,14 @@ def main() -> int:
         "Jina v5 is Qwen3-based; long turns can OOM a T4 unless "
         "they are truncated.",
     )
-    p.add_argument("--host", default="0.0.0.0")
+    p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8100)
-    args = p.parse_args()
+    return p
+
+
+def main() -> int:
+    global _DEVICE_INFO, _EMBEDDER, _MODEL_NAME
+    args = build_parser().parse_args()
 
     _MODEL_NAME = args.served_name
     _DEVICE_INFO = _torch_device_info(args.device)
@@ -188,6 +194,7 @@ def main() -> int:
     )
     _EMBEDDER = TurnEmbedder(
         model_id=args.model,
+        revision=args.revision,
         device=args.device,
         trust_remote_code=args.trust_remote_code,
         task=args.task,

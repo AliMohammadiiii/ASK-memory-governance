@@ -59,6 +59,7 @@ def test_rejudge_writes_separate_report_from_persisted_answers(tmp_path: Path) -
             judge_json_format=True,
             judge_think=False,
             hf_dtype="float16",
+            hf_revision=None,
             hf_device_map="auto",
             hf_load_in_4bit=False,
             hf_trust_remote_code=False,
