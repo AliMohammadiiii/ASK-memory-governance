@@ -1,6 +1,6 @@
 {
   "schema_version": "repository-modernization-validation-1.0",
-  "evaluated_at": "2026-08-05T17:05:00Z",
+  "evaluated_at": "2026-08-05T17:13:57Z",
   "starting_commit": "2452e97a9992779d28fd202b3b91a9c25ae91fab",
   "branch": "chore/repository-modernization",
   "status": "PASS_LOCAL_CONDITIONAL",
@@ -89,6 +89,12 @@
       "details": "157 pages; no undefined citation or reference warning"
     },
     {
+      "name": "clean_clone",
+      "command": "git clone; make setup; make release-check; make paper; make thesis",
+      "status": "PASS",
+      "details": "No-local clone initialized the pinned thesis submodule; 605 tests passed and 19 public-checkout skips were documented; paper and thesis built; tracked worktree remained clean"
+    },
+    {
       "name": "readiness",
       "command": "make readiness",
       "status": "NO_GO_EXPECTED",
@@ -101,8 +107,7 @@
     "private-data evaluation",
     "independent human annotation or adjudication",
     "native external-system comparison",
-    "public release or push",
-    "clean-clone validation of the final ledger commit"
+    "public release or push"
   ],
   "inventory": {
     "baseline_regular_files": 1096,
@@ -112,5 +117,5 @@
     "migration_rows": 17,
     "hash_identical_archives": 13
   },
-  "working_tree_clean": false
+  "working_tree_clean": true
 }

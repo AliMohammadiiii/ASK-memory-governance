@@ -104,6 +104,8 @@ private-data, or native-system execution. Full findings are in
 - Public/private boundary declaration: PASS; legal clearance false.
 - Paper: PASS, 44 pages.
 - Thesis: PASS, 157 pages, references resolved.
+- Clean clone: PASS for `make setup`, `make release-check`, `make paper`, and
+  `make thesis`; the clone remained clean after all builds.
 - Core constraint vulnerability audit: PASS.
 - Exact ML lock validation: PASS, including 68 targeted tests and 2 documented
   opt-in skips.
@@ -113,6 +115,14 @@ private-data, or native-system execution. Full findings are in
 
 Machine-readable results are in `FINAL_VALIDATION.json`. Scientific boundary
 checks are in `SCIENTIFIC_INTEGRITY_CHECK.md`.
+
+The first clean-clone thesis attempt exposed that the pinned
+`thesis/template` submodule was present locally but was not initialized by the
+documented setup path. `make setup` now initializes the pinned submodule, and
+the complete sequence passed in a new no-local clone. The clean clone reported
+605 passing tests and 19 documented skips because private or locally retained
+evidence is deliberately absent; the full evidence-bearing workspace reported
+610 passing tests and 14 skips.
 
 ## Decision
 

@@ -122,7 +122,7 @@
       "referenced_by_paper": false,
       "relative_path": ".pre-commit-config.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -621,7 +621,7 @@
       "known_problems": "",
       "logical_name": "Makefile",
       "model_facing": false,
-      "output_sha256": "321b0fdf505b846b4f6ebfad7cc7aa99a9f5da2a040a7fa72a2974d24805e729",
+      "output_sha256": "623a36e21389c92a040f9679ea220584cf4f13f197ef5b9cdb1387c6f8017d5f",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "Makefile",
@@ -716,7 +716,7 @@
       "referenced_by_paper": false,
       "relative_path": "artifacts/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -986,7 +986,7 @@
       "referenced_by_paper": false,
       "relative_path": "artifacts/manifests/mgp_natural_v0_1_1_derived_audit.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -3987,7 +3987,7 @@
       "known_problems": "",
       "logical_name": "mismatch_report.json",
       "model_facing": false,
-      "output_sha256": "909d53511dd6d27c8bc89982dd9b6682bc99b5e8a85b6939e4d0d9fed678f536",
+      "output_sha256": "c072669908f09adbba8dc68e322a3f9fabcf0301f15bfd170bfd6a8a1236f44d",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "claims/mismatch_report.json",
@@ -4005,7 +4005,7 @@
       "known_problems": "",
       "logical_name": "source_inventory.json",
       "model_facing": false,
-      "output_sha256": "061c198acfc54786aaa510708a009382dd7b27b09ad20188ea8b1e1ff65e174b",
+      "output_sha256": "c6fe826f5449f9c99ef1ef100396cd8a461f86255de9a3debbb4c73dd888e90e",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "claims/source_inventory.json",
@@ -4028,7 +4028,7 @@
       "referenced_by_paper": false,
       "relative_path": "configs/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -4496,7 +4496,7 @@
       "referenced_by_paper": false,
       "relative_path": "confirmation/natural_challenge/mgp_natural_v0_1_0/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -4514,7 +4514,7 @@
       "referenced_by_paper": false,
       "relative_path": "confirmation/natural_challenge/mgp_natural_v0_1_0/archive_audit.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -4532,7 +4532,7 @@
       "referenced_by_paper": false,
       "relative_path": "confirmation/natural_challenge/mgp_natural_v0_1_0/private_packet_verification.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -4550,7 +4550,7 @@
       "referenced_by_paper": false,
       "relative_path": "confirmation/natural_challenge/mgp_natural_v0_2_2_full/intake_audit.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -4712,7 +4712,7 @@
       "referenced_by_paper": false,
       "relative_path": "constraints/external-baselines-py312.txt",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -4730,7 +4730,7 @@
       "referenced_by_paper": false,
       "relative_path": "constraints/ml-py312.txt",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -5900,7 +5900,7 @@
       "referenced_by_paper": false,
       "relative_path": "docs/architecture/SOURCE_OF_TRUTH.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -7916,7 +7916,7 @@
       "referenced_by_paper": false,
       "relative_path": "docs/reproducibility/ENVIRONMENT.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -7934,7 +7934,7 @@
       "referenced_by_paper": false,
       "relative_path": "docs/reproducibility/GENERATED_FILES.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -7947,12 +7947,12 @@
       "known_problems": "",
       "logical_name": "QUICKSTART.md",
       "model_facing": false,
-      "output_sha256": "cb1afbda181314568500f8bfd88e97f738f703185bf34153073508b11ebc3125",
+      "output_sha256": "165c178263549372742f51106ea762af079884623b94477b9aa82fd47bbc6c52",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "docs/reproducibility/QUICKSTART.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -7988,7 +7988,7 @@
       "referenced_by_paper": false,
       "relative_path": "docs/reproducibility/RESULT_PROVENANCE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -8096,7 +8096,7 @@
       "referenced_by_paper": false,
       "relative_path": "experiments/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -9698,7 +9698,7 @@
       "referenced_by_paper": false,
       "relative_path": "prompts/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -9842,7 +9842,7 @@
       "referenced_by_paper": false,
       "relative_path": "prompts/registry.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -10454,7 +10454,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/MGP_NATURAL_DATASET_LANDSCAPE_2026_08_03.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10472,7 +10472,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/MGP_NATURAL_FINALIZATION.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10490,7 +10490,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/MGP_NATURAL_SOURCE_MATRIX.csv",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "tabular_artifact",
       "visibility": "public_candidate"
     },
@@ -10508,7 +10508,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/MGP_NATURAL_V0_2_2_INTAKE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10904,7 +10904,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/BASELINE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10922,7 +10922,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/FILE_DISPOSITION.csv",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "tabular_artifact",
       "visibility": "public_candidate"
     },
@@ -10935,12 +10935,12 @@
       "known_problems": "",
       "logical_name": "FINAL_REPORT.md",
       "model_facing": false,
-      "output_sha256": "a046680125f7ffc2dd7bd0de172f67eb1c89c7f0e3b5e8b458425fa3287cf0a9",
+      "output_sha256": "165de3be57918bf1921ab4e28033a411df8adb4ed4ad57961a64b00affb55945",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/FINAL_REPORT.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10953,12 +10953,12 @@
       "known_problems": "",
       "logical_name": "FINAL_VALIDATION.json",
       "model_facing": false,
-      "output_sha256": "7e120e488008516d4b3aa982af701217a80c8c3c62ea7dea73cf535a1e78a788",
+      "output_sha256": "874ba0a105bdb8eacc707c447d9319ab8f1c129517659007c71c992b949fd057",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/FINAL_VALIDATION.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -10976,7 +10976,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/HUGGINGFACE_COMPATIBILITY.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -10994,7 +10994,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/MIGRATION_MAP.csv",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "tabular_artifact",
       "visibility": "public_candidate"
     },
@@ -11012,7 +11012,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/MIGRATION_PLAN.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -11030,7 +11030,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/SCIENTIFIC_INTEGRITY_CHECK.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -11048,7 +11048,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/SECURITY_REVIEW.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -11061,12 +11061,12 @@
       "known_problems": "",
       "logical_name": "UNRESOLVED_ITEMS.md",
       "model_facing": false,
-      "output_sha256": "0197d385bed2fd9e4bdec2ba148b1cd63a46235c39f07f32256e01d7c97d6296",
+      "output_sha256": "807f95d061890d2a0941f2a5f44ccadb61f99e62816aef3ce1e7285d4a5bb96d",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/UNRESOLVED_ITEMS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -11084,7 +11084,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_anonymous_scan.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -11102,7 +11102,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_checks.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -11120,7 +11120,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_claim_verification.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -11138,7 +11138,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_inventory.csv",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "tabular_artifact",
       "visibility": "public_candidate"
     },
@@ -11156,7 +11156,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_readiness.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -11174,7 +11174,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/baseline_readiness.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -11187,12 +11187,12 @@
       "known_problems": "",
       "logical_name": "final_inventory.csv",
       "model_facing": false,
-      "output_sha256": "fdab46a93daf02fd28c7de556a39205144498b012b62245e4073b7e3519e44f6",
+      "output_sha256": "211523a5e6a06887e6c875f5a724052072bb942df41b1a70d3f4f240bc5de475",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/final_inventory.csv",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "tabular_artifact",
       "visibility": "public_candidate"
     },
@@ -11210,7 +11210,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/prose_hygiene.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -11228,7 +11228,7 @@
       "referenced_by_paper": false,
       "relative_path": "reports/repository_cleanup/prose_hygiene_before_cleanup.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -12074,7 +12074,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/confirmation/audit_mgpn_full_inputs.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12128,7 +12128,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/confirmation/prepare_mgpn_candidate.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12146,7 +12146,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/confirmation/score_mgpn_predictions.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12164,7 +12164,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/confirmation/validate_mgpn_annotations.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12200,7 +12200,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/confirmation/verify_mgpn_candidate.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12632,7 +12632,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/provenance/build_mgpn_derived_manifest.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -12920,7 +12920,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/research/build_repository_cleanup_inventory.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13424,7 +13424,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/validation/validate_document_paths.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13442,7 +13442,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/validation/validate_huggingface_environment.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13460,7 +13460,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/validation/validate_prompt_registry.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13478,7 +13478,7 @@
       "referenced_by_paper": false,
       "relative_path": "scripts/validation/validate_prose_hygiene.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13892,7 +13892,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13910,7 +13910,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/blinding.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13928,7 +13928,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/mgpn_candidate.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13946,7 +13946,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/mgpn_full_intake.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13964,7 +13964,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/mgpn_scoring.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -13982,7 +13982,7 @@
       "referenced_by_paper": false,
       "relative_path": "src/ask/confirmation/mgpn_validation.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -15980,7 +15980,7 @@
       "referenced_by_paper": false,
       "relative_path": "tests/test_mgpn_confirmation.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -15998,7 +15998,7 @@
       "referenced_by_paper": false,
       "relative_path": "tests/test_mgpn_full_intake.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -16016,7 +16016,7 @@
       "referenced_by_paper": false,
       "relative_path": "tests/test_mgpn_manifest.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -16034,7 +16034,7 @@
       "referenced_by_paper": false,
       "relative_path": "tests/test_mgpn_source_matrix.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -16394,7 +16394,7 @@
       "referenced_by_paper": false,
       "relative_path": "tests/test_repository_hygiene.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -17361,7 +17361,7 @@
       "known_problems": "",
       "logical_name": "build.sh",
       "model_facing": false,
-      "output_sha256": "0c2e05952239de31d26702165d9bae8b4c67c61cd1e1993f328fb40d2a67446d",
+      "output_sha256": "6e2c24c668deec48c533bb5a84cdd009907bdc9f02d315ed8c265928211309c1",
       "owner": "Ali Mohammadi/project",
       "referenced_by_paper": false,
       "relative_path": "thesis/latex/tools/build.sh",
@@ -17510,7 +17510,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/.gitignore",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -17528,7 +17528,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/CHANGELOG.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17546,7 +17546,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/CITATION.cff",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -17564,7 +17564,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/INTEGRATION.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17582,7 +17582,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/LICENSE",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -17600,7 +17600,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/Makefile",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -17618,7 +17618,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/PLANS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17636,7 +17636,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17654,7 +17654,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/README_FIRST.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17672,7 +17672,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/SANITIZED_PACKAGE_NOTICE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17690,7 +17690,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/WORKPRODUCT_NOTICE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17708,7 +17708,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/annotation.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17726,7 +17726,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/evaluation.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17744,7 +17744,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/mining.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17762,7 +17762,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/model_matrix.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17780,7 +17780,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/privacy.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17798,7 +17798,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/split.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17816,7 +17816,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/studychat.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17834,7 +17834,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/configs/wikiconv.yaml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "configuration",
       "visibility": "public_candidate"
     },
@@ -17852,7 +17852,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/README.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -17870,7 +17870,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/adjudications_valid.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17888,7 +17888,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/annotations_valid.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17906,7 +17906,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/blind_items.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17924,7 +17924,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/predictions.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17942,7 +17942,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/provisional_gold.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17960,7 +17960,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/studychat_candidate_fixture.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17978,7 +17978,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/studychat_long_chat_fixture.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -17996,7 +17996,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/trajectory.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -18014,7 +18014,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/data/fixtures/wikiconv_actions.jsonl",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "jsonl_artifact",
       "visibility": "public_candidate"
     },
@@ -18032,7 +18032,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/ADJUDICATION_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18050,7 +18050,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/AI_ANNOTATION_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18068,7 +18068,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/AI_USE_DISCLOSURE.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18086,7 +18086,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/ANNOTATION_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18104,7 +18104,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/ANNOTATOR_MANUAL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18122,7 +18122,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/BASELINES.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18140,7 +18140,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/DATASET_CARD.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18158,7 +18158,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/DATA_CONSTRUCTION.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18176,7 +18176,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/EVALUATION_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18194,7 +18194,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/JMLR_READINESS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18212,7 +18212,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/LIMITATIONS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18230,7 +18230,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/PRIVACY_AND_ETHICS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18248,7 +18248,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/REPRODUCIBILITY.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18266,7 +18266,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/ROBUSTNESS_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18284,7 +18284,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/SPLIT_POLICY.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18302,7 +18302,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/STUDYCHAT_TRACK.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18320,7 +18320,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/TASK_DEFINITION.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18338,7 +18338,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/TMLR_READINESS.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18356,7 +18356,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/TRAJECTORY_PROTOCOL.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18374,7 +18374,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/docs/WIKICONV_TRACK.md",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "documentation",
       "visibility": "public_candidate"
     },
@@ -18392,7 +18392,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/pyproject.toml",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -18410,7 +18410,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/adjudication.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18428,7 +18428,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/ai_annotation.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18446,7 +18446,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/ai_consensus.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18464,7 +18464,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/annotation.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18482,7 +18482,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/blind_item.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18500,7 +18500,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/construction_item.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18518,7 +18518,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/execution_summary.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18536,7 +18536,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/gold.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18554,7 +18554,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/lineage.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18572,7 +18572,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/manifest.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18590,7 +18590,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/prediction.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18608,7 +18608,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/readiness.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18626,7 +18626,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/score.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18644,7 +18644,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/schemas/trajectory.schema.json",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "json_artifact",
       "visibility": "public_candidate"
     },
@@ -18662,7 +18662,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/acquire_wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18680,7 +18680,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/analyze_agreement.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18698,7 +18698,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/annotate_ai_provisional_full.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18716,7 +18716,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/audit_input.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18734,7 +18734,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/audit_private_permissions.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18752,7 +18752,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/audit_toolchain.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18770,7 +18770,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/build_artifacts.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18788,7 +18788,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/build_continuity_graph.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18806,7 +18806,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/build_gold.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18824,7 +18824,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/build_private_packet.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18842,7 +18842,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/build_splits.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18860,7 +18860,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/clean_reproduce.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18878,7 +18878,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/freeze_claim_evidence.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18896,7 +18896,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/full_continuity_splits.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18914,7 +18914,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/full_sources.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18932,7 +18932,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/generate_claims_full.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18950,7 +18950,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/generate_execution_summary.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18968,7 +18968,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/generate_private_inventory.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -18986,7 +18986,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/ingest_studychat.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19004,7 +19004,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/mine_candidates.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19022,7 +19022,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/offline_static_checks.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19040,7 +19040,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/package_public.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19058,7 +19058,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/readiness.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19076,7 +19076,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/readiness_full.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19094,7 +19094,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/reconstruct_studychat.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19112,7 +19112,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/reconstruct_wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19130,7 +19130,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/run_named_check.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19148,7 +19148,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/run_tests.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19166,7 +19166,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/scan_privacy.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19184,7 +19184,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/scan_repository_security.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19202,7 +19202,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/score_predictions.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19220,7 +19220,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/validate_adjudications.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19238,7 +19238,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/validate_annotations.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19256,7 +19256,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/validate_candidates.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19274,7 +19274,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/validate_full.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19292,7 +19292,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/verify_build_reproducibility.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19310,7 +19310,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/verify_claims.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19328,7 +19328,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/scripts/verify_private_packet.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19346,7 +19346,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19364,7 +19364,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/adjudication/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19382,7 +19382,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/adjudication/gold.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19400,7 +19400,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/adjudication/validation.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19418,7 +19418,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/annotation/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19436,7 +19436,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/annotation/agreement.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19454,7 +19454,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/annotation/validation.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19472,7 +19472,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19490,7 +19490,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/claims.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19508,7 +19508,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/execution.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19526,7 +19526,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/private_permissions.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19544,7 +19544,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/readiness.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19562,7 +19562,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/audits/security.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19580,7 +19580,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/baselines/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19598,7 +19598,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/baselines/controllers.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19616,7 +19616,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/blinding/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19634,7 +19634,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/blinding/packet.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19652,7 +19652,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/cli.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19670,7 +19670,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/errors.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19688,7 +19688,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/ingestion/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19706,7 +19706,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/ingestion/studychat.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19724,7 +19724,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/ingestion/wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19742,7 +19742,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/mining/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19760,7 +19760,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/mining/studychat.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19778,7 +19778,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/mining/wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19796,7 +19796,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/ontology/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19814,7 +19814,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/ontology/contract.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19832,7 +19832,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/privacy/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19850,7 +19850,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/privacy/redaction.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19868,7 +19868,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/privacy/scanner.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19886,7 +19886,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/py.typed",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "file",
       "visibility": "public_candidate"
     },
@@ -19904,7 +19904,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/reconstruction/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19922,7 +19922,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/reconstruction/studychat.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19940,7 +19940,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/reconstruction/wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19958,7 +19958,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/release/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19976,7 +19976,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/release/package.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -19994,7 +19994,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/release/reproduce.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20012,7 +20012,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/scoring/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20030,7 +20030,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/scoring/metrics.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20048,7 +20048,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/splitting/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20066,7 +20066,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/splitting/continuity.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20084,7 +20084,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/splitting/split.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20102,7 +20102,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/trajectories/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20120,7 +20120,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/trajectories/evaluate.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20138,7 +20138,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/util/__init__.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20156,7 +20156,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/util/io.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20174,7 +20174,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/src/mgp_natural/util/text.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20192,7 +20192,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/conftest.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20210,7 +20210,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_adjudication.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20228,7 +20228,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_annotation.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20246,7 +20246,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_baselines_and_trajectory.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20264,7 +20264,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_candidate_semantics.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20282,7 +20282,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_claims_and_readiness.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20300,7 +20300,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_input_and_reconstruction.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20318,7 +20318,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_leakage_and_blinding.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20336,7 +20336,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_privacy.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20354,7 +20354,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_release.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20372,7 +20372,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_schemas.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20390,7 +20390,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_scoring.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20408,7 +20408,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_split_integrity.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     },
@@ -20426,7 +20426,7 @@
       "referenced_by_paper": false,
       "relative_path": "third_party/mgp-natural-v0.2.2/tests/test_wikiconv.py",
       "reproducibility": "tracked_source",
-      "source": "working_tree_candidate",
+      "source": "git_tracked",
       "type": "source_code",
       "visibility": "public_candidate"
     }
@@ -20435,5 +20435,5 @@
   "repository_root": ".",
   "schema_version": "1.0",
   "selected_local_evidence_count": 12,
-  "tracked_file_count": 897
+  "tracked_file_count": 1123
 }
