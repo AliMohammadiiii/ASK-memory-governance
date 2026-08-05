@@ -80,9 +80,6 @@ checkpoints/
 .private/
 tmp/
 
-# Local agent audit reports
-reports/code_quality_audit/
-
 # Generated publication outputs
 paper/**/compiled/
 thesis/compiled/

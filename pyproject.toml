@@ -75,7 +75,6 @@ exclude = [
   "*.md",
   "Ali_Mohammadi_MGP6_v3_3_1_Final",
   "deliverables",
-  "reports/code_quality_audit",
   "releases",
   "benchmarks/mgp6/mgp6_v4_3/source",
   "benchmarks/mgp6/v3_human_pack",
