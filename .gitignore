@@ -76,6 +76,10 @@ checkpoints/
 .DS_Store
 .idea/
 .vscode/
+.serena/
+
+# Local agent audit reports
+reports/code_quality_audit/
 
 # Generated publication outputs
 paper/**/compiled/
