@@ -32,6 +32,7 @@ Implementation discipline (mirrors `ask.inference.llm.HuggingFaceLLM`):
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 import urllib.error
@@ -46,6 +47,8 @@ from pydantic import BaseModel, ConfigDict
 
 from ask.endpoints import is_loopback_host, validate_http_endpoint
 from ask.inference.openai_headers import openai_compatible_headers
+
+logger = logging.getLogger(__name__)
 
 
 def _is_loopback_url(url: str) -> bool:
@@ -208,12 +211,9 @@ def _resolve_sentence_transformer_device(device: str) -> str:
     if not requested or requested_l == "auto":
         return "cuda" if _torch_cuda_is_available() else "cpu"
     if requested_l.startswith("cuda") and not _torch_cuda_is_available():
-        print(
-            "[embedder] requested CUDA for sentence-transformer embeddings, "
-            "but torch.cuda.is_available() is false; falling back to CPU. "
-            "In Colab, select a GPU runtime or install a CUDA-enabled torch "
-            "wheel if you need GPU embeddings.",
-            flush=True,
+        logger.warning(
+            "requested CUDA for sentence-transformer embeddings, but CUDA is unavailable; "
+            "falling back to CPU"
         )
         return "cpu"
     return requested
@@ -480,11 +480,13 @@ class OllamaEmbedder:
                 last_exc = exc
                 if exc.code in {500, 502, 503, 504} and attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama-embed] {url} returned HTTP {exc.code}; "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc.code,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -493,10 +495,13 @@ class OllamaEmbedder:
                 last_exc = exc
                 if attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama-embed] {url} failed ({exc}); retrying in "
-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -673,8 +678,8 @@ class OpenAICompatibleEmbedder:
                 body = ""
                 try:
                     body = exc.read().decode("utf-8")[:500]
-                except Exception:
-                    pass
+                except (OSError, UnicodeError):
+                    body = ""
                 if exc.code in {429, 500, 502, 503, 504} and attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
                     self._write_log(
@@ -688,19 +693,17 @@ class OpenAICompatibleEmbedder:
                             "input_chars": input_chars,
                         }
                     )
-                    print(
-                        f"[api-call:retry] provider=embedding-openai-compatible {url} returned HTTP {exc.code}; "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc.code,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
-                print(
-                    f"[api-call:error] provider=embedding-openai-compatible url={url} "
-                    f"HTTP {exc.code}: {body}",
-                    flush=True,
-                )
+                logger.error("request failed url=%s HTTP %s: %s", url, exc.code, body)
                 raise RuntimeError(f"HTTP {exc.code} from {url}: {body}") from exc
             except (urllib.error.URLError, TimeoutError) as exc:
                 last_exc = exc
@@ -717,10 +720,13 @@ class OpenAICompatibleEmbedder:
                             "input_chars": input_chars,
                         }
                     )
-                    print(
-                        f"[api-call:retry] provider=embedding-openai-compatible {url} failed ({exc}); retrying in "
-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue

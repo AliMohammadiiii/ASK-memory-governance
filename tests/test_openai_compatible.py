@@ -52,7 +52,7 @@ def _http_error(code: int, body: str = "temporary failure") -> urllib.error.HTTP
     )
 
 
-def test_openai_compatible_sends_chat_completion_and_logs_metadata(tmp_path) -> None:
+def test_openai_compatible_sends_chat_completion_and_logs_metadata(tmp_path, capsys) -> None:
     llm = OpenAICompatibleLLM(
         model_id="cogito-2.1:671b",
         base_url="http://localhost:3001/v1",
@@ -85,6 +85,9 @@ def test_openai_compatible_sends_chat_completion_and_logs_metadata(tmp_path) -> 
     assert len(rows) == 1
     assert rows[0]["valid_json"] is True
     assert rows[0]["fallback_used"] is False
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
 
 
 def test_openai_compatible_uses_modal_headers_from_env(monkeypatch) -> None:

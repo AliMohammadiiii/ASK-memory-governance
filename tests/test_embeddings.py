@@ -393,12 +393,12 @@ def test_sentence_transformer_auto_device_uses_cuda_when_available(monkeypatch) 
 
 def test_sentence_transformer_cuda_device_falls_back_to_cpu(
     monkeypatch,
-    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     monkeypatch.setattr("ask.baselines.embeddings._torch_cuda_is_available", lambda: False)
 
     assert _resolve_sentence_transformer_device("cuda") == "cpu"
-    assert "falling back to CPU" in capsys.readouterr().out
+    assert "falling back to CPU" in caplog.text
 
 
 @pytest.mark.skipif(not _HAS_ST, reason="sentence-transformers not installed")

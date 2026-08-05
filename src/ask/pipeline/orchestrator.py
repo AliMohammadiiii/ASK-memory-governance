@@ -10,12 +10,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import math
 import re
 import sqlite3
 import threading
 import time
-from collections.abc import Iterable, Mapping
+from collections.abc import Callable, Iterable, Mapping
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
@@ -81,9 +82,9 @@ from ..memory import (
     retrieve_active,
     supersede,
 )
-from ..memory import (
-    MemoryItem as DBMemoryItem,
-)
+from ..memory import MemoryItem as DBMemoryItem
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_SYSTEM_PROMPT = (
     "Answer the question using only the retrieved memory and dialog below. "
@@ -577,6 +578,7 @@ class ControllerOrchestrator:
     prompt_template: str = "controller_cot.j2"
     system_prompt: str = DEFAULT_SYSTEM_PROMPT
     progress: bool = False
+    reporter: Callable[[str], None] | None = None
     memory_prefilter_top_k: int | None = None
     raw_turn_fallback: bool = False
     retrieval_neighbor_window: int = 0
@@ -1314,7 +1316,11 @@ class ControllerOrchestrator:
     def _log_progress(self, message: str) -> None:
         if not self.progress:
             return
-        print(f"[{self.BASELINE_NAME}] {message}", flush=True)
+        rendered = f"[{self.BASELINE_NAME}] {message}"
+        if self.reporter is not None:
+            self.reporter(rendered)
+        else:
+            logger.info(rendered)
 
     def _load_persistent_caches(self) -> None:
         # §5 fix 3: read a content-keyed cache shared across runs/ranges/systems

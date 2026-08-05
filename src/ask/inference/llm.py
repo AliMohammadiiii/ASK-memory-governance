@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -34,6 +35,8 @@ from pydantic import BaseModel
 from ask.endpoints import validate_http_endpoint
 
 _PYDANTIC_AVAILABLE = True
+
+logger = logging.getLogger(__name__)
 
 
 _DEFAULT_INFERENCE_CONFIG = (
@@ -274,10 +277,11 @@ class HuggingFaceLLM:
                 ) from exc
             load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True)
 
-        print(
-            f"[hf] loading {self.model_id} "
-            f"dtype={self.config.dtype} 4bit={self.config.load_in_4bit}",
-            flush=True,
+        logger.info(
+            "loading model=%s dtype=%s 4bit=%s",
+            self.model_id,
+            self.config.dtype,
+            self.config.load_in_4bit,
         )
         self._tokenizer = AutoTokenizer.from_pretrained(
             self.model_id, trust_remote_code=self.config.trust_remote_code
@@ -314,9 +318,7 @@ class HuggingFaceLLM:
                 cls = getattr(transformers, name, None)
                 if cls is None:
                     continue
-                print(
-                    f"[hf] {self.model_id}: AutoModelForCausalLM failed; trying {name}", flush=True
-                )
+                logger.info("model=%s primary loader failed; trying %s", self.model_id, name)
                 return cls.from_pretrained(self.model_id, **load_kwargs)
             except (ValueError, KeyError, OSError) as exc:  # pragma: no cover - depends on model
                 last_exc = exc

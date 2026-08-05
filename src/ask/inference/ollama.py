@@ -26,6 +26,7 @@ deliberately avoid pulling in `ollama-python` to keep dev dependencies thin.
 from __future__ import annotations
 
 import json
+import logging
 import time
 import urllib.error
 import urllib.request
@@ -34,6 +35,8 @@ from dataclasses import dataclass
 from ask.endpoints import validate_http_endpoint
 
 from .llm import LLMResponse
+
+logger = logging.getLogger(__name__)
 
 # 5xx responses Ollama can emit during cold-start / runner-restart windows.
 # 4xx responses (e.g. 404 unknown model) are NOT retried — those are user
@@ -134,16 +137,18 @@ class OllamaLLM:
                 last_exc = exc
                 try:
                     last_error_body = exc.read().decode("utf-8", errors="replace").strip()
-                except Exception:
+                except (OSError, UnicodeError):
                     last_error_body = ""
                 if exc.code in _RETRY_HTTP_CODES and attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama] {url} returned HTTP {exc.code}; "
-                        f"{last_error_body[:240] + '; ' if last_error_body else ''}"
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s returned HTTP %s; %sretrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc.code,
+                        f"{last_error_body[:240]}; " if last_error_body else "",
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -156,11 +161,13 @@ class OllamaLLM:
                 last_exc = exc
                 if attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama] {url} unreachable ({exc}); "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s unreachable (%s); retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -169,11 +176,13 @@ class OllamaLLM:
                 last_exc = exc
                 if attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama] {url} timed out after {self.timeout_s:.1f}s; "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s timed out after %.1fs; retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        self.timeout_s,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -201,13 +210,14 @@ class OllamaLLM:
         if self.num_ctx is None:
             return
         if prompt_tokens >= int(self.num_ctx) - 8 and completion_tokens <= 1:
-            print(
-                f"[ollama] WARNING: prompt_tokens={prompt_tokens} fills num_ctx="
-                f"{self.num_ctx} for {self.model_id}; only {completion_tokens} "
-                "token(s) generated. The prompt is being truncated and there is no "
-                "room to answer. Raise --ollama-num-ctx above the prompt size "
-                "(or reduce k / neighbor window / assistant context).",
-                flush=True,
+            logger.warning(
+                "prompt_tokens=%s fills num_ctx=%s for %s; only %s token(s) generated. "
+                "The prompt is being truncated and there is no room to answer. "
+                "Raise the context limit above the prompt size or reduce retrieved context.",
+                prompt_tokens,
+                self.num_ctx,
+                self.model_id,
+                completion_tokens,
             )
 
     def _chat(

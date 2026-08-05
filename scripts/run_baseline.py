@@ -643,6 +643,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             memory_prefilter_top_k=args.recency_memory_top_k,
             raw_turn_fallback=args.recency_raw_turn_fallback,
             progress=args.recency_progress,
+            reporter=print if args.recency_progress else None,
         )
 
     if args.baseline in {"naive_overwrite", "controller"}:
@@ -673,6 +674,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             extraction_max_new_tokens=args.extraction_max_new_tokens,
             relation_max_new_tokens=args.relation_max_new_tokens,
             progress=args.controller_progress,
+            reporter=print if args.controller_progress else None,
             memory_prefilter_top_k=args.controller_memory_top_k,
             raw_turn_fallback=args.controller_raw_turn_fallback,
             retrieval_neighbor_window=args.controller_retrieval_neighbor_window,

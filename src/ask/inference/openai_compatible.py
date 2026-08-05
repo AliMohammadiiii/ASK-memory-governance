@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import time
 import urllib.error
 import urllib.request
@@ -23,6 +24,8 @@ from ask.endpoints import validate_http_endpoint
 
 from .llm import LLMResponse, _strip_think_blocks
 from .openai_headers import openai_compatible_headers
+
+logger = logging.getLogger(__name__)
 
 TaskValidator = Callable[[str, dict[str, Any] | None], tuple[bool, str | None]]
 
@@ -269,12 +272,16 @@ class OpenAICompatibleLLM:
             if provider_preferences_json is not None
             else ""
         )
-        print(
-            f"[api-call:start] provider=openai-compatible base_url={self.base_url} "
-            f"path=/chat/completions model={model} require_json={self.require_json} "
-            f"max_tokens={max_new_tokens} prompt_chars={len(prompt)} attempt={attempt_index}"
-            f"{provider_part}",
-            flush=True,
+        logger.info(
+            "request start base_url=%s path=/chat/completions model=%s require_json=%s "
+            "max_tokens=%s prompt_chars=%s attempt=%s%s",
+            self.base_url,
+            model,
+            self.require_json,
+            max_new_tokens,
+            len(prompt),
+            attempt_index,
+            provider_part,
         )
         t0 = time.perf_counter()
         raw = self._post_json("/chat/completions", payload)
@@ -331,13 +338,19 @@ class OpenAICompatibleLLM:
         metadata["gate_pass"] = gate_pass
         metadata["route"] = route
         routed_provider = str(provider) if provider is not None else "unreported"
-        print(
-            f"[api-call:done] provider=openai-compatible base_url={self.base_url} "
-            f"routed_provider={routed_provider} model={routed_model} "
-            f"requested_model={model} latency_ms={latency_ms:.1f} "
-            f"prompt_tokens={usage.prompt_tokens} completion_tokens={usage.completion_tokens} "
-            f"gate_pass={gate_pass} valid_json={valid_json}",
-            flush=True,
+        logger.info(
+            "request done base_url=%s routed_provider=%s model=%s requested_model=%s "
+            "latency_ms=%.1f prompt_tokens=%s completion_tokens=%s "
+            "gate_pass=%s valid_json=%s",
+            self.base_url,
+            routed_provider,
+            routed_model,
+            model,
+            latency_ms,
+            usage.prompt_tokens,
+            usage.completion_tokens,
+            gate_pass,
+            valid_json,
         )
         return LLMResponse(
             text=text,
@@ -390,10 +403,13 @@ class OpenAICompatibleLLM:
                 except (TypeError, ValueError):
                     status = 500
                 body_excerpt = body[:500]
-                print(
-                    f"[api-call:error] provider=openai-compatible url={url} "
-                    f"attempt={attempt}/{attempts} embedded HTTP {status}: {body_excerpt}",
-                    flush=True,
+                logger.warning(
+                    "request error url=%s attempt=%s/%s embedded HTTP %s: %s",
+                    url,
+                    attempt,
+                    attempts,
+                    status,
+                    body_excerpt,
                 )
                 if attempt >= attempts or status not in self.retry_status_codes:
                     error = f"embedded HTTP {status} error from {url}: {body_excerpt}"
@@ -405,13 +421,16 @@ class OpenAICompatibleLLM:
                 body = ""
                 try:
                     body = exc.read().decode("utf-8")
-                except Exception:
-                    pass
+                except (OSError, UnicodeError):
+                    body = ""
                 body_excerpt = body[:500]
-                print(
-                    f"[api-call:error] provider=openai-compatible url={url} "
-                    f"attempt={attempt}/{attempts} HTTP {exc.code}: {body_excerpt}",
-                    flush=True,
+                logger.warning(
+                    "request error url=%s attempt=%s/%s HTTP %s: %s",
+                    url,
+                    attempt,
+                    attempts,
+                    exc.code,
+                    body_excerpt,
                 )
                 if attempt >= attempts or exc.code not in self.retry_status_codes:
                     error = f"HTTP {exc.code} from {url}: {body_excerpt}"
@@ -420,10 +439,12 @@ class OpenAICompatibleLLM:
                     raise RuntimeError(error) from exc
                 self._sleep_before_retry(attempt, exc.headers.get("Retry-After"), body)
             except urllib.error.URLError as exc:
-                print(
-                    f"[api-call:error] provider=openai-compatible url={url} "
-                    f"attempt={attempt}/{attempts} error={exc}",
-                    flush=True,
+                logger.warning(
+                    "request error url=%s attempt=%s/%s error=%s",
+                    url,
+                    attempt,
+                    attempts,
+                    exc,
                 )
                 if attempt >= attempts:
                     raise RuntimeError(f"request failed at {url}: {exc}") from exc

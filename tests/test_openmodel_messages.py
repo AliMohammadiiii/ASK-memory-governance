@@ -20,7 +20,7 @@ class _Resp:
         return False
 
 
-def test_openmodel_messages_posts_anthropic_messages(monkeypatch) -> None:  # noqa: ANN001
+def test_openmodel_messages_posts_anthropic_messages(monkeypatch, capsys) -> None:  # noqa: ANN001
     seen = {}
 
     def fake_urlopen(req, timeout):  # noqa: ANN001
@@ -50,6 +50,9 @@ def test_openmodel_messages_posts_anthropic_messages(monkeypatch) -> None:  # no
     assert seen["body"]["max_tokens"] == 12
     assert resp.text == "ok"
     assert resp.model_id == "deepseek-v4-flash-202605"
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert captured.err == ""
 
 
 def test_openmodel_messages_round_robins_key_envs(monkeypatch) -> None:  # noqa: ANN001

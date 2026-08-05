@@ -45,12 +45,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import random
-import sys
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # The seven LongMemEval competency labels. Source: Wu et al. (2025) §3.
 LONGMEMEVAL_COMPETENCIES: tuple[str, ...] = (
@@ -351,12 +353,11 @@ def _iter_json_array(path: Path) -> Iterator[LongMemEvalSession]:
     except ModuleNotFoundError:
         size_mb = path.stat().st_size / (1024 * 1024)
         if size_mb > 64:
-            print(
-                f"[longmemeval] WARNING: reading a {size_mb:.0f} MB JSON array "
-                f"eagerly ({path}); install 'ijson' or run convert_to_jsonl() "
-                "first to stream LongMemEval-M without loading it all into RAM.",
-                file=sys.stderr,
-                flush=True,
+            logger.warning(
+                "reading a %.0f MB JSON array eagerly (%s); install the streaming extra "
+                "or convert the input to JSONL first",
+                size_mb,
+                path,
             )
         with path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)

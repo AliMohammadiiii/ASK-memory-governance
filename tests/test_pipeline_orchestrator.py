@@ -1570,7 +1570,10 @@ def test_controller_loads_persistent_extraction_cache(tmp_path: Path) -> None:
     assert answer.extras["extraction_cache_hits"] >= 1
 
 
-def test_controller_falls_back_when_extractor_raises(tmp_path: Path) -> None:
+def test_controller_falls_back_when_extractor_raises(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     prior = _session("s-prior", "I prefer coffee in the morning.", ())
     current = _session("s-current", "What do I like now?", ("s-prior",))
     llm = FakeLLM()
@@ -1596,6 +1599,7 @@ def test_controller_falls_back_when_extractor_raises(tmp_path: Path) -> None:
     # continue, but a resume must retry instead of reusing a poisoned empty row.
     assert answer.extras["extraction_uncached_failures"] == 2
     assert not (tmp_path / "extraction_cache.jsonl").exists()
+    assert capsys.readouterr() == ("", "")
 
 
 def test_strict_controller_aborts_session_when_extractor_raises(tmp_path: Path) -> None:
