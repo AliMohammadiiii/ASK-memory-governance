@@ -42,15 +42,16 @@ that system with hidden input.
 
 ## LongMemEval
 
-LongMemEval data is not redistributed. A valid run requires the frozen external
+LongMemEval data is not redistributed. A valid run requires the recorded external
 input, an authorized provider credential, and the exact commands in
 `../FINAL_RUN_MATRIX.yaml`:
 
 ```bash
-export LONGMEMEVAL_DATA='/absolute/path/to/the-frozen-input.jsonl'
-export OPENROUTER_API_KEY='...'
+export LONGMEMEVAL_DATA="${PWD}/.private/longmemeval/longmemeval_m_full.jsonl"
 bash scripts/evaluation/run_longmemeval_final.sh --smoke
 ```
+
+Load `OPENROUTER_API_KEY` from the approved secret manager before the smoke run.
 
 No final eligible LongMemEval result ships with this release. Historical runs
 and failure replays remain diagnostic, incomplete, invalid, or externally

@@ -1,7 +1,7 @@
 # Thesis number and claim audit
 
-Audit date: 2026-07-15  
-Primary quantitative source: `artifacts/analysis/mgp6_validity_audit.json`  
+Audit date: 2026-07-15
+Primary quantitative source: `artifacts/analysis/mgp6_validity_audit.json`
 Historical run source: `artifacts/results_ledger.json` v1.1
 
 The validity audit changes interpretation, not the archived prediction values.

@@ -13,4 +13,3 @@
 
 Historical artifacts and manifests are immutable. Paid inference, external
 data acquisition, publication, and external writes require separate authority.
-

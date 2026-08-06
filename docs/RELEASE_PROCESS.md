@@ -9,4 +9,3 @@ inspect extraction of the archive.
 The release must preserve historical evidence unchanged, identify withheld
 artifacts and acquisition routes, and include exact provenance and claim
 eligibility. `release/RELEASE_CHECKLIST.md` is the operational checklist.
-

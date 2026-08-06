@@ -11,4 +11,3 @@ were preregistered, separate public development from hidden evaluation, never
 expose hidden labels to prediction code, and preserve raw outputs. A metric is
 claim-eligible only through `claims/claims.json` with zero unexplained mismatch.
 Model-judge correctness is not independent human validation.
-

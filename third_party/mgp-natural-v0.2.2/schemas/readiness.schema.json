@@ -1,0 +1,76 @@
+{
+  "$id": "https://example.org/mgp-natural/readiness.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "gateRecord": {
+      "additionalProperties": true,
+      "properties": {
+        "blocker": {"type": ["string", "null"]},
+        "evidence": {"items": {"type": "string"}, "type": "array"},
+        "notes": {"type": ["string", "null"]},
+        "owner": {"type": "string"},
+        "passed": {"type": "boolean"},
+        "status": {"type": "string"}
+      },
+      "required": ["passed", "status", "owner", "evidence", "blocker"],
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "blocked": {
+      "additionalProperties": false,
+      "properties": {
+        "jmlr_additional": {"items": {"type": "string"}, "type": "array"},
+        "tmlr_human": {"items": {"type": "string"}, "type": "array"},
+        "tmlr_machine": {"items": {"type": "string"}, "type": "array"}
+      },
+      "required": ["tmlr_machine", "tmlr_human", "jmlr_additional"],
+      "type": "object"
+    },
+    "jmlr_additional_gates": {
+      "additionalProperties": {"$ref": "#/$defs/gateRecord"},
+      "type": "object"
+    },
+    "jmlr_ready": {"type": "boolean"},
+    "private_pilot_human_complete": {"type": "boolean"},
+    "private_pilot_machine_complete": {"type": "boolean"},
+    "publication_eligible": {"type": "boolean"},
+    "schema_version": {"const": "1.0"},
+    "status_manifest": {"type": "string"},
+    "tmlr_human_complete": {"type": "boolean"},
+    "tmlr_human_gates": {
+      "additionalProperties": {"$ref": "#/$defs/gateRecord"},
+      "type": "object"
+    },
+    "tmlr_machine_complete": {"type": "boolean"},
+    "tmlr_machine_gates": {
+      "additionalProperties": {"$ref": "#/$defs/gateRecord"},
+      "type": "object"
+    },
+    "verdict": {
+      "enum": [
+        "NO_GO",
+        "MACHINE_READY_HUMAN_GATES_PENDING",
+        "PRIVATE_PILOT_READY",
+        "PUBLIC_RELEASE_READY"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "verdict",
+    "publication_eligible",
+    "tmlr_machine_gates",
+    "tmlr_human_gates",
+    "jmlr_additional_gates",
+    "tmlr_machine_complete",
+    "tmlr_human_complete",
+    "private_pilot_machine_complete",
+    "private_pilot_human_complete",
+    "jmlr_ready",
+    "blocked"
+  ],
+  "type": "object"
+}
+

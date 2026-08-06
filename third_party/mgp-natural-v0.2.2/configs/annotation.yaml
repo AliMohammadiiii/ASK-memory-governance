@@ -1,0 +1,14 @@
+schema_version: "1.0"
+protocol_version: "1.0-prospective"
+manual_version: "1.0-prospective"
+minimum_independent_annotators: 3
+constructor_exclusion: true
+blind_mapping_visible: false
+individual_rows_immutable: true
+adjudication_additive: true
+pilot_thresholds_require_human_approval: true
+candidate_thresholds:
+  survival_rate: 0.70
+  nominal_agreement: 0.60
+  supersede_reconstructable_rate: 0.90
+

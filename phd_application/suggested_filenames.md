@@ -25,4 +25,3 @@ Use stable, descriptive filenames without spaces for portal uploads and email at
 ## Internal review only
 
 Do not upload `proposal_with_audits.pdf` unless specifically asked. It is a review companion containing fit, novelty, risk, and factual-verification notes, not the 3,000-word research-proposal submission.
-

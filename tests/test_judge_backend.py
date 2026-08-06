@@ -74,3 +74,16 @@ def test_openai_compatible_judge_backend_builds_json_llm(tmp_path) -> None:  # n
     assert isinstance(judge, OpenAICompatibleLLM)
     assert judge.model_id == "cogito-2.1:671b"
     assert judge.require_json is True
+
+
+def test_huggingface_judge_forwards_immutable_revision() -> None:
+    revision = "c" * 40
+    judge = build_judge_backend(
+        JudgeBackendConfig(
+            backend="huggingface",
+            model_id="example/judge",
+            hf_revision=revision,
+        )
+    )
+
+    assert judge.config.model_revision == revision

@@ -1,0 +1,15 @@
+{
+  "$id": "https://example.org/mgp-natural/manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version"
+  ],
+  "type": "object"
+}
+

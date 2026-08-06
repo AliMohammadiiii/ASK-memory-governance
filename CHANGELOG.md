@@ -33,7 +33,7 @@
 - Removed generated preview renders, copied presentation figures, and duplicate
   MGP-6 dataset files from the source tree.
 
-## 0.2.0 — 2026-07-13
+## 0.2.0, 2026-07-13
 
 - Reconstructed the full Git-ready repository from the authoritative ASK source archive.
 - Integrated the frozen MGP-6 v2 benchmark and separated human from model annotations.

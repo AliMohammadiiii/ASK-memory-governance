@@ -1,0 +1,4 @@
+{"action":"KEEP","annotation_status":"provisional_constructor_smoke","blind_id":"MGP-000001-AAAABBBB","cluster_id":"fixture-1","evidence_turn_ids":["T001","T003"],"resulting_value":"concise","schema_version":"1.0","scope":"SESSION_INTERACTION_PREFERENCE","source_track":"STUDYCHAT"}
+{"action":"SUPERSEDE","annotation_status":"provisional_constructor_smoke","blind_id":"MGP-000002-CCCCDDDD","cluster_id":"fixture-2","evidence_turn_ids":["T001","T003"],"resulting_value":"final.csv","schema_version":"1.0","scope":"CORRECTION_STATE","source_track":"STUDYCHAT"}
+{"action":"ABSTAIN","annotation_status":"provisional_constructor_smoke","blind_id":"MGP-000003-EEEEFFFF","cluster_id":"fixture-3","evidence_turn_ids":["T001","T003"],"resulting_value":"cleaned.csv","schema_version":"1.0","scope":"UNCERTAINTY_STATE","source_track":"STUDYCHAT"}
+

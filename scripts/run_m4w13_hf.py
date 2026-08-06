@@ -212,6 +212,8 @@ def _command_for(
         "--embedder-backend",
         args.embedder_backend,
     ]
+    if getattr(args, "hf_revision", None):
+        cmd.extend(["--hf-revision", args.hf_revision])
     if getattr(args, "quality_preset", _QUALITY_PRESET_NONE) != _QUALITY_PRESET_NONE:
         cmd.extend(["--quality-preset", args.quality_preset])
     if args.hf_load_in_4bit:
@@ -230,6 +232,8 @@ def _command_for(
         cmd.extend(["--embedder-device", args.embedder_device])
         if getattr(args, "embedder_st_model", None):
             cmd.extend(["--embedder-st-model", args.embedder_st_model])
+        if getattr(args, "embedder_revision", None):
+            cmd.extend(["--embedder-revision", args.embedder_revision])
         if getattr(args, "embedder_trust_remote_code", False):
             cmd.append("--embedder-trust-remote-code")
         if getattr(args, "embedder_task", None):
@@ -540,6 +544,11 @@ def main() -> int:
     )
     p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct")
     p.add_argument(
+        "--hf-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision shared by maintained LLM paths.",
+    )
+    p.add_argument(
         "--judge-backend",
         choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
         default="same_as_answerer",
@@ -589,6 +598,11 @@ def main() -> int:
         default=None,
         help="Override the sentence-transformers retrieval model id "
         "(e.g. jinaai/jina-embeddings-v5-text-small).",
+    )
+    p.add_argument(
+        "--embedder-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision for the sentence-transformers model.",
     )
     p.add_argument(
         "--embedder-trust-remote-code",

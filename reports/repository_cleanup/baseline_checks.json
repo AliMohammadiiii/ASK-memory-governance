@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0",
+  "captured_at": "2026-08-05T15:20:00Z",
+  "repository": {
+    "starting_branch": "main",
+    "cleanup_branch": "chore/repository-modernization",
+    "commit": "2452e97a9992779d28fd202b3b91a9c25ae91fab",
+    "tracked_file_count": 897,
+    "candidate_file_count": 1096,
+    "working_directory_size": "17 GB",
+    "python": "CPython 3.12.12"
+  },
+  "checks": [
+    {
+      "command": "make release-check PYTHON=.venv/bin/python",
+      "status": "PASS",
+      "details": "599 tests passed, 14 skipped; Ruff, mypy, compileall, shell syntax, strict MGP-6 validation, package build, wheel inspection, validity audit, and bibliography audit passed"
+    },
+    {
+      "command": "python scripts/claims/verify_claims.py",
+      "status": "PASS",
+      "details": "26 claims; 0 mismatches"
+    },
+    {
+      "command": "make verify-manifest validate-public-data validate-traces validate-experiments smoke PYTHON=.venv/bin/python",
+      "status": "PASS",
+      "details": "Derived manifest matched; boundary declaration passed with legal clearance false; 8 ASK protocol tests passed; model matrix and dry-run passed"
+    },
+    {
+      "command": "python scripts/paper/verify_generated_outputs.py (read-only function call)",
+      "status": "PASS",
+      "details": "5 files and 18 required fragments checked"
+    },
+    {
+      "command": "python scripts/release/anonymous_scan.py --out reports/repository_cleanup/baseline_anonymous_scan.json",
+      "status": "PASS",
+      "details": "Paper source-text scan passed"
+    },
+    {
+      "command": "python scripts/check_readiness.py --json-out reports/repository_cleanup/baseline_readiness.json --md-out reports/repository_cleanup/baseline_readiness.md",
+      "status": "NO_GO_EXPECTED",
+      "details": "External human, legal, and publication gates remain open"
+    },
+    {
+      "command": "latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=compiled main.tex",
+      "working_directory": "paper/paper_1",
+      "status": "PASS",
+      "details": "44-page PDF produced"
+    },
+    {
+      "command": "latexmk -xelatex -interaction=nonstopmode -halt-on-error -outdir=../latex/compiled -jobname=ASK_Masters_Thesis_UT_Draft ../latex/main.tex",
+      "working_directory": "thesis/template",
+      "status": "FAIL_PREEXISTING",
+      "details": "Unescaped ampersand at thesis/latex/chapters/09_validity_limitations.tex:88; 63 citations unresolved after the fatal source error"
+    },
+    {
+      "command": "python -m pip install .; python -c 'import ask'",
+      "status": "PASS",
+      "details": "Clean CPython 3.12 environment imported ask 0.2.0"
+    },
+    {
+      "command": "python -m pip install -e .; python -c 'import ask'",
+      "status": "PASS",
+      "details": "Clean editable installation imported ask 0.2.0"
+    },
+    {
+      "command": "pre-commit run --all-files",
+      "status": "NOT_RUN",
+      "details": "pre-commit was not installed in the baseline environment"
+    },
+    {
+      "command": "provider-dependent, GPU, private-data, and independent-human workflows",
+      "status": "NOT_RUN",
+      "details": "No authorization, private input, GPU requirement, or human action was supplied; no paid API call was made"
+    }
+  ]
+}

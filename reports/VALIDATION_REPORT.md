@@ -6,14 +6,14 @@ Validated on 2026-07-15 in the local release environment.
 
 | Gate | Result |
 |---|---|
-| Ruff | pass — `ruff check .` |
-| Mypy | pass — 60 source files |
-| Pytest | pass — 472 passed, 11 documented optional skips |
-| MGP-6 strict schema | pass — 180 examples, 0 errors |
-| Offline smoke suite | pass — tests, strict schema, two-item dry run |
+| Ruff | pass, `ruff check .` |
+| Mypy | pass, 60 source files |
+| Pytest | pass, 472 passed, 11 documented optional skips |
+| MGP-6 strict schema | pass, 180 examples, 0 errors |
+| Offline smoke suite | pass, tests, strict schema, two-item dry run |
 | Repository secret/structure scan | pass |
-| Build | pass — sdist and universal wheel |
-| Isolated wheel install/import/resources | pass — wheel installed with `--no-deps`; package import and four required resources verified |
+| Build | pass, sdist and universal wheel |
+| Isolated wheel install/import/resources | pass, wheel installed with `--no-deps`; package import and four required resources verified |
 
 The optional skips are nine computations requiring a non-redistributed
 LongMemEval fixture and two MiniLM smoke tests disabled by the documented
@@ -25,7 +25,7 @@ Apple-Silicon `libomp` safety gate.
 |---|---|
 | Ledger | canonical v1.1; exact status vocabulary enforced |
 | MGP-6 data | 180 rows; no schema errors; shortcut gate failed (conflict type reaches 1.000 held-out accuracy) |
-| MGP-6 validity audit | pass — cluster intervals, finite-sample bounds, calibration, risk–coverage, and cost sensitivity regenerated |
+| MGP-6 validity audit | pass, cluster intervals, finite-sample bounds, calibration, risk–coverage, and cost sensitivity regenerated |
 | Freeze manifest | regenerated from exact bytes plus external input hashes |
 | Paper | 16 pages; all pages visually inspected; no overfull boxes or unresolved citations/references |
 | Thesis | 42 tagged pages; all pages inspected across the final review cycle; accessibility 0/0/0; 46 cited keys resolve against 49 entries |

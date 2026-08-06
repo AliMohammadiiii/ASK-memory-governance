@@ -1,0 +1,8 @@
+schema_version: "1.0"
+primary_metric: macro_f1
+report_tracks_separately: true
+no_mixed_headline_score: true
+bootstrap_unit: continuity_component
+bootstrap_iterations: 2000
+views: [prevalence_full, balanced_action_diagnostic, studychat_task, studychat_preference, studychat_cross_session, wikiconv_editorial, short_context, long_distance_evidence, ambiguity_heavy, trajectory]
+

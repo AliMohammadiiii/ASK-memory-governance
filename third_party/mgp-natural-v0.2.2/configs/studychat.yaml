@@ -1,0 +1,12 @@
+schema_version: "1.0"
+canonical_repo_id: wmcnicho/StudyChat
+input_policy: authorized_local_or_human_accepted_gate_only
+canonical_order: [userId, chatId, interactionCount]
+messages_usage: consistency_check_only
+required_user_disjoint_splits: true
+full_data_expected_audit_values:
+  rows: 16851
+  chats: 2214
+  users: 203
+sample_derivative_gate: BLOCK_FULL_RELEASE
+

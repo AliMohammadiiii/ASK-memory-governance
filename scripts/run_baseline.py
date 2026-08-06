@@ -470,8 +470,8 @@ def _build_embedder(args: argparse.Namespace):
     embedder_kwargs: dict[str, Any] = {"device": args.embedder_device}
     if getattr(args, "embedder_st_model", None):
         embedder_kwargs["model_id"] = args.embedder_st_model
-    if getattr(args, "embedder_st_revision", None):
-        embedder_kwargs["revision"] = args.embedder_st_revision
+    if getattr(args, "embedder_revision", None):
+        embedder_kwargs["revision"] = args.embedder_revision
     if getattr(args, "embedder_trust_remote_code", False):
         embedder_kwargs["trust_remote_code"] = True
     if getattr(args, "embedder_task", None):
@@ -606,7 +606,11 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
     `answer_session_ids`. The no-memory baseline ignores it.
     """
     if args.baseline == "no_memory":
-        return NoMemoryBaseline(llm=llm, seed=args.seed)
+        return NoMemoryBaseline(
+            llm=llm,
+            seed=args.seed,
+            max_new_tokens=args.answer_max_new_tokens,
+        )
 
     if args.baseline == "flat_vector":
         # Build session corpus over the slice. The baseline resolves the
@@ -623,6 +627,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             corpus=corpus,
             k=args.k,
             seed=args.seed,
+            max_new_tokens=args.answer_max_new_tokens,
         )
 
     if args.baseline == "recency":
@@ -642,6 +647,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             capacity=args.capacity,
             k=args.k,
             seed=args.seed,
+            max_new_tokens=args.answer_max_new_tokens,
             action_log_path=action_log_path,
             append_action_log=getattr(args, "append_action_log", False),
             extraction_max_new_tokens=args.extraction_max_new_tokens,
@@ -927,9 +933,9 @@ def main() -> int:
         "--embedder-trust-remote-code and a recent transformers.",
     )
     p.add_argument(
-        "--embedder-st-revision",
+        "--embedder-revision",
         default=None,
-        help="Exact source revision for the sentence-transformer model.",
+        help="Optional immutable Hugging Face commit revision for the sentence-transformers model.",
     )
     p.add_argument(
         "--embedder-trust-remote-code",
@@ -1614,7 +1620,7 @@ def main() -> int:
     p.add_argument(
         "--hf-revision",
         default=None,
-        help="Exact source revision for directly loaded model weights.",
+        help="Optional immutable Hugging Face commit revision for model and tokenizer loading.",
     )
     p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
     p.add_argument("--hf-device-map", default="auto")

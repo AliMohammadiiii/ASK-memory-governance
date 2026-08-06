@@ -1,21 +1,25 @@
-# External memory-system baselines — pinned for reproducibility (paper table).
-# Install into the environment you run mgp6_v2 from:
-#   pip install -r external/requirements-external.txt
+# External memory-system baselines, pinned for reproducibility (paper table).
+# Install in a dedicated external-baseline environment. MemoryOS currently
+# requires Transformers 4.x, while the maintained ASK ML extra uses the audited
+# Transformers 5.x line. Do not combine the two environments.
+#   python3.12 -m venv .venv-external
+#   .venv-external/bin/python -m pip install -r external/requirements-external.txt
 
 # Mem0 (Chhikara et al., 2025)
 mem0ai==2.0.11
 qdrant-client>=1.9
 sentence-transformers>=3.0
 
-# Zep/Graphiti (Rasmussen et al., 2025) — FalkorDB service backend
+# Zep/Graphiti (Rasmussen et al., 2025), FalkorDB service backend
 # The adapter imports FalkorDriver, so the FalkorDB extra is required; Kuzu
 # alone cannot satisfy this runner.
 graphiti-core[falkordb]==0.29.2
 
-# Letta / MemGPT (Packer et al., 2023) — client only; server runs in Docker
+# Letta / MemGPT (Packer et al., 2023), client only; server runs in Docker
 letta-client==1.12.1
 
 # MemOS (Li et al., 2025)
 MemoryOS==2.0.23
+transformers==4.57.6
 chonkie==1.7.0
 langchain-text-splitters==1.1.2

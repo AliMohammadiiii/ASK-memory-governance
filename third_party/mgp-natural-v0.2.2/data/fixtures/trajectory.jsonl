@@ -1,0 +1,2 @@
+{"schema_version":"1.0","scope":"ARTIFACT_STATE","slot":"active_dataset_file","source_track":"STUDYCHAT","steps":[{"action":"SUPERSEDE","evidence_turn_ids":["T1"],"item_id":"s1","prior_value":"alpha.csv","resulting_value":"beta.csv"},{"action":"ABSTAIN","evidence_turn_ids":["T2"],"item_id":"s2","prior_value":"beta.csv","resulting_value":"beta.csv"},{"action":"SUPERSEDE","evidence_turn_ids":["T3"],"item_id":"s3","prior_value":"beta.csv","resulting_value":"gamma.csv"}],"trajectory_id":"trajectory-fixture-1"}
+

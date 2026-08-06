@@ -63,4 +63,3 @@ Until all four items are satisfied, use **prospective supervisor** in private pl
 - [ ] PourYa described as released open-source software; no claim that its paper is under JOSS review.
 - [ ] Ontology, employment, team-size, product-impact, award, and ranking claims checked against evidence.
 - [ ] Contact details, dates, spelling, and filenames verified.
-

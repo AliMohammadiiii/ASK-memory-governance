@@ -1,7 +1,7 @@
 # Cambridge PhD application requirements - verified notes
 
-**Course:** PhD in Computer Science, University of Cambridge  
-**Verification date:** 13 July 2026  
+**Course:** PhD in Computer Science, University of Cambridge
+**Verification date:** 13 July 2026
 **Target cycle:** 2027-28, whose exact course deadlines were not yet published on the current course-directory page at the verification date.
 
 These notes distinguish verified current requirements from cycle-specific details that still need confirmation.
@@ -94,4 +94,3 @@ The research summary uses these primary-source records. It also uses "curated ve
 ## JOSS status correction
 
 The PourYa software is publicly released at [CMC-lab/PourYa](https://github.com/CMC-lab/PourYa). Its JOSS pre-review issue, [openjournals/joss-reviews#8739](https://github.com/openjournals/joss-reviews/issues/8739), was closed after editorial scope screening in August 2025 and the paper was not advanced to peer review. The final CV therefore does not describe the manuscript as "under review at JOSS".
-

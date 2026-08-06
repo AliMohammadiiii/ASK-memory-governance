@@ -16,4 +16,3 @@ Status: `BLOCKED_HUMAN_DECISION`
 9. Artifact/data/code availability and any redistribution restrictions.
 
 No names may be filled automatically from repository metadata.
-

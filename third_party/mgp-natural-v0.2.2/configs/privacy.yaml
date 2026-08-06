@@ -1,0 +1,11 @@
+schema_version: "1.0"
+automated_scan_is_anonymity_guarantee: false
+manual_review_required: true
+redaction_placeholder_policy: category_named
+scan_categories: [email, ip, url, token, secret_like, username, repository, filesystem_path, timestamp, course, assignment, grade, identity_free_text, deleted_wiki_content]
+private_file_mode: "0600"
+private_directory_mode: "0700"
+ner_review_backend: none
+ner_model: null
+ner_review_is_advisory: true
+

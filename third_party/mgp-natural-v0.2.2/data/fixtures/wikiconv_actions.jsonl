@@ -1,0 +1,5 @@
+{"content":"The project uses the alpha wording.","conversation_id":"c1","id":"a1","page_id":"p1","page_title":"Fixture Page","rev_id":"r1","section":"Lead","timestamp":"2018-01-01T00:00:00Z","type":"CREATION","user_id":"editor-1"}
+{"content":"The project uses the beta wording.","conversation_id":"c1","id":"a2","page_id":"p1","page_title":"Fixture Page","parent_id":"a1","rev_id":"r2","section":"Lead","timestamp":"2018-01-01T00:01:00Z","type":"MODIFICATION","user_id":"editor-2"}
+{"content":"","conversation_id":"c1","id":"a3","page_id":"p1","page_title":"Fixture Page","parent_id":"a2","rev_id":"r3","section":"Lead","timestamp":"2018-01-01T00:02:00Z","type":"DELETION","user_id":"editor-3"}
+{"content":"The project uses the beta wording.","conversation_id":"c1","id":"a4","page_id":"p1","page_title":"Fixture Page","parent_id":"a3","rev_id":"r4","section":"Lead","timestamp":"2018-01-01T00:03:00Z","type":"RESTORATION","user_id":"editor-1"}
+

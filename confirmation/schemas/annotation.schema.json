@@ -4,13 +4,43 @@
   "title": "Independent ASK annotation",
   "type": "object",
   "additionalProperties": false,
-  "required": ["blind_id", "annotator_pseudonym", "action", "confidence", "rationale"],
+  "required": ["blind_id", "annotator_pseudonym"],
   "properties": {
-    "blind_id": {"type": "string", "pattern": "^C[0-9]{6}$"},
+    "blind_id": {"type": "string", "pattern": "^[CN][0-9]{6}$"},
     "annotator_pseudonym": {"type": "string", "minLength": 1},
     "action": {"enum": ["KEEP", "SUPERSEDE", "ABSTAIN"]},
     "confidence": {"type": "integer", "minimum": 1, "maximum": 5},
     "rationale": {"type": "string", "minLength": 1},
-    "evidence_spans": {"type": "array", "items": {"type": "string"}}
-  }
+    "evidence_turn_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "resulting_value": {"type": ["string", "null"]},
+    "exclude_reason": {"type": "string", "minLength": 1}
+  },
+  "oneOf": [
+    {
+      "required": [
+        "action",
+        "confidence",
+        "rationale",
+        "evidence_turn_ids",
+        "resulting_value"
+      ],
+      "not": {"required": ["exclude_reason"]}
+    },
+    {
+      "required": ["exclude_reason"],
+      "not": {
+        "anyOf": [
+          {"required": ["action"]},
+          {"required": ["confidence"]},
+          {"required": ["rationale"]},
+          {"required": ["evidence_turn_ids"]},
+          {"required": ["resulting_value"]}
+        ]
+      }
+    }
+  ]
 }

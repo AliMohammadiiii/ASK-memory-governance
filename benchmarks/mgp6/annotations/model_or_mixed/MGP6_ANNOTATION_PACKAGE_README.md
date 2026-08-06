@@ -3,13 +3,13 @@
 This package contains the files generated and used during the annotation and agreement-analysis workflow.
 
 ## Primary human annotation outputs
-- `human_independent_annotations_test.csv` — the 90-item independent human annotation.
-- `human_annotation_agreement_report.md` — human-vs-author agreement report.
-- `human_annotation_agreement_summary.json` — machine-readable human agreement metrics.
-- `human_vs_author_disagreements.csv` — disagreement cases requiring adjudication.
+- `human_independent_annotations_test.csv`, the 90-item independent human annotation.
+- `human_annotation_agreement_report.md`, human-vs-author agreement report.
+- `human_annotation_agreement_summary.json`, machine-readable human agreement metrics.
+- `human_vs_author_disagreements.csv`, disagreement cases requiring adjudication.
 
 ## Blind annotation material
-- `mgp6_v2_test_blind_annotation.jsonl` — test-only blinded annotation input with only the fields needed for annotation.
+- `mgp6_v2_test_blind_annotation.jsonl`, test-only blinded annotation input with only the fields needed for annotation.
 
 ## Multi-model audit
 - `geminiPro.csv`
@@ -29,7 +29,7 @@ This package contains the files generated and used during the annotation and agr
 
 ## Canonical source
 
-- `../../data/mgp6_v2.jsonl` — source/gold dataset used for comparison.
+- `../../data/mgp6_v2.jsonl`, source/gold dataset used for comparison.
 
 ## Key human agreement result
 - Test items: 90

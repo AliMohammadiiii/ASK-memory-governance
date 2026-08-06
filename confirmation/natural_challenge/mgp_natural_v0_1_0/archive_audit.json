@@ -1,0 +1,85 @@
+{
+  "allowed_claim": "Internally coherent 36-item Wikipedia editorial-discussion feasibility seed with provisional constructor labels.",
+  "audit_date": "2026-08-03",
+  "blind_packet_audit": {
+    "deterministic_relation_rule_correct": 36,
+    "deterministic_relation_rule_total": 36,
+    "direct_source_id_join_count": 36,
+    "record_count": 36,
+    "relation_to_prior_present_count": 36,
+    "safe_for_independent_annotation": false
+  },
+  "blockers": [
+    "BLIND_PACKET_LABEL_LEAKAGE",
+    "NO_INDEPENDENT_ANNOTATION_OR_ADJUDICATION",
+    "HUMAN_LEGAL_AND_PRIVACY_APPROVAL_PENDING",
+    "PAGE_FAMILY_AND_CONTRIBUTOR_SPLIT_LEAKAGE",
+    "NO_INDEPENDENT_CONTINUITY_HELD_OUT_SPLIT",
+    "SOURCE_EXTRACTION_LEDGER_NOT_REPRODUCIBLE",
+    "SCORER_AND_VALIDATOR_HARDENING_REQUIRED"
+  ],
+  "core_integrity_passed": true,
+  "dataset": {
+    "action_counts": {
+      "ABSTAIN": 12,
+      "KEEP": 12,
+      "SUPERSEDE": 12
+    },
+    "annotation_status_counts": {
+      "expert_provisional_seed": 36
+    },
+    "dialogue_excerpt_row_count": 76,
+    "independent_adjudication_complete_count": 0,
+    "multi_contributor_excerpt_count": 31,
+    "record_count": 36,
+    "requires_independent_confirmation_count": 36,
+    "single_contributor_excerpt_count": 5,
+    "split_counts": {
+      "dev": 6,
+      "test": 6,
+      "train": 24
+    },
+    "unique_id_count": 36
+  },
+  "gold_or_public_release_eligible": false,
+  "manifest": {
+    "duplicate_count": 0,
+    "entry_count": 136,
+    "extra_count": 0,
+    "hash_mismatch_count": 0,
+    "missing_count": 0,
+    "verified": true
+  },
+  "parent_archive": {
+    "filename": "MGP-Natural-v0.1.0-release.zip",
+    "known_parent_match": true,
+    "sha256": "0ffe92eba00bcec503e81589965c381857f4524fdd955902678d636eca7b7f26",
+    "zip_integrity_passed": true
+  },
+  "prohibited_claims": [
+    "independently annotated gold benchmark",
+    "public-release-cleared dataset",
+    "representative real-world personal-assistant memory benchmark",
+    "page-family-held-out evaluation",
+    "leaderboard-quality test set"
+  ],
+  "release_checklist": {
+    "all_required_signoffs_complete": false,
+    "unchecked_item_count": 32
+  },
+  "schema_version": "1.0",
+  "split_audit": {
+    "benchmark_held_out_split_valid": false,
+    "continuity_component_count": 2,
+    "continuity_component_sizes": [
+      35,
+      1
+    ],
+    "exact_test_page_overlap_count": 0,
+    "mixed_split_continuity_component_count": 1,
+    "split_files_reconstruct_seed": true,
+    "test_contributor_overlap_count": 1,
+    "test_page_family_overlap_count": 1
+  },
+  "status": "QUARANTINED_RELEASE_CANDIDATE"
+}

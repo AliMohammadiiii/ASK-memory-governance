@@ -10,4 +10,3 @@ Public/private boundaries, license status, independent-annotation limitations,
 and external LongMemEval restrictions are in `release/DATA_PROVENANCE.md`,
 `release/PUBLIC_PRIVATE_MATRIX.csv`, and `LICENSE-DATA.md`. V4.3 redistribution
 is currently blocked pending an explicit human/legal decision.
-

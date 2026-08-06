@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
+from run_baseline import _build_baseline as _build_runtime_baseline  # noqa: E402
 from run_m4w13_hf import (  # type: ignore[import-not-found]  # noqa: E402
     _apply_quality_preset,
     _command_for,
@@ -21,6 +22,8 @@ from run_m4w13_hf_a100_parallel import (  # type: ignore[import-not-found]  # no
     _write_command_manifest,
 )
 
+from ask.inference.fake import FakeLLM  # noqa: E402
+
 
 def _args(**overrides):
     values = {
@@ -28,6 +31,7 @@ def _args(**overrides):
         "seed": 0,
         "n_bootstrap": 20,
         "hf_model": "Qwen/Qwen2.5-3B-Instruct",
+        "hf_revision": None,
         "hf_dtype": "float16",
         "hf_device_map": "auto",
         "hf_max_seq_len": 4096,
@@ -37,6 +41,7 @@ def _args(**overrides):
         "limit": 12,
         "embedder_backend": "sentence_transformer",
         "embedder_device": "cuda",
+        "embedder_revision": None,
         "embedder_ollama_model": "llama3.2:3b",
         "embedder_timeout_s": 1800.0,
         "embedder_batch_size": 16,
@@ -111,6 +116,28 @@ def test_command_prefers_configured_python(monkeypatch) -> None:
 
     assert _preferred_python() == "/tmp/ask-python"
     assert cmd[0] == "/tmp/ask-python"
+
+
+def test_model_revisions_are_forwarded_to_run_baseline() -> None:
+    cmd = _command_for(
+        baseline_alias="controller",
+        baseline="controller",
+        out_dir=Path("runs/x"),
+        args=_args(hf_revision="a" * 40, embedder_revision="b" * 40),
+    )
+
+    assert cmd[cmd.index("--hf-revision") + 1] == "a" * 40
+    assert cmd[cmd.index("--embedder-revision") + 1] == "b" * 40
+
+
+def test_answer_budget_is_forwarded_to_no_memory_baseline() -> None:
+    baseline = _build_runtime_baseline(
+        SimpleNamespace(baseline="no_memory", seed=0, answer_max_new_tokens=4),
+        FakeLLM(),
+        [],
+    )
+
+    assert baseline.max_new_tokens == 4
 
 
 def test_quality_preset_is_forwarded_to_run_baseline() -> None:

@@ -84,6 +84,7 @@ def _build_judge(args: argparse.Namespace):
         response_format="json" if args.judge_json_format else None,
         think=args.judge_think,
         hf_dtype=args.hf_dtype,
+        hf_revision=args.hf_revision,
         hf_device_map=args.hf_device_map,
         hf_load_in_4bit=args.hf_load_in_4bit,
         hf_trust_remote_code=args.hf_trust_remote_code,
@@ -164,6 +165,11 @@ def main() -> int:
     p.add_argument("--judge-json-format", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--judge-think", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
+    p.add_argument(
+        "--hf-revision",
+        default=None,
+        help="Optional immutable Hugging Face commit revision for judge loading.",
+    )
     p.add_argument("--hf-device-map", default="auto")
     p.add_argument("--hf-load-in-4bit", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument("--hf-trust-remote-code", action=argparse.BooleanOptionalAction, default=False)

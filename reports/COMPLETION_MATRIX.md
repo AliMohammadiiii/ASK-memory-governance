@@ -2,7 +2,7 @@
 
 | Workstream | Status | Final evidence |
 |---|---|---|
-| Input inventory and immutable source hashes | complete | `docs/audit/REPOSITORY_INVENTORY.md`; `artifacts/manifests/source_archives.json` |
+| Input inventory and immutable source hashes | complete | `docs/REPOSITORY_INVENTORY.md`; `artifacts/manifests/source_archives.json` |
 | Canonical repository and packaging | complete | source tree; wheel/sdist build; isolated install/resource check |
 | MGP-6 v2 diagnostic audit | complete; construct gate failed | 180/0 strict schema; conflict-type-only 1.000 held-out accuracy; cluster/cost/calibration audit released; current scores diagnostic |
 | MGP-6 label audit | complete but not multi-human IAA | one independent human: 89/90 raw agreement, κ 0.981; separate four-model panel; raw human labels withheld pending consent |

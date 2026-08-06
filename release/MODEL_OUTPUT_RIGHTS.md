@@ -8,4 +8,3 @@ labels may be redistributed; required attribution; privacy restrictions; and
 the human reviewer. Until then, publish aggregate metrics and hashes only where
 scientifically sufficient and legally cleared. Paid inference is not authorized
 by this file.
-

@@ -9,7 +9,7 @@ on one GPU is the bottleneck anyway; sentence-transformers batches each call.
 Run:
   PYTHONPATH=src python scripts/serve_embeddings.py \
     --model jinaai/jina-embeddings-v5-text-small --task retrieval \
-    --device cuda --trust-remote-code --port 8100
+    --device cuda --trust-remote-code --host 127.0.0.1 --port 8100
 
 Then point the eval at it:
   run_baseline ... --embedder-backend openai_compatible \
@@ -20,15 +20,12 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 import threading
 import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
-if "src" not in sys.path:
-    sys.path.insert(0, "src")
-from ask.baselines.embeddings import TurnEmbedder  # noqa: E402
-from ask.endpoints import validate_bind_address  # noqa: E402
+from ask.baselines.embeddings import TurnEmbedder
+from ask.endpoints import validate_bind_address
 
 _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"
@@ -152,15 +149,16 @@ class _Handler(BaseHTTPRequestHandler):
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser()
     p.add_argument("--model", default="jinaai/jina-embeddings-v5-text-small")
+    p.add_argument(
+        "--revision",
+        default=None,
+        help="Optional immutable Hugging Face commit revision for model loading.",
+    )
     p.add_argument("--served-name", default="jina")
     p.add_argument("--task", default="retrieval")
     p.add_argument("--prompt-name", default=None)
     p.add_argument("--device", default="cuda")
-    p.add_argument(
-        "--trust-remote-code",
-        action="store_true",
-        help="Allow model-repository Python code. Disabled unless explicitly requested.",
-    )
+    p.add_argument("--trust-remote-code", action=argparse.BooleanOptionalAction, default=False)
     p.add_argument(
         "--batch-size",
         type=int,
@@ -230,6 +228,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     _EMBEDDER = TurnEmbedder(
         model_id=args.model,
+        revision=args.revision,
         device=args.device,
         trust_remote_code=args.trust_remote_code,
         task=args.task,

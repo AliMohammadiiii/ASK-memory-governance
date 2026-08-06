@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/mgp-natural/execution_summary.schema.json",
+  "title": "MGP-Natural execution summary",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "verdict",
+    "publication_eligible",
+    "studychat_input",
+    "observed_reconstruction",
+    "candidate_counts",
+    "continuity",
+    "splits",
+    "privacy",
+    "license_and_redistribution",
+    "annotation_readiness",
+    "engineering_validation",
+    "readiness",
+    "allowed_claims",
+    "prohibited_claims",
+    "remaining_human_actions",
+    "reproduction_commands"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "verdict": {
+      "enum": ["NO_GO", "MACHINE_READY_HUMAN_GATES_PENDING", "PRIVATE_PILOT_READY", "PUBLIC_RELEASE_READY"]
+    },
+    "publication_eligible": {"type": "boolean"},
+    "studychat_input": {"type": "object"},
+    "observed_reconstruction": {"type": "object"},
+    "candidate_counts": {"type": "object"},
+    "continuity": {"type": "object"},
+    "splits": {"type": "object"},
+    "privacy": {"type": "object"},
+    "license_and_redistribution": {"type": "object"},
+    "annotation_readiness": {"type": "object"},
+    "engineering_validation": {"type": "object"},
+    "readiness": {"type": "object"},
+    "allowed_claims": {"type": "array"},
+    "prohibited_claims": {"type": "array"},
+    "remaining_human_actions": {"type": "array"},
+    "reproduction_commands": {"type": "array", "items": {"type": "string"}}
+  }
+}
+

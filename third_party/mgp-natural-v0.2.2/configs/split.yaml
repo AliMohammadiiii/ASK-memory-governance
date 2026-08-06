@@ -1,0 +1,11 @@
+schema_version: "1.0"
+seed: 1729
+ratios:
+  train: 0.70
+  development: 0.15
+  hidden_test: 0.15
+unit: continuity_component
+studychat_user_disjoint: true
+wikiconv_component_disjoint: true
+balance_may_not_break_isolation: true
+

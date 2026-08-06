@@ -23,6 +23,7 @@ from ask.inference.llm import (
     StructuredLLM,
     StructuredLLMError,
     _extract_first_json_object,
+    _supports_non_causal_fallback,
     build_llm,
     load_inference_config,
 )
@@ -246,6 +247,7 @@ def test_huggingface_loader_propagates_exact_revision(
     torch_module.float16 = SimpleNamespace()  # type: ignore[attr-defined]
     torch_module.float32 = SimpleNamespace()  # type: ignore[attr-defined]
     transformers_module = ModuleType("transformers")
+    transformers_module.__version__ = "5.0.0"  # type: ignore[attr-defined]
     transformers_module.AutoTokenizer = _TokenizerFactory  # type: ignore[attr-defined]
     transformers_module.AutoModelForCausalLM = _ModelFactory  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "torch", torch_module)
@@ -259,3 +261,19 @@ def test_huggingface_loader_propagates_exact_revision(
 
     assert observed["tokenizer"]["revision"] == "commit-sha"
     assert observed["model"]["revision"] == "commit-sha"
+
+
+def test_inference_config_accepts_immutable_model_revision() -> None:
+    revision = "a" * 40
+    cfg = InferenceConfig(model_id="example/model", model_revision=revision)
+    assert cfg.model_revision == revision
+
+
+def test_non_architecture_load_error_does_not_trigger_model_fallback() -> None:
+    accelerate_error = ValueError("Using a device_map requires accelerate")
+    architecture_error = ValueError(
+        "Unrecognized configuration class ExampleConfig for this kind of AutoModel"
+    )
+
+    assert _supports_non_causal_fallback(accelerate_error) is False
+    assert _supports_non_causal_fallback(architecture_error) is True

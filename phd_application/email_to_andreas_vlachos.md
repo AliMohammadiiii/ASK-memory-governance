@@ -1,6 +1,6 @@
 # Draft email to Professor Andreas Vlachos
 
-**Status:** Draft only - not sent.  
+**Status:** Draft only - not sent.
 **Suggested subject:** Prospective PhD research on revisable fact verification (2027 entry)
 
 Dear Professor Vlachos,
@@ -17,9 +17,9 @@ I have attached my CV and a concise research summary. I would be grateful to kno
 
 Thank you for considering the enquiry.
 
-Best regards,  
-Ali Mohammadi  
-ali.mohammadi@cytognosis.org  
+Best regards,
+Ali Mohammadi
+ali.mohammadi@cytognosis.org
 [LinkedIn](https://www.linkedin.com/in/ali-mohammadi) | [GitHub](https://github.com/AliMohammadiiii) | [Website](https://mohammadi-ali.ir)
 
 ## Before sending
@@ -28,4 +28,3 @@ ali.mohammadi@cytognosis.org
 - Check that the target entry term is still 2027 and update the subject if needed.
 - Confirm that the contact links and email address are current.
 - Do not add Professor Vlachos to the formal application unless he explicitly grants permission and confirms that the project can be undertaken in the Department and that he can accept new students.
-

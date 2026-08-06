@@ -42,16 +42,16 @@ def test_inference_config_enable_thinking_default_and_set() -> None:
 def test_turn_embedder_accepts_jina_fields_without_loading() -> None:
     emb = TurnEmbedder(
         model_id="jinaai/jina-embeddings-v5-text-small",
+        revision="a" * 40,
         device="cpu",
         trust_remote_code=True,
         task="retrieval",
         prompt_name="document",
-        revision="0123456789abcdef",
     )
     assert emb.trust_remote_code is True
+    assert emb.revision == "a" * 40
     assert emb.task == "retrieval"
     assert emb.prompt_name == "document"
-    assert emb.revision == "0123456789abcdef"
     # Default still satisfies the Embedder protocol contract.
     assert isinstance(FakeEmbedder(), Embedder)
 
@@ -59,9 +59,9 @@ def test_turn_embedder_accepts_jina_fields_without_loading() -> None:
 def test_turn_embedder_defaults_are_backward_compatible() -> None:
     emb = TurnEmbedder()
     assert emb.trust_remote_code is False
+    assert emb.revision is None
     assert emb.task is None
     assert emb.prompt_name is None
-    assert emb.revision is None
 
 
 def test_turn_embedder_propagates_exact_revision(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -87,6 +87,32 @@ def test_turn_embedder_propagates_exact_revision(monkeypatch: pytest.MonkeyPatch
     assert cached is first
     assert second_revision is not first
     assert [call["revision"] for call in observed] == ["commit-sha", "other-sha"]
+
+
+def test_turn_embedder_forwards_immutable_revision(monkeypatch) -> None:
+    captured = {}
+
+    def fake_loader(model_id, device, revision, trust_remote_code):  # noqa: ANN001
+        captured.update(
+            model_id=model_id,
+            device=device,
+            revision=revision,
+            trust_remote_code=trust_remote_code,
+        )
+        return object()
+
+    monkeypatch.setattr(embeddings_module, "_get_or_load_model", fake_loader)
+    revision = "b" * 40
+    emb = TurnEmbedder(model_id="example/embedder", revision=revision, device="cpu")
+
+    emb._ensure_loaded()
+
+    assert captured == {
+        "model_id": "example/embedder",
+        "device": "cpu",
+        "revision": revision,
+        "trust_remote_code": False,
+    }
 
 
 def test_embedding_dim_probes_when_accessor_unusable() -> None:

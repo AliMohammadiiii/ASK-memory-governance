@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Please cite the eventual benchmark paper and source datasets. This repository is pre-release."
+title: "MGP-Natural: Write-Time Memory Governance Across Natural Conversations"
+type: software
+version: 0.2.2
+date-released: 2026-08-04
+license: Apache-2.0
+repository-code: "PENDING_PUBLIC_REPOSITORY"
+authors:
+  - name: "MGP-Natural contributors"
+preferred-citation:
+  type: article
+  title: "MGP-Natural: Write-Time Memory Governance Across Natural Human-LLM and Collaborative Editorial Conversations"
+  authors:
+    - name: "AUTHORS_PENDING_HUMAN_CONFIRMATION"
+  year: 2026
+  notes: "Manuscript scaffold only; no publication claim."
+

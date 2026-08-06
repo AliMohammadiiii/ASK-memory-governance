@@ -1,0 +1,57 @@
+{
+  "$id": "https://example.org/mgp-natural/score.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evaluation_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "exact_prediction_coverage_required": {"const": true},
+        "mixed_track_headline_score_emitted": {"const": false},
+        "primary_metric": {"const": "macro_f1"},
+        "tracks_reported_separately": {"const": true}
+      },
+      "required": [
+        "primary_metric",
+        "mixed_track_headline_score_emitted",
+        "tracks_reported_separately",
+        "exact_prediction_coverage_required"
+      ],
+      "type": "object"
+    },
+    "evaluator_version": {"type": "string"},
+    "inputs": {
+      "additionalProperties": false,
+      "properties": {
+        "gold_rows": {"minimum": 1, "type": "integer"},
+        "gold_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"},
+        "prediction_rows": {"minimum": 1, "type": "integer"},
+        "predictions_sha256": {"pattern": "^[0-9a-f]{64}$", "type": "string"}
+      },
+      "required": ["gold_sha256", "predictions_sha256", "gold_rows", "prediction_rows"],
+      "type": "object"
+    },
+    "publication_eligible": {"type": "boolean"},
+    "required_statement": {"type": "string"},
+    "schema_version": {"const": "1.0"},
+    "smoke_mode": {"type": "boolean"},
+    "track_results": {
+      "additionalProperties": {"type": "object"},
+      "propertyNames": {"enum": ["STUDYCHAT", "WIKICONV"]},
+      "type": "object"
+    },
+    "views": {"additionalProperties": {"type": "object"}, "type": "object"}
+  },
+  "required": [
+    "schema_version",
+    "evaluator_version",
+    "publication_eligible",
+    "smoke_mode",
+    "evaluation_policy",
+    "inputs",
+    "track_results",
+    "views"
+  ],
+  "type": "object"
+}
+

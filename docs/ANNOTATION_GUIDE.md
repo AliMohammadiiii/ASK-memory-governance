@@ -11,4 +11,3 @@ prospective protocol. Original rows are immutable. Disagreements receive an
 additional adjudication row. Identity/independence, consent, compensation,
 redistribution, and conflicts require human records outside the blind packet.
 Existing single-annotator and model-audit evidence does not satisfy this gate.
-

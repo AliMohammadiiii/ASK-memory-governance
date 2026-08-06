@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "evidence_turn_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "predecessor_item_id": {
+      "type": "string"
+    },
+    "relation": {
+      "enum": [
+        "REAFFIRMS",
+        "SUPERSEDES",
+        "WITHHOLDS_COMMITMENT",
+        "RESTORES",
+        "DELETES",
+        "RESOLVES",
+        "REOPENS",
+        "CONTRADICTS_WITHOUT_RESOLUTION"
+      ]
+    },
+    "scope": {
+      "enum": [
+        "SESSION_TASK_STATE",
+        "CROSS_SESSION_TASK_STATE",
+        "SESSION_INTERACTION_PREFERENCE",
+        "CROSS_SESSION_USER_PREFERENCE",
+        "ARTIFACT_STATE",
+        "CORRECTION_STATE",
+        "UNCERTAINTY_STATE",
+        "EDITORIAL_DECISION",
+        "CONTENT_INCLUSION",
+        "CONTENT_REMOVAL",
+        "WORDING_STATE",
+        "SOURCE_STATUS",
+        "CONSENSUS_STATE",
+        "DISPUTE_STATE",
+        "REVISION_STATE",
+        "DELETION_RESTORATION",
+        "EDITORIAL_UNCERTAINTY"
+      ]
+    },
+    "slot": {
+      "type": "string"
+    },
+    "successor_item_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "predecessor_item_id",
+    "successor_item_id",
+    "relation",
+    "scope",
+    "slot",
+    "evidence_turn_ids"
+  ],
+  "type": "object"
+}
+

@@ -86,7 +86,7 @@ fi
 PREFETCH_ARGS=()
 REVISION_ARGS=()
 [ -n "${HF_REVISION}" ] && REVISION_ARGS+=(--hf-revision "${HF_REVISION}")
-[ -n "${EMBEDDER_REVISION}" ] && REVISION_ARGS+=(--embedder-st-revision "${EMBEDDER_REVISION}")
+[ -n "${EMBEDDER_REVISION}" ] && REVISION_ARGS+=(--embedder-revision "${EMBEDDER_REVISION}")
 if [ "${OFFLINE:-0}" = "1" ]; then
   export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
   PREFETCH_ARGS+=(--no-prefetch)

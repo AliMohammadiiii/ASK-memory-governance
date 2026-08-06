@@ -6,6 +6,9 @@
     "independent annotation redistribution consent is not recorded",
     "model-output and rationale redistribution terms are unresolved",
     "external dataset and external-system output terms require item-level review",
+    "the external MGP-Natural v0.1.0 archive has incomplete attribution, privacy, and redistribution sign-offs",
+    "MGP-Natural labels are provisional and independent annotator redistribution consent does not yet exist",
+    "candidate real-chat corpus licenses do not automatically clear underlying transcript content or sensitive metadata",
     "paper and artifact licensing must be reconciled with the selected venue"
   ],
   "authoritative_matrix": "release/LICENSE_DECISION_MATRIX.md",

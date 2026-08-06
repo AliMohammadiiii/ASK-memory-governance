@@ -234,7 +234,7 @@ def _prefetch_models(args: argparse.Namespace) -> None:
         models.add(
             (
                 getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL,
-                getattr(args, "embedder_st_revision", None) or "",
+                getattr(args, "embedder_revision", None) or "",
             )
         )
 
@@ -246,7 +246,7 @@ def _prefetch_models(args: argparse.Namespace) -> None:
     env = _base_env(args)
     for model_id, revision in sorted(models):
         start = time.monotonic()
-        _log(f"prefetch start: {model_id}")
+        _log(f"prefetch start: {model_id} revision={revision or 'default'}")
         subprocess.run([_preferred_python(), "-c", code, model_id, revision], check=True, env=env)
         _log(f"prefetch done: {model_id} in {time.monotonic() - start:.1f}s")
 
@@ -810,6 +810,11 @@ def main() -> int:
     p.add_argument("--n-bootstrap", type=int, default=1000)
     p.add_argument("--hf-model", default="Qwen/Qwen2.5-3B-Instruct")
     p.add_argument(
+        "--hf-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision shared by maintained LLM paths.",
+    )
+    p.add_argument(
         "--judge-backend",
         choices=("same_as_answerer", "hf", "huggingface", "ollama", "fake"),
         default="same_as_answerer",
@@ -841,6 +846,11 @@ def main() -> int:
         default=None,
         help="Override the sentence-transformers retrieval model id "
         "(e.g. jinaai/jina-embeddings-v5-text-small).",
+    )
+    p.add_argument(
+        "--embedder-revision",
+        default=None,
+        help="Immutable Hugging Face commit revision for the sentence-transformers model.",
     )
     p.add_argument(
         "--embedder-trust-remote-code",

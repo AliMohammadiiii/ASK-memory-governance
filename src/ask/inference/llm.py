@@ -122,9 +122,15 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
     raw = yaml.safe_load(p.read_text(encoding="utf-8"))
     return InferenceConfig(
         model_id=str(raw["model_id"]),
-        model_revision=raw.get("model_revision"),
         fallback_model_id=raw.get("fallback_model_id"),
-        fallback_model_revision=raw.get("fallback_model_revision"),
+        model_revision=(
+            None if raw.get("model_revision") is None else str(raw.get("model_revision"))
+        ),
+        fallback_model_revision=(
+            None
+            if raw.get("fallback_model_revision") is None
+            else str(raw.get("fallback_model_revision"))
+        ),
         dtype=str(raw.get("dtype", "bfloat16")),
         device_map=str(raw.get("device_map", "auto")),
         use_flash_attn_2=bool(raw.get("use_flash_attn_2", False)),
@@ -188,6 +194,14 @@ _THINK_BLOCK_RE = re.compile(r"<think>.*?</think>", re.DOTALL | re.IGNORECASE)
 _THINK_OPEN_RE = re.compile(r"<think>.*\Z", re.DOTALL | re.IGNORECASE)
 
 
+def _supports_non_causal_fallback(exc: Exception) -> bool:
+    """Return whether a causal auto-class error is architecture-specific."""
+    if isinstance(exc, KeyError):
+        return True
+    message = str(exc)
+    return "Unrecognized configuration class" in message and "AutoModel" in message
+
+
 def _strip_think_blocks(text: str) -> str:
     """Remove <think>...</think> reasoning spans from model output."""
     if "<think" not in text.lower() and "</think>" not in text.lower():
@@ -248,6 +262,7 @@ class HuggingFaceLLM:
             return
         try:
             import torch  # type: ignore[import-not-found]
+            import transformers  # type: ignore[import-not-found]
             from transformers import (  # type: ignore[import-not-found]
                 AutoModelForCausalLM,
                 AutoTokenizer,
@@ -265,8 +280,13 @@ class HuggingFaceLLM:
             "float32": torch.float32,
         }[self.config.dtype]
 
+        dtype_argument = (
+            "dtype"
+            if int(transformers.__version__.split(".", maxsplit=1)[0]) >= 5
+            else "torch_dtype"
+        )
         load_kwargs: dict[str, Any] = {
-            "torch_dtype": dtype,
+            dtype_argument: dtype,
             "device_map": self.config.device_map,
             "trust_remote_code": self.config.trust_remote_code,
             "low_cpu_mem_usage": True,
@@ -306,6 +326,8 @@ class HuggingFaceLLM:
         try:
             self._model = AutoModelForCausalLM.from_pretrained(self.model_id, **load_kwargs)
         except (ValueError, KeyError) as causal_exc:
+            if not _supports_non_causal_fallback(causal_exc):
+                raise
             self._model = self._load_non_causal_fallback(load_kwargs, causal_exc)
         self._model.eval()
         _HF_MODEL_CACHE[cache_key] = (self._tokenizer, self._model, self._torch)

@@ -13,8 +13,9 @@ provenance and supersession lineage; replay; and machine-checkable invariants.
    `paper/paper_1/compiled/main.pdf`; in the advisor snapshot it is copied to
    `paper/ASK_paper.pdf`.
 2. Check `paper/paper_1/contribution_audit.md` for the contribution boundary.
-3. Read `docs/ASK_PROTOCOL.md` and `docs/architecture.md` for the normative
-   protocol and separation between controller, adapter, store, and audit layer.
+3. Read `docs/ASK_PROTOCOL.md` and
+   `docs/architecture/REPOSITORY_ARCHITECTURE.md` for the normative protocol
+   and separation between controller, adapter, store, and audit layer.
 4. Inspect `claims/claims.csv` and `claims/mismatch_report.json` for the
    evidence-backed claim ledger.
 5. Read `reports/GO_NO_GO.md` and `publication/NEXT_ACTIONS.md` before making a

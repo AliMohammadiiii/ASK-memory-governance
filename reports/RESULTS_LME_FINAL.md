@@ -1,4 +1,4 @@
-# LongMemEval-M — Final Downstream Report (V12, freeze `final-2.0`)
+# LongMemEval-M, Final Downstream Report (V12, freeze `final-2.0`)
 
 > **Run:** `runs_local/lme_final_controller_v12_qwen_180`
 > **Slice:** stratified 180 items (6 competencies × 30, seed 0), sha256 `f10b4fb4…6787d`
@@ -7,8 +7,8 @@
 
 ## 1. Headline
 
-The homogeneous full-slice run — the one the paper previously marked
-`externally_pending` — is complete. The ASK write-time-governance controller
+The homogeneous full-slice run, the one the paper previously marked
+`externally_pending`, is complete. The ASK write-time-governance controller
 reaches **76.1 % accuracy (137/180, 95 % CI 70.0–82.2)** on LongMemEval-M,
 the highest of all five evaluated memory systems and **+12.8 points** over the
 strongest structural baseline (naive-overwrite, 63.3 %).
@@ -51,14 +51,14 @@ The controller leads or ties on every competency. Its per-competency profile:
 | multi-session | 30 | 63.3% | 46.7–80.0 | 29693 | 959 |
 | temporal-reasoning | 30 | 63.3% | 46.7–80.0 | 35484 | 897 |
 | single-session-preference | 30 | 53.3% | 36.7–70.0 | 9131 | 672 |
-| **Overall** | 180 | **76.1%** | 70.0–82.2 | — | — |
+| **Overall** | 180 | **76.1%** | 70.0–82.2 |, |, |
 
 ![ASK controller accuracy by competency with 95% CIs](figures/lme_v12/fig3_controller_competency.png)
 
 Knowledge-update and single-session-assistant are effectively solved
 (96.7 %). The remaining headroom is concentrated in single-session-preference
 (53.3 %) and the two reasoning-heavy competencies (multi-session and
-temporal-reasoning, 63.3 % each) — consistent with the preference-handling
+temporal-reasoning, 63.3 % each), consistent with the preference-handling
 weakness documented in the paper's failure taxonomy.
 
 ## 4. Judge integrity
@@ -103,7 +103,7 @@ extraction and relation classification rather than the answer call.
   the failed provider-pool run at 61.7 %).
 - **Two housekeeping gate items remain open.** The run's
   `homogeneity_report.json` reports `homogeneous: false`, but the per-system
-  `errors`/`warnings` lists are **empty** — the flag is raised solely by one
+  `errors`/`warnings` lists are **empty**, the flag is raised solely by one
   `global_errors` entry: a stale code/protocol hash for
   `scripts/evaluation/run_longmemeval_final.sh`. Separately, `manifest.json`
   still carries `status: running` / `exit_code: 1` from a resumed run whose
@@ -112,14 +112,14 @@ extraction and relation classification rather than the answer call.
   bookkeeping (re-freeze the code hash, finalize the manifest status) and do
   not affect any accuracy number in this report.**
 - **Registry action taken:** `EXPERIMENT_REGISTRY.yaml` and
-  `EVIDENCE_REGISTRY.yaml` were updated in this pass — the run moves from
+  `EVIDENCE_REGISTRY.yaml` were updated in this pass, the run moves from
   `externally_pending` to `final_candidate`, recording the 76.1 % result with
   the two open items listed under `open_items`. This is the citable eligibility
   label; it does not assert a fully-frozen run.
 - **Still pending (not done here):** promotion to a fully-frozen `final` status
   and recording the result in the canonical `artifacts/results_ledger.json`
   (which bumps the ledger version). Both are deliberately deferred until the
-  code/protocol hash is re-frozen and the manifest is finalized — the two open
+  code/protocol hash is re-frozen and the manifest is finalized, the two open
   bookkeeping items above.
 
 ## 7. Files

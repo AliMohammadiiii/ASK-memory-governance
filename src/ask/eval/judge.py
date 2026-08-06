@@ -39,6 +39,7 @@ class JudgeBackendConfig:
     think: bool | str | None = False
     hf_revision: str | None = None
     hf_dtype: str = "float16"
+    hf_revision: str | None = None
     hf_device_map: str = "auto"
     hf_load_in_4bit: bool = False
     hf_trust_remote_code: bool = False
@@ -76,8 +77,10 @@ class JudgeBackendConfig:
             timeout_s=float(judge.get("timeout_s", 900.0)),
             response_format=response_format,
             think=judge.get("think", False),
-            hf_revision=judge.get("hf_revision"),
             hf_dtype=str(judge.get("hf_dtype", "float16")),
+            hf_revision=(
+                None if judge.get("hf_revision") is None else str(judge.get("hf_revision"))
+            ),
             hf_device_map=str(judge.get("hf_device_map", "auto")),
             hf_load_in_4bit=bool(judge.get("hf_load_in_4bit", False)),
             hf_trust_remote_code=bool(judge.get("hf_trust_remote_code", False)),
