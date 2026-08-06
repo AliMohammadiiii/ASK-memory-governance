@@ -428,15 +428,16 @@ def make_mgpn_annotation_rows(
         record_id = record.get("mgpn_id")
         before = record.get("memory_before")
         candidate = record.get("candidate")
-        dialogue = record.get("dialogue")
+        dialogue_raw = record.get("dialogue")
         if not isinstance(record_id, str):
             raise CandidateArchiveError(f"record {index} is missing mgpn_id")
         if (
             not isinstance(before, dict)
             or not isinstance(candidate, dict)
-            or not isinstance(dialogue, list)
+            or not isinstance(dialogue_raw, list)
         ):
             raise CandidateArchiveError(f"record {record_id} has malformed annotation inputs")
+        dialogue = dialogue_raw
 
         clean_dialogue: list[dict[str, Any]] = []
         clean_turn_text: dict[object, str] = {}

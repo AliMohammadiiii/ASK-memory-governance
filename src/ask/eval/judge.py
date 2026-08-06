@@ -39,7 +39,6 @@ class JudgeBackendConfig:
     think: bool | str | None = False
     hf_revision: str | None = None
     hf_dtype: str = "float16"
-    hf_revision: str | None = None
     hf_device_map: str = "auto"
     hf_load_in_4bit: bool = False
     hf_trust_remote_code: bool = False
