@@ -57,7 +57,7 @@ user-specific home-directory prefix:
 - docs/history/research_notes/m4w14_thesis_colab_20260608_review.md
 - docs/history/research_notes/m4w15_runbook.md
 - docs/history/research_notes/m4w16_runbook.md
-The active `docs/thesis_readiness_audit.md` was sanitized. The release builder
+The active `docs/evaluation/thesis_readiness_audit.md` was sanitized. The release builder
 excludes all of `docs/history/` and fails if the active machine-home prefix is
 found anywhere in the public snapshot.
 

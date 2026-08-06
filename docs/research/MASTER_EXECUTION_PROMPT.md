@@ -620,12 +620,12 @@ Create or repair:
 * `CITATION.cff`
 * `CHANGELOG.md`
 * `.env.example`
-* `docs/architecture.md`
+* `docs/architecture/architecture.md`
 * `docs/reproducibility.md`
-* `docs/evaluation_protocol.md`
-* `docs/known_limitations.md`
-* `docs/external_adapters.md`
-* `docs/release_checklist.md`
+* `docs/evaluation/evaluation_protocol.md`
+* `docs/evaluation/known_limitations.md`
+* `docs/architecture/external_adapters.md`
+* `docs/development/release_checklist.md`
 
 Choose separate code and data licenses when necessary.
 

@@ -28,11 +28,11 @@ tmlr:
   authorship_and_openreview_resolved:
     passed: false
     authority: human
-    evidence: publication/OPENREVIEW_PROFILE_CHECKLIST.md
+    evidence: docs/publication/OPENREVIEW_PROFILE_CHECKLIST.md
   current_venue_constraints_checked:
     passed: false
     authority: machine_and_human
-    evidence: publication/VENUE_REQUIREMENTS_SNAPSHOT.md
+    evidence: docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md
 
 jmlr:
   formal_core_completed_and_tested:
@@ -54,7 +54,7 @@ jmlr:
   model_family_breadth_satisfied:
     passed: false
     authority: paid_or_external_execution
-    evidence: experiments/model_matrix.yaml
+    evidence: configs/experiments/model_matrix.yaml
   cross_storage_or_native_system_evidence_completed:
     passed: false
     authority: external_execution
@@ -70,8 +70,8 @@ jmlr:
   generalizable_ml_lessons_demonstrated:
     passed: false
     authority: scientific_review
-    evidence: docs/JMLR_READINESS.md
+    evidence: docs/evaluation/JMLR_READINESS.md
   jmlr_compliance_satisfied:
     passed: false
     authority: machine_and_human
-    evidence: publication/VENUE_REQUIREMENTS_SNAPSHOT.md
+    evidence: docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md

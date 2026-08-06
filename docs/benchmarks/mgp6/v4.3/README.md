@@ -13,4 +13,4 @@ audit material live only under the ignored `.private/benchmarks/mgp6/v4.3/`
 boundary. LongMemEval remains a separately reported external evaluation.
 
 See `release_metadata/RELEASE_FACTS.json` beside the public data and
-`experiments/mgp6_v43/FROZEN_CONFIG_INDEX.json` for the current execution gate.
+`configs/experiments/mgp6_v43/FROZEN_CONFIG_INDEX.json` for the current execution gate.

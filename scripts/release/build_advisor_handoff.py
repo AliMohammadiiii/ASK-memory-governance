@@ -34,7 +34,7 @@ ADVISOR_EXCLUDED_FILES = {
     "MGP6_Paper_Publication_Novelty_Action_Plan_FA.md",
     "PROJECT_STATE.md",
     "WORKPLAN.md",
-    "research/MASTER_EXECUTION_PROMPT.md",
+    "docs/research/MASTER_EXECUTION_PROMPT.md",
 }
 
 

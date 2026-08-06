@@ -32,8 +32,8 @@ from ask.eval.mgp6_v43 import (  # noqa: E402
 RELEASE_FACTS_PATH = REPO / "benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_FACTS.json"
 DEV_CONFIG_PATH = REPO / "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json"
 FINAL_STATUS_PATH = REPO / "artifacts/mgp6_v43_integration/FINAL_STATUS.json"
-DEFAULT_CONFIG_PATH = REPO / "experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json"
-DEFAULT_AUTHORIZATION_PATH = REPO / "experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
+DEFAULT_CONFIG_PATH = REPO / "configs/experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json"
+DEFAULT_AUTHORIZATION_PATH = REPO / "configs/experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
 PROHIBITED_KEYS = {
     "gold_action",
     "design_target",
@@ -248,7 +248,7 @@ def build_freeze_artifacts(*, ci_run_id: str) -> tuple[dict[str, Any], dict[str,
         "release_identity": frozen_config["release_identity"],
         "authorized": True,
         "authorization_scope": "One complete hidden prediction generation for the frozen controls; it does not authorize hidden-gold inspection during generation or scoring before predictions are complete and hashed.",
-        "frozen_config_path": "experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json",
+        "frozen_config_path": "configs/experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json",
         "frozen_config_sha256": sha256_value(frozen_config),
         "hidden_run_controls": runtime_controls,
         "hidden_run_controls_sha256": sha256_value(runtime_controls),

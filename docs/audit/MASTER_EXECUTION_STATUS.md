@@ -4,7 +4,7 @@ Updated: 2026-07-26. Statuses: not_started | in_progress | implemented | validat
 
 | # | Workstream | Status | Evidence / gate |
 |---|---|---|---|
-| A1 | Input inventory and availability | complete | `docs/REPOSITORY_INVENTORY.md`; dated predecessor archived under `docs/history/` |
+| A1 | Input inventory and availability | complete | `docs/audit/REPOSITORY_INVENTORY.md`; dated predecessor archived under `docs/history/` |
 | A2 | Metric recomputation & run classification | complete | `artifacts/results_ledger.json`, `artifacts/controller_run_comparison.json`, `docs/audit/ARTIFACT_TRUTH_TABLE.csv`; MGP-6 rows recomputed from aligned 180-item files; historical 139/180 classified as selection-biased `failure_replay_only`, not a result |
 | A3 | Leakage / degrees-of-freedom audit | complete | `docs/audit/DATA_LEAKAGE_AND_RESEARCHER_DEGREES_OF_FREEDOM.md` |
 | A4 | MGP-6 construct-validity audit | validated | `scripts/analysis/audit_mgp6_validity.py` and `artifacts/analysis/mgp6_validity_audit.{json,md}`; conflict-type-only lookup reaches 1.000 test accuracy, so v2 remains diagnostic |

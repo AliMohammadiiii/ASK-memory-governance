@@ -3,7 +3,7 @@
 Use the blind packet and schemas under `confirmation/`. Annotators receive
 predecessor, candidate, and context, never author gold, design target, source
 identifier, system prediction, or another annotator's decision. Apply the
-decision semantics in `ASK_PROTOCOL.md`; record action, 1--5 confidence,
+decision semantics in `architecture/ASK_PROTOCOL.md`; record action, 1--5 confidence,
 rationale, and evidence spans.
 
 At least two genuinely independent annotations per item are required by the

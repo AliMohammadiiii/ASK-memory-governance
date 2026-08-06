@@ -15,7 +15,7 @@ TEXT_SUFFIXES = {".j2", ".md", ".rst", ".tex", ".txt"}
 EXCLUDED_PREFIXES = (
     "artifacts/",
     "docs/history/",
-    "research/MASTER_EXECUTION_PROMPT.md",
+    "docs/research/MASTER_EXECUTION_PROMPT.md",
     "third_party/",
     "thesis/template/",
     "tmp/",
