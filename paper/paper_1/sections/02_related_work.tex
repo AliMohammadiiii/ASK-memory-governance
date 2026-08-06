@@ -24,9 +24,12 @@ about a proposed durable update.
 Zep/Graphiti \citep{rasmussen2025zep} invalidates contradicted edges with
 bi-temporal metadata, and TOKI \citep{wang2026toki} formalizes bitemporal
 operators for persistent-memory conflict resolution. FadeMem
-\citep{fademem2026} combines pairwise classification with decay and fusion,
-while deterministic consolidation work \citep{reddy2026deterministic} motivates
-transparent conflict policies. MemStrata \citep{yadav2026memstrata} targets
+\citep{fademem2026} combines pairwise classification with decay and fusion.
+\citet{reddy2026deterministic} separate evidence extraction from policy execution
+during post-retrieval assembly, which is the read-side counterpart of the
+separation ASK imposes at write time: in both cases an explicit policy stage is
+isolated from the model step that produces the candidate evidence.
+MemStrata \citep{yadav2026memstrata} targets
 stale-fact errors through temporal validity at retrieval. These systems precede
 ASK on temporal representation, retained history, or deterministic resolution.
 ASK's narrower contribution is to bind a proposed write action to evidence,

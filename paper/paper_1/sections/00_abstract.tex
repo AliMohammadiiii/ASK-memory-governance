@@ -11,9 +11,12 @@ to state and lineage invariants, while decision records retain the information
 needed to reconstruct the implemented policy. ASK is a protocol, not one
 classifier, prompt, database, or benchmark.
 
-We evaluate complementary parts of this contract. Executable tests check the
+We evaluate complementary parts of this contract, using two instruments that
+answer different questions and neither of which is the contribution itself.
+Executable tests check the
 reference transition semantics. \mgpc{} is a controlled synthetic diagnostic
-with $900$ items in $100$ component-disjoint semantic groups. On its sealed
+built for this paper to make the write decision observable in isolation, with
+$900$ items in $100$ component-disjoint semantic groups. On its sealed
 $540$-item hidden split, one configuration frozen before scoring reaches
 $0.8481$ action accuracy and $0.8479$ macro-F1, with component-cluster $95\%$
 intervals of $[0.8037,0.8889]$ and $[0.8021,0.8894]$. Of $38$ errors on
@@ -24,11 +27,13 @@ $137/180$ correct downstream answers, compared with $114/180$ for naive
 overwrite. Exact replay reproduces all $12{,}654$ logged controller decisions,
 which establishes execution fidelity rather than write correctness.
 
-The evidence supports explicit write governance, auditable supersession, and
-layer-specific failure attribution. It does not establish deployment safety or
-population generality. The controlled diagnostic is synthetic, and the downstream
-run uses one fixed slice and model configuration. The generic reference
-validator is not wired into that runtime's SQLite mutation path. MGP-Natural is
-present only as a quarantined seed and construction workflow, without
-independent gold or publication clearance.
+Together the two instruments support explicit write governance, auditable
+supersession, and layer-specific failure attribution: the diagnostic supplies
+write labels without realism, the downstream run supplies realism without write
+labels. Neither establishes deployment safety or population generality. The
+controlled diagnostic is synthetic, the downstream run uses one fixed slice and
+model configuration, the generic reference validator is not wired into that
+runtime's SQLite mutation path, and a planned natural-dialogue track remains
+quarantined without independent gold. We state these boundaries because the
+claim is about the governance contract, not about a score on either instrument.
 \end{abstract}
