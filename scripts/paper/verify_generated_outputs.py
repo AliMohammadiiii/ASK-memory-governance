@@ -37,8 +37,8 @@ REQUIRED = {
         "storage-independent governance contract",
         "reference transition semantics",
         "$12{,}654$ logged controller decisions",
-        "validator is not wired into that runtime's SQLite mutation path",
-        "MGP-Natural is",
+        "generic reference validator is not wired into that runtime's SQLite mutation path",
+        "planned natural-dialogue track remains quarantined without independent gold",
     ],
 }
 
@@ -47,10 +47,11 @@ def verify() -> dict[str, object]:
     missing = []
     for relative, fragments in REQUIRED.items():
         text = (ROOT / relative).read_text(encoding="utf-8")
+        normalized_text = " ".join(text.split())
         missing.extend(
             {"file": relative, "fragment": fragment}
             for fragment in fragments
-            if fragment not in text
+            if " ".join(fragment.split()) not in normalized_text
         )
     return {
         "schema_version": "1.0",

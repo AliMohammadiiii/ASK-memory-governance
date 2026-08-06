@@ -26,14 +26,13 @@ a claim of acceptance readiness.
 
 ### AI-writing-signal scan (against the supplied 120-item checklist)
 
-Strong signals — all zero: no placeholders (`[Insert…]`, `TBD`, `2025-XX-XX`),
-no ChatGPT/Gemini/Grok/Perplexity markup leakage (`oaicite`, `contentReference`,
-`turn0search0`, `[cite: 1]`, `:::writing`), no `utm_source=chatgpt.com`, no
+Strong signals, all zero: no unfinished placeholders, no provider-generated
+citation or content-reference markup, no search-turn or writing-block markers,
+and no ChatGPT tracking parameters. There is also no
 assistant-voice residue, no fabricated citations, no unused-but-defined
 references, no mid-sentence truncation.
 
-Medium signals — all at or near zero: no cliché openers or transitions
-("it is important to note", "in today's…", "despite these challenges"),
+Medium signals, all at or near zero: no stock openers or transitions,
 no `not only X but also`, no trailing participial summary clauses, no
 promotional vocabulary, no vague attribution ("experts believe", "studies
 show"), no boilerplate Challenges/Future-Outlook/Key-Takeaways sections, no
@@ -43,7 +42,7 @@ technical sense (`harness` = evaluation harness; `robust` once; `additionally`
 three times).
 
 Sentence-length coefficient of variation is 0.74 overall (range 0.41–1.28
-across sections), i.e. high burstiness — the opposite of the flat rhythm the
+across sections), i.e. high burstiness, the opposite of the flat rhythm the
 checklist flags. The 35 `X, Y, and Z` triples are technical enumerations
 (`action, state, lineage`), not adjective padding.
 
@@ -58,14 +57,14 @@ register.
    Recipe for Memory Conflict Resolution". That was the v1 title; v2 (2026-08-02)
    is "Reliable Post-Retrieval Assembly for Agent Memory: Separating Evidence
    Extraction from Policy Execution". This is checklist item 97 (valid DOI,
-   wrong paper) — the single highest-risk citation defect a reviewer can find,
+wrong paper), the single highest-risk citation defect a reviewer can find,
    because it is trivially checkable. Entry retitled, second author's name
    corrected to *Sumanth Reddy Challaram*, `note` field records the v1 title,
    and the related-work sentence now describes what the paper actually argues.
 2. **Overfull hbox (69.8 pt).** The ten-element event tuple was set inline;
    now displayed.
 3. **Abstract rebalanced.** The closing paragraph previously ended on
-   MGP-Natural — a non-result — giving a quarantined artifact the final
+   MGP-Natural, a non-result, giving a quarantined artifact the final
    emphasis. It now closes on the contribution boundary, and the two
    instruments are framed as complementary (labels without realism / realism
    without labels) rather than as the paper's identity. All disclosures are
@@ -94,7 +93,7 @@ register.
       `tables/external_systems.tex`, `tables/lme_competency.tex`,
       `tables/mcnemar.tex`. Their content is covered by `lme_competency_full`
       and `v43_mcnemar`. Either drop them or fold the external-systems table
-      into an appendix — as-is they are dead files a reproducer will trip over.
+      into an appendix. As written, they are dead files a reproducer will trip over.
 - [ ] **Three orphan figures** likewise unused: `lme_competency_heatmap.png`,
       `lme_system_accuracy.png`, `lme_v12_systems.png`.
 - [ ] **Length.** 47 pp is within TMLR's variable-length policy but long. If a
@@ -102,7 +101,7 @@ register.
       candidate: it is explicitly framed as a negative result and nothing in
       §7–§10 depends on its details.
 - [ ] **OpenReview-hosted citations** (LongMemEval, MEMIT, PrefEval, PersonaMem)
-      were not machine-verified — the sandbox could not reach the API. Confirm
+      were not machine-verified because the sandbox could not reach the API. Confirm
       the four forum IDs by hand before submission.
 
 ## D. What would strengthen the paper scientifically
@@ -123,8 +122,8 @@ what a reviewer is most likely to demand.
    claim from "future work" to "preliminary evidence". The construction
    workflow already exists at v0.2.2; the gate is rights review and annotation,
    not software.
-3. **Calibrate the abstention.** The disclosed defect — selective accuracy
-   0.8449 < overall 0.8481 — is reported openly, which is to the paper's
+3. **Calibrate the abstention.** The disclosed defect, selective accuracy
+   0.8449 < overall 0.8481, is reported openly, which is to the paper's
    credit. But a reviewer will ask whether a threshold sweep on *development*
    fixes it. If it does, that is a real result; if it does not, that is a
    stronger negative finding than the current one-line disclosure.

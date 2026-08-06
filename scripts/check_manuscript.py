@@ -54,8 +54,8 @@ def check_bibliography(tex: str) -> dict[str, dict]:
     for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", raw, re.S):
         key, body = m.group(2).strip(), m.group(3)
 
-        def field(name: str) -> str | None:
-            mm = re.search(name + r"\s*=\s*\{(.*?)\}\s*,?\s*\n", body, re.S)
+        def field(name: str, entry: str = body) -> str | None:
+            mm = re.search(name + r"\s*=\s*\{(.*?)\}\s*,?\s*\n", entry, re.S)
             return " ".join(mm.group(1).split()) if mm else None
 
         entries[key] = {
@@ -87,9 +87,7 @@ def check_bibliography(tex: str) -> dict[str, dict]:
 # --------------------------------------------------------------------------
 def check_crossrefs(tex: str) -> None:
     print("\n[2] Cross-references, tables, figures")
-    table_tex = "".join(
-        p.read_text(encoding="utf-8") for p in (PAPER / "tables").glob("*.tex")
-    )
+    table_tex = "".join(p.read_text(encoding="utf-8") for p in (PAPER / "tables").glob("*.tex"))
     labels = set(re.findall(r"\\label\{([^}]*)\}", tex + table_tex))
     refs = set(re.findall(r"\\(?:ref|autoref|eqref|pageref)\{([^}]*)\}", tex))
 
@@ -208,13 +206,13 @@ def check_writing_signals(tex: str) -> None:
     print("\n[4] Drafting residue / AI-writing strong signals")
     patterns = {
         "placeholder": r"\[Insert[^\]]*\]|\[Specific [^\]]*\]|SOURCE_PUBLISHER|"
-                       r"PASTE_URL_HERE|20\d\d-XX-XX|\bTODO\b|\bFIXME\b|\bTBD\b",
+        r"PASTE_URL_HERE|20\d\d-XX-XX|\bTODO\b|\bFIXME\b|\bTBD\b",
         "assistant markup leakage": r"contentReference|oaicite|oai_citation|"
-                                    r"turn\d+search\d+|turn\d+file\d+|attributableIndex|"
-                                    r"\[cite: ?\d+\]|grok_card|ppl-ai-file-upload|:::writing",
+        r"turn\d+search\d+|turn\d+file\d+|attributableIndex|"
+        r"\[cite: ?\d+\]|grok_card|ppl-ai-file-upload|:::writing",
         "chatgpt referrer in URL": r"utm_source=chatgpt",
         "assistant voice": r"\bAs an AI\b|I hope this helps|Let me know if|"
-                           r"Would you like|knowledge cutoff",
+        r"Would you like|knowledge cutoff",
         "unresolved LaTeX query": r"\?\?\?|\\todo\{|\\note\{",
     }
     clean = True
