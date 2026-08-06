@@ -17,6 +17,12 @@ def test_maintained_manuscripts_have_no_unsafe_placeholders() -> None:
     MODULE.validate_sources()
 
 
+def test_thesis_avoids_optional_xepersian_localization() -> None:
+    preamble = ROOT / "thesis" / "latex" / "preamble" / "commands.tex"
+    source = preamble.read_text(encoding="utf-8")
+    assert "localize=" not in source
+
+
 @pytest.mark.parametrize(
     "placeholder",
     ("TODO", "TBD", "FILL ME", "INSERT", "XX", "[Field pending approval]", "نیازمند تأیید"),
