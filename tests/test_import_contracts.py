@@ -39,3 +39,30 @@ def test_pipeline_and_naive_overwrite_public_imports_are_order_independent() -> 
         env=env,
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_package_import_is_silent_and_does_not_create_files(tmp_path: Path) -> None:
+    env = dict(os.environ)
+    src_root = str(Path(ask.__file__).resolve().parents[1])
+    env["PYTHONPATH"] = os.pathsep.join(p for p in (src_root, env.get("PYTHONPATH")) if p)
+    code = (
+        "import logging; "
+        "root = logging.getLogger(); "
+        "handlers = tuple(root.handlers); level = root.level; "
+        "import ask; "
+        "assert tuple(root.handlers) == handlers; assert root.level == level"
+    )
+
+    result = subprocess.run(
+        [sys.executable, "-c", code],
+        cwd=tmp_path,
+        check=False,
+        capture_output=True,
+        text=True,
+        env=env,
+    )
+
+    assert result.returncode == 0, result.stderr
+    assert result.stdout == ""
+    assert result.stderr == ""
+    assert list(tmp_path.iterdir()) == []

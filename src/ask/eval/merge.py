@@ -16,6 +16,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
+from ..atomic_io import atomic_write_text
 from .longmemeval import EvalReport, GradeResult, build_eval_report
 
 # Line-oriented artifacts that simply concatenate across shards.
@@ -45,7 +46,7 @@ def grade_from_dict(row: dict[str, Any]) -> GradeResult | None:
         return None
     try:
         return GradeResult(**payload)
-    except Exception:
+    except (TypeError, ValueError):
         return None
 
 
@@ -91,7 +92,7 @@ def merge_run_shards(
                     seen_ans.add(key)
                 lines.append(json.dumps(row, ensure_ascii=False))
         if lines:
-            (out_dir / name).write_text("\n".join(lines) + "\n", encoding="utf-8")
+            atomic_write_text(out_dir / name, "\n".join(lines) + "\n")
 
     # 2) rebuild the aggregate report from the union of grades.
     grades = [
@@ -106,8 +107,9 @@ def merge_run_shards(
         n_bootstrap=n_bootstrap,
         bootstrap_seed=bootstrap_seed,
     )
-    (out_dir / "report.json").write_text(
-        json.dumps(report.to_dict(), indent=2, sort_keys=True), encoding="utf-8"
+    atomic_write_text(
+        out_dir / "report.json",
+        json.dumps(report.to_dict(), indent=2, sort_keys=True),
     )
-    (out_dir / "results.md").write_text(report.summarize_markdown(), encoding="utf-8")
+    atomic_write_text(out_dir / "results.md", report.summarize_markdown())
     return report

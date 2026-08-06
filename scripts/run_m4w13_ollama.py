@@ -22,6 +22,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
+_THIS = Path(__file__).resolve()
+sys.path.insert(0, str(_THIS.parents[1] / "src"))
+
+from ask.endpoints import validate_http_endpoint  # noqa: E402
+
 REQUESTED_OLLAMA_MODELS: tuple[str, ...] = (
     "gemma4:e4b",
     "gemma4:e2b",
@@ -184,7 +189,8 @@ def _model_slug(model: str) -> str:
 
 
 def _installed_ollama_models(host: str) -> set[str]:
-    with urllib.request.urlopen(f"{host.rstrip('/')}/api/tags", timeout=30) as resp:
+    endpoint = validate_http_endpoint(host).rstrip("/")
+    with urllib.request.urlopen(f"{endpoint}/api/tags", timeout=30) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
     return {str(m.get("name") or m.get("model")) for m in payload.get("models", [])}
 
@@ -241,8 +247,7 @@ def _dataset_family(path: Path, override: str = "auto") -> str:
         "longmemeval_m" in name
         or "lme_m" in name
         or "_m_" in name
-        or name.endswith("_m.jsonl")
-        or name.endswith("_m.json")
+        or name.endswith(("_m.jsonl", "_m.json"))
     ):
         return "m"
     return "s"

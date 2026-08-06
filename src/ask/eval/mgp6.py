@@ -111,7 +111,7 @@ def compute_report(
     rows = list(predictions)
     n = len(rows)
     confusion = _confusion(rows)
-    report = {
+    return {
         "baseline": baseline,
         "n_scenarios": n,
         "action_accuracy": _rate(rows, lambda r: r.correct_action),
@@ -141,11 +141,10 @@ def compute_report(
         "threshold_ordering": _threshold_ordering(rows),
         "predictions": [r.to_dict() for r in rows],
     }
-    return report
 
 
 def _confusion(rows: list[MGP6Prediction]) -> dict[str, dict[str, int]]:
-    out = {gold: {pred: 0 for pred in ACTIONS} for gold in ACTIONS}
+    out = {gold: dict.fromkeys(ACTIONS, 0) for gold in ACTIONS}
     for row in rows:
         out[row.gold_action][row.predicted_action] += 1
     return out

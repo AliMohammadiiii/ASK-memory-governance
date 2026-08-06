@@ -45,12 +45,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import random
-import sys
 from collections import defaultdict
 from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 # The seven LongMemEval competency labels. Source: Wu et al. (2025) §3.
 LONGMEMEVAL_COMPETENCIES: tuple[str, ...] = (
@@ -265,7 +267,9 @@ def _normalize_cleaned_record(raw: dict, line_no: int) -> LongMemEvalSession:
         raise ValueError(f"line {line_no}: malformed cleaned LongMemEval record ({exc})") from exc
 
     corpus_sessions = []
-    for idx, (support_id, turns_raw) in enumerate(zip(haystack_ids, haystack_sessions)):
+    for idx, (support_id, turns_raw) in enumerate(
+        zip(haystack_ids, haystack_sessions, strict=True)
+    ):
         default_timestamp = str(haystack_dates[idx]) if idx < len(haystack_dates) else None
         turns = tuple(
             _normalize_turn(turn, default_timestamp=default_timestamp) for turn in turns_raw
@@ -345,21 +349,20 @@ def _iter_json_array(path: Path) -> Iterator[LongMemEvalSession]:
     ``ijson`` is unavailable.
     """
     try:
-        import ijson  # type: ignore
+        import ijson  # type: ignore[import-not-found]
     except ModuleNotFoundError:
         size_mb = path.stat().st_size / (1024 * 1024)
         if size_mb > 64:
-            print(
-                f"[longmemeval] WARNING: reading a {size_mb:.0f} MB JSON array "
-                f"eagerly ({path}); install 'ijson' or run convert_to_jsonl() "
-                "first to stream LongMemEval-M without loading it all into RAM.",
-                file=sys.stderr,
-                flush=True,
+            logger.warning(
+                "reading a %.0f MB JSON array eagerly (%s); install the streaming extra "
+                "or convert the input to JSONL first",
+                size_mb,
+                path,
             )
         with path.open("r", encoding="utf-8") as fh:
             data = json.load(fh)
         if not isinstance(data, list):
-            raise ValueError("expected a top-level JSON array or JSONL")
+            raise ValueError("expected a top-level JSON array or JSONL") from None
         for i, raw in enumerate(data, start=1):
             yield _normalize_record(raw, line_no=i)
         return
@@ -485,7 +488,7 @@ def sample_slice(
     del rng  # not used after this; the per-bucket RNG above is what matters
 
     # Apply floors (capped by bucket size).
-    quotas: dict[str, int] = {k: 0 for k in buckets}
+    quotas: dict[str, int] = dict.fromkeys(buckets, 0)
     remaining = n
     for k, floor in floors.items():
         if k not in buckets:

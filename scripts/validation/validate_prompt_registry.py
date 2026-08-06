@@ -82,9 +82,12 @@ def validate_registry(root: Path = ROOT, registry_path: Path = REGISTRY) -> list
             if target is not None and target not in records_by_id:
                 errors.append(f"{prompt_id}.{field} refers to unknown id: {target}")
         previous = record["supersedes"]
-        if previous is not None and previous in records_by_id:
-            if records_by_id[previous]["superseded_by"] != prompt_id:
-                errors.append(f"lineage is not reciprocal: {previous} -> {prompt_id}")
+        if (
+            previous is not None
+            and previous in records_by_id
+            and records_by_id[previous]["superseded_by"] != prompt_id
+        ):
+            errors.append(f"lineage is not reciprocal: {previous} -> {prompt_id}")
     return errors
 
 

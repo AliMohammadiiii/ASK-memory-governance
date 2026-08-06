@@ -243,7 +243,9 @@ def audit_candidate_archive(path: Path, *, require_known_parent: bool = True) ->
             )
         rule_predictions = [_leakage_rule(value) for value in packet_relations]
         packet_gold = [gold_by_id.get(str(row.get("mgpn_id"))) for row in blind_rows]
-        rule_correct = sum(pred == gold for pred, gold in zip(rule_predictions, packet_gold))
+        rule_correct = sum(
+            pred == gold for pred, gold in zip(rule_predictions, packet_gold, strict=True)
+        )
 
         split_pages: dict[str, set[str]] = defaultdict(set)
         split_families: dict[str, set[str]] = defaultdict(set)
@@ -426,15 +428,16 @@ def make_mgpn_annotation_rows(
         record_id = record.get("mgpn_id")
         before = record.get("memory_before")
         candidate = record.get("candidate")
-        dialogue = record.get("dialogue")
+        dialogue_raw = record.get("dialogue")
         if not isinstance(record_id, str):
             raise CandidateArchiveError(f"record {index} is missing mgpn_id")
         if (
             not isinstance(before, dict)
             or not isinstance(candidate, dict)
-            or not isinstance(dialogue, list)
+            or not isinstance(dialogue_raw, list)
         ):
             raise CandidateArchiveError(f"record {record_id} has malformed annotation inputs")
+        dialogue = dialogue_raw
 
         clean_dialogue: list[dict[str, Any]] = []
         clean_turn_text: dict[object, str] = {}

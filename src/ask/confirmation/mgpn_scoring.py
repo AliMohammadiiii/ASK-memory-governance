@@ -27,9 +27,9 @@ def _classification(gold: list[str], pred: list[str]) -> dict[str, Any]:
     per_class: dict[str, dict[str, float | int]] = {}
     f1_values: list[float] = []
     for action in ACTIONS:
-        tp = sum(g == action and p == action for g, p in zip(gold, pred))
-        fp = sum(g != action and p == action for g, p in zip(gold, pred))
-        fn = sum(g == action and p != action for g, p in zip(gold, pred))
+        tp = sum(g == action and p == action for g, p in zip(gold, pred, strict=True))
+        fp = sum(g != action and p == action for g, p in zip(gold, pred, strict=True))
+        fn = sum(g == action and p != action for g, p in zip(gold, pred, strict=True))
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
@@ -41,12 +41,16 @@ def _classification(gold: list[str], pred: list[str]) -> dict[str, Any]:
         }
         f1_values.append(f1)
     return {
-        "accuracy": sum(g == p for g, p in zip(gold, pred)) / len(gold) if gold else 0.0,
+        "accuracy": sum(g == p for g, p in zip(gold, pred, strict=True)) / len(gold)
+        if gold
+        else 0.0,
         "macro_f1": sum(f1_values) / len(f1_values),
         "per_class": per_class,
         "confusion": {
             gold_action: {
-                pred_action: sum(g == gold_action and p == pred_action for g, p in zip(gold, pred))
+                pred_action: sum(
+                    g == gold_action and p == pred_action for g, p in zip(gold, pred, strict=True)
+                )
                 for pred_action in ACTIONS
             }
             for gold_action in ACTIONS

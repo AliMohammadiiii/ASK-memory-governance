@@ -124,7 +124,7 @@ def _render_merged_table(reports: list[tuple[Path, EvalReport]], ci_dp: int = 1)
                 f"{ref_row.mean_latency_ms:.0f} |"
             )
         # Then each comparison.
-        for path, rep in reports[1:]:
+        for _path, rep in reports[1:]:
             row_by_comp = {r.competency: r for r in rep.rows}
             row = row_by_comp.get(comp)
             if row is None:

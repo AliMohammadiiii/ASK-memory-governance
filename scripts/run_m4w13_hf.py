@@ -174,8 +174,7 @@ def _dataset_family(path: Path) -> str:
         "longmemeval_m" in name
         or "lme_m" in name
         or "_m_" in name
-        or name.endswith("_m.jsonl")
-        or name.endswith("_m.json")
+        or name.endswith(("_m.jsonl", "_m.json"))
     ):
         return "m"
     return "s"

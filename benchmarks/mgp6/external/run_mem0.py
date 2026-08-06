@@ -36,7 +36,13 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
+from common import (  # noqa: E402
+    ALLOW_INSECURE_HTTP,
+    ExternalAdapter,
+    WriteObservation,
+    run_external,
+    validate_http_endpoint,
+)
 
 MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
 EMBED_MODEL = os.environ.get("MGP6_EMBED_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
@@ -68,7 +74,13 @@ class Mem0Adapter(ExternalAdapter):
         if modal_url:
             import openai
 
-            modal_base_url = f"{modal_url.rstrip('/')}/v1"
+            modal_base_url = (
+                validate_http_endpoint(
+                    modal_url,
+                    allow_insecure_http=ALLOW_INSECURE_HTTP,
+                ).rstrip("/")
+                + "/v1"
+            )
 
             def make_patched_init(original_init):
                 def patched_init(self, *args, **kwargs):

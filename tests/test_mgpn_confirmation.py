@@ -64,7 +64,7 @@ def test_annotation_validation_requires_three_independent_rows_and_state_semanti
     result = validate_annotation_set(_packet(), _annotations(), schema)
     assert result["status"] == "VALID"
 
-    duplicate = _annotations()[:2] + [copy.deepcopy(_annotations()[1])]
+    duplicate = [*_annotations()[:2], copy.deepcopy(_annotations()[1])]
     duplicate[2]["resulting_value"] = "changed"
     result = validate_annotation_set(_packet(), duplicate, schema)
     assert result["status"] == "INVALID"
@@ -156,7 +156,7 @@ def test_scorer_refuses_provisional_gold_and_rejects_duplicate_predictions() -> 
 def test_scorer_rejects_missing_and_extra_prediction_ids() -> None:
     with pytest.raises(ValueError, match="coverage mismatch"):
         score_predictions(_gold(), [], allow_provisional_smoke=True)
-    prediction = _prediction() + [{"blind_id": "N000002", "predicted_action": "ABSTAIN"}]
+    prediction = [*_prediction(), {"blind_id": "N000002", "predicted_action": "ABSTAIN"}]
     with pytest.raises(ValueError, match="coverage mismatch"):
         score_predictions(_gold(), prediction, allow_provisional_smoke=True)
 

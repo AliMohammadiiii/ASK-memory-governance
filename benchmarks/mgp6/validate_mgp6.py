@@ -112,7 +112,7 @@ def regex_matches(patterns: list[str], text: str) -> bool:
     return any(re.search(pattern, text, flags=re.I) for pattern in patterns)
 
 
-def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
+def _validate_row_identity_action(line: int, row: MGP6Example, errors: list[str]) -> None:
     match = ID_RE.fullmatch(row.scenario_id)
     if not match:
         add_error(errors, f"invalid scenario_id {row.scenario_id!r}", line)
@@ -126,6 +126,59 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
     if row.type == "T6" and row.gold_action != "ABSTAIN":
         add_error(errors, "T6 must be ABSTAIN", line)
 
+
+def _validate_supersede_memory(
+    line: int,
+    row: MGP6Example,
+    active: list[Any],
+    errors: list[str],
+) -> None:
+    old = [record for record in row.gold_memory_state if record.status == "superseded"]
+    successor = [record for record in active if record.supersedes_id]
+    if not old or not successor:
+        add_error(errors, "SUPERSEDE requires old superseded and successor active records", line)
+    for record in old:
+        stale = memory_value(record.text)
+        if not regex_matches(row.forbidden_answer_patterns, stale):
+            add_error(errors, f"forbidden patterns do not cover stale value {stale!r}", line)
+        if not regex_matches(row.judge_spec.not_include, stale):
+            add_error(errors, f"judge not_include does not cover stale value {stale!r}", line)
+
+
+def _validate_keep_memory(
+    line: int,
+    row: MGP6Example,
+    active: list[Any],
+    errors: list[str],
+) -> None:
+    before = {record.id: record for record in row.initial_memory_state if record.status == "active"}
+    after = {record.id: record for record in active}
+    if not set(before).issubset(after):
+        add_error(errors, "KEEP failed to preserve prior active durable memory", line)
+    if any(record.type != "transient_pref" for rid, record in after.items() if rid not in before):
+        add_error(errors, "KEEP added a non-transient memory", line)
+
+
+def _validate_action_memory(
+    line: int,
+    row: MGP6Example,
+    active: list[Any],
+    errors: list[str],
+) -> None:
+    if row.gold_action == "SUPERSEDE":
+        _validate_supersede_memory(line, row, active, errors)
+    elif row.gold_action == "ABSTAIN":
+        if row.gold_memory_state != row.initial_memory_state:
+            add_error(errors, "ABSTAIN changed the memory state", line)
+    else:
+        _validate_keep_memory(line, row, active, errors)
+
+
+def _validate_row_memory_state(
+    line: int,
+    row: MGP6Example,
+    errors: list[str],
+) -> list[Any]:
     initial_ids = [record.id for record in row.initial_memory_state]
     gold_ids = [record.id for record in row.gold_memory_state]
     if len(initial_ids) != len(set(initial_ids)) or len(gold_ids) != len(set(gold_ids)):
@@ -148,30 +201,16 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
         if len(stable_active) != 1:
             add_error(errors, "stable-pref slot must have exactly one active stable memory", line)
 
-    if row.gold_action == "SUPERSEDE":
-        old = [record for record in row.gold_memory_state if record.status == "superseded"]
-        successor = [record for record in active if record.supersedes_id]
-        if not old or not successor:
-            add_error(
-                errors, "SUPERSEDE requires old superseded and successor active records", line
-            )
-        for record in old:
-            stale = memory_value(record.text)
-            if not regex_matches(row.forbidden_answer_patterns, stale):
-                add_error(errors, f"forbidden patterns do not cover stale value {stale!r}", line)
-            if not regex_matches(row.judge_spec.not_include, stale):
-                add_error(errors, f"judge not_include does not cover stale value {stale!r}", line)
-    elif row.gold_action == "ABSTAIN":
-        if row.gold_memory_state != row.initial_memory_state:
-            add_error(errors, "ABSTAIN changed the memory state", line)
-    else:
-        before = {r.id: r for r in row.initial_memory_state if r.status == "active"}
-        after = {r.id: r for r in active}
-        if not set(before).issubset(after):
-            add_error(errors, "KEEP failed to preserve prior active durable memory", line)
-        if any(r.type != "transient_pref" for rid, r in after.items() if rid not in before):
-            add_error(errors, "KEEP added a non-transient memory", line)
+    _validate_action_memory(line, row, active, errors)
+    return active
 
+
+def _validate_row_answer_contract(
+    line: int,
+    row: MGP6Example,
+    active: list[Any],
+    errors: list[str],
+) -> None:
     if row.gold_action in {"KEEP", "ABSTAIN"} and not regex_matches(
         row.forbidden_answer_patterns, row.perturbation_event
     ):
@@ -197,6 +236,8 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
     if any(value.casefold() in row.expected_answer.casefold() for value in stale_values):
         add_error(errors, "expected_answer uses a superseded value", line)
 
+
+def _validate_row_query_mode(line: int, row: MGP6Example, errors: list[str]) -> None:
     if row.query_mode == "premise_resistance":
         if not regex_matches(row.forbidden_answer_patterns, row.evaluation_query):
             add_error(errors, "premise-resistance query does not embed the forbidden premise", line)
@@ -214,6 +255,8 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
         if META_APPLICATION_RE.search(row.evaluation_query):
             add_error(errors, "implicit-application query uses meta/template wording", line)
 
+
+def _validate_row_implicit_conflict(line: int, row: MGP6Example, errors: list[str]) -> None:
     if row.subtype == "implicit_conflict":
         if row.type not in {"T1", "T2", "T3"}:
             add_error(errors, "implicit_conflict subtype is only valid in T1-T3", line)
@@ -225,6 +268,8 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
             if re.search(cue, row.perturbation_event, re.I):
                 add_error(errors, f"implicit conflict contains R4 cue {cue!r}", line)
 
+
+def _required_quality_flags(row: MGP6Example) -> set[str]:
     required_flags = {"synthetic", "paraphrased_source_pattern", "judge_spec_gatemem_shape"}
     if row.type in {"T1", "T2", "T3"}:
         required_flags.add("source_pattern_longmemeval_knowledge_update")
@@ -238,18 +283,30 @@ def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
         required_flags.add("source_pattern_memora_temporal_scope")
     if row.type == "T6":
         required_flags.add("source_pattern_memevobench_misleading_pool")
+    return required_flags
+
+
+def _validate_row_release_metadata(line: int, row: MGP6Example, errors: list[str]) -> None:
+    required_flags = _required_quality_flags(row)
     missing_flags = sorted(required_flags - set(row.quality_flags))
     if missing_flags:
         add_error(errors, f"missing release quality flags: {missing_flags}", line)
-
     serialized = json.dumps(row.model_dump(mode="json"), ensure_ascii=True)
     for label, pattern in PII_PATTERNS.items():
         if pattern.search(serialized):
             add_error(errors, f"possible {label} detected", line)
 
 
-def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> None:
-    models = [row for _, row in rows]
+def validate_row(line: int, row: MGP6Example, errors: list[str]) -> None:
+    _validate_row_identity_action(line, row, errors)
+    active = _validate_row_memory_state(line, row, errors)
+    _validate_row_answer_contract(line, row, active, errors)
+    _validate_row_query_mode(line, row, errors)
+    _validate_row_implicit_conflict(line, row, errors)
+    _validate_row_release_metadata(line, row, errors)
+
+
+def _validate_corpus_counts(models: list[MGP6Example], errors: list[str]) -> None:
     expect_equal(errors, "row count", len(models), 180)
     expect_equal(errors, "type counts", dict(Counter(r.type for r in models)), TYPE_COUNTS)
     expect_equal(
@@ -264,7 +321,6 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
     if len(ids) != len(set(ids)):
         duplicates = sorted(key for key, count in Counter(ids).items() if count > 1)
         add_error(errors, f"duplicate scenario ids: {duplicates}")
-
     per_type_split = {
         type_name: dict(Counter(r.split for r in models if r.type == type_name))
         for type_name in TYPE_COUNTS
@@ -275,6 +331,8 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
         actual = dict(Counter(r.gold_action for r in models if r.type == "T5" and r.split == split))
         expect_equal(errors, f"T5 {split} action counts", actual, expected)
 
+
+def _validate_distribution_floors(models: list[MGP6Example], errors: list[str]) -> None:
     for type_name in TYPE_COUNTS:
         subset = [row for row in models if row.type == type_name]
         modes = Counter(row.query_mode for row in subset)
@@ -291,6 +349,11 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
         if modes["implicit_application"] < math.ceil(size * 0.10):
             add_error(errors, f"{split} misses the 10% implicit-application floor: {dict(modes)}")
 
+
+def _collect_pair_rows(
+    models: list[MGP6Example],
+    errors: list[str],
+) -> dict[str, list[MGP6Example]]:
     family_splits: dict[str, set[str]] = defaultdict(set)
     pair_splits: dict[str, set[str]] = defaultdict(set)
     pair_rows: dict[str, list[MGP6Example]] = defaultdict(list)
@@ -306,6 +369,43 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
     if leaked_pairs:
         add_error(errors, f"minimal-pair split leakage: {leaked_pairs}")
     expect_equal(errors, "minimal-pair group count", len(pair_rows), 24)
+    return pair_rows
+
+
+def _validate_pair_contrast(
+    pair_id: str,
+    source: MGP6Example,
+    partner: MGP6Example,
+    errors: list[str],
+) -> None:
+    if source.gold_action != "SUPERSEDE" or partner.gold_action != "ABSTAIN":
+        add_error(errors, f"{pair_id} has an invalid action contrast")
+    if source.semantic_slot != partner.semantic_slot or source.split != partner.split:
+        add_error(errors, f"{pair_id} must share semantic_slot and split")
+    source_old = [record for record in source.gold_memory_state if record.status == "superseded"]
+    source_new = [record for record in source.gold_memory_state if record.status == "active"]
+    partner_active = [
+        record
+        for record in partner.gold_memory_state
+        if record.status == "active" and record.type != "transient_pref"
+    ]
+    if not source_old or not source_new or not partner_active:
+        add_error(errors, f"{pair_id} lacks values required for contrast validation")
+        return
+    old_value = memory_value(source_old[0].text)
+    new_value = memory_value(source_new[0].text)
+    if old_value.casefold() != memory_value(partner_active[0].text).casefold():
+        add_error(errors, f"{pair_id} does not preserve the same prior active value")
+    if not regex_matches(partner.forbidden_answer_patterns, new_value):
+        add_error(errors, f"{pair_id} T4 partner does not forbid the source successor")
+    if source.perturbation_event not in partner.perturbation_event:
+        add_error(errors, f"{pair_id} T4 partner does not preserve the source surface claim")
+
+
+def _validate_pair_groups(
+    pair_rows: dict[str, list[MGP6Example]],
+    errors: list[str],
+) -> None:
     for pair_id, members in sorted(pair_rows.items()):
         if len(members) != 2:
             add_error(errors, f"{pair_id} must contain exactly two rows, got {len(members)}")
@@ -316,29 +416,14 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
             add_error(errors, f"{pair_id} must pair one T1-T3 row with one T4 row")
             continue
         source, partner = sources[0], partners[0]
-        if source.gold_action != "SUPERSEDE" or partner.gold_action != "ABSTAIN":
-            add_error(errors, f"{pair_id} has an invalid action contrast")
-        if source.semantic_slot != partner.semantic_slot or source.split != partner.split:
-            add_error(errors, f"{pair_id} must share semantic_slot and split")
-        source_old = [r for r in source.gold_memory_state if r.status == "superseded"]
-        source_new = [r for r in source.gold_memory_state if r.status == "active"]
-        partner_active = [
-            r
-            for r in partner.gold_memory_state
-            if r.status == "active" and r.type != "transient_pref"
-        ]
-        if not source_old or not source_new or not partner_active:
-            add_error(errors, f"{pair_id} lacks values required for contrast validation")
-            continue
-        old_value = memory_value(source_old[0].text)
-        new_value = memory_value(source_new[0].text)
-        if old_value.casefold() != memory_value(partner_active[0].text).casefold():
-            add_error(errors, f"{pair_id} does not preserve the same prior active value")
-        if not regex_matches(partner.forbidden_answer_patterns, new_value):
-            add_error(errors, f"{pair_id} T4 partner does not forbid the source successor")
-        if source.perturbation_event not in partner.perturbation_event:
-            add_error(errors, f"{pair_id} T4 partner does not preserve the source surface claim")
+        _validate_pair_contrast(pair_id, source, partner, errors)
 
+
+def _validate_implicit_pairs(
+    models: list[MGP6Example],
+    pair_rows: dict[str, list[MGP6Example]],
+    errors: list[str],
+) -> None:
     for type_name in ("T1", "T2", "T3"):
         implicit = [
             row for row in models if row.type == type_name and row.subtype == "implicit_conflict"
@@ -364,6 +449,11 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
                 errors, f"{type_name} needs exactly 6 paired implicit conflicts, got {paired}"
             )
 
+
+def _validate_unique_content(
+    rows: list[tuple[int, MGP6Example]],
+    errors: list[str],
+) -> None:
     seen_content: set[tuple[str, str, str]] = set()
     seen_events: set[str] = set()
     for line, row in rows:
@@ -379,6 +469,16 @@ def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> N
         if signature in seen_content:
             add_error(errors, "exact duplicate slot/event/query signature", line)
         seen_content.add(signature)
+
+
+def validate_corpus(rows: list[tuple[int, MGP6Example]], errors: list[str]) -> None:
+    models = [row for _, row in rows]
+    _validate_corpus_counts(models, errors)
+    _validate_distribution_floors(models, errors)
+    pair_rows = _collect_pair_rows(models, errors)
+    _validate_pair_groups(pair_rows, errors)
+    _validate_implicit_pairs(models, pair_rows, errors)
+    _validate_unique_content(rows, errors)
 
 
 def main(argv: list[str] | None = None) -> int:

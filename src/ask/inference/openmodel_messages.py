@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import time
 import urllib.error
@@ -12,8 +13,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from ask.endpoints import validate_http_endpoint
+
 from .llm import LLMResponse
 from .openai_compatible import _parse_strict_json_object
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -32,6 +37,13 @@ class OpenModelMessagesLLM:
     include_raw_response: bool = False
     extra_headers: dict[str, str] = field(default_factory=dict)
     _next_key_index: int = field(default=0, init=False, repr=False)
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     def generate(
         self,
@@ -53,11 +65,14 @@ class OpenModelMessagesLLM:
         if stop:
             payload["stop_sequences"] = list(stop)
 
-        print(
-            f"[api-call:start] provider=openmodel base_url={self.base_url} "
-            f"path=/messages model={self.model_id} require_json={self.require_json} "
-            f"max_tokens={max_new_tokens} prompt_chars={len(prompt)}",
-            flush=True,
+        logger.info(
+            "request start base_url=%s path=/messages model=%s require_json=%s "
+            "max_tokens=%s prompt_chars=%s",
+            self.base_url,
+            self.model_id,
+            self.require_json,
+            max_new_tokens,
+            len(prompt),
         )
         t0 = time.perf_counter()
         raw, key_env = self._post_json("/messages", payload)
@@ -93,13 +108,17 @@ class OpenModelMessagesLLM:
         if self.include_raw_response:
             metadata["raw_response"] = text
         self._write_log(metadata)
-        print(
-            f"[api-call:done] provider=openmodel base_url={self.base_url} "
-            f"model={metadata['model']} key_env={key_env} latency_ms={latency_ms:.1f} "
-            f"prompt_tokens={usage.get('input_tokens') or 0} "
-            f"completion_tokens={usage.get('output_tokens') or 0} "
-            f"gate_pass={gate_pass} valid_json={valid_json}",
-            flush=True,
+        logger.info(
+            "request done base_url=%s model=%s key_env=%s latency_ms=%.1f "
+            "prompt_tokens=%s completion_tokens=%s gate_pass=%s valid_json=%s",
+            self.base_url,
+            metadata["model"],
+            key_env,
+            latency_ms,
+            usage.get("input_tokens") or 0,
+            usage.get("output_tokens") or 0,
+            gate_pass,
+            valid_json,
         )
         return LLMResponse(
             text=text,
@@ -120,10 +139,7 @@ class OpenModelMessagesLLM:
         errors: list[str] = []
         for key_env, api_key in key_candidates:
             if not api_key:
-                print(
-                    f"[api-call:key-skip] provider=openmodel key_env={key_env} reason=missing",
-                    flush=True,
-                )
+                logger.warning("request key skipped key_env=%s reason=missing", key_env)
                 errors.append(f"{key_env}: missing")
                 continue
             headers = {
@@ -139,10 +155,11 @@ class OpenModelMessagesLLM:
                 method="POST",
             )
             try:
-                print(
-                    f"[api-call:key-try] provider=openmodel key_env={key_env} "
-                    f"url={url} model={payload.get('model')}",
-                    flush=True,
+                logger.info(
+                    "request key attempt key_env=%s url=%s model=%s",
+                    key_env,
+                    url,
+                    payload.get("model"),
                 )
                 with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
                     return resp.read().decode("utf-8"), key_env
@@ -150,19 +167,12 @@ class OpenModelMessagesLLM:
                 body = ""
                 try:
                     body = exc.read().decode("utf-8")[:500]
-                except Exception:
-                    pass
-                print(
-                    f"[api-call:key-error] provider=openmodel key_env={key_env} "
-                    f"HTTP {exc.code}: {body}",
-                    flush=True,
-                )
+                except (OSError, UnicodeError):
+                    body = ""
+                logger.warning("request key error key_env=%s HTTP %s: %s", key_env, exc.code, body)
                 errors.append(f"{key_env}: HTTP {exc.code} {body}")
             except urllib.error.URLError as exc:
-                print(
-                    f"[api-call:key-error] provider=openmodel key_env={key_env} error={exc}",
-                    flush=True,
-                )
+                logger.warning("request key error key_env=%s error=%s", key_env, exc)
                 errors.append(f"{key_env}: request failed {exc}")
         raise RuntimeError(
             f"OpenModel request failed for all API keys at {url}: {' | '.join(errors)}"

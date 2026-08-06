@@ -34,6 +34,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from ask.endpoints import validate_http_endpoint
+
 
 def structured_via_pydantic_ai(
     *,
@@ -45,6 +47,7 @@ def structured_via_pydantic_ai(
     api_key: str | None = None,
     seed: int = 0,
     temperature: float = 0.0,
+    allow_insecure_http: bool = False,
 ) -> Any:
     """Run one structured extraction via pydantic-ai. Returns an instance of `schema`.
 
@@ -63,6 +66,7 @@ def structured_via_pydantic_ai(
 
     model_obj: Any = model
     if base_url:
+        validate_http_endpoint(base_url, allow_insecure_http=allow_insecure_http)
         try:
             from pydantic_ai.models.openai import OpenAIModel  # type: ignore[import-not-found]
             from pydantic_ai.providers.openai import (

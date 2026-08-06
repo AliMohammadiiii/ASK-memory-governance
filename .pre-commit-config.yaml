@@ -19,9 +19,30 @@ repos:
         exclude: '^(benchmarks/mgp6/(annotation_kit_test|annotations)/|claims/|configs/|constraints/|docs/figures/|experiments/|paper/.*/tables/|prompts/.*\.j2$|presentation/.*\.inspect\.ndjson$|reports/tables/)'
       - id: trailing-whitespace
         exclude: '^(benchmarks/mgp6/(annotation_kit_test|annotations)/|claims/|configs/|constraints/|docs/figures/|experiments/|paper/.*/tables/|prompts/.*\.j2$|presentation/.*\.inspect\.ndjson$|reports/tables/)'
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.16.0
+  - repo: local
     hooks:
       - id: ruff-check
-        args: [--fix]
-      - id: ruff-format
+        name: Ruff lint maintained Python
+        entry: scripts/precommit_python.sh -m ruff check
+        language: system
+        types: [python]
+        files: >-
+          ^(src|tests|scripts|benchmarks)/|^deploy/download_longmemeval_s\.py$|^thesis/latex/tools/
+      - id: ruff-format-check
+        name: Ruff format maintained Python
+        entry: scripts/precommit_python.sh -m ruff format --check
+        language: system
+        types: [python]
+        files: >-
+          ^(src|tests|scripts|benchmarks)/|^deploy/download_longmemeval_s\.py$|^thesis/latex/tools/
+      - id: shell-syntax
+        name: Bash syntax
+        entry: bash -n
+        language: system
+        types: [shell]
+      - id: repository-contract
+        name: Repository and public-boundary contract
+        entry: scripts/precommit_python.sh scripts/validate_repository.py
+        language: system
+        pass_filenames: false
+        always_run: true

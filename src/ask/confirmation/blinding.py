@@ -74,15 +74,15 @@ def nested_keys(value: Any) -> set[str]:
     """Return every mapping key below ``value`` as a string."""
 
     if isinstance(value, Mapping):
-        keys = {str(key) for key in value}
+        mapping_keys = {str(key) for key in value}
         for child in value.values():
-            keys.update(nested_keys(child))
-        return keys
+            mapping_keys.update(nested_keys(child))
+        return mapping_keys
     if isinstance(value, list):
-        keys: set[str] = set()
+        list_keys: set[str] = set()
         for child in value:
-            keys.update(nested_keys(child))
-        return keys
+            list_keys.update(nested_keys(child))
+        return list_keys
     return set()
 
 

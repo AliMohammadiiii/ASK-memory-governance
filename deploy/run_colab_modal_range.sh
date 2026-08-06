@@ -43,6 +43,7 @@ START_EMBED_SERVER="${START_EMBED_SERVER:-1}"
 EMBED_MODEL_PATH="${EMBED_MODEL_PATH:-jinaai/jina-embeddings-v5-text-nano}"
 EMBED_MODEL_NAME="${EMBED_MODEL_NAME:-jina}"
 EMBED_TASK="${EMBED_TASK:-retrieval}"
+EMBED_TRUST_REMOTE_CODE="${EMBED_TRUST_REMOTE_CODE:-1}"
 EMBED_DEVICE="${EMBED_DEVICE:-mps}"
 EMBED_BATCH_SIZE="${EMBED_BATCH_SIZE:-4}"
 EMBED_CLIENT_BATCH_SIZE="${EMBED_CLIENT_BATCH_SIZE:-4}"
@@ -257,6 +258,9 @@ PY
   )
   if [[ -n "${EMBED_TASK}" ]]; then
     embed_cmd+=(--task "${EMBED_TASK}")
+  fi
+  if [[ "${EMBED_TRUST_REMOTE_CODE}" == "1" ]]; then
+    embed_cmd+=(--trust-remote-code)
   fi
   printf '[colab-modal] embed command:' > "${EMBED_LOG}"
   printf ' %q' "${embed_cmd[@]}" >> "${EMBED_LOG}"

@@ -49,8 +49,7 @@ class _ReplayBaseline:
         self._by_session = by_session
 
     def answer(self, session) -> BaselineAnswer:  # noqa: ANN001
-        a = self._by_session[session.session_id]
-        return a
+        return self._by_session[session.session_id]
 
 
 class _CacheOnlyJudge:

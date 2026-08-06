@@ -32,6 +32,7 @@ Implementation discipline (mirrors `ask.inference.llm.HuggingFaceLLM`):
 from __future__ import annotations
 
 import json
+import logging
 import os
 import time
 import urllib.error
@@ -44,14 +45,16 @@ from typing import Any, Protocol, runtime_checkable
 import numpy as np
 from pydantic import BaseModel, ConfigDict
 
+from ask.endpoints import is_loopback_host, validate_http_endpoint
 from ask.inference.openai_headers import openai_compatible_headers
 
-_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
+logger = logging.getLogger(__name__)
 
 
 def _is_loopback_url(url: str) -> bool:
     """Return whether *url* targets this machine's loopback interface."""
-    return urllib.parse.urlparse(url).hostname in _LOOPBACK_HOSTS
+    host = urllib.parse.urlparse(url).hostname
+    return bool(host and is_loopback_host(host))
 
 
 def _urlopen(
@@ -170,7 +173,7 @@ def _apply_remote_code_import_shim() -> None:
         return
     try:
         from transformers import dynamic_module_utils  # type: ignore[import-not-found]
-    except Exception:
+    except ImportError:
         return
 
     _original_get_imports = dynamic_module_utils.get_imports
@@ -188,11 +191,11 @@ def _torch_cuda_is_available() -> bool:
     """Return whether the installed torch build can actually use CUDA."""
     try:
         import torch  # type: ignore[import-not-found]
-    except Exception:
+    except ImportError:
         return False
     try:
         return bool(torch.cuda.is_available())
-    except Exception:
+    except (AssertionError, RuntimeError):
         return False
 
 
@@ -208,12 +211,9 @@ def _resolve_sentence_transformer_device(device: str) -> str:
     if not requested or requested_l == "auto":
         return "cuda" if _torch_cuda_is_available() else "cpu"
     if requested_l.startswith("cuda") and not _torch_cuda_is_available():
-        print(
-            "[embedder] requested CUDA for sentence-transformer embeddings, "
-            "but torch.cuda.is_available() is false; falling back to CPU. "
-            "In Colab, select a GPU runtime or install a CUDA-enabled torch "
-            "wheel if you need GPU embeddings.",
-            flush=True,
+        logger.warning(
+            "requested CUDA for sentence-transformer embeddings, but CUDA is unavailable; "
+            "falling back to CPU"
         )
         return "cpu"
     return requested
@@ -242,14 +242,17 @@ def _get_or_load_model(
         # jina-embeddings-v5 (EuroBERT) trips a transformers get_imports bug;
         # see _apply_remote_code_import_shim. No-op for plain models.
         _apply_remote_code_import_shim()
+    load_kwargs: dict[str, Any] = {
+        "device": resolved_device,
+        "trust_remote_code": trust_remote_code,
+    }
+    if revision is not None:
+        load_kwargs["revision"] = revision
     try:
-        model = SentenceTransformer(
-            model_id,
-            device=resolved_device,
-            revision=revision,
-            trust_remote_code=trust_remote_code,
-        )
-    except TypeError:
+        model = SentenceTransformer(model_id, **load_kwargs)
+    except TypeError as exc:
+        if revision is not None:
+            raise RuntimeError("the installed sentence-transformers cannot pin a revision") from exc
         # Very old sentence-transformers without the trust_remote_code kwarg.
         model = SentenceTransformer(model_id, device=resolved_device)
     _MODEL_CACHE[key] = model
@@ -337,7 +340,7 @@ class TurnEmbedder:
                 if callable(fn):
                     try:
                         value = fn()
-                    except Exception:
+                    except (AttributeError, RuntimeError, TypeError, ValueError):
                         value = None
                     if value:
                         dim = int(value)
@@ -422,8 +425,15 @@ class OllamaEmbedder:
     truncate: bool = True
     max_retries: int = 5
     backoff_s: float = 2.0
+    allow_insecure_http: bool = False
 
     _embedding_dim: int | None = field(default=None, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     @property
     def embedding_dim(self) -> int:
@@ -487,11 +497,13 @@ class OllamaEmbedder:
                 last_exc = exc
                 if exc.code in {500, 502, 503, 504} and attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama-embed] {url} returned HTTP {exc.code}; "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc.code,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -500,10 +512,13 @@ class OllamaEmbedder:
                 last_exc = exc
                 if attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
-                    print(
-                        f"[ollama-embed] {url} failed ({exc}); retrying in "
-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
@@ -549,9 +564,16 @@ class OpenAICompatibleEmbedder:
     min_interval_s: float = 0.0
     max_batch_chars: int = 0
     extra_headers: dict[str, str] = field(default_factory=dict)
+    allow_insecure_http: bool = False
 
     _embedding_dim: int | None = field(default=None, init=False, repr=False)
     _last_request_at: float = field(default=0.0, init=False, repr=False)
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
     @property
     def embedding_dim(self) -> int:
@@ -667,15 +689,14 @@ class OpenAICompatibleEmbedder:
         for attempt in range(self.max_retries + 1):
             try:
                 with _urlopen(req, url=url, timeout=self.timeout_s) as resp:
-                    data = json.loads(resp.read().decode("utf-8"))
-                    return data
+                    return json.loads(resp.read().decode("utf-8"))
             except urllib.error.HTTPError as exc:
                 last_exc = exc
                 body = ""
                 try:
                     body = exc.read().decode("utf-8")[:500]
-                except Exception:
-                    pass
+                except (OSError, UnicodeError):
+                    body = ""
                 if exc.code in {429, 500, 502, 503, 504} and attempt < self.max_retries:
                     delay = self.backoff_s * (2**attempt)
                     self._write_log(
@@ -689,19 +710,17 @@ class OpenAICompatibleEmbedder:
                             "input_chars": input_chars,
                         }
                     )
-                    print(
-                        f"[api-call:retry] provider=embedding-openai-compatible {url} returned HTTP {exc.code}; "
-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
-                        f"{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc.code,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue
-                print(
-                    f"[api-call:error] provider=embedding-openai-compatible url={url} "
-                    f"HTTP {exc.code}: {body}",
-                    flush=True,
-                )
+                logger.error("request failed url=%s HTTP %s: %s", url, exc.code, body)
                 raise RuntimeError(f"HTTP {exc.code} from {url}: {body}") from exc
             except (urllib.error.URLError, TimeoutError) as exc:
                 last_exc = exc
@@ -718,10 +737,13 @@ class OpenAICompatibleEmbedder:
                             "input_chars": input_chars,
                         }
                     )
-                    print(
-                        f"[api-call:retry] provider=embedding-openai-compatible {url} failed ({exc}); retrying in "
-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
-                        flush=True,
+                    logger.warning(
+                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
+                        url,
+                        exc,
+                        delay,
+                        attempt + 1,
+                        self.max_retries,
                     )
                     time.sleep(delay)
                     continue

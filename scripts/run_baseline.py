@@ -367,8 +367,8 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
             timeout_s=args.judge_timeout_s,
             response_format="json" if args.judge_json_format else None,
             think=args.judge_think,
-            hf_dtype=args.hf_dtype,
             hf_revision=args.hf_revision,
+            hf_dtype=args.hf_dtype,
             hf_device_map=args.hf_device_map,
             hf_load_in_4bit=args.hf_load_in_4bit,
             hf_trust_remote_code=args.hf_trust_remote_code,
@@ -384,8 +384,8 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
             timeout_s=args.judge_timeout_s,
             response_format="json" if args.judge_json_format else None,
             think=args.judge_think,
-            hf_dtype=args.hf_dtype,
             hf_revision=args.hf_revision,
+            hf_dtype=args.hf_dtype,
             hf_device_map=args.hf_device_map,
             hf_load_in_4bit=args.hf_load_in_4bit,
             hf_trust_remote_code=args.hf_trust_remote_code,
@@ -654,6 +654,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             memory_prefilter_top_k=args.recency_memory_top_k,
             raw_turn_fallback=args.recency_raw_turn_fallback,
             progress=args.recency_progress,
+            reporter=print if args.recency_progress else None,
         )
 
     if args.baseline in {"naive_overwrite", "controller"}:
@@ -684,6 +685,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
             extraction_max_new_tokens=args.extraction_max_new_tokens,
             relation_max_new_tokens=args.relation_max_new_tokens,
             progress=args.controller_progress,
+            reporter=print if args.controller_progress else None,
             memory_prefilter_top_k=args.controller_memory_top_k,
             raw_turn_fallback=args.controller_raw_turn_fallback,
             retrieval_neighbor_window=args.controller_retrieval_neighbor_window,

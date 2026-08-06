@@ -19,6 +19,18 @@ def _load_runner():
     return mod
 
 
+def test_model_preflight_rejects_invalid_endpoint_before_network(monkeypatch) -> None:
+    runner = _load_runner()
+
+    def unexpected_network_call(*args, **kwargs):
+        raise AssertionError("network access must not occur for an invalid endpoint")
+
+    monkeypatch.setattr(runner.urllib.request, "urlopen", unexpected_network_call)
+
+    with pytest.raises(ValueError, match="scheme"):
+        runner._installed_ollama_models("localhost:11434")
+
+
 def test_session_shard_failure_tails_log_and_stops_other_shards(tmp_path: Path) -> None:
     runner = _load_runner()
     env = {"PYTHONUNBUFFERED": "1"}

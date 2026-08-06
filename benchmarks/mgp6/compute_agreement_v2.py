@@ -68,7 +68,7 @@ def load_labels(path: Path, field: str = "annotator_action") -> dict[str, str]:
                     lab = str(r.get(field, "")).strip().upper()
                     if sid and lab:
                         labels[sid] = lab
-    bad = {s: l for s, l in labels.items() if l not in ACTIONS}
+    bad = {scenario_id: label for scenario_id, label in labels.items() if label not in ACTIONS}
     if bad:
         raise SystemExit(f"invalid labels (must be KEEP/SUPERSEDE/ABSTAIN): {bad}")
     return labels
@@ -172,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
         if sid in gold:
             per_type[gold[sid]["type"]].append((ref[sid], ann[sid]))
 
-    confusion = {r: {c: 0 for c in ACTIONS} for r in ACTIONS}
+    confusion = {r: dict.fromkeys(ACTIONS, 0) for r in ACTIONS}
     for a, b in pairs:
         confusion[a][b] += 1
 

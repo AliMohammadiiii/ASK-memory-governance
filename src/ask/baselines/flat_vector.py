@@ -34,9 +34,6 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
-from pathlib import Path
-
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from ask.data.longmemeval import LongMemEvalSession, memory_session_ids
 from ask.inference.llm import LLM
@@ -44,6 +41,7 @@ from ask.inference.llm import LLM
 from .base import BaselineAnswer
 from .embeddings import TurnEmbedder
 from .flat_vector_store import FlatVectorStore, MemoryItem, RetrievedItem
+from .prompts import build_prompt_environment
 
 # Match `NoMemoryBaseline.DEFAULT_SYSTEM_PROMPT` so cross-baseline numbers
 # don't drift on system-prompt wording. The retrieved-memory framing is
@@ -56,21 +54,6 @@ DEFAULT_SYSTEM_PROMPT = (
 )
 
 _DEFAULT_K = 5
-_PROMPT_DIR = Path(__file__).resolve().parent / "prompts"
-
-
-def _build_jinja_env() -> Environment:
-    """Module-level Jinja env mirroring the no-memory baseline's setup."""
-    return Environment(
-        loader=FileSystemLoader(str(_PROMPT_DIR)),
-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
-
-
 # --------------------------------------------------------------------- #
 # Corpus lookup                                                          #
 # --------------------------------------------------------------------- #
@@ -163,7 +146,7 @@ class FlatVectorBaseline:
     BASELINE_NAME: str = "flat_vector"
 
     def __post_init__(self) -> None:
-        self._env = _build_jinja_env()
+        self._env = build_prompt_environment()
         self._template = self._env.get_template(self.prompt_template)
 
     # --- factory helper --------------------------------------------- #

@@ -53,11 +53,18 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent))
+sys.path.insert(0, str(HERE.parents[2] / "src"))
 
 from systems.extractor import read_evidence  # noqa: E402
 
+from ask.endpoints import validate_http_endpoint  # noqa: E402
+
 ANSWER_MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
-BASE_URL = os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+ALLOW_INSECURE_HTTP = os.environ.get("MGP6_ALLOW_INSECURE_HTTP") == "1"
+BASE_URL = validate_http_endpoint(
+    os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1"),
+    allow_insecure_http=ALLOW_INSECURE_HTTP,
+).rstrip("/")
 API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 
 # Same neutral answer contract as run_llm_controller.py, for comparability.
@@ -195,7 +202,7 @@ def state_records(scenario: dict[str, Any], texts: list[str]) -> list[dict[str, 
 
 
 def load_scenarios(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in path.open(encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
 def done_ids(path: Path) -> set[str]:
@@ -246,7 +253,7 @@ def run_scenario(adapter: ExternalAdapter, scenario: dict[str, Any], k: int) -> 
 def finalize(out: Path, scenarios_by_id: dict[str, dict[str, Any]]) -> None:
     """Emit metrics_mgp6-compatible prediction files under both mappings."""
     raw_path = out / "raw_results.jsonl"
-    rows = [json.loads(l) for l in raw_path.open(encoding="utf-8") if l.strip()]
+    rows = [json.loads(line) for line in raw_path.open(encoding="utf-8") if line.strip()]
     for mapping, fname in (
         ("KEEP", "predictions.jsonl"),
         ("ABSTAIN", "predictions_noop_abstain.jsonl"),

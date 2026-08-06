@@ -78,6 +78,9 @@ checkpoints/
 .DS_Store
 .idea/
 .vscode/
+.serena/
+.private/
+tmp/
 
 # Generated publication outputs
 paper/**/compiled/

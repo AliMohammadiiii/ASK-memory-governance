@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import time
 from collections import deque
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from .llm import LLM, LLMResponse
 
@@ -29,11 +29,7 @@ class FakeLLM:
     """
 
     model_id: str = "fake/deterministic-1"
-    scripted: deque[str] = None  # type: ignore[assignment]
-
-    def __post_init__(self) -> None:
-        if self.scripted is None:
-            self.scripted = deque()
+    scripted: deque[str] = field(default_factory=deque)
 
     def queue(self, *texts: str) -> None:
         """Push scripted responses to the back of the queue."""

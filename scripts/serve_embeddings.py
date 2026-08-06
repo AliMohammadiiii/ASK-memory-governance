@@ -25,18 +25,20 @@ import traceback
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from ask.baselines.embeddings import TurnEmbedder
+from ask.endpoints import validate_bind_address
 
 _EMBEDDER: TurnEmbedder | None = None
 _MODEL_NAME = "embedding-model"
 _DEVICE_INFO: dict[str, object] = {}
 _LOCK = threading.Lock()
+_MAX_REQUEST_BYTES = 64 * 1024 * 1024
 
 
 def _torch_device_info(requested_device: str) -> dict[str, object]:
     info: dict[str, object] = {"requested_device": requested_device}
     try:
         import torch  # type: ignore[import-not-found]
-    except Exception as exc:  # noqa: BLE001
+    except (ImportError, OSError, RuntimeError) as exc:
         info["torch_import_error"] = f"{type(exc).__name__}: {exc}"
         return info
     info["torch_version"] = getattr(torch, "__version__", "unknown")
@@ -47,7 +49,7 @@ def _torch_device_info(requested_device: str) -> dict[str, object]:
     if cuda_available:
         try:
             info["cuda_device_name"] = torch.cuda.get_device_name(0)
-        except Exception as exc:  # noqa: BLE001
+        except (AssertionError, RuntimeError) as exc:
             info["cuda_device_name_error"] = f"{type(exc).__name__}: {exc}"
     return info
 
@@ -61,12 +63,12 @@ def _model_device_summary(model: object) -> str:
         module_device = getattr(module, "device", None)
         if module_device is not None:
             return str(module_device)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         pass
     try:
         for param in model.parameters():  # type: ignore[attr-defined]
             return str(param.device)
-    except Exception:
+    except (AttributeError, RuntimeError, TypeError):
         pass
     return "unknown"
 
@@ -96,6 +98,12 @@ class _Handler(BaseHTTPRequestHandler):
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
+            if length < 0 or length > _MAX_REQUEST_BYTES:
+                self._send(
+                    413,
+                    {"error": f"request body exceeds {_MAX_REQUEST_BYTES} bytes"},
+                )
+                return
             req = json.loads(self.rfile.read(length) or b"{}")
         except (ValueError, json.JSONDecodeError) as exc:
             self._send(400, {"error": f"bad request: {exc}"})
@@ -168,16 +176,42 @@ def build_parser() -> argparse.ArgumentParser:
         "Jina v5 is Qwen3-based; long turns can OOM a T4 unless "
         "they are truncated.",
     )
-    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Bind address. Use 0.0.0.0 only on an explicitly protected network.",
+    )
     p.add_argument("--port", type=int, default=8100)
+    p.add_argument(
+        "--allow-non-loopback",
+        action="store_true",
+        help="Explicitly permit binding outside the local loopback interface.",
+    )
+    p.add_argument(
+        "--max-request-bytes",
+        type=int,
+        default=64 * 1024 * 1024,
+        help="Reject larger request bodies before reading them into memory.",
+    )
     return p
 
 
-def main() -> int:
-    global _DEVICE_INFO, _EMBEDDER, _MODEL_NAME
-    args = build_parser().parse_args()
+def main(argv: list[str] | None = None) -> int:
+    global _DEVICE_INFO, _EMBEDDER, _MAX_REQUEST_BYTES, _MODEL_NAME
+    args = build_parser().parse_args(argv)
+    if args.max_request_bytes <= 0:
+        raise SystemExit("--max-request-bytes must be positive")
+    try:
+        validate_bind_address(
+            args.host,
+            args.port,
+            allow_non_loopback=args.allow_non_loopback,
+        )
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
 
     _MODEL_NAME = args.served_name
+    _MAX_REQUEST_BYTES = args.max_request_bytes
     _DEVICE_INFO = _torch_device_info(args.device)
     print(
         f"[embed-server] torch/device info: {json.dumps(_DEVICE_INFO, sort_keys=True)}", flush=True

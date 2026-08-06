@@ -114,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
                 continue
             c = fmt(val(r["full"][key]))
             cells.append(f"**{c}**" if k == b else c)
-        bl = dict((k, lb) for k, lb, _ in systems)[b]
+        bl = {key: label for key, label, _ in systems}[b]
         L.append(f"| {label} | " + " | ".join(cells) + f" | {bl} |")
     L.append("")
     L.append("↓ = lower is better; **bold** = best system for that metric.")
@@ -124,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     L.append("")
     L.append("| System | KEEP | SUPERSEDE | ABSTAIN |")
     L.append("|---|---|---|---|")
-    for k, lb, r in systems:
+    for _key, lb, r in systems:
         pa = r["full"].get("per_action", {})
         row = [fmt(val(pa[a]["f1"])) if a in pa else "-" for a in ("KEEP", "SUPERSEDE", "ABSTAIN")]
         L.append(f"| {lb} | " + " | ".join(row) + " |")

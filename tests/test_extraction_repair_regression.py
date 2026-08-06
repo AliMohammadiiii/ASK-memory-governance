@@ -18,6 +18,7 @@ from collections import deque
 from pathlib import Path
 
 import pytest
+from pydantic import ValidationError
 
 from ask.extraction import Extractor
 from ask.extraction.schema import ExtractionOutput
@@ -50,7 +51,7 @@ def test_missing_flag_with_empty_items_infers_true() -> None:
 
 def test_explicit_inconsistent_flag_still_rejected() -> None:
     """Tolerance is only for the *missing* field; explicit contradiction stays strict."""
-    with pytest.raises(Exception):
+    with pytest.raises(ValidationError):
         ExtractionOutput.model_validate({"items": [], "no_extractable_content": False})
 
 
@@ -88,7 +89,7 @@ def test_m4w14_real_traces_recover_majority_of_discarded_items() -> None:
     for row in rows:
         try:
             output = _validate_any_json_object(row["first_pass_text"], ExtractionOutput)
-        except Exception:
+        except ValueError:
             continue
         if output.items:
             new_with_items += 1

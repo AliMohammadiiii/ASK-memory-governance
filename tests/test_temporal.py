@@ -42,9 +42,7 @@ def test_classify_duration_order_relative_and_none() -> None:
         == "order"
     )
     assert classify_temporal_question("What is my favorite coffee?") == "none"
-    assert (
-        not is_temporal_question("How long have I been collecting cameras?") or True
-    )  # not date-arith
+    assert not is_temporal_question("How long have I been collecting cameras?")
 
 
 def test_parse_session_timestamp_longmemeval_form() -> None:

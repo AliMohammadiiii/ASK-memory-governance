@@ -6,6 +6,11 @@ embedder field plumbing without loading any model weights.
 
 from __future__ import annotations
 
+import sys
+from types import ModuleType
+
+import pytest
+
 import ask.baselines.embeddings as embeddings_module
 from ask.baselines.embeddings import Embedder, FakeEmbedder, TurnEmbedder
 from ask.inference.llm import InferenceConfig, _strip_think_blocks
@@ -57,6 +62,31 @@ def test_turn_embedder_defaults_are_backward_compatible() -> None:
     assert emb.revision is None
     assert emb.task is None
     assert emb.prompt_name is None
+
+
+def test_turn_embedder_propagates_exact_revision(monkeypatch: pytest.MonkeyPatch) -> None:
+    observed: list[dict[str, object]] = []
+    module = ModuleType("sentence_transformers")
+
+    def sentence_transformer(model_id: str, **kwargs: object) -> object:
+        observed.append({"model_id": model_id, **kwargs})
+        return object()
+
+    module.SentenceTransformer = sentence_transformer  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "sentence_transformers", module)
+    embeddings_module._clear_model_cache()
+
+    first = embeddings_module._get_or_load_model("model", "cpu", revision="commit-sha")
+    cached = embeddings_module._get_or_load_model("model", "cpu", revision="commit-sha")
+    second_revision = embeddings_module._get_or_load_model(
+        "model",
+        "cpu",
+        revision="other-sha",
+    )
+
+    assert cached is first
+    assert second_revision is not first
+    assert [call["revision"] for call in observed] == ["commit-sha", "other-sha"]
 
 
 def test_turn_embedder_forwards_immutable_revision(monkeypatch) -> None:

@@ -12,7 +12,6 @@ import shutil
 import subprocess
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parents[3]
 THESIS = ROOT / "thesis"
 LATEX = THESIS / "latex"
@@ -107,18 +106,39 @@ def build_master() -> None:
     for title, stem in APPENDICES.items():
         write(LATEX / "appendices" / f"{stem}.tex", pandoc(blocks[title]))
 
-    write(LATEX / "frontmatter" / "abstract_en.tex", pandoc(extract_section(blocks["Auditable Governance of Long-Term Memory in Language Agents"], "Abstract")))
+    write(
+        LATEX / "frontmatter" / "abstract_en.tex",
+        pandoc(
+            extract_section(
+                blocks["Auditable Governance of Long-Term Memory in Language Agents"], "Abstract"
+            )
+        ),
+    )
     write(
         LATEX / "frontmatter" / "abstract_fa.tex",
-        pandoc((THESIS / "frontmatter" / "abstract_fa.md").read_text(encoding="utf-8").split("\n", 2)[2]),
+        pandoc(
+            (THESIS / "frontmatter" / "abstract_fa.md")
+            .read_text(encoding="utf-8")
+            .split("\n", 2)[2]
+        ),
     )
     write(
         LATEX / "appendices" / "g_extended_summary_fa.tex",
-        persian_toc_sections(pandoc((THESIS / "frontmatter" / "extended_summary_fa.md").read_text(encoding="utf-8").split("\n", 2)[2])),
+        persian_toc_sections(
+            pandoc(
+                (THESIS / "frontmatter" / "extended_summary_fa.md")
+                .read_text(encoding="utf-8")
+                .split("\n", 2)[2]
+            )
+        ),
     )
     write(
         LATEX / "appendices" / "h_terminology_fa.tex",
-        pandoc((THESIS / "frontmatter" / "terminology_fa.md").read_text(encoding="utf-8").split("\n", 2)[2]),
+        pandoc(
+            (THESIS / "frontmatter" / "terminology_fa.md")
+            .read_text(encoding="utf-8")
+            .split("\n", 2)[2]
+        ),
     )
 
 

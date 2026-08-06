@@ -51,13 +51,12 @@ Implementation discipline:
 from __future__ import annotations
 
 import json
-from collections.abc import Iterable, Mapping
+import logging
+from collections.abc import Callable, Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
-
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from ask.audit import ActionLogWriter
 from ask.data.longmemeval import LongMemEvalSession, LongMemEvalTurn, memory_session_ids
@@ -73,14 +72,15 @@ from ask.memory import (
     retrieve_active,
     supersede_evict,
 )
-from ask.memory import (
-    MemoryItem as DBMemoryItem,
-)
+from ask.memory import MemoryItem as DBMemoryItem
 
 from .base import BaselineAnswer
 from .embeddings import Embedder, TurnEmbedder
 from .flat_vector_store import FlatVectorStore
 from .flat_vector_store import MemoryItem as RetrievalItem
+from .prompts import build_prompt_environment
+
+logger = logging.getLogger(__name__)
 
 # Match the flat-vector + no-memory system prompt verbatim. Cross-baseline
 # comparisons must not be confounded by system-prompt wording.
@@ -92,18 +92,6 @@ DEFAULT_SYSTEM_PROMPT = (
 
 _DEFAULT_K = 5
 _DEFAULT_CAPACITY = 50
-_PROMPT_DIR = Path(__file__).resolve().parent / "prompts"
-
-
-def _build_jinja_env() -> Environment:
-    return Environment(
-        loader=FileSystemLoader(str(_PROMPT_DIR)),
-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
 
 
 def _next_action_log_id(path: Path | None) -> int:
@@ -206,6 +194,7 @@ def llm_extract(
     selected_turn_idxs: set[int] | None = None,
     raw_turn_fallback: bool = False,
     progress_label: str | None = None,
+    reporter: Callable[[str], None] | None = None,
 ) -> list[TrivialExtractedItem]:
     """Run the M2 turn-level extractor and adapt outputs to B3 memory rows."""
     out: list[TrivialExtractedItem] = []
@@ -218,10 +207,13 @@ def llm_extract(
     total = len(selected_user_turns)
     for ordinal, (idx, turn) in enumerate(selected_user_turns, start=1):
         if progress_label:
-            print(
-                f"{progress_label}: extract user_turn {ordinal}/{total} {session.session_id}:{idx}",
-                flush=True,
+            message = (
+                f"{progress_label}: extract user_turn {ordinal}/{total} {session.session_id}:{idx}"
             )
+            if reporter is not None:
+                reporter(message)
+            else:
+                logger.info(message)
         payload = _turn_payload(session, turn, idx)
         prev_payload = _turn_payload(session, turns[idx - 1], idx - 1) if idx > 0 else None
         next_payload = (
@@ -346,18 +338,27 @@ class RecencyPruningBaseline:
     memory_prefilter_top_k: int | None = None
     raw_turn_fallback: bool = False
     progress: bool = False
+    reporter: Callable[[str], None] | None = None
     seed: int = 0
     action_log_path: Path | None = None
     append_action_log: bool = False
 
     BASELINE_NAME: str = "recency"
 
+    def _report(self, message: str) -> None:
+        if not self.progress:
+            return
+        if self.reporter is not None:
+            self.reporter(message)
+        else:
+            logger.info(message)
+
     def __post_init__(self) -> None:
         if self.capacity <= 0:
             raise ValueError(f"capacity must be > 0; got {self.capacity}")
         if self.k <= 0:
             raise ValueError(f"k must be > 0; got {self.k}")
-        self._env = _build_jinja_env()
+        self._env = build_prompt_environment()
         self._template = self._env.get_template(self.prompt_template)
         # The action_log writer for the FIRST answer() call uses mode='w'
         # (truncate); subsequent calls use mode='a' (append). The
@@ -406,11 +407,10 @@ class RecencyPruningBaseline:
         unresolved = [sid for sid, other in resolved if other is None]
         supporting_sessions = [other for _sid, other in resolved if other is not None]
         if self.progress:
-            print(
+            self._report(
                 f"[recency] {session.session_id}: start; "
                 f"memory_sessions={len(memory_ids)} resolved={len(supporting_sessions)} "
-                f"unresolved={len(unresolved)}",
-                flush=True,
+                f"unresolved={len(unresolved)}"
             )
 
         selected_by_session = self._prefilter_memory_turns(session, supporting_sessions)
@@ -419,10 +419,9 @@ class RecencyPruningBaseline:
                 1 for other in supporting_sessions for turn in other.turns if turn.role == "user"
             )
             selected_count = sum(len(turns) for turns in selected_by_session.values())
-            print(
+            self._report(
                 f"[recency] {session.session_id}: memory_prefilter "
-                f"selected={selected_count}/{total_user_turns} user_turns",
-                flush=True,
+                f"selected={selected_count}/{total_user_turns} user_turns"
             )
 
         ingested_idx = 0
@@ -436,10 +435,9 @@ class RecencyPruningBaseline:
                 continue
             ingested_idx += 1
             if self.progress:
-                print(
+                self._report(
                     f"[recency] {session.session_id}: ingest memory_session "
-                    f"{ingested_idx}/{len(supporting_sessions)} {sid} turns={len(other.turns)}",
-                    flush=True,
+                    f"{ingested_idx}/{len(supporting_sessions)} {sid} turns={len(other.turns)}"
                 )
             if self.extractor is None:
                 out.extend(trivial_extract(other, user_turns_only=True))
@@ -457,13 +455,11 @@ class RecencyPruningBaseline:
                             if self.progress
                             else None
                         ),
+                        reporter=self.reporter,
                     )
                 )
         if self.progress:
-            print(
-                f"[recency] {session.session_id}: extracted_items={len(out)}",
-                flush=True,
-            )
+            self._report(f"[recency] {session.session_id}: extracted_items={len(out)}")
         return out
 
     def _prefilter_memory_turns(
@@ -653,10 +649,9 @@ class RecencyPruningBaseline:
                     log_writer=log_cm,
                 )
                 if self.progress:
-                    print(
+                    self._report(
                         f"[recency] {session.session_id}: admitted={len(admitted)} "
-                        f"capacity={self.capacity}",
-                        flush=True,
+                        f"capacity={self.capacity}"
                     )
 
                 # 4. Build retrieval index from the CURRENTLY ACTIVE
@@ -667,7 +662,7 @@ class RecencyPruningBaseline:
                 actives_now = retrieve_active(conn)
                 # We need the trivial-extracted item metadata to render
                 # provenance — recover it by id from `admitted`.
-                admitted_by_id = {db_id: itm for db_id, itm in admitted}
+                admitted_by_id = dict(admitted)
                 retrieval_items: list[RetrievalItem] = []
                 for active in actives_now:
                     if active.id is None:
@@ -689,10 +684,7 @@ class RecencyPruningBaseline:
                 # 5. Retrieve.
                 retrieved = store.search(session.question, k=self.k)
                 if self.progress:
-                    print(
-                        f"[recency] {session.session_id}: retrieved={len(retrieved)}",
-                        flush=True,
-                    )
+                    self._report(f"[recency] {session.session_id}: retrieved={len(retrieved)}")
 
                 # 6. Render + generate.
                 prompt = self.render_prompt(session, retrieved)
@@ -707,10 +699,9 @@ class RecencyPruningBaseline:
                 n_active = len(actives_now)
                 n_evicted = len(admitted) - n_active
                 if self.progress:
-                    print(
+                    self._report(
                         f"[recency] {session.session_id}: done; active={n_active} "
-                        f"evicted={n_evicted}",
-                        flush=True,
+                        f"evicted={n_evicted}"
                     )
                 return BaselineAnswer(
                     session_id=session.session_id,

@@ -38,7 +38,7 @@ class FallbackLLM:
                     seed=seed,
                     stop=stop,
                 )
-            except Exception as exc:
+            except (OSError, TimeoutError, RuntimeError) as exc:
                 errors.append(f"{getattr(llm, 'model_id', '?')}: {type(exc).__name__}: {exc}")
                 continue
             meta = dict(response.metadata)

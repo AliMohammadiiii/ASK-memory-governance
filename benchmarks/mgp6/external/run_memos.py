@@ -31,7 +31,13 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
+from common import (  # noqa: E402
+    ALLOW_INSECURE_HTTP,
+    ExternalAdapter,
+    WriteObservation,
+    run_external,
+    validate_http_endpoint,
+)
 
 
 def _texts_from(items: Any) -> list[str]:
@@ -186,7 +192,13 @@ class MemOSAdapter(ExternalAdapter):
 
         modal_url = os.environ.get("MODAL_ENDPOINT_URL")
         if modal_url:
-            modal_base_url = f"{modal_url.rstrip('/')}/v1"
+            modal_base_url = (
+                validate_http_endpoint(
+                    modal_url,
+                    allow_insecure_http=ALLOW_INSECURE_HTTP,
+                ).rstrip("/")
+                + "/v1"
+            )
             # MemOS reads these env vars at MOS() construction time
             os.environ.setdefault("OPENAI_API_KEY", "dummy")
             os.environ["OPENAI_API_BASE"] = modal_base_url
@@ -196,9 +208,12 @@ class MemOSAdapter(ExternalAdapter):
             # Do not hijack the dedicated embedding client.
             # MemOS creates an OpenAI-compatible client for MOS_EMBEDDER_API_BASE;
             # only LLM clients should be redirected to Modal.
-            embed_base_url = os.environ.get(
-                "MOS_EMBEDDER_API_BASE",
-                "http://127.0.0.1:8100/v1",
+            embed_base_url = validate_http_endpoint(
+                os.environ.get(
+                    "MOS_EMBEDDER_API_BASE",
+                    "http://127.0.0.1:8100/v1",
+                ),
+                allow_insecure_http=ALLOW_INSECURE_HTTP,
             ).rstrip("/")
 
             def _make_modal_init(original_init):

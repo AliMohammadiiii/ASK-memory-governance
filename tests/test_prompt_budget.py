@@ -64,7 +64,7 @@ def _retrieved(n: int) -> list[RetrievedItem]:
 
 def test_budget_disabled_when_backend_has_no_num_ctx() -> None:
     orch = _orchestrator(num_ctx=None)
-    num_ctx, reserved, budget = orch._answer_token_budget()
+    num_ctx, _reserved, budget = orch._answer_token_budget()
     assert num_ctx is None
     assert budget == 0
     retrieved = _retrieved(20)

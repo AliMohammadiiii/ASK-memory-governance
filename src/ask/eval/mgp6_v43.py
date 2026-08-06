@@ -17,7 +17,7 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ask.controller.active import FeatureSnapshot, decide, rho
 
@@ -40,9 +40,9 @@ MGP6V43_RUNNABLE_SYSTEMS = MGP6V43_SYSTEMS + MGP6V43_SUCCESSOR_SYSTEMS
 MODEL_BACKED_SYSTEMS = frozenset(
     system for system in MGP6V43_RUNNABLE_SYSTEMS if system != "rules_controller"
 )
-SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = {
-    system: VALID_ACTIONS for system in MGP6V43_RUNNABLE_SYSTEMS
-}
+SYSTEM_ALLOWED_ACTIONS: dict[str, tuple[str, ...]] = dict.fromkeys(
+    MGP6V43_RUNNABLE_SYSTEMS, VALID_ACTIONS
+)
 SYSTEM_ALLOWED_ACTIONS["b4"] = ("KEEP", "SUPERSEDE")
 SYSTEM_ALLOWED_ACTIONS["ablation_no_abstain"] = ("KEEP", "SUPERSEDE")
 ADAPTER_VERSION = "ask.mgp6_v43_adapter.v3"
@@ -177,7 +177,7 @@ def load_public_records(path: str | Path, *, require_gold: bool = True) -> list[
             continue
         try:
             record = MGP6V43Record.model_validate_json(line)
-        except Exception as exc:  # Pydantic supplies the useful validation detail.
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid public record") from exc
         if require_gold and record.gold_action is None:
             raise MGP6V43Error(f"{path}:{line_no}: missing development gold_action")
@@ -624,7 +624,7 @@ def parse_action_response(raw_response: str) -> str:
         return MGP6V43Prediction.model_validate(
             {"public_id": "MGP43-00000000000000000000", **value}
         ).action
-    except Exception as exc:
+    except ValidationError as exc:
         raise MGP6V43Error("response does not contain a valid action") from exc
 
 
@@ -637,7 +637,7 @@ def load_predictions(path: str | Path, expected_ids: Iterable[str]) -> list[MGP6
             continue
         try:
             predictions.append(MGP6V43Prediction.model_validate_json(line))
-        except Exception as exc:
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid prediction") from exc
     ids = [prediction.public_id for prediction in predictions]
     duplicates = sorted(item_id for item_id, count in Counter(ids).items() if count > 1)
@@ -680,7 +680,7 @@ def load_predictions_allow_partial(path: str | Path) -> list[MGP6V43Prediction]:
             continue
         try:
             record = MGP6V43Prediction.model_validate_json(line)
-        except Exception as exc:
+        except ValidationError as exc:
             raise MGP6V43Error(f"{path}:{line_no}: invalid prediction") from exc
         if record.public_id in seen:
             raise MGP6V43Error(f"{path}:{line_no}: duplicate resumed prediction")
@@ -723,7 +723,7 @@ def _per_class(confusion: Mapping[str, Mapping[str, int]]) -> dict[str, dict[str
 def score_actions(gold: Mapping[str, str], predictions: Mapping[str, str]) -> dict[str, Any]:
     if set(gold) != set(predictions):
         raise MGP6V43Error("cannot score mismatched ID coverage")
-    confusion = {actual: {predicted: 0 for predicted in VALID_ACTIONS} for actual in VALID_ACTIONS}
+    confusion = {actual: dict.fromkeys(VALID_ACTIONS, 0) for actual in VALID_ACTIONS}
     for public_id in sorted(gold):
         confusion[gold[public_id]][predictions[public_id]] += 1
     per_class = _per_class(confusion)

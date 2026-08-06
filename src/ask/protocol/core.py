@@ -186,6 +186,114 @@ def state_digest(records: Sequence[MemoryRecord]) -> str:
     return stable_digest(normalized)
 
 
+@dataclass(frozen=True)
+class _TransitionResult:
+    records: tuple[MemoryRecord, ...]
+    candidate_id: str | None = None
+    resulting_id: str | None = None
+    predecessor_id: str | None = None
+    keep_admitted: bool = False
+
+
+def _apply_keep(
+    before: tuple[MemoryRecord, ...],
+    *,
+    by_id: Mapping[str, MemoryRecord],
+    prior: MemoryRecord | None,
+    candidate: CandidateRecord | None,
+    store_mode: StoreMode,
+    admit_candidate: bool,
+) -> _TransitionResult:
+    if prior is not None and not prior.active:
+        raise ValueError("Keep requires the compared prior to remain active")
+    candidate_id = candidate.record_id if candidate else None
+    if not admit_candidate:
+        return _TransitionResult(before, candidate_id=candidate_id)
+    if store_mode is not StoreMode.MULTI_RECORD:
+        raise ValueError("candidate admission on Keep is only valid in multi_record mode")
+    if candidate is None:
+        raise ValueError("candidate admission on Keep requires a candidate")
+    if candidate.record_id in by_id:
+        raise ValueError("candidate identifier already exists")
+    admitted = MemoryRecord(
+        record_id=candidate.record_id,
+        memory_type=candidate.memory_type,
+        value=candidate.value,
+        active=True,
+        evidence_digest=candidate.evidence_digest,
+    )
+    return _TransitionResult(
+        (*before, admitted),
+        candidate_id=candidate.record_id,
+        resulting_id=admitted.record_id,
+        keep_admitted=True,
+    )
+
+
+def _apply_supersede(
+    before: tuple[MemoryRecord, ...],
+    *,
+    by_id: Mapping[str, MemoryRecord],
+    prior: MemoryRecord | None,
+    candidate: CandidateRecord | None,
+) -> _TransitionResult:
+    if prior is None or not prior.active:
+        raise ValueError("Supersede requires an active compared prior")
+    if candidate is None:
+        raise ValueError("Supersede requires a candidate")
+    if candidate.record_id in by_id:
+        raise ValueError("candidate identifier already exists")
+    retained = tuple(
+        replace(record, active=False) if record.record_id == prior.record_id else record
+        for record in before
+    )
+    successor = MemoryRecord(
+        record_id=candidate.record_id,
+        memory_type=candidate.memory_type,
+        value=candidate.value,
+        active=True,
+        predecessor=PredecessorReference(prior.record_id),
+        evidence_digest=candidate.evidence_digest,
+    )
+    return _TransitionResult(
+        (*retained, successor),
+        candidate_id=candidate.record_id,
+        resulting_id=successor.record_id,
+        predecessor_id=prior.record_id,
+    )
+
+
+def _transition_result(
+    before: tuple[MemoryRecord, ...],
+    *,
+    by_id: Mapping[str, MemoryRecord],
+    prior: MemoryRecord | None,
+    action: Action,
+    store_mode: StoreMode,
+    candidate: CandidateRecord | None,
+    admit_candidate_on_keep: bool,
+) -> _TransitionResult:
+    if action is Action.ABSTAIN:
+        return _TransitionResult(before, candidate_id=candidate.record_id if candidate else None)
+    if action is Action.KEEP:
+        return _apply_keep(
+            before,
+            by_id=by_id,
+            prior=prior,
+            candidate=candidate,
+            store_mode=store_mode,
+            admit_candidate=admit_candidate_on_keep,
+        )
+    if action is Action.SUPERSEDE:
+        return _apply_supersede(
+            before,
+            by_id=by_id,
+            prior=prior,
+            candidate=candidate,
+        )
+    raise ValueError(f"unsupported action {action!r}")
+
+
 def apply_transition(
     records: Sequence[MemoryRecord],
     *,
@@ -207,64 +315,16 @@ def apply_transition(
     if trace.final_action != action:
         raise ValueError("trace final action differs from requested transition")
 
-    resulting_id: str | None = None
-    predecessor_id: str | None = None
-    keep_admitted = False
-
-    if action is Action.ABSTAIN:
-        if candidate is None:
-            candidate_id = None
-        else:
-            candidate_id = candidate.record_id
-        after = before
-    elif action is Action.KEEP:
-        candidate_id = candidate.record_id if candidate else None
-        if prior is not None and not prior.active:
-            raise ValueError("Keep requires the compared prior to remain active")
-        if admit_candidate_on_keep:
-            if store_mode is not StoreMode.MULTI_RECORD:
-                raise ValueError("candidate admission on Keep is only valid in multi_record mode")
-            if candidate is None:
-                raise ValueError("candidate admission on Keep requires a candidate")
-            if candidate.record_id in by_id:
-                raise ValueError("candidate identifier already exists")
-            admitted = MemoryRecord(
-                record_id=candidate.record_id,
-                memory_type=candidate.memory_type,
-                value=candidate.value,
-                active=True,
-                evidence_digest=candidate.evidence_digest,
-            )
-            after = (*before, admitted)
-            resulting_id = admitted.record_id
-            keep_admitted = True
-        else:
-            after = before
-    elif action is Action.SUPERSEDE:
-        if prior is None or not prior.active:
-            raise ValueError("Supersede requires an active compared prior")
-        if candidate is None:
-            raise ValueError("Supersede requires a candidate")
-        if candidate.record_id in by_id:
-            raise ValueError("candidate identifier already exists")
-        retained = tuple(
-            replace(record, active=False) if record.record_id == prior.record_id else record
-            for record in before
-        )
-        successor = MemoryRecord(
-            record_id=candidate.record_id,
-            memory_type=candidate.memory_type,
-            value=candidate.value,
-            active=True,
-            predecessor=PredecessorReference(prior.record_id),
-            evidence_digest=candidate.evidence_digest,
-        )
-        after = (*retained, successor)
-        candidate_id = candidate.record_id
-        resulting_id = successor.record_id
-        predecessor_id = prior.record_id
-    else:  # pragma: no cover - Enum exhaustiveness guard
-        raise ValueError(f"unsupported action {action!r}")
+    result = _transition_result(
+        before,
+        by_id=by_id,
+        prior=prior,
+        action=action,
+        store_mode=store_mode,
+        candidate=candidate,
+        admit_candidate_on_keep=admit_candidate_on_keep,
+    )
+    after = result.records
 
     before_hash = state_digest(before)
     after_hash = state_digest(after)
@@ -272,29 +332,29 @@ def apply_transition(
         "action": action.value,
         "store_mode": store_mode.value,
         "prior_record_id": prior_record_id,
-        "candidate_record_id": candidate_id,
-        "resulting_record_id": resulting_id,
-        "predecessor_record_id": predecessor_id,
+        "candidate_record_id": result.candidate_id,
+        "resulting_record_id": result.resulting_id,
+        "predecessor_record_id": result.predecessor_id,
         "configuration_id": trace.configuration.configuration_id,
         "configuration_sha256": trace.configuration.sha256,
         "evidence_digest": trace.evidence_digest,
         "before_digest": before_hash,
         "after_digest": after_hash,
-        "keep_admitted_candidate": keep_admitted,
+        "keep_admitted_candidate": result.keep_admitted,
     }
     event = TransitionEvent(
         event_id=stable_digest(event_body),
         action=action,
         store_mode=store_mode,
         prior_record_id=prior_record_id,
-        candidate_record_id=candidate_id,
-        resulting_record_id=resulting_id,
-        predecessor_record_id=predecessor_id,
+        candidate_record_id=result.candidate_id,
+        resulting_record_id=result.resulting_id,
+        predecessor_record_id=result.predecessor_id,
         configuration=trace.configuration,
         evidence_digest=trace.evidence_digest,
         before_digest=before_hash,
         after_digest=after_hash,
-        keep_admitted_candidate=keep_admitted,
+        keep_admitted_candidate=result.keep_admitted,
     )
     ASKInvariantValidator().validate(before=before, after=after, event=event, trace=trace)
     return after, event
@@ -324,8 +384,8 @@ def replay_transition(
 class ASKInvariantValidator:
     """Validate state, lineage, event completeness, and action semantics."""
 
-    def validate(
-        self,
+    @staticmethod
+    def _validate_event_identity(
         *,
         before: Sequence[MemoryRecord],
         after: Sequence[MemoryRecord],
@@ -341,37 +401,101 @@ class ASKInvariantValidator:
         if event.before_digest != state_digest(before) or event.after_digest != state_digest(after):
             raise ValueError("event state digest does not match transition state")
         _require_sha256(event.event_id, "event identifier")
+
+    @staticmethod
+    def _validate_action(
+        *,
+        before: Sequence[MemoryRecord],
+        after: Sequence[MemoryRecord],
+        event: TransitionEvent,
+        before_by_id: Mapping[str, MemoryRecord],
+        after_by_id: Mapping[str, MemoryRecord],
+    ) -> None:
+        prior_before = before_by_id.get(event.prior_record_id or "")
+        prior_after = after_by_id.get(event.prior_record_id or "")
+        if event.action is Action.ABSTAIN:
+            ASKInvariantValidator._validate_abstain(before, after, event)
+        elif event.action is Action.KEEP:
+            ASKInvariantValidator._validate_keep(
+                before,
+                after,
+                event,
+                prior_before=prior_before,
+                prior_after=prior_after,
+            )
+        elif event.action is Action.SUPERSEDE:
+            ASKInvariantValidator._validate_supersede(
+                event,
+                prior_before=prior_before,
+                prior_after=prior_after,
+                after_by_id=after_by_id,
+            )
+
+    @staticmethod
+    def _validate_abstain(
+        before: Sequence[MemoryRecord],
+        after: Sequence[MemoryRecord],
+        event: TransitionEvent,
+    ) -> None:
+        if tuple(before) != tuple(after) or event.resulting_record_id is not None:
+            raise ValueError("Abstain must commit no candidate and preserve state")
+
+    @staticmethod
+    def _validate_keep(
+        before: Sequence[MemoryRecord],
+        after: Sequence[MemoryRecord],
+        event: TransitionEvent,
+        *,
+        prior_before: MemoryRecord | None,
+        prior_after: MemoryRecord | None,
+    ) -> None:
+        if prior_before is not None and prior_after != prior_before:
+            raise ValueError("Keep must preserve the compared prior")
+        if event.store_mode is StoreMode.SINGLE_SLOT_VERSIONED and tuple(before) != tuple(after):
+            raise ValueError("single-slot Keep must preserve the full state")
+        if event.keep_admitted_candidate and event.store_mode is not StoreMode.MULTI_RECORD:
+            raise ValueError("Keep admission requires multi-record mode")
+
+    @staticmethod
+    def _validate_supersede(
+        event: TransitionEvent,
+        *,
+        prior_before: MemoryRecord | None,
+        prior_after: MemoryRecord | None,
+        after_by_id: Mapping[str, MemoryRecord],
+    ) -> None:
+        if prior_before is None or prior_after is None or prior_after.active:
+            raise ValueError("Supersede must retain and invalidate the compared prior")
+        successor = after_by_id.get(event.resulting_record_id or "")
+        if successor is None or not successor.active:
+            raise ValueError("Supersede must create an active successor")
+        if (
+            successor.predecessor is None
+            or successor.predecessor.record_id != prior_before.record_id
+        ):
+            raise ValueError("Supersede successor must resolve to the retained predecessor")
+
+    def validate(
+        self,
+        *,
+        before: Sequence[MemoryRecord],
+        after: Sequence[MemoryRecord],
+        event: TransitionEvent,
+        trace: DecisionTrace,
+    ) -> None:
+        self._validate_event_identity(before=before, after=after, event=event, trace=trace)
         self._validate_unique_ids(after)
         self._validate_lineage(after)
 
         before_by_id = {record.record_id: record for record in before}
         after_by_id = {record.record_id: record for record in after}
-        prior_before = before_by_id.get(event.prior_record_id or "")
-        prior_after = after_by_id.get(event.prior_record_id or "")
-
-        if event.action is Action.ABSTAIN:
-            if tuple(before) != tuple(after) or event.resulting_record_id is not None:
-                raise ValueError("Abstain must commit no candidate and preserve state")
-        elif event.action is Action.KEEP:
-            if prior_before is not None and prior_after != prior_before:
-                raise ValueError("Keep must preserve the compared prior")
-            if event.store_mode is StoreMode.SINGLE_SLOT_VERSIONED and tuple(before) != tuple(
-                after
-            ):
-                raise ValueError("single-slot Keep must preserve the full state")
-            if event.keep_admitted_candidate and event.store_mode is not StoreMode.MULTI_RECORD:
-                raise ValueError("Keep admission requires multi-record mode")
-        elif event.action is Action.SUPERSEDE:
-            if prior_before is None or prior_after is None or prior_after.active:
-                raise ValueError("Supersede must retain and invalidate the compared prior")
-            successor = after_by_id.get(event.resulting_record_id or "")
-            if successor is None or not successor.active:
-                raise ValueError("Supersede must create an active successor")
-            if (
-                successor.predecessor is None
-                or successor.predecessor.record_id != prior_before.record_id
-            ):
-                raise ValueError("Supersede successor must resolve to the retained predecessor")
+        self._validate_action(
+            before=before,
+            after=after,
+            event=event,
+            before_by_id=before_by_id,
+            after_by_id=after_by_id,
+        )
 
         if event.store_mode is StoreMode.SINGLE_SLOT_VERSIONED:
             active = [record for record in after if record.active]

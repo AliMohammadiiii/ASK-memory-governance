@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import logging
 import re
 import time
 from dataclasses import dataclass, field
@@ -31,7 +32,11 @@ import pydantic
 import yaml
 from pydantic import BaseModel
 
+from ask.endpoints import validate_http_endpoint
+
 _PYDANTIC_AVAILABLE = True
+
+logger = logging.getLogger(__name__)
 
 
 _DEFAULT_INFERENCE_CONFIG = (
@@ -66,6 +71,7 @@ class InferenceConfig:
     model_id: str
     fallback_model_id: str | None = None
     model_revision: str | None = None
+    fallback_model_revision: str | None = None
     dtype: str = "bfloat16"  # bfloat16 | float16 | float32
     device_map: str = "auto"
     use_flash_attn_2: bool = False
@@ -84,6 +90,17 @@ class InferenceConfig:
     openai_base_url: str = "http://localhost:3001/v1"
     openai_api_key_env: str = "FREELLMAPI_KEY"
     openai_timeout_s: float = 120.0
+    allow_insecure_http: bool = False
+
+    def __post_init__(self) -> None:
+        validate_http_endpoint(
+            self.ollama_host,
+            allow_insecure_http=self.allow_insecure_http,
+        )
+        validate_http_endpoint(
+            self.openai_base_url,
+            allow_insecure_http=self.allow_insecure_http,
+        )
 
 
 def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
@@ -109,6 +126,11 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
         model_revision=(
             None if raw.get("model_revision") is None else str(raw.get("model_revision"))
         ),
+        fallback_model_revision=(
+            None
+            if raw.get("fallback_model_revision") is None
+            else str(raw.get("fallback_model_revision"))
+        ),
         dtype=str(raw.get("dtype", "bfloat16")),
         device_map=str(raw.get("device_map", "auto")),
         use_flash_attn_2=bool(raw.get("use_flash_attn_2", False)),
@@ -124,6 +146,7 @@ def load_inference_config(path: str | Path | None = None) -> InferenceConfig:
         openai_base_url=str(raw.get("openai_base_url", "http://localhost:3001/v1")),
         openai_api_key_env=str(raw.get("openai_api_key_env", "FREELLMAPI_KEY")),
         openai_timeout_s=float(raw.get("openai_timeout_s", 120.0)),
+        allow_insecure_http=bool(raw.get("allow_insecure_http", False)),
     )
 
 
@@ -281,10 +304,11 @@ class HuggingFaceLLM:
                 ) from exc
             load_kwargs["quantization_config"] = BitsAndBytesConfig(load_in_4bit=True)
 
-        print(
-            f"[hf] loading {self.model_id} "
-            f"dtype={self.config.dtype} 4bit={self.config.load_in_4bit}",
-            flush=True,
+        logger.info(
+            "loading model=%s dtype=%s 4bit=%s",
+            self.model_id,
+            self.config.dtype,
+            self.config.load_in_4bit,
         )
         self._tokenizer = AutoTokenizer.from_pretrained(
             self.model_id,
@@ -325,9 +349,7 @@ class HuggingFaceLLM:
                 cls = getattr(transformers, name, None)
                 if cls is None:
                     continue
-                print(
-                    f"[hf] {self.model_id}: AutoModelForCausalLM failed; trying {name}", flush=True
-                )
+                logger.info("model=%s primary loader failed; trying %s", self.model_id, name)
                 return cls.from_pretrained(self.model_id, **load_kwargs)
             except (ValueError, KeyError, OSError) as exc:  # pragma: no cover - depends on model
                 last_exc = exc
@@ -479,7 +501,14 @@ def _extract_first_json_object(text: str) -> str:
     start = text.find("{")
     if start < 0:
         raise ValueError("no JSON object found in model output")
+    end = _balanced_json_object_end(text, start)
+    if end is None:
+        raise ValueError("unterminated JSON object in model output")
+    return text[start:end]
 
+
+def _balanced_json_object_end(text: str, start: int) -> int | None:
+    """Return the exclusive end of a balanced object starting at ``start``."""
     depth = 0
     in_string = False
     escaped = False
@@ -493,7 +522,6 @@ def _extract_first_json_object(text: str) -> str:
             elif ch == '"':
                 in_string = False
             continue
-
         if ch == '"':
             in_string = True
         elif ch == "{":
@@ -501,9 +529,8 @@ def _extract_first_json_object(text: str) -> str:
         elif ch == "}":
             depth -= 1
             if depth == 0:
-                return text[start : idx + 1]
-
-    raise ValueError("unterminated JSON object in model output")
+                return idx + 1
+    return None
 
 
 def _iter_json_objects(text: str) -> list[str]:
@@ -514,31 +541,11 @@ def _iter_json_objects(text: str) -> list[str]:
         start = text.find("{", idx)
         if start < 0:
             break
-        depth = 0
-        in_string = False
-        escaped = False
-        for pos in range(start, len(text)):
-            ch = text[pos]
-            if in_string:
-                if escaped:
-                    escaped = False
-                elif ch == "\\":
-                    escaped = True
-                elif ch == '"':
-                    in_string = False
-                continue
-            if ch == '"':
-                in_string = True
-            elif ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    objects.append(text[start : pos + 1])
-                    idx = pos + 1
-                    break
-        else:
+        end = _balanced_json_object_end(text, start)
+        if end is None:
             break
+        objects.append(text[start:end])
+        idx = end
     return objects
 
 
@@ -643,7 +650,7 @@ class StructuredLLM:
     ) -> str:
         try:
             schema_dump = json.dumps(schema.model_json_schema(), indent=2)
-        except Exception:
+        except (AttributeError, TypeError, ValueError):
             schema_dump = str(schema)
         return (
             "Your previous response could not be parsed. "
@@ -682,11 +689,19 @@ def build_llm(
     if use_fallback:
         if cfg.fallback_model_id is None:
             raise ValueError("no fallback_model_id configured")
-        cfg = dataclasses.replace(cfg, model_id=cfg.fallback_model_id)
+        cfg = dataclasses.replace(
+            cfg,
+            model_id=cfg.fallback_model_id,
+            model_revision=cfg.fallback_model_revision,
+        )
     if cfg.backend == "ollama":
         from .ollama import OllamaLLM
 
-        return OllamaLLM(model_id=cfg.model_id, host=cfg.ollama_host)
+        return OllamaLLM(
+            model_id=cfg.model_id,
+            host=cfg.ollama_host,
+            allow_insecure_http=cfg.allow_insecure_http,
+        )
     if cfg.backend in {"openai_compatible", "openai-compatible", "openai"}:
         from .openai_compatible import OpenAICompatibleLLM
 
@@ -695,6 +710,7 @@ def build_llm(
             base_url=cfg.openai_base_url,
             api_key_env=cfg.openai_api_key_env,
             timeout_s=cfg.openai_timeout_s,
+            allow_insecure_http=cfg.allow_insecure_http,
         )
     if cfg.backend == "huggingface":
         return HuggingFaceLLM(cfg)

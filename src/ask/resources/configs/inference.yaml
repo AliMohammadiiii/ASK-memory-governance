@@ -1,6 +1,7 @@
 model_id: "meta-llama/Meta-Llama-3-8B-Instruct"
 model_revision: null
 fallback_model_id: "Qwen/Qwen2.5-7B-Instruct"
+fallback_model_revision: null
 dtype: "bfloat16"
 device_map: "auto"
 use_flash_attn_2: false

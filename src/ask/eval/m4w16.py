@@ -569,7 +569,7 @@ def _walkthrough_lines(
     if not logs:
         lines.append("- No action_log rows found for this scenario.")
         return lines
-    for log, check in zip(logs, checks):
+    for log, check in zip(logs, checks, strict=True):
         lines.append(
             "- Log row: "
             f"action=`{_action(log.get('action'))}`, candidate_type=`{log.get('candidate_type')}`, "
@@ -708,16 +708,19 @@ def _fit_softmax(
     l2: float,
 ) -> dict[str, Any]:
     means, scales = _standardizer(raw_x)
-    x = [_standardize(row, means, scales) + [1.0] for row in raw_x]
+    x = [[*_standardize(row, means, scales), 1.0] for row in raw_x]
     labels = list(ACTIONS)
     label_to_idx = {label: idx for idx, label in enumerate(labels)}
     width = len(x[0])
     weights = [[0.0 for _ in range(width)] for _ in labels]
     for _epoch in range(epochs):
         grad = [[0.0 for _ in range(width)] for _ in labels]
-        for row, gold in zip(x, y):
+        for row, gold in zip(x, y, strict=True):
             probs = _softmax(
-                [sum(w * v for w, v in zip(weights[k], row)) for k in range(len(labels))]
+                [
+                    sum(w * v for w, v in zip(weights[k], row, strict=True))
+                    for k in range(len(labels))
+                ]
             )
             gold_idx = label_to_idx[gold]
             for k in range(len(labels)):
@@ -733,8 +736,8 @@ def _fit_softmax(
 
 
 def _predict_softmax(model: dict[str, Any], raw_x: list[float]) -> str:
-    x = _standardize(raw_x, model["means"], model["scales"]) + [1.0]
-    scores = [sum(w * v for w, v in zip(row, x)) for row in model["weights"]]
+    x = [*_standardize(raw_x, model["means"], model["scales"]), 1.0]
+    scores = [sum(w * v for w, v in zip(row, x, strict=True)) for row in model["weights"]]
     return str(model["labels"][max(range(len(scores)), key=lambda idx: scores[idx])])
 
 
@@ -749,7 +752,7 @@ def _standardizer(rows: list[list[float]]) -> tuple[list[float], list[float]]:
 
 
 def _standardize(row: list[float], means: list[float], scales: list[float]) -> list[float]:
-    return [(value - mean) / scale for value, mean, scale in zip(row, means, scales)]
+    return [(value - mean) / scale for value, mean, scale in zip(row, means, scales, strict=True)]
 
 
 def _softmax(scores: list[float]) -> list[float]:

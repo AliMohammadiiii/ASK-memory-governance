@@ -29,6 +29,7 @@ jobs:
           cache: pip
       - run: python -m pip install -U pip
       - run: python -m pip install -e '.[dev]'
+      - run: pre-commit run --all-files
       - run: make check PYTHON=python
 
   research-contracts:
@@ -55,3 +56,30 @@ jobs:
       - run: python -m pip install -U pip
       - run: python -m pip install -e '.[dev]'
       - run: make release-check PYTHON=python
+
+  manuscript-builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - run: sudo apt-get update
+      - run: >-
+          sudo apt-get install -y latexmk poppler-utils texlive-fonts-recommended
+          texlive-lang-arabic texlive-latex-extra texlive-xetex
+      - run: make paper thesis PYTHON=python
+      - run: test -s build/manuscripts/paper.pdf
+      - run: test -s build/manuscripts/thesis.pdf
+      - run: test -z "$(git status --short)"
+
+  specialist-lock-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - run: make specialist-locks PYTHON=python

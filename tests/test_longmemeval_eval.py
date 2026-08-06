@@ -126,7 +126,7 @@ def test_grader_marks_correct_and_incorrect_per_judge() -> None:
     grader = LongMemEvalGrader(judge_llm=judge)
     sessions = [_session(f"s{i}") for i in range(3)]
     answers = [_answer(f"s{i}", f"G prediction-{i}") for i in range(3)]
-    grades = [grader.grade(a, s) for a, s in zip(answers, sessions)]
+    grades = [grader.grade(a, s) for a, s in zip(answers, sessions, strict=True)]
     assert [g.correct for g in grades] == [True, True, False]
     assert grades[0].judge_rationale == "matches gold"
     assert grades[2].judge_score == 0.0

@@ -21,14 +21,12 @@ Implementation discipline:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
-
-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
 
 from ask.data.longmemeval import LongMemEvalSession
 from ask.inference.llm import LLM
 
 from .base import BaselineAnswer
+from .prompts import build_prompt_environment
 
 # Minimal system prompt. Reads as plain instruction, no memory framing, no
 # chain-of-thought hint. Match the smoke-prompt vocabulary in scripts/smoke_e2e
@@ -39,20 +37,6 @@ DEFAULT_SYSTEM_PROMPT = (
     "value, name, date, number, or short phrase. Do not explain. Do not add "
     "surrounding sentence text. If the context is insufficient, answer Unknown."
 )
-
-_PROMPT_DIR = Path(__file__).resolve().parent / "prompts"
-
-
-def _build_jinja_env() -> Environment:
-    """Module-level Jinja env. autoescape off (we render plain text, not HTML)."""
-    return Environment(
-        loader=FileSystemLoader(str(_PROMPT_DIR)),
-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
-        undefined=StrictUndefined,
-        keep_trailing_newline=True,
-        trim_blocks=False,
-        lstrip_blocks=False,
-    )
 
 
 @dataclass
@@ -82,7 +66,7 @@ class NoMemoryBaseline:
     BASELINE_NAME: str = "no_memory"
 
     def __post_init__(self) -> None:
-        self._env = _build_jinja_env()
+        self._env = build_prompt_environment()
         # Touch the template at __init__ so a missing file fails fast, not on
         # the first answer.
         self._template = self._env.get_template(self.prompt_template)

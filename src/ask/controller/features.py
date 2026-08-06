@@ -361,5 +361,3 @@ def recency_protection(turns_since_confirm: float, tau: float) -> float:
 
 class FeatureVector(FeatureSnapshot):
     """Backward-compatible name for the original controller tests."""
-
-    pass

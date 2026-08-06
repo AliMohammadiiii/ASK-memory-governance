@@ -121,7 +121,7 @@ def main() -> int:
     median_tokps = statistics.median(tokps)
     median_latency = statistics.median(latencies_ms)
     sorted_latencies = sorted(latencies_ms)
-    p95_latency = sorted_latencies[max(0, int(round(0.95 * len(sorted_latencies))) - 1)]
+    p95_latency = sorted_latencies[max(0, round(0.95 * len(sorted_latencies)) - 1)]
 
     summary = {
         "backend": backend_label,

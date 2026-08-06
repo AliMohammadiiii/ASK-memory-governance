@@ -260,7 +260,7 @@ def test_ollama_num_ctx_can_be_disabled_to_use_server_default() -> None:
     assert "num_ctx" not in body["options"]
 
 
-def test_ollama_warns_when_prompt_fills_context(capsys) -> None:
+def test_ollama_warns_when_prompt_fills_context(caplog: pytest.LogCaptureFixture) -> None:
     """Regression: a prompt that fills num_ctx leaves no room to generate and
     Ollama returns a single token. The wrapper must warn loudly so this silent
     failure (every answer truncated to one token) is caught immediately."""
@@ -281,11 +281,12 @@ def test_ollama_warns_when_prompt_fills_context(capsys) -> None:
         resp = o.generate("huge prompt", max_new_tokens=512, temperature=0.0, seed=0)
 
     assert resp.completion_tokens == 1
-    out = capsys.readouterr().out
-    assert "num_ctx" in out and "truncated" in out
+    assert "num_ctx" in caplog.text and "truncated" in caplog.text
 
 
-def test_ollama_no_truncation_warning_on_healthy_generation(capsys) -> None:
+def test_ollama_no_truncation_warning_on_healthy_generation(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
     o = OllamaLLM(model_id="qwen3.5:9b", num_ctx=8192)
 
     fake_response = MagicMock()
@@ -302,4 +303,4 @@ def test_ollama_no_truncation_warning_on_healthy_generation(capsys) -> None:
     with patch("urllib.request.urlopen", return_value=fake_response):
         o.generate("normal prompt", max_new_tokens=512, temperature=0.0, seed=0)
 
-    assert "WARNING" not in capsys.readouterr().out
+    assert "truncated" not in caplog.text

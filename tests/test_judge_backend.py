@@ -21,6 +21,19 @@ def test_fake_judge_backend_allows_explicit_model_id() -> None:
     assert judge.model_id == "fake/substitute-judge"
 
 
+def test_huggingface_judge_preserves_exact_revision() -> None:
+    judge = build_judge_backend(
+        JudgeBackendConfig(
+            backend="huggingface",
+            model_id="model",
+            hf_revision="commit-sha",
+        ),
+        answerer=FakeLLM(),
+    )
+
+    assert judge.config.model_revision == "commit-sha"  # type: ignore[attr-defined]
+
+
 def test_yaml_config_accepts_nested_judge_block(tmp_path) -> None:  # noqa: ANN001
     path = tmp_path / "judge.yaml"
     path.write_text(
@@ -31,6 +44,7 @@ def test_yaml_config_accepts_nested_judge_block(tmp_path) -> None:  # noqa: ANN0
                 "  model_id: fake/from-yaml",
                 "  response_format: none",
                 "  think: false",
+                "  hf_revision: commit-sha",
             ]
         ),
         encoding="utf-8",
@@ -42,6 +56,7 @@ def test_yaml_config_accepts_nested_judge_block(tmp_path) -> None:  # noqa: ANN0
     assert cfg.model_id == "fake/from-yaml"
     assert cfg.response_format is None
     assert cfg.think is False
+    assert cfg.hf_revision == "commit-sha"
 
 
 def test_openai_compatible_judge_backend_builds_json_llm(tmp_path) -> None:  # noqa: ANN001

@@ -36,9 +36,18 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import ExternalAdapter, WriteObservation, run_external  # noqa: E402
+from common import (  # noqa: E402
+    ALLOW_INSECURE_HTTP,
+    ExternalAdapter,
+    WriteObservation,
+    run_external,
+    validate_http_endpoint,
+)
 
-LETTA_URL = os.environ.get("LETTA_BASE_URL", "http://localhost:8283")
+LETTA_URL = validate_http_endpoint(
+    os.environ.get("LETTA_BASE_URL", "http://localhost:8283"),
+    allow_insecure_http=ALLOW_INSECURE_HTTP,
+)
 ASK_MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
 # The current Letta Docker image exposes OpenAI-compatible upstream models
 # under the ``openai-proxy/`` provider namespace.  The environment override

@@ -9,6 +9,10 @@ weights are not.
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+
 import pytest
 
 from ask.inference.fake import FakeLLM
@@ -21,6 +25,7 @@ from ask.inference.llm import (
     _extract_first_json_object,
     _supports_non_causal_fallback,
     build_llm,
+    load_inference_config,
 )
 
 # pydantic v2 is the structured contract. v1 stubs would also work but we
@@ -141,6 +146,26 @@ def test_generate_json_skips_schema_echo_and_uses_later_valid_object() -> None:
 # ----------------- Fallback config flip ----------------- #
 
 
+def test_config_loads_primary_and_fallback_revisions(tmp_path: Path) -> None:
+    config_path = tmp_path / "inference.yaml"
+    config_path.write_text(
+        "\n".join(
+            [
+                "model_id: primary",
+                "model_revision: primary-sha",
+                "fallback_model_id: fallback",
+                "fallback_model_revision: fallback-sha",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    config = load_inference_config(config_path)
+
+    assert config.model_revision == "primary-sha"
+    assert config.fallback_model_revision == "fallback-sha"
+
+
 def test_fallback_flag_swaps_model_id_and_nothing_else() -> None:
     cfg = InferenceConfig(
         model_id="meta-llama/Meta-Llama-3-8B-Instruct",
@@ -155,6 +180,17 @@ def test_fallback_flag_swaps_model_id_and_nothing_else() -> None:
     # All other config fields preserved.
     assert primary.config.dtype == fallback.config.dtype  # type: ignore[attr-defined]
     assert primary.config.device_map == fallback.config.device_map  # type: ignore[attr-defined]
+
+
+def test_fallback_propagates_its_own_revision() -> None:
+    cfg = InferenceConfig(
+        model_id="primary",
+        model_revision="primary-sha",
+        fallback_model_id="fallback",
+        fallback_model_revision="fallback-sha",
+    )
+    fallback = build_llm(cfg, use_fallback=True)
+    assert fallback.config.model_revision == "fallback-sha"  # type: ignore[attr-defined]
 
 
 def test_build_llm_raises_on_missing_fallback() -> None:
@@ -177,6 +213,54 @@ def test_huggingface_llm_construction_does_not_load_weights() -> None:
     # Internal handles must be None until generate() runs.
     assert h._tokenizer is None
     assert h._model is None
+
+
+def test_huggingface_loader_propagates_exact_revision(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ask.inference import llm as llm_module
+    from ask.inference.llm import HuggingFaceLLM
+
+    observed: dict[str, dict[str, object]] = {}
+
+    class _Tokenizer:
+        pad_token_id = 1
+
+    class _Model:
+        def eval(self) -> None:
+            return None
+
+    class _TokenizerFactory:
+        @staticmethod
+        def from_pretrained(model_id: str, **kwargs: object) -> _Tokenizer:
+            observed["tokenizer"] = {"model_id": model_id, **kwargs}
+            return _Tokenizer()
+
+    class _ModelFactory:
+        @staticmethod
+        def from_pretrained(model_id: str, **kwargs: object) -> _Model:
+            observed["model"] = {"model_id": model_id, **kwargs}
+            return _Model()
+
+    torch_module = ModuleType("torch")
+    torch_module.bfloat16 = SimpleNamespace()  # type: ignore[attr-defined]
+    torch_module.float16 = SimpleNamespace()  # type: ignore[attr-defined]
+    torch_module.float32 = SimpleNamespace()  # type: ignore[attr-defined]
+    transformers_module = ModuleType("transformers")
+    transformers_module.__version__ = "5.0.0"  # type: ignore[attr-defined]
+    transformers_module.AutoTokenizer = _TokenizerFactory  # type: ignore[attr-defined]
+    transformers_module.AutoModelForCausalLM = _ModelFactory  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "torch", torch_module)
+    monkeypatch.setitem(sys.modules, "transformers", transformers_module)
+    llm_module._HF_MODEL_CACHE.clear()
+
+    llm = HuggingFaceLLM(
+        InferenceConfig(model_id="model", model_revision="commit-sha", dtype="float32")
+    )
+    llm._ensure_loaded()
+
+    assert observed["tokenizer"]["revision"] == "commit-sha"
+    assert observed["model"]["revision"] == "commit-sha"
 
 
 def test_inference_config_accepts_immutable_model_revision() -> None:

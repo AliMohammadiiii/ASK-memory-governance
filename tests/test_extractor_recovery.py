@@ -7,7 +7,7 @@ from collections import deque
 
 import pytest
 
-from ask.extraction import Extractor
+from ask.extraction import ExtractionUnavailableError, Extractor
 from ask.inference.fake import FakeLLM
 from ask.inference.llm import StructuredLLM
 
@@ -26,7 +26,7 @@ def test_extractor_propagates_failure_when_provider_returns_no_response(tmp_path
         log_path=tmp_path / "trace.jsonl",
     )
 
-    with pytest.raises(RuntimeError, match="HTTP 402"):
+    with pytest.raises(ExtractionUnavailableError, match="valid response") as exc_info:
         extractor.extract(
             {
                 "session_id": "s-unavailable",
@@ -38,9 +38,11 @@ def test_extractor_propagates_failure_when_provider_returns_no_response(tmp_path
             (None, None),
         )
 
+    assert isinstance(exc_info.value.__cause__, RuntimeError)
+    assert "HTTP 402" in str(exc_info.value.__cause__)
     trace = json.loads((tmp_path / "trace.jsonl").read_text(encoding="utf-8"))
     assert trace["responses"] == []
-    assert "unavailable before any response" in trace["error"]
+    assert "extractor unavailable" in trace["error"]
 
 
 def test_extractor_falls_back_to_empty_on_schema_echo() -> None:

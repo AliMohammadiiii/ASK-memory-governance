@@ -40,6 +40,7 @@ from ask.controller.active import (  # noqa: E402
     r,
     rho,
 )
+from ask.endpoints import validate_http_endpoint  # noqa: E402
 from ask.eval.mgp6 import build_prediction, compute_report, consolidate_actions  # noqa: E402
 from ask.eval.mgp6_schema import (  # noqa: E402
     MGP6MemoryItem,
@@ -118,7 +119,8 @@ class Candidate:
 
 
 def _installed_ollama_models(host: str) -> set[str]:
-    with urllib.request.urlopen(f"{host.rstrip('/')}/api/tags", timeout=30) as resp:
+    endpoint = validate_http_endpoint(host).rstrip("/")
+    with urllib.request.urlopen(f"{endpoint}/api/tags", timeout=30) as resp:
         payload = json.loads(resp.read().decode("utf-8"))
     return {str(model.get("name") or model.get("model")) for model in payload.get("models", [])}
 
@@ -671,7 +673,7 @@ def _render_note(reports: list[tuple[str, dict[str, Any]]], *, path: Path, limit
             f"{_pct(report['over_forgetting_rate'])} | {_pct(report['under_forgetting_rate'])} |"
         )
     lines.extend(["", "## Threshold Ordering"])
-    for alias, report in reports:
+    for _alias, report in reports:
         if report["baseline"] != "controller":
             continue
         ordering = report["threshold_ordering"]

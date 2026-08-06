@@ -61,9 +61,9 @@ def test_agreement_scorer_writes_detail_and_summary_rows(tmp_path: Path) -> None
 
     parsed = list(csv.DictReader(out.open(encoding="utf-8")))
     assert sum(1 for row in parsed if row["row_type"] == "detail") == 6
-    overall = [row for row in parsed if row["row_type"] == "summary" and row["scope"] == "overall"][
-        0
-    ]
+    overall = next(
+        row for row in parsed if row["row_type"] == "summary" and row["scope"] == "overall"
+    )
     assert overall["n"] == "6"
     assert float(overall["agreement"]) < 1.0
 

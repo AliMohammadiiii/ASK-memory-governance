@@ -20,6 +20,7 @@ Env:
     OPENROUTER_API_KEY   required (or OPENAI_API_KEY)
     MGP6_MODEL           default "qwen/qwen3.5-9b"
     MGP6_BASE_URL        default "https://openrouter.ai/api/v1"
+    MGP6_ALLOW_INSECURE_HTTP  set to "1" only for a controlled remote HTTP endpoint
     MGP6_CONCURRENCY     default 12
 
 Usage:
@@ -50,6 +51,7 @@ from typing import Any
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE.parents[1] / "src"))
 
 from systems.extractor import Evidence, read_evidence  # noqa: E402
 from systems.policies import (  # noqa: E402
@@ -59,8 +61,13 @@ from systems.policies import (  # noqa: E402
     _superseded_state,
 )
 
+from ask.endpoints import validate_http_endpoint  # noqa: E402
+
 MODEL = os.environ.get("MGP6_MODEL", "qwen/qwen3.5-9b")
-BASE_URL = os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1").rstrip("/")
+BASE_URL = validate_http_endpoint(
+    os.environ.get("MGP6_BASE_URL", "https://openrouter.ai/api/v1"),
+    allow_insecure_http=os.environ.get("MGP6_ALLOW_INSECURE_HTTP") == "1",
+).rstrip("/")
 API_KEY = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
 CONCURRENCY = int(os.environ.get("MGP6_CONCURRENCY", "12"))
 
@@ -205,7 +212,7 @@ def predict(scenario: dict[str, Any], exemplars: list[dict[str, Any]]) -> dict[s
 
 
 def load_scenarios(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(l) for l in path.open(encoding="utf-8") if l.strip()]
+    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
 
 
 def done_ids(path: Path) -> set[str]:

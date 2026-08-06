@@ -28,7 +28,7 @@ def confusion_counts(
     predicted: Iterable[str],
     labels: tuple[str, ...] = LABELS,
 ) -> dict[tuple[str, str], int]:
-    counts = Counter(zip(gold, predicted))
+    counts = Counter(zip(gold, predicted, strict=True))
     return {(g, p): counts[(g, p)] for g in labels for p in labels}
 
 
@@ -39,7 +39,7 @@ def per_label_metrics(
 ) -> list[LabelMetrics]:
     result: list[LabelMetrics] = []
     for label in labels:
-        tp = sum(1 for g, p in zip(gold, predicted) if g == label and p == label)
+        tp = sum(1 for g, p in zip(gold, predicted, strict=True) if g == label and p == label)
         pred_n = sum(1 for p in predicted if p == label)
         gold_n = sum(1 for g in gold if g == label)
         precision = tp / pred_n if pred_n else None

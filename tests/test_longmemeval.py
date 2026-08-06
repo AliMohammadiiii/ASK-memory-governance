@@ -222,7 +222,9 @@ def test_slice_changes_with_seed(synth_corpus: Path) -> None:
     s_seed0 = sample_slice(list(iter_longmemeval_s(synth_corpus)), n=50, seed=0)
     s_seed1 = sample_slice(list(iter_longmemeval_s(synth_corpus)), n=50, seed=1)
     # The size of the intersection should be < 50 (otherwise the seed has no effect).
-    overlap = set(s.session_id for s in s_seed0) & set(s.session_id for s in s_seed1)
+    overlap = {session.session_id for session in s_seed0} & {
+        session.session_id for session in s_seed1
+    }
     assert len(overlap) < 50
 
 

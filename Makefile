@@ -2,6 +2,7 @@ PYTHON ?= $(if $(wildcard .venv/bin/python),.venv/bin/python,$(shell command -v 
 PYTEST ?= $(PYTHON) -m pytest
 RUFF ?= $(PYTHON) -m ruff
 MYPY ?= $(PYTHON) -m mypy
+MAINTAINED_PYTHON := src tests scripts benchmarks deploy/download_longmemeval_s.py thesis/latex/tools
 MGP_NATURAL_ARCHIVE ?=
 MGP_NATURAL_DELIVERY_REPORT ?=
 MGP_NATURAL_RESEARCH_REPORT ?=
@@ -16,6 +17,8 @@ MGP_NATURAL_V022_PYTHON = $(if $(findstring /,$(PYTHON)),$(abspath $(PYTHON)),$(
 .PHONY: help setup setup-ml setup-external hf-compat check release-check test test-fast lint format format-check \
 	typecheck build shell-syntax compile smoke validate-data reproduce-mgp6 \
 	reproduce-longmemeval figures paper paper-audit thesis clean repo-check \
+	manuscript-check thesis-template \
+	specialist-locks \
 	claims verify-claims inventory verify-manifest readiness validate-traces \
 	validate-public-data reproduce-public build-paper-tmlr build-paper-jmlr \
 	anonymous-scan release-audit ci clean-reproduction validate-experiments \
@@ -58,6 +61,9 @@ help:
 	@echo "mgpn-natural-v022-test  Run the vendored MGP-Natural v0.2.2 software tests"
 	@echo "advisor-check  Run the offline, privacy-safe supervisor review gate"
 	@echo "advisor-package  Build a sanitized local supervisor review snapshot"
+	@echo "paper           Compile the complete canonical paper"
+	@echo "thesis          Compile the complete canonical thesis"
+	@echo "specialist-locks  Validate exact specialist dependency locks"
 	@echo "advisor-clean  Remove only generated supervisor review outputs"
 	@echo "prompt-check  Validate prompt registry metadata and hashes"
 	@echo "prose-check  Reject strong generated-text leakage in maintained prose"
@@ -93,7 +99,7 @@ hf-compat:
 check: repo-check prompt-check prose-check document-check lint format-check typecheck compile \
 	test-fast shell-syntax
 
-release-check: check test validate-data build paper-audit
+release-check: check test validate-data build paper-audit manuscript-check specialist-locks
 
 test:
 	$(PYTEST) -q
@@ -102,18 +108,17 @@ test-fast:
 	$(PYTEST) -q -m 'not slow and not network'
 
 lint:
-	$(RUFF) check src tests scripts benchmarks
+	$(RUFF) check $(MAINTAINED_PYTHON)
 
 format:
-	$(RUFF) format src tests scripts benchmarks
-	$(RUFF) check --fix src tests scripts benchmarks
+	$(RUFF) format $(MAINTAINED_PYTHON)
+	$(RUFF) check --fix $(MAINTAINED_PYTHON)
 
 format-check:
-	$(RUFF) format --check src tests scripts benchmarks
+	$(RUFF) format --check $(MAINTAINED_PYTHON)
 
 typecheck:
-	$(MYPY) --follow-imports=skip src/ask/controller src/ask/memory \
-		src/ask/eval/mgp6.py src/ask/eval/mgp6_schema.py src/ask/eval/mgp6_v43.py
+	$(MYPY) src/ask
 
 build:
 	$(PYTHON) -m build
@@ -123,7 +128,7 @@ shell-syntax:
 	git ls-files -z '*.sh' | xargs -0 bash -n
 
 compile:
-	$(PYTHON) -m compileall -q src scripts benchmarks tests
+	$(PYTHON) -m compileall -q $(MAINTAINED_PYTHON)
 
 smoke:
 	$(PYTHON) scripts/run_mgp6.py --systems no_memory --limit 1 --dry-run
@@ -140,17 +145,25 @@ reproduce-longmemeval:
 figures:
 	@echo 'Figure sources are under docs/figures; regenerate from machine-readable reports before submission.'
 
-paper:
-	mkdir -p paper/paper_1/compiled
-	cd paper/paper_1 && latexmk -pdf -interaction=nonstopmode -halt-on-error \
-		-outdir=compiled main.tex
+manuscript-check:
+	$(PYTHON) scripts/validation/build_manuscripts.py --check
+
+specialist-locks:
+	$(PYTHON) scripts/validation/validate_specialist_environment.py --profile ml --lock-only
+	$(PYTHON) scripts/validation/validate_specialist_environment.py --profile adapters --lock-only
+
+paper: manuscript-check
+	$(PYTHON) scripts/validation/build_manuscripts.py --kind paper
 
 paper-audit:
 	$(PYTHON) scripts/analysis/audit_mgp6_validity.py
 	$(PYTHON) scripts/release/audit_bibliography.py
 
-thesis:
-	PYTHON=$(PYTHON) bash thesis/latex/tools/build.sh
+thesis-template:
+	git submodule update --init --recursive thesis/template
+
+thesis: manuscript-check thesis-template
+	$(PYTHON) scripts/validation/build_manuscripts.py --kind thesis
 
 repo-check:
 	$(PYTHON) scripts/validate_repository.py

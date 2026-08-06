@@ -27,7 +27,7 @@ ACTIONS = ("KEEP", "SUPERSEDE", "ABSTAIN")
 # INVALID_COMMIT means the system committed a conflicting state without
 # completing a valid KEEP/SUPERSEDE/ABSTAIN governance transition.
 # INVALID is reserved for malformed, unknown, or missing predictions.
-PREDICTION_OUTCOMES = ACTIONS + ("INVALID_COMMIT", "INVALID")
+PREDICTION_OUTCOMES = (*ACTIONS, "INVALID_COMMIT", "INVALID")
 REJECTION_RE = re.compile(
     r"\b(?:no|not|incorrect|wrong|false|stale|rather|instead|remains)\b",
     re.I,

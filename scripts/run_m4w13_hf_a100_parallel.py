@@ -22,7 +22,7 @@ import time
 import zipfile
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -55,7 +55,7 @@ class RunningJob:
 
 
 def _timestamp() -> str:
-    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
 def _log(message: str) -> None:
@@ -224,30 +224,30 @@ def _prefetch_models(args: argparse.Namespace) -> None:
         _log("model prefetch skipped")
         return
 
-    model_revisions = {args.hf_model: args.hf_revision}
+    models = {(args.hf_model, args.hf_revision or "")}
     for model_id in (args.extractor_model, args.classifier_model):
         if model_id:
-            model_revisions[model_id] = args.hf_revision
+            models.add((model_id, args.hf_revision or ""))
     if args.judge_backend in {"hf", "huggingface"}:
-        model_revisions[args.judge_model or args.hf_model] = args.hf_revision
+        models.add((args.judge_model or args.hf_model, args.hf_revision or ""))
     if args.embedder_backend == "sentence_transformer":
-        model_revisions[getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL] = (
-            args.embedder_revision
+        models.add(
+            (
+                getattr(args, "embedder_st_model", None) or _DEFAULT_EMBEDDER_MODEL,
+                getattr(args, "embedder_revision", None) or "",
+            )
         )
 
     code = (
         "from huggingface_hub import snapshot_download\n"
         "import sys\n"
-        "revision = None if sys.argv[2] == '-' else sys.argv[2]\n"
-        "snapshot_download(sys.argv[1], revision=revision)\n"
+        "snapshot_download(sys.argv[1], revision=sys.argv[2] or None)\n"
     )
     env = _base_env(args)
-    for model_id, revision in sorted(model_revisions.items()):
+    for model_id, revision in sorted(models):
         start = time.monotonic()
         _log(f"prefetch start: {model_id} revision={revision or 'default'}")
-        subprocess.run(
-            [_preferred_python(), "-c", code, model_id, revision or "-"], check=True, env=env
-        )
+        subprocess.run([_preferred_python(), "-c", code, model_id, revision], check=True, env=env)
         _log(f"prefetch done: {model_id} in {time.monotonic() - start:.1f}s")
 
 
@@ -257,19 +257,13 @@ def _smoke_load_quality_model(args: argparse.Namespace) -> None:
     code = (
         "from ask.inference.llm import HuggingFaceLLM, InferenceConfig\n"
         "llm = HuggingFaceLLM(InferenceConfig(\n"
-        "    model_id=%r, model_revision=%r, dtype=%r, device_map=%r, load_in_4bit=%r,\n"
-        "    trust_remote_code=%r, max_seq_len=%r, backend='huggingface'))\n"
+        f"    model_id={args.hf_model!r}, dtype={args.hf_dtype!r}, "
+        f"model_revision={args.hf_revision!r}, "
+        f"device_map={args.hf_device_map!r}, load_in_4bit={args.hf_load_in_4bit!r},\n"
+        f"    trust_remote_code={args.hf_trust_remote_code!r}, "
+        f"max_seq_len={args.hf_max_seq_len!r}, backend='huggingface'))\n"
         "resp = llm.generate('Return OK.', max_new_tokens=1, temperature=0.0, seed=0)\n"
         "print('[quality-smoke] loaded', resp.model_id, 'tokens', resp.completion_tokens)\n"
-        % (
-            args.hf_model,
-            args.hf_revision,
-            args.hf_dtype,
-            args.hf_device_map,
-            args.hf_load_in_4bit,
-            args.hf_trust_remote_code,
-            args.hf_max_seq_len,
-        )
     )
     _log(f"quality preset load smoke start: {args.hf_model}")
     result = subprocess.run([_preferred_python(), "-c", code], env=_base_env(args), check=False)
@@ -449,7 +443,7 @@ def _is_complete_run(
 
 
 def _archive_path(path: Path) -> Path:
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
     candidate = path.with_name(f"{path.name}.stale_{stamp}")
     i = 1
     while candidate.exists():

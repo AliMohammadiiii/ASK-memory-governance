@@ -317,15 +317,16 @@ def _command_for_log(cmd: list[str]) -> list[str]:
     redacted = list(cmd)
     for index, token in enumerate(cmd[:-1]):
         next_index = index + 1
-        if token == "--openai-api-key":
+        if token == "--openai-api-key" or (
+            token
+            in {
+                "--openai-api-key-env",
+                "--openmodel-api-key-env",
+                "--openmodel-api-key-envs",
+            }
+            and _looks_like_api_key(cmd[next_index])
+        ):
             redacted[next_index] = "<redacted>"
-        elif token in {
-            "--openai-api-key-env",
-            "--openmodel-api-key-env",
-            "--openmodel-api-key-envs",
-        }:
-            if _looks_like_api_key(cmd[next_index]):
-                redacted[next_index] = "<redacted>"
     return redacted
 
 
