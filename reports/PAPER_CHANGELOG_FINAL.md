@@ -2,6 +2,9 @@
 
 Date: 2026-08-06
 
+- Set the canonical manuscript author to Ali Mohammadi. Any venue-specific
+  blinded copy must now be produced as a separate artifact.
+
 ## Scientific identity
 
 - Changed the title to **ASK: Auditable Governance of Long-Term Memory in

@@ -22,7 +22,7 @@ tmlr:
     authority: independent_human
     evidence: confirmation/adjudication/
   anonymous_release_scan_passed:
-    passed: true
+    passed: false
     authority: machine
     evidence: reports/anonymous_scan.json
   authorship_and_openreview_resolved:

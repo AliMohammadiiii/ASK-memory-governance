@@ -1,5 +1,5 @@
 {
-  "blocker_count": 14,
+  "blocker_count": 15,
   "blockers": [
     {
       "authority": "human_legal",
@@ -17,6 +17,12 @@
       "authority": "independent_human",
       "evidence": "confirmation/adjudication/",
       "gate_id": "independent_annotation_satisfied",
+      "venue": "TMLR"
+    },
+    {
+      "authority": "machine",
+      "evidence": "reports/anonymous_scan.json",
+      "gate_id": "anonymous_release_scan_passed",
       "venue": "TMLR"
     },
     {
@@ -86,7 +92,7 @@
       "venue": "JMLR"
     }
   ],
-  "evaluated_at": "2026-08-06T10:46:52.873631+00:00",
+  "evaluated_at": "2026-08-06T12:57:54.895693+00:00",
   "gates": {
     "jmlr": {
       "cross_storage_or_native_system_evidence_completed": {
@@ -144,7 +150,7 @@
       "anonymous_release_scan_passed": {
         "authority": "machine",
         "evidence": "reports/anonymous_scan.json",
-        "passed": true
+        "passed": false
       },
       "authorship_and_openreview_resolved": {
         "authority": "human",

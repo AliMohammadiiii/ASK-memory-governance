@@ -1,10 +1,21 @@
 {
-  "findings": [],
+  "findings": [
+    {
+      "category": "author_name",
+      "file": "main.tex",
+      "line": 41
+    },
+    {
+      "category": "non_anonymous_author",
+      "file": "main.tex",
+      "line": 41
+    }
+  ],
   "limitations": [
     "source-text scan only; final PDF metadata and rendered visual inspection are still required"
   ],
   "root": "paper/paper_1",
-  "scanned_at": "2026-08-06T10:46:52.833547+00:00",
+  "scanned_at": "2026-08-06T12:57:44.887598+00:00",
   "schema_version": "1.0",
-  "status": "PASS"
+  "status": "FAIL"
 }

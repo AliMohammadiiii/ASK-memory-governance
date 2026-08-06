@@ -3,12 +3,13 @@
   "generated_date": "2026-08-06",
   "paper": {
     "identity": "ASK: Auditable Governance of Long-Term Memory in Language Agents",
+    "author": "Ali Mohammadi",
     "authoritative_source": "paper/paper_1/main.tex",
     "compiled_pdf": "build/manuscripts/paper.pdf",
     "page_count": 47,
     "manuscript_readiness": "CONDITIONAL_GO",
     "public_release_readiness": "NO_GO",
-    "public_release_open_gate_count": 14
+    "public_release_open_gate_count": 15
   },
   "ask": {
     "actions": ["KEEP", "SUPERSEDE", "ABSTAIN"],

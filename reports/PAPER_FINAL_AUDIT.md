@@ -138,7 +138,7 @@ counterfactual replays are explicitly non-primary.
 
 ## Build and readiness
 
-The canonical PDF builds successfully as a 47-page anonymous manuscript. All
+The canonical PDF builds successfully as a 47-page authored manuscript. All
 47 pages were rendered and inspected for clipping, overflow, figure order,
 table readability, and unresolved references. The advisor and release checks
 pass, including 686 main tests with 14 documented optional skips; the vendored
@@ -149,7 +149,7 @@ recorded in `reports/REPRODUCIBILITY_STATUS_FINAL.md`.
 
 **CONDITIONAL GO for the bounded manuscript.** The scientific story and
 manuscript are complete within the stated evidence boundaries. The repository's
-publication-readiness engine remains **NO_GO** with 14 external, human, legal,
+publication-readiness engine remains **NO_GO** with 15 external, human, legal,
 venue, or scientific-evidence gates open. Public artifact release and an
 unqualified reproducibility claim remain blocked by licensing, V12 provenance
 anomalies, private-source restrictions, and the unfinished MGP-Natural human and

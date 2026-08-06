@@ -79,7 +79,8 @@ the score source; the stale pre-adjudication aggregate is not.
 | `make release-check PYTHON=.venv/bin/python` | PASS; complete offline release gate and package build |
 | `make mgpn-natural-v022-test PYTHON=.venv/bin/python` | PASS; 132 tests, 1 expected duplicate-member warning in a tamper-rejection test |
 | `make clean-reproduction PYTHON=.venv/bin/python` | PASS from commit `bcde14c`; fresh environment, 684 tests passed and 14 optional tests skipped |
-| `make release-audit PYTHON=.venv/bin/python` | Boundary checks PASS; publication readiness correctly remains `NO_GO` with 14 open gates |
+| Named-manuscript identity scan | Expected non-anonymous result; the canonical source names Ali Mohammadi and a blind copy must be generated separately if required |
+| Publication readiness | `NO_GO` with 15 open gates, including the now-unsatisfied anonymous-release gate |
 | `git diff --check` | PASS before final validation |
 | PDF render and 47-page visual inspection | PASS; no clipping or unreadable figure/table found |
 
