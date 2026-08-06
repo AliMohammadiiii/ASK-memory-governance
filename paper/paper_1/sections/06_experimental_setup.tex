@@ -1,7 +1,49 @@
-\section{Experimental Setup}
+\section{Evaluation Methodology}
 \label{sec:setup}
 
-\subsection{Systems}
+The evaluation is organized around four answerable questions. RQ1 asks whether
+an ASK controller selects the correct write action under controlled evidence.
+RQ2 asks whether a transition preserves state and lineage invariants. RQ3 asks
+how false commits, missed updates, and unnecessary abstentions change under
+different costs. RQ4 asks whether governed writes improve downstream answers
+and whether later failures can be attributed to writing, retrieval, or
+generation. Generalization to independently collected natural dialogue is not
+an answered research question in this version.
+
+\begin{center}
+\small
+\begin{tabular}{@{}p{0.22\linewidth}p{0.22\linewidth}p{0.46\linewidth}@{}}
+\toprule
+Evidence stream & Status & Supported use \\
+\midrule
+Reference protocol tests & Primary conformance & Transition and invariant semantics, not semantic action accuracy \\
+\mgpc{} & Primary controlled & RQ1--RQ3 on a controlled synthetic single-slot diagnostic \\
+\lme{} V12 & Downstream final candidate & RQ4 on one fixed slice; no per-candidate action gold \\
+\mgp{} & Historical diagnostic & Construct-failure discovery and mechanism examples only \\
+External adapters & Mapped diagnostic & Harness compatibility; not native-system capability \\
+MGP-Natural v0.1.0/v0.2.2 & Quarantined, not scored & Feasibility and construction evidence only; no independent gold or headline metric \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[!h]
+\centering
+\fbox{\begin{minipage}{0.94\linewidth}
+\centering
+candidate and evidence
+$\rightarrow$ \textbf{action} (accuracy, class recall, false commit)\\[2pt]
+$\rightarrow$ \textbf{state and lineage} (invalid state, retained predecessor,
+active successor)\\[2pt]
+$\rightarrow$ \textbf{retrieval} (active-only recall, stale retrieval)\\[2pt]
+$\rightarrow$ \textbf{answer} (task accuracy, refusal, generation error)
+\end{minipage}}
+\caption{Layered evaluation in ASK. A later correct answer does not erase an
+incorrect write, and a correct write is not charged for a later retrieval or
+generation failure.}
+\label{fig:evaluation-layers}
+\end{figure}
+
+\subsection{Historical v2 systems}
 
 The main test comparison contains the transparent reference policy, the
 structured LLM policy, and the unstructured zero-shot policy described in
@@ -22,7 +64,7 @@ vocabulary, so mapped action accuracies are excluded from the main empirical
 claim. A successor evaluation must compare observable final state, stale
 retrieval, downstream answer, latency, and cost under each system's native API.
 
-\subsection{Metrics and denominators}
+\subsection{Historical v2 metrics and denominators}
 
 Primary decision-level metrics are computed over the held-out $90$-item test:
 action accuracy, macro-F1, and per-action precision/recall/F1. We report
@@ -37,7 +79,7 @@ commit-averse, and update-responsive cost matrices. Confidence results are
 descriptive because neither policy was calibrated on an independent set. Full
 formulas and commands are in Appendix~\ref{app:metrics}.
 
-\subsection{Statistical methods}
+\subsection{Historical v2 statistical methods}
 \label{sec:stats}
 
 Systems are paired by scenario id. The primary uncertainty estimate is a
@@ -60,13 +102,12 @@ inter-annotator agreement.
 \subsection{\mgpc{} systems, metrics, and statistics}
 
 The \mgpc{} comparison covers sixteen configurations on the public development
-split: the pre-registered frozen controller, the successor controller in both
+split: the frozen controller, the successor controller in both
 its as-run and guard-composed forms, four structural baselines (no memory, flat
 retrieval, recency, naive overwrite), an unstructured zero-shot decision policy,
 the deterministic five-feature scorecard through its v4.3 adapter, and four
 component ablations (no abstention, no provenance, no typing, no lineage).
-Three deployed
-external memory systems --- Letta, Mem0, and Graphiti --- were run through adapters
+Three external memory systems, Letta, Mem0, and Graphiti, were run through adapters
 we wrote. Because their native operations do not match our action vocabulary,
 their scores depend on an action mapping and are reported as harness
 diagnostics, not as capability measurements of those systems in their intended
@@ -89,8 +130,8 @@ update-responsive cost matrices fixed before scoring.
 Hidden-split uncertainty uses a $5{,}000$-replicate component-cluster bootstrap
 at seed $4301$, because items within a semantic component share a scenario
 skeleton. On the public development split, component-cluster resampling is
-unavailable --- the component map is private and the public scorer does not read
-it --- so those intervals are $10{,}000$-replicate item bootstraps and are
+unavailable because the component map is private and the public scorer does not
+read it. Those intervals are therefore $10{,}000$-replicate item bootstraps and are
 narrower than a component-aware estimate would be. Paired system contrasts on
 development use exact two-sided McNemar tests with Holm correction over the
 reported family; they inherit the same independence assumption and are

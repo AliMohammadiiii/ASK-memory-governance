@@ -1,99 +1,91 @@
 \section{Related Work}
 \label{sec:related}
 
-We position \ask{} against five clusters. For each we name the nearest precedent
-and state precisely what we build on. Our claim concerns the operationalization
-and controlled evaluation of a particular combination, not priority for any
-individual component.
+ASK combines established ideas but assigns them a specific systems role: they
+form a governance boundary before a persistent write. We distinguish memory
+architectures, write policies, temporal stores, abstention mechanisms, and
+evaluation instruments because similarity on one axis does not imply an
+equivalent governance contract.
 
-\paragraph{Agent memory systems with write operations.}
+\paragraph{Persistent agent memory and write policies.}
 MemGPT/Letta \citep{packer2023memgpt}, Mem0 \citep{chhikara2025mem0}, A-MEM
-\citep{xu2025amem}, and RMM \citep{tan2025rmm} manage a persistent store with
-per-item operations (add/update/delete/no-op, or merge-vs-add). Memory-R1
-\citep{yan2025memoryr1} is the clearest prior formalization of memory writes as a
-discrete action space, learned by RL. We do not claim to introduce the action
-space. The differences we defend are that (i) \texttt{NOOP} in these systems means
-``nothing new,'' not ``too ambiguous to commit,'' so there is no
-uncertainty-driven refusal; and (ii) they are primarily rewarded at the answer
-level, without a shared diagnostic that separately scores the write and its
-resulting state. Our released rule is a transparent reference policy, not a
-claim of a new learning algorithm.
+\citep{xu2025amem}, and RMM \citep{tan2025rmm} organize persistent memories and
+expose add, update, merge, delete, or no-op behavior. Memory-R1
+\citep{yan2025memoryr1} learns discrete memory-management actions by
+reinforcement learning, while Generative Agents \citep{park2023generative}
+uses an additive event stream with reflection and retrieval. These systems
+establish that an agent memory requires a write policy. ASK contributes a
+controller-independent audit and transition contract around such a policy. In
+particular, generic \texttt{NOOP} is not automatically an ASK \abstain:
+duplicate or irrelevant content may require no operation without uncertainty
+about a proposed durable update.
 
-\paragraph{Write-time conflict resolution and lineage.}
-Zep/Graphiti \citep{rasmussen2025zep} invalidates contradicted graph edges with
-bi-temporal timestamps rather than deleting them --- the strongest shipped prior
-on supersession-with-history. TOKI \citep{wang2026toki} argues, formally, that
-contradiction resolution \emph{is} write-time concurrency control, and types the
-heuristic family (including an \emph{await-confirmation} operator functionally
-equivalent to \abstain) as bitemporal operators with audit rows. FadeMem
-\citep{fademem2026} classifies new-vs-old memory pairs and applies decay/fusion.
-Relative to these, storing lineage or provenance is not new; our distinct piece is
-to make the write a \emph{governed, scored} decision with an abstain option, and to
-measure lineage integrity separately from the action label. \citet{reddy2026deterministic}
-independently report that deterministic conflict resolution beats LLM judgment on a
-consolidation benchmark, motivating independent tests of transparent policies rather
-than validating our author-designed pilot by analogy.
+\paragraph{Temporal conflict resolution, provenance, and lineage.}
+Zep/Graphiti \citep{rasmussen2025zep} invalidates contradicted edges with
+bi-temporal metadata, and TOKI \citep{wang2026toki} formalizes bitemporal
+operators for persistent-memory conflict resolution. FadeMem
+\citep{fademem2026} combines pairwise classification with decay and fusion,
+while deterministic consolidation work \citep{reddy2026deterministic} motivates
+transparent conflict policies. MemStrata \citep{yadav2026memstrata} targets
+stale-fact errors through temporal validity at retrieval. These systems precede
+ASK on temporal representation, retained history, or deterministic resolution.
+ASK's narrower contribution is to bind a proposed write action to evidence,
+validate its state consequence, and score action, state, lineage, and retrieval
+separately.
 
-\paragraph{Typed memory.}
-MemGuard \citep{ha2026memguard} assigns each memory an explicit functional role at
-write time to prevent contamination, and MemOS \citep{li2025memos} types memory
-levels. Typed memory is therefore precedented; what we add is a measured ablation
-of typing inside the pilot, reported as a mechanism diagnostic rather than an
-independently identified causal effect.
+\paragraph{Typed memory and provenance-bearing dialogue data.}
+MemGuard \citep{ha2026memguard} assigns functional memory roles at write time,
+and MemOS \citep{li2025memos} distinguishes memory levels. Typed memory is not a
+novelty claim here. CareCallMem \citep{bae2022keep} provides long-term
+conversation data and a memory-management task with updated information. WRIT
+\citep{hendrickson2026writ} represents multi-session memory events with
+introduction, update, retraction, persistence, previous values, and provenance.
+These resources are relevant to naturalistic evaluation, but their labels and
+publication status differ from direct ASK action gold. They are neighbors and
+possible future adapters, not evidence included in our reported results.
+PrefEval \citep{zhao2025prefeval} and PersonaMem
+\citep{jiang2025personamem} further motivate evaluation of changing preferences
+and user profiles, but neither supplies gold ASK actions for our runtime.
 
-\paragraph{Diagnostics and evaluation for memory.}
-HaluMem \citep{halumem2025} is the nearest prior on operation-level evaluation,
-separately scoring extraction, update, and QA for hallucinations; we do not claim
-to introduce operation-level evaluation. STALE \citep{chao2026stale} probes
-\emph{frozen agents at read time} for recognition of stale beliefs and shares
-\mgp's construct names (implicit conflict, premise resistance), but defines no
-write actions, abstention, or lineage. The Supersede environment
-\citep{patel2026supersede} isolates the answer-level ``supersession gap'' on
-\lme{} and trains the behavior end-to-end. GateMem \citep{ren2026gatemem} uses the
-phrase ``memory governance'' for authorization across principals --- a different
-axis from our epistemic write correctness. LongMemEval \citep{wu2025longmemeval}
-and LoCoMo \citep{maharana2024locomo} are end-to-end QA benchmarks that cannot
-attribute a failure to the write decision. Newer evaluations close other parts
-of that gap: Memora \citep{uddin2026memora} penalizes obsolete-memory use;
-MemGym \citep{xu2026memgym} reports memory-isolated scores across agentic
-regimes; and GroupMemBench \citep{yang2026groupmembench} adds multi-principal
-knowledge-update and abstention cases. None supplies the same controlled
-three-way write label together with a post-transition lineage target. \mgp{}
-operationalizes joint scoring of write-time \keep/\supersede/\abstain{}
-decisions and resulting memory state; we do not claim that operation-level,
-memory-isolated, or state-level evaluation itself is new.
+\paragraph{Direct diagnostics of memory updates.}
+HaluMem \citep{halumem2025} separately evaluates extraction, update, and QA for
+memory hallucination. STALE \citep{chao2026stale} probes whether an agent
+recognizes obsolete memory at read time, and Supersede
+\citep{patel2026supersede} studies the answer-level memory-update gap. The
+MemPatch-Bench artifact \citep{zhu2026mempatch} evaluates post-admission
+revision using operations, state maps, and evidence identifiers. MemOps
+\citep{hao2026memops} also treats memory operation as an explicit evaluation
+object. These are the closest conceptual neighbors to MGP-6. MGP-6 differs in
+the exact three-way decision and single-slot post-transition targets, but it is
+an evaluation instrument rather than the ASK framework.
 
-\paragraph{Selective prediction, belief revision, knowledge editing.}
-The reject option \citep{chow1970reject,elyaniv2010selective,geifman2017selective}
-and learning to defer \citep{madras2018defer,mozannar2020defer} are the origin of
-\abstain; RSCB-MC \citep{iscan2026rscbmc} already applies abstention to memory
-\emph{retrieval} in coding agents. We therefore never claim to introduce
-abstention to memory systems; we measure what an explicit abstain-on-write option
-contributes within our controlled diagnostic and claim no priority for the
-mechanism. RSCB-MC is also the closest feature-controller precedent: its
-16-feature contextual bandit governs whether retrieved coding memory should be
-injected, whereas our five-feature rule governs a candidate write and exposes
-the exact score and state transition. The distinction is scope and
-auditability, not ownership of feature-based control. AGM belief revision
-\citep{alchourron1985agm} is the intellectual
-ancestor of \keep/\supersede; we cite it as ancestry only and prove no
-postulate compliance. Knowledge editing \citep{meng2022rome,meng2023memit}
-governs \emph{how} to change a parametric belief and assumes the edit should
-happen; we govern \emph{whether} to commit an external write. Finally, PrefEval
-\citep{zhao2025prefeval} and PersonaMem \citep{jiang2025personamem} motivate
-testing preference changes on independently constructed natural dialogue.
+\paragraph{Long-term and multi-principal evaluation.}
+LongMemEval \citep{wu2025longmemeval} and LoCoMo
+\citep{maharana2024locomo} evaluate long-term conversational memory through
+answers. Memora \citep{uddin2026memora} penalizes obsolete-memory use, MemGym
+\citep{xu2026memgym} reports memory-isolated scores across agentic regimes, and
+GroupMemBench \citep{yang2026groupmembench} includes multi-party update and
+abstention cases. GateMem \citep{ren2026gatemem} uses ``memory governance'' for
+authorization across principals, which is a different control problem from
+ASK's epistemic write decision. End-to-end benchmarks provide downstream
+evidence, but without candidate-level write annotations they cannot identify
+the gold ASK action for every mutation.
 
-\paragraph{Scope of contribution.}
-Each component has named precedents: Memory-R1 for write actions; Zep and TOKI
-for retained history; MemGuard and MemOS for typing; deterministic policy work
-including \citet{reddy2026deterministic}; and HaluMem and STALE for evaluation.
-We therefore make the
-narrower contribution claim that this work operationalizes and audits an explicit
-three-way policy --- \keep, \supersede, or \abstain{} --- over typed,
-provenance-tracked
-records with supersession lineage, and evaluates that implementation at three
-separate layers: decision, stored state/lineage, and downstream answer. The
-controlled conjunction, its validity checks, and the measurements they enable
-are the contribution;
-update operations, version history, provenance, typing, abstention, and
-operation-level evaluation are not claimed as inventions.
+\paragraph{Selective prediction and belief change.}
+The reject option \citep{chow1970reject,elyaniv2010selective,
+geifman2017selective} and learning to defer \citep{madras2018defer,
+mozannar2020defer} precede ASK's abstention mechanism. RSCB-MC
+\citep{iscan2026rscbmc} applies abstention to retrieval or context injection,
+whereas ASK applies it before a write. AGM belief revision
+\citep{alchourron1985agm} is conceptual ancestry for preservation and revision;
+we prove no AGM-postulate compliance. Parametric knowledge editing
+\citep{meng2022rome,meng2023memit} determines how to change model parameters
+after an edit has been selected. ASK instead governs whether an external-memory
+change should be committed.
+
+The contribution boundary follows from these precedents. ASK does not own its
+action vocabulary or any individual representation mechanism. It specifies an
+integrated write-time contract in which policy proposal, storage mutation,
+lineage, audit reconstruction, retrieval, and answer evaluation remain
+separable. The experiments test portions of that contract under explicit scope
+limits.

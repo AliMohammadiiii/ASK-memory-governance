@@ -1,4 +1,4 @@
-\section{The Diagnostic Instruments}
+\section{MGP-6 Controlled Diagnostic}
 \label{sec:mgp6}
 
 This section describes the two collections the harness is exercised on: the
@@ -9,7 +9,7 @@ deliberately and throughout: these are instruments for probing decision
 mechanisms, not community benchmarks, independent test collections, or measures
 of general QA or retrieval efficiency.
 
-\subsection{From the v2 pilot to the v4.3 release}
+\subsection{From the v2 pilot to the v4.3 controlled artifact}
 
 The historical v2 pilot remains in the artifact as a record of the earlier
 instrument and its limitations; every v2 number in this paper is labelled
@@ -30,7 +30,7 @@ rewriting.
 \subsection{What \mgpc{} is, and what it is for}
 \label{sec:v43}
 
-\mgpc{} (release \texttt{4.3.0-human-validated-final}) exists to answer one
+\mgpc{} (version \texttt{4.3.0-human-validated-final}) exists to answer one
 question that no end-to-end memory QA benchmark can answer: \emph{given the
 same stored record and the same proposed new value, can a system tell apart the
 three cases where it should keep, replace, or decline?} End-to-end collections
@@ -40,11 +40,12 @@ and generation. Operation-level HaluMem localizes update errors but does not
 provide this controlled ternary contrast. To isolate the write decision we need
 items where retrieval, context, and generation are held \emph{constant} and
 only the evidential situation varies. That requirement, not a desire for scale,
-dictated the construction.
+dictated the construction. The artifact is experiment-ready but is not a public
+dataset release: no redistribution license has been selected.
 
 \subsection{The item}
 
-Each record is deliberately minimal --- five fields, no free-form metadata:
+Each record is deliberately minimal: five fields and no free-form metadata.
 
 \begin{center}
 \small
@@ -65,8 +66,8 @@ Field & Content \\
 The identifier is opaque by design and the schema sets
 \texttt{additionalProperties: false}, so a model-facing record cannot carry a
 design target, a component label, an annotator note, or any other channel
-through which the answer could leak. There is no conflict-type field --- the
-v2 field that turned out to determine the label.
+through which the answer could leak. There is no conflict-type field, which was
+the v2 field that turned out to determine the label.
 
 The dialogue itself has a fixed rhetorical shape. Early turns state the
 standing value and name the candidate value. A middle turn declares which
@@ -83,9 +84,9 @@ component is a group of nine items sharing one \texttt{principal}, one
 \texttt{memory\_slot}, one \texttt{standing\_value}, and one candidate value.
 Within it the nine items form a $3 \times 3$ grid: three dialogue lengths
 ($9$, $11$, $13$ turns) crossed with the three gold actions. Every component is
-therefore exactly action-balanced, and --- because the grid is crossed --- so is
-every dialogue length. We verified both properties directly on the released
-public splits: all $40$ public components are exactly $3$/$3$/$3$, and each
+therefore exactly action-balanced. Because the grid is crossed, every dialogue
+length is also balanced. We verified both properties directly on the tracked
+public-boundary splits: all $40$ public components are exactly $3$/$3$/$3$, and each
 dialogue length is exactly $40$ \keep{} / $40$ \supersede{} / $40$ \abstain{}.
 Neither length nor verbosity carries any signal about the action.
 
@@ -127,7 +128,7 @@ establishes that a temporary override expired and the standing value was
 reasserted afterwards, so the proposal is stale. The \supersede{} pair
 establishes that the temporary period ended and a durable change followed, so
 the proposal is current. The \abstain{} pair establishes that the two
-timestamps are not comparable, so neither conclusion is warranted --- the
+timestamps are not comparable, so neither conclusion is warranted. The
 evidence is not \emph{weak}, it is \emph{unresolvable}. Critically, the other
 four sentences remain in every item as controlled distractors. A system that
 reads the whole transcript instead of the indexed evidence will find apparent
@@ -139,13 +140,13 @@ sense in which \mgpc{} is a \emph{controlled} synthetic diagnostic rather than
 merely a synthetic collection: the confound is not removed by paraphrase, it is
 removed by holding the surface form fixed and moving only the pointer.
 
-\subsection{Splits, balance, and what the release gates actually check}
+\subsection{Splits, balance, and what the artifact gates check}
 
 Components, never items, are assigned to splits: train receives $180$ items
 from $20$ components, development $180$ from $20$, and the sealed hidden
 partition $540$ from $60$. Each of the $20$ domains contributes one component to
 train, one to development, and three to hidden. Assignment uses a recorded seed
-($4301$), and the build is byte-deterministic --- archive timestamps are pinned
+($4301$), and the build is byte-deterministic. Archive timestamps are pinned
 to a constant so the same inputs produce the same hashes. Because a component
 never straddles a boundary, a system cannot see the \keep{} variant of a
 scenario in training and the \supersede{} variant at test.
@@ -155,21 +156,21 @@ the reason v4.3 exists.
 
 \paragraph{The shortcut audit.} Fitted on train, evaluated on hidden, and run
 across five seeds, it trains word-level and character-level TF-IDF logistic
-regressions over \emph{twelve restricted views} of each item ---
+regressions over \emph{twelve restricted views} of each item:
 \path{full_text}, \path{dialogue_only},
 \path{query_only},
 \path{candidate_only}, \path{previous_turn}, \path{last_two},
 \path{target_evidence_only}, \path{memory_only},
 \path{user_only}, \path{assistant_only},
-\path{first_three}, and \path{id_only} --- plus
+\path{first_three}, and \path{id_only}, plus
 punctuation-only and length-only numeric features and decision trees at depths
 one through five. Each view has a pre-set accuracy ceiling (for example $0.40$
 for \path{query_only} and \path{memory_only}, $0.45$ for
-\path{candidate_only}, $0.65$ for \path{full_text}). The release ships
+\path{candidate_only}, $0.65$ for \path{full_text}). The frozen artifact records
 with \texttt{failed\_gates} empty: no probe cleared its threshold. The
-\path{id_only} probe deserves particular note --- it confirms the opaque
-identifiers themselves leak nothing --- as does \path{target_evidence_only},
-which checks that even the correctly indexed evidence, stripped of its
+\path{id_only} probe deserves particular note because it confirms that the opaque
+identifiers themselves leak nothing. The \path{target_evidence_only} probe
+checks that even the correctly indexed evidence, stripped of its
 dialogue context, does not linearly separate the classes.
 
 \paragraph{The duplicate audit.} It hashes seven restricted views and fails on
@@ -200,8 +201,8 @@ Any violation raises and aborts the build. The requirement that annotators cite
 turn identifiers is the substantive one: it makes an annotation checkable
 against the item rather than a bare label.
 
-The packets agree on every action --- raw agreement $1.0$, Cohen's $\kappa =
-1.0$, zero exclusions, zero adjudications --- with mean confidence $0.96$ and
+The packets agree on every action: raw agreement $1.0$, Cohen's $\kappa =
+1.0$, zero exclusions, and zero adjudications, with mean confidence $0.96$ and
 $0.967$. Both flagged all $300$ \abstain{} items as intentionally ambiguous
 \emph{scenarios}, which records designed ambiguity rather than uncertainty about
 the label.
@@ -225,7 +226,7 @@ tested this directly. Of the $28$ errors the frozen controller makes on the
 development split, $18$ can be mechanically resolved against a sibling item's
 indexed pair, and in \emph{all $18$} the evidence supporting the predicted
 action was present in the item but indexed to a different slot. Every
-resolvable error is distractor capture --- the precise failure the component
+resolvable error is distractor capture, which is the precise failure the component
 design isolates. The instrument is measuring what it was built to measure.
 
 \subsection{The \mgpc{} evaluation contract and staged protocol}
@@ -234,7 +235,7 @@ design isolates. The instrument is measuring what it was built to measure.
 For \mgpc{}, a system submits exactly one action per public identifier using two
 fields, \texttt{public\_id} and \texttt{action}. The evaluator rejects missing,
 duplicate, unknown, and extra identifiers, so partial coverage cannot be
-silently averaged away --- an incomplete submission fails rather than scoring.
+silently averaged away. An incomplete submission fails rather than scoring.
 It reports accuracy, macro-F1, per-class precision/recall/F1, the full confusion
 matrix, coverage, selective coverage and accuracy, and component-cluster
 bootstrap intervals.
@@ -246,7 +247,7 @@ prediction, the provider and exact model identifier, prompt and system-prompt
 hashes, decoding parameters, seed, retry policy, timeout, concurrency,
 evaluator version, adapter version, split and dataset hashes, code commit, and
 environment lock are frozen into a signed configuration record. Hidden inputs
-are then predicted once per pre-registered configuration; the prediction file is
+are then predicted once for the configuration frozen before scoring; the prediction file is
 coverage-validated and hashed \emph{before} the local private scorer is allowed
 to open hidden gold.
 
@@ -272,9 +273,9 @@ and ablations is a development-split contrast.
 The system evaluated on \mgpc{} is not a bare prompt. It composes two
 components that we can score separately on development data. A
 \emph{public-evidence rule policy} reads only the fields a model may see and
-emits one of five verdicts --- direct documented slot change, standing value
+emits one of five verdicts: direct documented slot change, standing value
 confirmed or proposal retracted, temporary or scoped exception, unresolved
-scope/authority/timing, or no decisive public evidence --- each mapping to an
+scope/authority/timing, or no decisive public evidence, each mapping to an
 action. In parallel a \emph{live model policy} is prompted with the typed state,
 the indexed evidence positions, and the three action definitions, and returns a
 single JSON action. A conservative guard then composes them: it overrides a
@@ -292,11 +293,75 @@ composed system can only move probability mass \emph{out} of \abstain{}, so any
 increase in false commits is attributable to the guard and is directly
 measurable (Section~\ref{sec:results:guard}).
 
+\subsection{MGP-Natural: a separate quarantined evidence track}
+\label{sec:mgp-natural}
+
+MGP-Natural is not a natural-data result for this paper. It is a separate
+confirmation track whose current artifacts establish feasibility and workflow
+status only. Its intended design has two natural-conversation tracks drawn from
+existing corpora: human--human discussion and human--AI interaction. Source
+conversations are to be mined for a prior memory, a later candidate, and the
+turns that bear on whether a durable update is warranted. Candidate construction
+must occur without placing relation labels, source locators, or design notes in
+model-facing records.
+
+After source-specific rights and privacy review, the planned annotation workflow
+freezes a redacted, continuity-preserving packet before labeling. Independent
+annotators assign \keep, \supersede, or \abstain, cite the exact evidence turns,
+record confidence and exclusion reasons, and do not see model predictions.
+Disagreements receive separate adjudication. Splits are then formed over connected
+conversation, participant, page, and contributor components rather than isolated
+items, so related dialogue cannot cross train, development, and test. Human--human
+and human--AI tracks retain separate denominators and results; a mixed headline
+is permitted only if a later protocol defines and validates one before scoring.
+
+\begin{figure}[!h]
+\centering
+\fbox{\begin{minipage}{0.94\linewidth}
+\centering
+existing human--human and human--AI corpora
+$\rightarrow$ rights, attribution, and privacy review\\[2pt]
+$\rightarrow$ candidate/prior/evidence mining $\rightarrow$ redaction and
+continuity graph\\[2pt]
+$\rightarrow$ protocol freeze $\rightarrow$ blinded independent labeling with
+evidence-turn citations\\[2pt]
+$\rightarrow$ separate adjudication $\rightarrow$ continuity-aware split
+$\rightarrow$ ASK scoring by track
+\end{minipage}}
+\caption{Intended MGP-Natural workflow. Stages after source review describe a
+prospective protocol, not completed evidence in this paper.}
+\label{fig:mgp-natural-workflow}
+\end{figure}
+
+MGP-Natural v0.1.0 is a $36$-item Wikipedia editorial-discussion
+seed derived from $76$ normalized excerpts. Its action labels are provisional
+single-curator labels. The supplied blind packet exposed relation and source
+fields that recover all provisional actions, and continuity linking yields two
+components of sizes $35$ and $1$. The declared $24/6/6$ split is therefore not
+an independent held-out split. The repository retains only aggregate audits and
+a private derived annotation draft, with no model score used in this paper.
+
+MGP-Natural v0.2.2 supplies Apache-2.0 construction software for the planned
+tracks: StudyChat human--LLM educational interaction and WikiConv human--human
+editorial discussion. Its intake source is a private derivative workspace rather than the
+original raw-source archives. The safe aggregate receipt records workflow
+counts, redaction logs, and privacy findings, but no independently adjudicated
+gold. These counts are not benchmark examples, denominators for statistical
+inference, or paper results.
+
+Both versions remain quarantined. Original-source integrity, source-specific
+rights and attribution, consent or public-data basis, manual privacy review,
+protocol freeze, independent annotation, separate adjudication, and
+track-specific continuity splits must be completed before scoring. We therefore
+report no mixed-track headline, confidence interval, or ASK generalization claim
+from MGP-Natural. Its role is to specify the evidence still required to move
+beyond controlled synthetic diagnosis.
+
 \subsection{The \mgp{} pilot: composition and the leak it carried}
 
 The remainder of this section documents the historical pilot. It is retained
 because the v4.3 design decisions above are only legible against the failure
-that motivated them, and because its per-item predictions remain in the release.
+that motivated them, and because its per-item predictions remain in the artifact.
 
 \subsubsection{Conflict taxonomy and distribution}
 
@@ -377,9 +442,9 @@ byte-equivalent \abstain{} states, active-only answers), and a released corpus
 prints \texttt{VALIDATION PASSED: 180 examples, 0 errors}.
 
 We score two families of metric (full definitions in Appendix~\ref{app:metrics}):
-\emph{decision-level} --- action accuracy, per-action and macro-F1, and the
-action false-commit rate on gold-\abstain{} items --- and \emph{memory-state}
---- state invalid-commit on gold-\abstain{} items, five-condition lineage
+\emph{decision-level}, comprising action accuracy, per-action and macro-F1, and
+the action false-commit rate on gold-\abstain{} items; and \emph{memory-state},
+comprising state invalid-commit on gold-\abstain{} items, five-condition lineage
 integrity on \supersede{} items, and stale-retrieval rate (the fraction of answers surfacing a forbidden
 superseded value). Two shipped forgetting-rate metrics saturate at $1.0$ for every
 system and are excluded from all tables as uninformative.
@@ -406,16 +471,16 @@ human inter-annotator agreement.
 The larger human review sheet ($180$ rows) exists but is unfilled; a genuine
 multi-annotator human release is future work (Section~\ref{sec:limitations}).
 The panel and the single annotator may share the manual's reading because the
-labelling policy is unambiguous by construction --- a construct-validity caveat we
+labelling policy is unambiguous by construction, which is a construct-validity caveat we
 carry explicitly.
 
 \subsubsection{Construction grounding}
 
-Scenario \emph{shapes} were informed by inspecting real corpora --- LongMemEval
+Scenario \emph{shapes} were informed by inspecting real corpora, including LongMemEval
 knowledge-update items and its false-premise (\texttt{\_abs}) questions, Memora
 \citep{uddin2026memora}
 operation chains, GateMem's machine-readable judge structure, and named
-confidence-laundering patterns --- but every released row is a newly authored
+confidence-laundering patterns, but every artifact row is a newly authored
 synthetic paraphrase; no source content is reused. This grounds the failure modes
 without importing personal data, and it is the reason \mgp{} shares construct
 names (implicit conflict, premise resistance) with concurrent read-side work

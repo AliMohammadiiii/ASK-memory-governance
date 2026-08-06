@@ -1,43 +1,34 @@
 \begin{abstract}
-Persistent language agents can silently corrupt future behavior when they write
-an ambiguous update, retain a stale value, or replace a record without history.
-End-to-end question answering conflates this write decision with extraction,
-retrieval, and generation. We introduce ASK, a storage-agnostic protocol that
-formulates memory writing as \keep, lineage-preserving \supersede, or write-time
-\abstain; binds each transition to evidence and configuration identity; and
-makes the decision, state change, lineage, and replay scope auditable. A layered
-evaluator then scores the action, resulting state, and later answer separately.
-On \mgpc, a $900$-item controlled synthetic diagnostic in $100$ surface-matched
-semantic components, one pre-registered configuration run once on the sealed
-$540$-item hidden split reaches $0.8481$ action accuracy and $0.8479$ macro-F1
-(component-cluster $95\%$ intervals $[0.8037,0.8889]$ and
-$[0.8021,0.8894]$). The error decomposition is operationally more informative:
-of $38$ mishandled ambiguous items, $30$ preserve the state and lose only the
-abstention audit record, whereas $8$ replace an active record on insufficient
-evidence ($0.0444$, CI $[0.0227,0.0852]$).
+Persistent memory turns an agent's interpretation of one interaction into state
+that can affect many later sessions. Final-answer accuracy does not identify
+whether a failure arose when the agent formed a candidate, governed its write,
+mutated the store, retrieved stale state, or generated an answer. We introduce
+ASK, a storage-independent governance contract placed before persistent-memory
+mutation. Given a memory state, a candidate update, and attributable evidence,
+an ASK controller proposes \keep, lineage-preserving \supersede, or
+write-time \abstain. A separate transition layer applies the proposal subject
+to state and lineage invariants, while decision records retain the information
+needed to reconstruct the implemented policy. ASK is a protocol, not one
+classifier, prompt, database, or benchmark.
 
-The deployed controller evaluates every candidate across five transparent
-dimensions: extraction confidence, evidence quality, negation/hedge burden,
-signed candidate--prior relation, and a memory-type stability prior. Exact
-replay reproduces all $12{,}654$ \lme{} write decisions. Counterfactual omission
-shows that marker burden determines the observed abstentions and signed
-relation determines supersessions, while evidence quality and the stability
-prior change no action on this run. A separate relation guard is essential:
-without it, $11{,}091$ observed \keep{} decisions would become
-\supersede{}. This is a mechanism diagnosis, not write-label accuracy.
+We evaluate complementary parts of this contract. Executable tests check the
+reference transition semantics. \mgpc{} is a controlled synthetic diagnostic
+with $900$ items in $100$ component-disjoint semantic groups. On its sealed
+$540$-item hidden split, one configuration frozen before scoring reaches
+$0.8481$ action accuracy and $0.8479$ macro-F1, with component-cluster $95\%$
+intervals of $[0.8037,0.8889]$ and $[0.8021,0.8894]$. Of $38$ errors on
+gold-\abstain{} items, $30$ preserve the modeled state, while $8$ incorrectly
+supersede an active record. A separate $180$-item \lme{} run evaluates the
+long-memory pipeline without per-write gold labels. Governed writes obtain
+$137/180$ correct downstream answers, compared with $114/180$ for naive
+overwrite. Exact replay reproduces all $12{,}654$ logged controller decisions,
+which establishes execution fidelity rather than write correctness.
 
-As downstream evidence, a homogeneous $180$-item \lme{} run with one answer
-model and one judge places governed writes at $76.1\%$, above every structural
-baseline (naive overwrite $63.3\%$; paired
-$p=2.9\times10^{-4}$), with the gain concentrated in knowledge-update and
-preference items. Trace accounting shows that extraction and relation
-classification consume $92.8\%$ of prompt tokens; the scored answer stage is
-only $7.2\%$. Finally, a conflict-type-only lookup reaches $1.000$ held-out
-accuracy on the earlier v2 pilot without reading the dialogue, a measured
-construct failure that motivated v4.3's component split and executable shortcut
-gates. The accompanying artifact records per-item predictions, action logs,
-shortcut audits, cluster bootstraps, error decompositions, and latency/token
-accounting, subject to its explicit public/private and redistribution
-boundaries. We make no priority, deployment-safety, or
-population-generalization claim.
+The evidence supports explicit write governance, auditable supersession, and
+layer-specific failure attribution. It does not establish deployment safety or
+population generality. The controlled diagnostic is synthetic, and the downstream
+run uses one fixed slice and model configuration. The generic reference
+validator is not wired into that runtime's SQLite mutation path. MGP-Natural is
+present only as a quarantined seed and construction workflow, without
+independent gold or publication clearance.
 \end{abstract}

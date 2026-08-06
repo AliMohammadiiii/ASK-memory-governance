@@ -15,7 +15,7 @@ controller is far above chance on a balanced decision where the evaluated
 baselines, adapter-mapped external systems, and ablations are not, and neither
 controller component alone explains the development result
 (Sections~\ref{sec:results:dev}--\ref{sec:results:guard}). Fourth, on the
-homogeneous \lme{} slice, governed writes exceed every structural baseline
+V12 \lme{} final candidate, governed writes exceed every structural baseline
 ($76.1\%$ versus $\le 63.3\%$, paired $p=2.9\times10^{-4}$), with the largest
 gain in knowledge update.
 
@@ -61,8 +61,9 @@ must not be read as validation of the chosen durability ordering.
 \paragraph{External validity.}
 \mgpc{} is synthetic, English-only, single-slot, and single-step. It lacks
 natural conversational trajectories, interference between slots, multiple
-languages, and a population sampling frame. The \lme{} run supplies naturalistic
-long-horizon QA structure but remains one fixed slice, answer model, judge, and
+languages, and a population sampling frame. The \lme{} run supplies a
+multi-session long-horizon QA structure but remains one fixed slice, answer
+model, judge, and
 seed. The two instruments complement rather than validate each other:
 \mgpc{} has write labels without realism; \lme{} has downstream realism without
 per-write labels.
@@ -103,15 +104,15 @@ are descriptive at $n=30$ each.
 The \mgpc{} hidden result is one measurement of one configuration. Development
 selection is the protocol working as intended, but the successor's $0.961$
 development score is not evidence that it improves the frozen controller's
-$0.848$ hidden score. For \lme{}, the homogeneous V12 run supersedes the
+$0.848$ hidden score. For \lme{}, the V12 final candidate supersedes the
 contaminated v7 and selection-biased replay constructions; those earlier
 artifacts remain in the paper only to document why they were rejected.
 
 \paragraph{Operational provenance.}
 The v4.3 hidden run resumed once after a transport disconnect under an immutable
 manifest, with complete coverage and no duplicate prediction. V12 has two open
-bookkeeping issues --- a stale launcher code/protocol hash and a manifest not
-written to a terminal status after resume --- while its per-system answer,
+bookkeeping issues: a stale launcher code/protocol hash and a manifest not
+written to a terminal status after resume. Its per-system answer,
 judge-routing, and fallback checks pass. These do not change the reported
 predictions, but they prevent a stronger clean-room provenance claim.
 Provider-reported latency is route-dependent wall time, not hardware compute.
@@ -120,6 +121,24 @@ to the write controller. It produced no direct model bypass and its two
 controller-side answer substitutions had zero net accuracy effect, so it does
 not explain the reported controller--naive contrast; we nevertheless disclose
 it because downstream accuracy is not a write-only measurement.
+
+\paragraph{Implementation scope.}
+The generic ASK protocol core and its invariant validator are executable and
+tested, but the V12 orchestrator does not call them on its SQLite mutation path.
+That runtime instead relies on transactional supersession, active-status
+filtering, predecessor identifiers, and decision logs. It rebuilds a fresh
+in-memory store for each benchmark question rather than operating as a
+long-lived production service. Candidate extraction and related-record
+resolution occur upstream of governance and may select the wrong candidate or
+prior. The evaluated store uses atomic records and a limited type inventory;
+multi-record conflict resolution, heterogeneous production adapters, privacy,
+access control, and deletion compliance are not validated here.
+
+\paragraph{MGP-Natural status.}
+Section~\ref{sec:mgp-natural} records the v0.1.0 feasibility seed and v0.2.2
+construction software explicitly. Neither provides independent gold or a valid
+held-out score. We use no MGP-Natural item or workflow count in a headline
+claim.
 
 \subsection{Ethics and scope}
 
@@ -131,7 +150,7 @@ production-safety claim.
 
 \subsection{Successor-dataset gate}
 
-A stronger release must be constructed after policies and thresholds are
+A stronger collection must be constructed after policies and thresholds are
 frozen; use independent generation and hidden labels; include \keep,
 \supersede, and \abstain{} within every conflict family; add adversarial minimal
 pairs and 5/10/20-step trajectories; obtain blinded labels from at least three
@@ -141,8 +160,8 @@ requirements for stronger claims, not future-work decorations.
 
 \subsection{Reproducibility statement}
 
-The repository releases schemas, validators, policies, public data, per-item
-predictions, and the V12 action log. The analysis programs regenerate shortcut
+The repository provides schemas, validators, policies, public-boundary data,
+per-item predictions, and the V12 action log. The analysis programs regenerate shortcut
 tables, cluster intervals, calibration, risk--coverage, cost sensitivity, and
 the five-dimensional scorecard replay. Every scorecard row carries enough state
 to recompute both scores and the final action without a model call. Incomplete,

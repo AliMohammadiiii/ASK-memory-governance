@@ -1,27 +1,80 @@
-\section{ASK Adapters, Controllers, and Reference Policies}
+\section{ASK Governance Protocol and Architecture}
 \label{sec:method}
 
-The name \ask{} abbreviates the three actions
-(\keep/\supersede/\abstain); it is not a priority claim for the vocabulary.
+The name \ask{} abbreviates the three actions in acronym order
+(\abstain/\supersede/\keep); it is not a priority claim for the vocabulary.
 ASK is the protocol and transition/audit contract from
-Section~\ref{sec:formulation}, not the name of one prediction policy. Three
-controller implementations must be kept distinct. The deployed \lme{} pipeline uses
-the five-dimensional scorecard below. The historical \mgp{} artifact uses a
-lexical reference policy. The \mgpc{} hidden experiment uses the composed
-model--rule controller in Section~\ref{sec:v43controller}. They share the action
-interface and transition layer, but their prediction mechanisms are not
-interchangeable.
+Section~\ref{sec:formulation}, not the name of one prediction policy. Four
+artifacts must remain distinct: the normative reference protocol, a controller
+that proposes an action, a storage adapter that executes a transition, and an
+evaluation instrument that supplies labels or downstream tasks. The historical
+\mgp{} artifact uses a lexical controller, \mgpc{} uses a composed model--rule
+controller, and the \lme{} runtime uses the five-dimensional scorecard below.
+They share action semantics but do not all call the same transition
+implementation.
 
-The ASK--MGP adapter records model and rule proposals, the public-evidence rule
-verdict, guard identity, evidence digest, and whether the guard replaced a
-model abstention. Its replay claim is limited to the composition and state
-transition: the guard changes model \abstain{} to a non-abstaining rule proposal
-but leaves model \keep{} and \supersede{} unchanged. The ASK--LME adapter logs
-the feature schema and raw values, scores, type-conditioned thresholds, ordered
-rules, negative-relation guard, record identifiers, and evidence/configuration
-digests; its deterministic final scorecard and transition are exactly
-replayable. Neither adapter treats a replayed policy decision as a replay of
-upstream extraction or external model generation.
+\subsection{Architecture and implementation boundary}
+\label{sec:architecture}
+
+Figure~\ref{fig:ask-architecture} separates proposal, mutation, and later use.
+Candidate extraction and target resolution may be model-based or deterministic.
+Only the transition component is permitted to mutate memory. Retrieval and
+answer generation consume the resulting state but cannot retrospectively make
+an unjustified write correct.
+
+\begin{figure}[!h]
+\centering
+\fbox{\begin{minipage}{0.94\linewidth}
+\centering
+Dialogue or event $\rightarrow$ candidate extraction $\rightarrow$ target and
+evidence resolution $\rightarrow$ ASK controller\\[2pt]
+$\downarrow$ action proposal and rationale\\[2pt]
+transition plan $\rightarrow$ invariant or transaction checks $\rightarrow$
+persistent state and audit record\\[2pt]
+$\downarrow$ active-only or historical retrieval $\rightarrow$ downstream answer
+\end{minipage}}
+\caption{ASK's component boundary. A controller proposes a governance action;
+the transition component alone changes state. Evaluation can inspect the action,
+state, lineage, retrieval, and answer as separate objects.}
+\label{fig:ask-architecture}
+\end{figure}
+
+The repository realizes this architecture in two paths. The generic reference
+core defines content-addressed evidence and configuration identities,
+adapter-declared replay scope, immutable transition events, and an in-memory
+validator for single-slot versioned, multi-record, and temporal-event modes.
+Its tests cover no-commit abstention, prior-preserving keep, retained
+predecessors, active successors, unique identifiers, and acyclic lineage. This
+is executable protocol conformance evidence.
+
+The evaluated \lme{} path is a narrower runtime. For each benchmark question it
+rebuilds an in-memory SQLite state from the supporting sessions, extracts user
+turn candidates, selects a related active record, classifies their relation,
+and passes the resulting features to the scorecard. The orchestrator then calls
+the database operation; neither the extraction model nor relation model can
+write directly. Supersession runs inside a transaction, retains the prior row,
+creates a successor pointer, and marks only the successor active. Normal
+retrieval filters on active status. Explicit historical questions traverse the
+retained predecessor chain.
+
+This runtime does not invoke the generic invariant validator or serialize the
+generic transition event. It records candidate, prior, and result identifiers,
+features, thresholds, scores, actions, and rationales in its action log; source
+session and turn provenance are maintained in the pipeline trace. The log is
+sufficient to reconstruct every final scorecard decision, but not to replay
+candidate extraction, relation-model generation, or a byte-identical generic
+transition event. Malformed structured model outputs are retained in raw traces
+and either fail the configured stage or yield no committable candidate; they do
+not receive direct mutation authority. These limitations are part of the
+reported implementation scope.
+
+The \mgpc{} adapter records the model and rule proposals, public-evidence
+verdict, guard identity, evidence digest, and whether the guard replaces a model
+abstention. Its replay claim is limited to controller composition and the
+diagnostic transition. The generic ASK--LME adapter can replay the final
+scorecard and reference transition from fully populated protocol inputs, but it
+was not the V12 runtime mutation path. Neither adapter treats a replayed policy
+decision as a replay of upstream model inference.
 
 \subsection{Five-dimensional runtime scorecard}
 \label{sec:scorecard}
@@ -159,24 +212,23 @@ Section~\ref{sec:v43controller}.
 
 \subsection{Auditable implementation}
 
-Every runtime write emits a schema-validated JSONL row containing the five raw
+Every V12 decision emits a structured JSONL row containing the five raw
 features, both scores, both thresholds, the action, the candidate and prior
-identifiers, and the resulting-record identifier. This is sufficient to replay
-Equation~\ref{eq:scorecard} without rerunning a model. Structured extraction
-and relation outputs retain raw traces and fail closed on missing provider
-responses rather than caching fabricated emptiness or independence. Writes are
-atomic; active-only retrieval excludes superseded rows; content-addressed
-caches and immutable-manifest checks support resumable runs without changing
-the frozen controls. These mechanisms instantiate the ASK audit contract and
-are implementation and reproducibility contributions, not separate learning
-claims.
+identifiers, and the resulting-record identifier when a record is written.
+This is sufficient to replay Equation~\ref{eq:scorecard} without rerunning a
+model. Structured extraction and relation outputs retain their raw traces.
+Writes are atomic, active-only retrieval excludes superseded rows, and
+content-addressed caches plus manifest checks support resumable runs. This is a
+partial runtime realization of the ASK audit contract. Evidence digests,
+before/after state digests, and generic invariant validation remain features of
+the reference protocol path rather than the evaluated V12 mutation path.
 
 \subsection{Shortcut probes}
 
 The v2 type-only and conflict-type-only probes learn a majority action for each
 metadata value on train+development and apply the lookup unchanged to test.
 They never read the dialogue, prior value, or candidate evidence. The v4.3
-release extends this principle to a gated suite of restricted-view lexical,
+artifact extends this principle to a gated suite of restricted-view lexical,
 identifier, punctuation, length, and shallow-tree probes
 (Section~\ref{sec:v43}). Their purpose is to test whether a collection rewards
 scenario recognition without memory reasoning.

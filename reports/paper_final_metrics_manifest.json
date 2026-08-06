@@ -1,0 +1,159 @@
+{
+  "schema_version": "ask-paper-final-metrics/v1",
+  "generated_date": "2026-08-06",
+  "paper": {
+    "identity": "ASK: Auditable Governance of Long-Term Memory in Language Agents",
+    "authoritative_source": "paper/paper_1/main.tex",
+    "compiled_pdf": "build/manuscripts/paper.pdf",
+    "page_count": 47,
+    "manuscript_readiness": "CONDITIONAL_GO",
+    "public_release_readiness": "NO_GO",
+    "public_release_open_gate_count": 16
+  },
+  "ask": {
+    "actions": ["KEEP", "SUPERSEDE", "ABSTAIN"],
+    "reference_protocol": "src/ask/protocol/",
+    "evaluated_runtime": [
+      "src/ask/pipeline/orchestrator.py",
+      "src/ask/memory/operations.py"
+    ],
+    "runtime_boundary": {
+      "generic_validator_called_by_v12": false,
+      "generic_transition_event_emitted_by_v12": false,
+      "source_provenance_normalized_in_sqlite_records": false,
+      "scorecard_action_replay_supported": true
+    }
+  },
+  "evidence_streams": {
+    "mgp6_v4_3": {
+      "role": "primary_controlled_diagnostic",
+      "version": "4.3.0-human-validated-final",
+      "dataset_identity": "human-authored, template-guided, controlled synthetic benchmark",
+      "license_status": "no_public_redistribution_license_selected",
+      "items": 900,
+      "components": 100,
+      "splits": {
+        "train": {"items": 180, "components": 20},
+        "dev": {"items": 180, "components": 20},
+        "hidden": {"items": 540, "components": 60}
+      },
+      "hidden_configuration": {
+        "model": "qwen/qwen3.5-9b",
+        "seed": 4301,
+        "temperature": 0.0,
+        "max_new_tokens": 128,
+        "prompt_sha256": "3ffa2ae8df004a4b04c03eaf17ca39d1a57060da718d4a42ec6f67e1a3158619"
+      },
+      "hidden_result": {
+        "valid": 540,
+        "skipped": 0,
+        "accuracy": 0.8481481481481481,
+        "macro_f1": 0.847872957121512,
+        "accuracy_component_cluster_ci95": [0.8037037037037037, 0.8888888888888888],
+        "macro_f1_component_cluster_ci95": [0.8020749634748688, 0.889351432442434],
+        "confusion_gold_rows_predicted_columns": {
+          "ABSTAIN": {"ABSTAIN": 142, "KEEP": 30, "SUPERSEDE": 8},
+          "KEEP": {"ABSTAIN": 18, "KEEP": 151, "SUPERSEDE": 11},
+          "SUPERSEDE": {"ABSTAIN": 6, "KEEP": 9, "SUPERSEDE": 165}
+        }
+      },
+      "source": "artifacts/analysis/mgp6_v43_full_benchmark_analysis.json"
+    },
+    "longmemeval_v12": {
+      "role": "downstream_final_candidate",
+      "slice_items": 180,
+      "slice_sha256": "f10b4fb4173d3e2d9310d90c2b6bf8f5e7b147cea1d04affa9037b1b9fe6787d",
+      "seed": 0,
+      "answer_model": "qwen/qwen3.5-9b",
+      "judge_model": "google/gemma-4-31b-it",
+      "controller": {"correct": 137, "n": 180, "accuracy": 0.7611111111111111},
+      "naive_overwrite": {"correct": 114, "n": 180, "accuracy": 0.6333333333333333},
+      "paired_controller_vs_naive_overwrite": {
+        "discordant_controller_only_correct": 31,
+        "discordant_naive_only_correct": 8,
+        "risk_difference": 0.12777777777777777,
+        "holm_corrected_p": 0.00029
+      },
+      "write_action_gold_available": false,
+      "action_log": {
+        "decisions": 12654,
+        "KEEP": 11478,
+        "ABSTAIN": 779,
+        "SUPERSEDE": 397,
+        "action_replay_fidelity": 1.0,
+        "score_replay_fidelity": 1.0
+      },
+      "provenance_status": {
+        "label": "final_candidate",
+        "manifest_status": "running",
+        "manifest_exit_code": 1,
+        "homogeneous": false,
+        "global_error": "manifest code/protocol hash stale: scripts/evaluation/run_longmemeval_final.sh"
+      },
+      "source": [
+        "runs_local/lme_final_controller_v12_qwen_180/controller/report.json",
+        "runs_local/lme_final_controller_v12_qwen_180/b4/report.json",
+        "artifacts/analysis/lme_v12_scorecard_analysis.json"
+      ]
+    },
+    "mgp_natural": {
+      "role": "quarantined_prospective_natural_dialogue_track",
+      "scored_in_paper": false,
+      "v0_1_0": {
+        "status": "QUARANTINED_CANDIDATE_NOT_GOLD",
+        "source_kind": "Wikipedia human-human editorial discussion",
+        "items": 36,
+        "normalized_excerpt_rows": 76,
+        "label_status": "single_curator_provisional",
+        "independent_adjudication_complete": 0,
+        "blind_packet_safe": false,
+        "continuity_component_sizes": [35, 1],
+        "declared_split": {"train": 24, "dev": 6, "test": 6},
+        "heldout_split_valid": false,
+        "source": "confirmation/natural_challenge/mgp_natural_v0_1_0/archive_audit.json"
+      },
+      "v0_2_2": {
+        "status": "QUARANTINED_PRIVATE_DERIVED_WORKSPACE",
+        "construction_software": "third_party/mgp-natural-v0.2.2/",
+        "tracks": {
+          "studychat": {
+            "kind": "natural human-AI educational interaction",
+            "private_rows": 16851,
+            "redacted_constructor_items": 431
+          },
+          "wikiconv": {
+            "kind": "natural human-human editorial conversation",
+            "private_rows": 54,
+            "redacted_constructor_items": 54
+          }
+        },
+        "workflow_receipts_not_evaluation_denominators": {
+          "privacy_findings": 4706,
+          "redaction_log_rows": 485
+        },
+        "natural_gold_available": false,
+        "publication_eligible": false,
+        "raw_source_archive_integrity_verified": false,
+        "source": "confirmation/natural_challenge/mgp_natural_v0_2_2_full/intake_audit.json"
+      },
+      "open_gates": [
+        "original source archive integrity",
+        "source-specific rights and attribution",
+        "consent or public-data basis",
+        "manual privacy review",
+        "protocol freeze before annotation",
+        "independent annotation with evidence-turn citations",
+        "separate adjudication",
+        "track-specific continuity-aware splits"
+      ]
+    }
+  },
+  "generating_commands": [
+    "make paper PYTHON=.venv/bin/python",
+    "make verify-paper-artifacts PYTHON=.venv/bin/python",
+    "make verify-claims PYTHON=.venv/bin/python",
+    "make advisor-check PYTHON=.venv/bin/python",
+    "make release-check PYTHON=.venv/bin/python",
+    "make mgpn-natural-v022-test PYTHON=.venv/bin/python"
+  ]
+}

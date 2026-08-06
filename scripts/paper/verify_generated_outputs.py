@@ -34,9 +34,11 @@ REQUIRED = {
         "$r$ & signed relation and update guard & 483",
     ],
     "paper/paper_1/sections/00_abstract.tex": [
-        "storage-agnostic protocol",
-        "$12{,}654$ \\lme{} write decisions",
-        "$11{,}091$ observed \\keep{} decisions",
+        "storage-independent governance contract",
+        "reference transition semantics",
+        "$12{,}654$ logged controller decisions",
+        "validator is not wired into that runtime's SQLite mutation path",
+        "MGP-Natural is",
     ],
 }
 

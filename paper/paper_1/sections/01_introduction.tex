@@ -1,106 +1,80 @@
 \section{Introduction}
 \label{sec:intro}
 
-A language agent that persists across sessions must decide what to do with each
-candidate memory: preserve the current record (and possibly append a compatible
-one), replace it with a newer one, or decline to commit because the evidence is
-insufficient. Deployed systems often
-make this decision through opaque LLM tool calls
-\citep{packer2023memgpt,chhikara2025mem0} or additive event logs
-\citep{park2023generative}. A wrong write can remain latent until much later: an
-ambiguous statement becomes a durable fact, a stale preference survives, or a
-correction erases its predecessor. End-to-end QA then reveals an error without
-identifying which layer caused it.
+A persistent-memory agent can turn one interpretation of a conversation into a
+durable commitment. If the agent stores an ambiguous claim as fact, retains an
+obsolete preference, or replaces a record without history, the error may affect
+answers in later sessions. Memory systems commonly expose operations such as
+add, update, delete, merge, or no-op \citep{packer2023memgpt,chhikara2025mem0,
+yan2025memoryr1}. Those operations explain how a store can change. They do not,
+by themselves, establish whether the available evidence warrants a durable
+change.
 
-We take the write transition itself as the object of governance and evaluation.
-ASK is a protocol rather than a particular controller: it defines \keep,
-lineage-preserving \supersede, and write-time \abstain{} over typed,
-provenance-tracked records; a deterministic transition contract; evidence and
-configuration identities; adapter-declared replay scope; and invariants for
-state and lineage. This combines established ideas from selective
-prediction \citep{chow1970reject,geifman2017selective}, belief revision
-\citep{alchourron1985agm}, and agent memory operations
-\citep{yan2025memoryr1,chhikara2025mem0,wang2026toki}. We claim neither the
-individual operations nor abstention, typing, provenance, and lineage as new.
-The contribution is their executable protocol-level conjunction and an
-evaluation harness that makes decision-, state-, lineage-, replay-, and
-answer-layer consequences separately observable across different controllers
-and storage semantics.
+Final-answer evaluation is insufficient for this question. A correct write can
+still be followed by failed retrieval or generation, while an incorrect write
+can be hidden by answer-time reasoning or accidental retrieval. A single
+end-to-end score therefore cannot localize whether the failure occurred during
+candidate extraction, target resolution, governance, state mutation,
+retrieval, or answer generation. It also encourages several distinct events to
+be treated as interchangeable: preserving a valid record, accepting a
+compatible record, refusing an uncertain write, deleting a record, retrieving
+nothing, and refusing to answer.
 
-We exercise the harness on two instruments and report both honestly. The first
-is \mgp, a $180$-item English synthetic pilot authored by the same project that
-implemented its reference policy. Rather than accept a held-out item split as
-sufficient, we tested whether scenario metadata alone predicts the action --- and
-it does, perfectly. That measured negative result, not a leaderboard number, is
-what the pilot contributes.
+ASK places an explicit governance boundary before persistent mutation. Given a
+state $M$, candidate update $u$, and attributable evidence $E$, a controller
+proposes one of three actions. \keep{} does not invalidate the compared prior
+record. \supersede{} makes a successor active while preserving the predecessor
+and its lineage. \abstain{} refuses the proposed durable commitment because the
+evidence is insufficient. The action is then applied by a transition mechanism,
+not directly by the proposing model. This separation permits controllers and
+storage adapters to vary while preserving a common decision and state contract.
 
-The second is its successor, \mgpc: $900$ human-authored, controlled synthetic
-items in $100$ semantic components across $20$ domains, split by component into
-exactly action-balanced train, development, and sealed hidden partitions, with
-duplicate, shortcut, allowlist, and deterministic-build gates passed at release
-and two separately completed, owner-attested human annotation packets covering
-every item. A single configuration was
-pre-registered on development data and run once against the sealed hidden
-split. This is still a controlled synthetic diagnostic and still not a
-community benchmark, but its construct-validity gate is enforced at build time
-rather than discovered afterwards.
+ASK is not a three-class classifier. Its normative reference protocol specifies
+typed candidates and records, evidence and configuration identity, transition
+semantics, state and lineage invariants, replay scope, and immutable transition
+events. The repository also contains evaluated implementations with narrower
+runtime guarantees. The LongMemEval pipeline uses candidate extraction, target
+selection, a transparent five-dimensional controller, transactional SQLite
+supersession, active-only retrieval, historical-lineage lookup, and structured
+decision logs. It does not call the generic reference validator or emit the
+reference transition event on its live mutation path. We make this boundary
+explicit because a tested specification and an integrated runtime are different
+forms of evidence.
 
-Our contributions and findings are:
-\begin{enumerate}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
-\item We specify ASK as a storage-agnostic, controller-independent protocol:
-typed candidates and records; evidence- and configuration-bound decision
-traces; deterministic \keep/\supersede/\abstain{} transitions; retained
-predecessor lineage; adapter-declared replay scope; and executable invariants.
-We release a layered evaluator for action correctness, state invariants,
-lineage and superseded-record recoverability, stale retrieval, selective risk,
-and asymmetric write costs.
-\item We implement the deployed write policy as an auditable five-dimensional
-scorecard over extraction confidence, evidence quality, marker burden, signed
-candidate--prior relation, and type stability. Exact replay of all $12{,}654$
-\lme{} write decisions exposes which dimensions and guards actually determine
-the action: marker burden controls abstention, the signed relation controls
-supersession, and removing the discrete relation guard would convert $11{,}091$
-\keep{} decisions into \supersede{}.
-\item On the sealed \mgpc{} hidden split ($n=540$) the pre-registered composed
-controller reaches $0.8481$ accuracy and $0.8479$ macro-F1.
-The component-cluster $95\%$ intervals are $[0.8037, 0.8889]$ for accuracy
-and $[0.8021, 0.8894]$ for macro-F1. We decompose its errors by operational
-harm rather than
-reporting one aggregate: the state-corrupting failure --- replacing an active
-record on insufficient evidence --- occurs on $8/180$ ambiguous items
-($0.0444$), while the far more frequent $30/180$ lapse leaves the state
-untouched and loses only the audit record.
-\item On the development split, every structural baseline, every component
-ablation, the zero-shot policy, and three deployed external memory systems fall
-at or below the $0.3333$ chance rate of the balanced three-way decision, in two
-opposite ways: commit-happy systems overwrite $77$--$98\%$ of records they
-should keep, and abstain-happy systems decline $78$--$98\%$ of decisions they
-should make. The composed controller reaches $0.844$ and its successor
-configuration $0.961$; each contrast rejects at Holm-corrected
-$p < 10^{-17}$.
-\item We report full computation accounting at both scales: the controlled
-\mgpc{} decision costs a $1.3$~s median and $393$ prompt tokens, while the
-\lme{} trace shows that extraction and relation classification consume $92.8\%$
-of end-to-end prompt tokens. Monetary cost is recorded as unavailable rather
-than estimated where provider telemetry emitted no price field.
-\item As downstream evidence, a homogeneous full-slice \lme{} run places the
-governed controller at $76.1\%$, above every structural baseline
-(naive overwrite $63.3\%$, paired $p = 2.9\times10^{-4}$), with the gain
-concentrated in knowledge-update and preference competencies rather than spread
-uniformly.
-\item We add train/dev-fitted shortcut baselines and cluster bootstrap. On the
-v2 pilot, conflict type alone predicts every held-out action and type alone
-predicts $96.7\%$ --- direct evidence that an item-level holdout can look clean
-while a family label determines the answer, and the reason the v4.3 build runs
-this probe as a release gate.
+We evaluate ASK in layers. Executable conformance tests exercise the reference
+transition contract. \mgpc{} directly tests evidence-sensitive write decisions
+and their single-slot state consequences. \lme{} tests one longer pipeline in
+which governed writes, retrieval, and answer generation interact, but it has no
+gold action for each extracted candidate. The earlier \mgp{} pilot is retained
+only as a construct-validity lesson: a conflict-type lookup predicts every
+held-out label without reading the dialogue. The separate MGP-Natural track is
+present as a quarantined feasibility seed and v0.2.2 construction software, but
+it is not reported as an experiment because it has no independently annotated,
+rights-cleared, frozen evaluation set.
+
+The contributions supported by the repository are:
+\begin{enumerate}[leftmargin=1.5em,topsep=2pt,itemsep=2pt]
+\item ASK, a controller- and storage-independent write-governance protocol that
+separates evidence assessment, action proposal, validated mutation, retrieval,
+and downstream response.
+\item A formal transition contract for state-preserving \keep,
+lineage-preserving \supersede, and uncertainty-based \abstain, with executable
+invariants and declared replay scope.
+\item An implemented architecture comprising a reference protocol engine and a
+separately evaluated LongMemEval runtime, together with an explicit account of
+which audit guarantees each path actually realizes.
+\item A layered evaluation methodology that reports action, state, lineage,
+retrieval, answer, uncertainty, and asymmetric operational cost without
+collapsing them into one score.
+\item Complementary empirical evidence from \mgpc{} and \lme{}, including
+component-cluster uncertainty, harm-specific error decomposition, exact
+decision replay, and a documented failure of the earlier v2 diagnostic.
 \end{enumerate}
 
-The protocol/controller/dataset separation is load-bearing: ASK defines the
-auditable contract, the scorecard and model--rule composition are policies that
-implement it, and MGP-6 is an evaluation instrument. This reframing also turns
-a weakness into a falsifiable result: an item-level test
-split can look clean while a family label still determines the answer. The
-released artifacts make that failure visible and specify the gate for a
-successor collection: independent construction, all three actions within each
-conflict family, blinded multi-human annotation, trajectory-level cases, and a
-hidden test set frozen after policy development.
+We do not claim to have invented memory update operations, abstention, typed
+memory, provenance, lineage, version history, belief revision, selective
+prediction, or operation-level evaluation. The scientific claim concerns the
+integrated governance contract, its separation from storage execution and
+answer generation, and the measurements this separation enables. MGP-6 is one
+controlled diagnostic for that claim. It is not the identity of the method or
+the paper.

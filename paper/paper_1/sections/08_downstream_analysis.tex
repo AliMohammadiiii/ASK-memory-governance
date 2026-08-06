@@ -1,21 +1,24 @@
-\section{Downstream Analysis: \lme{}}
+\section{Downstream and Runtime Evaluation: \lme{}}
 \label{sec:downstream}
 
 To test whether write-time governance helps a long-horizon task, we evaluate a
 stratified $180$-item slice of \lme{} ($6$ competencies $\times\,30$, seed $0$).
-We report the completed homogeneous full-slice run (freeze \texttt{final-2.0},
-denoted V12), then document why the earlier constructions on this track were
-ineligible and are retained only as history. Throughout we use the exact ledger
-labels --- \texttt{diagnostic\_only}, \texttt{failure\_replay\_only},
-\texttt{incomplete}, and \texttt{final\_candidate} --- and do not collapse them
+We report the complete-coverage full-slice final candidate (freeze
+\texttt{final-2.0}, denoted V12), then document why the earlier constructions
+on this track were ineligible and are retained only as history. Throughout we
+use the exact ledger labels \texttt{diagnostic\_only},
+\texttt{failure\_replay\_only}, \texttt{incomplete}, and
+\texttt{final\_candidate}, and do not collapse them
 into a generic result.
 
-\subsection{The homogeneous full-slice run}
+\subsection{The V12 full-slice final candidate}
 \label{sec:downstream:final}
 
 The V12 run evaluates all $180$ items with a single answer model
 (\texttt{qwen/qwen3.5-9b}) and a single judge (\texttt{google/gemma-4-31b-it}),
-with logged judge routing and \emph{zero} judge-model fallbacks. On this run the
+with logged judge routing and \emph{zero} judge-model fallbacks. The five system
+rows share the evaluated protocol, but the run-level homogeneity audit remains
+false because one launcher hash is stale. On this run the
 \ask{} controller reaches $137/180 = 76.1\%$ accuracy (exact $95\%$ CI
 $70.0$--$82.2$), the highest of the five evaluated memory systems and $12.8$
 points above the strongest structural baseline (naive overwrite,
@@ -47,13 +50,14 @@ breakdown and the per-competency significance treatment.
 
 The controller's action log records $12{,}654$ write decisions across $3{,}547$
 sessions: $11{,}478$ \keep{} ($90.7\%$), $779$ \abstain{} ($6.2\%$), and $397$
-\supersede{} ($3.1\%$). The distribution is what the design predicts on natural
-dialogue, where most turns carry no conflicting evidence, and it is very
-different from the balanced \mgpc{} diagnostic --- which is the reason we keep
-both instruments. Every one of the $397$ supersessions recorded both a
+\supersede{} ($3.1\%$). The distribution is what the design predicts on this
+multi-session benchmark dialogue, where most turns carry no conflicting
+evidence, and it is very different from the balanced \mgpc{} diagnostic. This is
+the reason we keep both instruments. Every one of the $397$ supersessions recorded both a
 predecessor and a successor identifier, and none of the $779$ abstentions
-produced a resulting record, so the lineage and no-op invariants held on all
-$12{,}654$ decisions.
+produced a resulting record. These identifier-level checks support retained
+lineage and no-commit abstention on the logged path. They are not a replay of
+the generic ASK invariant validator.
 
 \subsection{Five-dimensional scorecard: type comparison and action mechanism}
 \label{sec:downstream:scorecard}
@@ -72,7 +76,7 @@ $364/397$ supersessions. Stable preferences are rare ($381$, $3.0\%$), have the
 highest abstention rate ($13.4\%$), and the lowest supersession rate ($1.0\%$).
 Transient preferences lie between them in volume but not action mix: $9.8\%$
 abstain and only $1.2\%$ supersede. These differences are descriptive rather
-than a type effect, because the feature distributions also differ --- the
+than a type effect, because the feature distributions also differ. The
 median marker burden is $0$ for episodic and stable records but $0.5$ for
 transient records.
 
@@ -104,13 +108,13 @@ stable-preference \abstain{} decisions to \keep{} ($0.04\%$ of the log).
 The type ordering is a transparent policy commitment, while the observed
 between-type action rates mostly reflect candidate and relation features. Since
 \lme{} supplies no gold write action per extracted candidate, this analysis
-establishes execution, dependence, and invariants --- not action correctness.
+establishes execution and decision dependence, not gold action correctness.
 The downstream QA comparison remains the separate outcome.
 
 \subsection{Where the compute actually goes}
 \label{sec:downstream:pipeline}
 
-The released pipeline traces let us decompose the controller's cost by stage
+The retained pipeline traces let us decompose the controller's cost by stage
 rather than reporting a single per-item figure, and the decomposition overturns
 the natural reading of the accuracy table (Table~\ref{tab:lme_pipeline},
 Figure~\ref{fig:lme-pipeline}a).
@@ -121,8 +125,8 @@ $31{,}004$ further calls and $52.7$M prompt tokens: $11{,}847$ extraction calls
 over $11{,}491$ dialogue turns ($41.8$M tokens, $73.6\%$ of the budget) and
 $19{,}157$ relation-classification calls over $9{,}539$ candidate--prior pairs
 ($10.9$M tokens, $19.2\%$). The write-time stages are $92.8\%$ of prompt tokens
-and $99.4\%$ of model calls. The answer stage --- the only stage an end-to-end
-memory benchmark scores --- is $7.2\%$ of the token budget.
+and $99.4\%$ of model calls. The answer stage, which is the only stage an
+end-to-end memory benchmark scores, is $7.2\%$ of the token budget.
 
 This reframes the cost comparison in Table~\ref{tab:lme_v12}. The governed
 controller is not an expensive answerer; it is a cheap answerer sitting on an
@@ -138,12 +142,12 @@ the $1.55$~h difference is the implied generation-only cost, about $31$~s per
 item rather than the $809$~s the field suggests. Per-item pipeline times quoted
 in Table~\ref{tab:lme_v12} and elsewhere use the cumulative field and should be
 read as end-to-end pipeline time. We flag this explicitly because the naive
-reading --- that a single answer call takes thirteen minutes --- is wrong by more
+reading, that a single answer call takes thirteen minutes, is wrong by more
 than an order of magnitude.
 
 \paragraph{Extraction is mostly rejection.}
 Of the $11{,}491$ processed turns, $5{,}656$ yield
-\texttt{no\_extractable\_content} --- that is $49.2\%$. The extractor's most
+\texttt{no\_extractable\_content}, which is $49.2\%$. The extractor's most
 common output is
 \emph{nothing}, which is the correct behaviour on conversational filler and the
 first line of defence against memory bloat. The remaining turns produce
@@ -161,7 +165,7 @@ retrieved prior as \textsf{support}, \textsf{contradict}, or
 classifications, resolves same-subject and temporal ordering. Routing is then
 deterministic, and the released trace records the reason for every decision
 (Figure~\ref{fig:lme-pipeline}c). All $8{,}281$ \textsf{independent} labels route
-to \textsf{unclear} --- an independent candidate is never allowed to displace a
+to \textsf{unclear}; an independent candidate is never allowed to displace a
 prior. Of $369$ \textsf{contradict} labels, only the $221$ that stage two
 confirms as \emph{same-subject and newer} route to \textsf{supersede}; $113$
 older and $33$ same-time contradictions are held as \textsf{contradict} without
@@ -179,7 +183,7 @@ stage that end-to-end benchmarks score is $7.2\%$ of the total. (b) The
 ingestion funnel; $5{,}656$ of the $11{,}491$ processed turns ($49.2\%$) yield no
 extractable content, and the write-decision count exceeds the extracted-memory
 count because a candidate is evaluated against each retrieved prior. (c)
-Deterministic relation routing --- only a stage-one \textsf{contradict} that
+Deterministic relation routing means that only a stage-one \textsf{contradict} that
 stage two confirms as same-subject and newer becomes a supersession.}
 \label{fig:lme-pipeline}
 \end{figure}
@@ -188,7 +192,7 @@ stage two confirms as same-subject and newer becomes a supersession.}
 
 \paragraph{Caching did not help, and the trace says why.}
 The extraction cache holds $11{,}477$ unique keys against $11{,}491$ traced
-turns and the relation cache $9{,}523$ against $9{,}539$ classifications ---
+turns and the relation cache $9{,}523$ against $9{,}539$ classifications,
 under $0.3\%$ deduplication in both. Each turn is keyed by its own content and
 each candidate by its pairing with a specific prior, so in a single pass over
 distinct sessions there is essentially nothing to reuse. The caches are
@@ -206,7 +210,7 @@ costs. Three things in it are not visible from an accuracy ranking.
 
 \paragraph{Accuracy alone conflates two very different failures.}
 Decomposing the $180$ items separates a wrong answer from a declined one
-(Figure~\ref{fig:lme-full}b). B1 with no memory is not merely inaccurate --- it
+(Figure~\ref{fig:lme-full}b). B1 with no memory is not merely inaccurate; it
 refuses $170$ of $171$ answerable items, which is the correct behaviour for a
 system with nothing to retrieve, and its $5\%$ comes almost entirely from
 correctly declining the $9$ unanswerable items. B3 recency refuses $115$. Read as
@@ -220,18 +224,18 @@ $p = 1.2\times10^{-4}$.
 
 \paragraph{Only the controller both commits and stays calibrated.}
 On the $9$ by-design unanswerable items, naive overwrite answers $2$ and the
-controller answers $1$. The absolute counts are too small to separate ---
+controller answers $1$. The absolute counts are too small to separate,
 we report them because a system that commits more often should be checked for
 exactly this failure, not because $2$ versus $1$ is a result.
 
 \paragraph{The expensive part is ingestion, not governance.}
 This is the finding that most changes the cost story
-(Figure~\ref{fig:lme-full}c). B3 recency --- a baseline whose whole premise is
-that it is cheap --- runs an extraction stage of $43.0$M prompt tokens, which is
+(Figure~\ref{fig:lme-full}c). B3 recency, a baseline whose whole premise is
+that it is cheap, runs an extraction stage of $43.0$M prompt tokens, which is
 $3\%$ \emph{more} than the governed controller's $41.8$M, and scores $23.9\%$
 against $76.1\%$. Extraction is the dominant cost and it is common to every
-write-time system. The governance machinery proper --- relation classification
---- is $10.9$M tokens, a $26\%$ marginal increment on extraction, and that
+write-time system. The governance machinery proper, relation classification,
+is $10.9$M tokens, a $26\%$ marginal increment on extraction, and that
 increment is what separates $23.9\%$ from $76.1\%$. The controller does have the
 largest total prompt cost ($56.8$M against B3's $43.2$M) because it is the only
 system that runs both stages; the point is not that governance is free but that
@@ -292,7 +296,7 @@ take any single competency cell as independently established.
 competency per system). (a) Accuracy for all five systems; the two
 retrieval-only baselines collapse to zero on the two single-session competencies
 that require a stored preference. (b) The governed controller's item gain over
-naive overwrite, concentrated on knowledge update --- the competency that most
+naive overwrite, concentrated on knowledge update, which is the competency that most
 directly requires a correct supersession.}
 \label{fig:lme-competency}
 \end{figure*}
@@ -303,7 +307,7 @@ directly requires a correct supersession.}
 
 Per-item end-to-end pipeline time is $809$~s for the governed controller and
 $966$~s for naive overwrite, against $1.6$--$3.1$~s for the three retrieval-only
-baselines --- a factor of roughly $320$ against flat-vector retrieval, buying
+baselines, a factor of roughly $320$ against flat-vector retrieval, buying
 $31.7$ accuracy points. Answer-stage prompt tokens show the same ordering
 ($22{,}625$ per item versus $14{,}227$ and $3{,}629$), but as
 Section~\ref{sec:downstream:pipeline} shows, that comparison understates the
@@ -430,7 +434,7 @@ and single-session assistant are effectively solved at $96.7\%$
 
 
 
-The homogeneous full-slice run described in
+The V12 full-slice final candidate described in
 Section~\ref{sec:downstream:final} is the eligible downstream result. It
 evaluates all $180$ items with one answer model and logged judge routing under
 the frozen final protocol. The experiment registry moves this run from

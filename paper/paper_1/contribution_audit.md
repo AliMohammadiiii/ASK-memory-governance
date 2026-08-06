@@ -13,11 +13,11 @@ claims.
 | A three-action write-governance formulation that separates state-preserving retention, lineage-preserving replacement, and refusal to commit | `src/ask/controller/`, `src/ask/memory/operations.py` | Sections 1, 3, and 5 |
 | A typed five-dimensional write scorecard over extraction confidence, evidence quality, marker burden, signed relation, and stability prior, with type-conditional thresholds and a discrete relation guard | `src/ask/controller/features.py`, `score.py`, and `policy.py` | Abstract; Sections 1, 5.1, 8.3, 9, and 10 |
 | An exact action-log replay and counterfactual mechanism audit that measures the action dependence of every dimension, the relation guard, and the type channels | `scripts/analysis/analyze_lme_scorecard.py`; `artifacts/analysis/lme_v12_scorecard_analysis.json` | Sections 8.3 and 9; Appendix |
-| An append-only memory state machine with retained predecessors, explicit successor links, active-state invariants, and active-only versus historical retrieval | `src/ask/memory/operations.py`, `src/ask/memory/models.py`, `src/ask/audit/action_log.py` | Sections 3 and 5; Appendix |
+| Transactional SQLite supersession with retained predecessors, successor links, active-only retrieval, and explicit historical traversal | `src/ask/memory/operations.py`, `src/ask/memory/models.py`, `src/ask/pipeline/orchestrator.py` | Sections 3 and 5; Appendix |
 | A layered evaluation harness that scores the write action, state invariants, lineage, superseded-record recoverability, stale retrieval, selective risk, and asymmetric operational costs separately | `src/ask/eval/`; MGP-6 evaluator artifacts | Sections 3, 4, 6, and 7; Appendix |
 | MGP-6 v4.3, a component-controlled diagnostic with all three actions inside each semantic component, component-isolated splitting, duplicate and shortcut gates, a frozen hidden set, and release manifests | `benchmarks/mgp6/mgp6_v4_3/`; release and integration reports | Sections 4, 6, 7, and 9 |
 | A composed controller whose model and public-evidence rule proposals are both logged, enabling a repair-versus-regression decomposition of the conservative guard | v4.3 response `guard_trace` fields; benchmark-analysis artifact | Sections 4, 7, and 9 |
-| A homogeneous LongMemEval pipeline that exposes extraction, relation classification, governed state construction, retrieval, answer generation, and judgment as separately auditable stages | `src/ask/pipeline/orchestrator.py`; V12 run artifacts | Sections 6 and 8 |
+| A LongMemEval pipeline final candidate that exposes extraction, relation classification, governed state construction, retrieval, answer generation, and judgment as separate stages | `src/ask/pipeline/orchestrator.py`; V12 run artifacts | Sections 6 and 8 |
 | Stage-level call, prompt-token, completion-token, and latency accounting showing where memory-governance computation is spent | V12 extraction/relation traces; MGP-6 response telemetry | Sections 7 and 8 |
 | An auditable deterministic date, numeric, and list computation aid whose proposals and answer-level overrides remain separate from memory writes | `src/ask/controller/computation.py`; V12 answer extras | Sections 8 and 9 |
 | Validity-first negative results: v2 structural leakage, per-family dependence, contaminated-run exclusion, non-equivalent carry-forward exclusion, and mapping-aware external-system comparisons | validity audits; evidence registry; controller-run audit reports | Sections 4, 7, 9, and 10 |
@@ -43,6 +43,13 @@ isolation. The defensible novelty is their executable protocol-level conjunction
 MGP-6 is evidence for this contract, not the complete contribution. ASK--MGP
 and ASK--LME are adapters with different replay scopes and controller policies;
 neither adapter defines ASK by itself.
+
+The normative reference protocol and the evaluated runtime must also remain
+separate. The generic validator and transition event are implemented and tested,
+but the V12 orchestrator uses a distinct SQLite mutation path and decision log.
+The paper reports conformance and runtime evidence without claiming that the
+reference engine was deployed in V12. MGP-Natural is retained as a quarantined
+natural-evidence track, not an evaluated contribution.
 
 The closest feature-based precedent governs retrieval or injection, whereas
 this scorecard governs write-time state transition. Recent memory-update work

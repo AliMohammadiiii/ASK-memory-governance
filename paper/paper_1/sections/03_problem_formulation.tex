@@ -1,46 +1,55 @@
-\section{Problem Formulation}
+\section{ASK Problem Formulation}
 \label{sec:formulation}
 
-We formalize write-time memory governance for a single atomic semantic slot,
-which is the unit \mgp{} controls. This scoping is deliberate: it isolates the
-write decision from retrieval and answer generation so that the decision can be
-scored on its own.
+We formalize write-time memory governance independently of a controller and
+store. The reference protocol supports single-slot versioned, multi-record, and
+temporal-event modes. The controlled MGP-6 diagnostic instantiates one atomic
+semantic slot so that the write decision can be scored without retrieval or
+answer generation.
 
 \subsection{Memory records, state, and types}
 
 A memory record $m$ is a tuple
-$m = (\mathit{id}, \tau, v, c, \sigma, \pi, t, s)$, where $\mathit{id}$ is a
+$m = (\mathit{id}, \tau, v, c, \sigma, \ell, t, p)$, where $\mathit{id}$ is a
 unique identifier, $\tau \in \mathcal{T}$ is the memory \emph{type}, $v$ is the
 stored value (written in the auditable form \texttt{slot = value}), $c \in [0,1]$
 is a stored confidence, $\sigma \in \{\textsf{active}, \textsf{superseded}\}$ is
-the record's \emph{status}, $\pi$ is the supersession pointer (\texttt{supersedes\_id},
-possibly null), $t$ is a validity timestamp, and $s$ is the record's
+the record's \emph{status}, $\ell$ is the supersession pointer (\texttt{supersedes\_id},
+possibly null), $t$ is a validity timestamp, and $p$ is the record's
 \emph{provenance} (the source event/turn that established it). We use three
 types, ordered by expected durability:
 \[
 \mathcal{T} = \{\textsf{stable\_pref},\ \textsf{episodic\_fact},\ \textsf{transient\_pref}\}.
 \]
-A \emph{memory state} $M$ is a set of records for the slot. A well-formed state
-has at least one \textsf{active} record and, for a preference slot, exactly one
-active \textsf{stable\_pref} record; every non-null $\pi$ points at a retained
-\textsf{superseded} record.
+A \emph{memory state} $M$ is a set of records. In single-slot mode a well-formed
+state has at most one active record for the slot; an empty initial state is
+allowed. Every non-null $\ell$ points to a retained superseded predecessor.
+Multi-record mode permits compatible active records. The reference protocol
+encodes provenance and evidence digests in its records and events. The evaluated
+SQLite runtime stores the core type, status, validity, and lineage fields, while
+source session and turn provenance remain in the pipeline trace rather than a
+fully normalized provenance table.
 
 \subsection{Candidate update and evidence}
 
 At a write step the agent extracts a \emph{candidate update} $u$ (a proposed new
-value with a type guess) from a \emph{perturbation event} against the current
-state $M$. The decision is driven by \emph{evidence} associated with $u$: the
+value with a type guess) from an event against the current state $M$. Let $E$
+be the attributable evidence associated with $u$, and let
+$m^{\star}=R(M,u,E)$ be the prior record selected by a target-resolution
+function $R$, if one exists. The controller can use
 extraction confidence, the specificity and recency of the supporting span, the
 presence of negation or hedging markers, and the classified logical relation of
-$u$ to the active record (support, contradiction, or independence). These
-evidence signals are the inputs to the policy of Section~\ref{sec:method}; the
-formulation itself is agnostic to how they are computed.
+$u$ to the active record (support, contradiction, or independence) as evidence
+signals. The formulation is agnostic to candidate extraction, target resolution,
+and relation-classification methods.
 
 \subsection{Action space and transition function}
 \label{sec:actionspace}
 
-The controller emits one action $a \in \mathcal{A} = \{\keep, \supersede, \abstain\}$,
-which induces a deterministic transition $M' = \delta(M, u, a)$:
+The controller $\pi$ emits
+$a=\pi(M,u,E,m^{\star}) \in \mathcal{A} =
+\{\keep, \supersede, \abstain\}$, which induces a deterministic transition
+$M' = \delta(M,u,m^{\star},a)$:
 \begin{itemize}[leftmargin=1.5em,topsep=2pt,itemsep=1pt]
 \item Under \keep{}, the transition never invalidates the prior active record.
 In a single-slot diagnostic, a durable candidate leaves the state unchanged;
@@ -49,8 +58,8 @@ a clear temporary override may be added only as a separate
 instead be appended as another active record while the prior remains active.
 Thus \keep{} means ``admit or retain without replacement,'' not necessarily
 ``perform no insertion.''
-\item $\delta(M, u, \supersede)$ marks the prior active record
-\textsf{superseded} and adds one \textsf{active} successor whose $\pi$ points back
+\item $\delta(M, u, m^{\star}, \supersede)$ marks the prior active record
+\textsf{superseded} and adds one \textsf{active} successor whose $\ell$ points back
 at it. The prior value is \emph{retained}, not deleted, and no longer active in
 the slot; exactly one active record of the successor's type remains.
 \item $\delta(M, u, \abstain) \equiv M$ at the modeled field level: the state is
@@ -62,9 +71,36 @@ whose gold action is \abstain, or otherwise violates a state-transition invarian
 (Section~\ref{sec:mgp6}). This is the failure the abstention and provenance
 machinery is designed to prevent.
 
+Table~\ref{tab:action-example} illustrates the three actions while holding the
+standing value and candidate fixed. The evidence, rather than the candidate
+string, determines the warranted transition.
+
+\begin{table}[t]
+\centering
+\small
+\caption{One candidate under three evidence conditions. The standing record is
+\texttt{status=available}; the candidate is \texttt{status=do-not-disturb}.}
+\label{tab:action-example}
+\begin{tabular}{@{}p{0.19\linewidth}p{0.34\linewidth}p{0.37\linewidth}@{}}
+\toprule
+Action & Evidence reading & State consequence \\
+\midrule
+\keep{} & A temporary do-not-disturb period expired and
+\texttt{available} was reasserted later. & Retain the active standing record;
+do not invalidate it for the stale candidate. \\
+\supersede{} & A durable do-not-disturb change occurred after the temporary
+period ended. & Retain \texttt{available} as superseded, create an active
+successor, and link successor to predecessor. \\
+\abstain{} & The two timestamps use incomparable time zones and the offsets are
+missing. & Leave modeled memory unchanged and record the uncertainty decision
+in the audit trace. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Protocol event and replay contract}
 
-ASK binds each transition to an immutable event
+The ASK reference protocol binds each validated transition to an immutable event
 $z=(a,\mu,i_p,i_u,i_r,i_{\pi},h_C,h_E,h_M,h_{M'})$, where $\mu$ is the
 declared storage mode; $i_p,i_u,i_r,i_{\pi}$ are the compared-prior,
 candidate, resulting-record, and predecessor identifiers; $h_C$ and $h_E$ bind
@@ -78,9 +114,10 @@ The reference validator requires: \abstain{} makes no commit and preserves
 $h_M=h_{M'}$; \keep{} never invalidates the compared prior; \supersede{}
 retains that prior, creates an active successor, and resolves its predecessor
 edge; identifiers are unique; lineage has neither dangling edges nor cycles;
-and a single-slot state has at most one active record. These are protocol
-correctness conditions, not evidence that the chosen action matches human
-semantics.
+and a single-slot state has at most one active record. These are reference
+protocol correctness conditions, not evidence that the chosen action matches
+human semantics. Section~\ref{sec:architecture} distinguishes these normative
+events from the narrower decision logs emitted by the evaluated runtime.
 
 \subsection{Four distinctions the formulation makes explicit}
 \label{sec:distinctions}

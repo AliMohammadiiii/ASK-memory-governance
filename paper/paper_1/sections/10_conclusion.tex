@@ -1,56 +1,38 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We specified ASK as a controller- and storage-agnostic protocol for auditable
-memory transitions, separated memory writing from the state and answer layers
-it affects, then
-used that separation in three ways: to expose a failed pilot, to construct a
-better controlled diagnostic, and to inspect the deployed controller at
-decision-level resolution.
+ASK treats a persistent-memory write as a governed commitment. A controller may
+preserve the compared record, replace it while retaining history, or refuse the
+proposed commitment when evidence is insufficient. The controller is separated
+from the component that mutates storage, and the resulting action, state,
+lineage, retrieval, and answer can be inspected independently. This contract is
+the paper's contribution. It is not reducible to an action vocabulary,
+scorecard, database, or diagnostic dataset.
 
-The audit produced a negative result worth retaining. On \mgp{}, conflict type
-alone predicts every held-out action without reading the dialogue. That failure
-motivated \mgpc: $900$ items in $100$ surface-matched semantic components,
-split by component and exactly action-balanced, with shortcut probes enforced
-as release gates. A single pre-registered configuration run once on the sealed
-$540$-item hidden split reaches $0.8481$ accuracy and $0.8479$ macro-F1. Its
-confusion structure matters more than its rank: $30$ ambiguous-item errors
-preserve the state and lose an audit record, while $8$ replace an active record
-on insufficient evidence. The latter rate is $0.0444$, not the aggregate
-$0.2111$ false-commit label.
+The repository supports this claim at complementary levels. The reference core
+provides executable transition and invariant semantics. \mgpc{} makes the
+write decision directly observable under controlled evidence. One configuration
+frozen before hidden scoring reaches $0.8481$ accuracy and $0.8479$ macro-F1 on
+$540$ items. Its confusion matrix separates $30$ state-preserving
+\abstain$\to$\keep{} errors from $8$ state-changing
+\abstain$\to$\supersede{} errors. The historical v2 result also matters:
+conflict type alone recovers every held-out action, so v2 cannot support a
+capability claim.
 
-The five-dimensional framework is now explicit and empirically traced. Every
-candidate is evaluated by extraction confidence, evidence quality,
-negation/hedge burden, signed candidate--prior relation, and a type stability
-prior, followed by type-conditional thresholds and a discrete negative-relation
-guard. Exact replay recovers all $12{,}654$ V12 decisions. Marker burden carries
-the abstention branch, relation carries supersession, and the guard prevents
-$11{,}091$ score-only replacements. Evidence quality and the stability prior
-move margins but no action on this run; common type thresholds change only five.
-This is both a contribution and a correction to the intended story: the policy
-is transparent, but its effective runtime dimensionality is smaller than five
-on the observed support.
+The \lme{} V12 final candidate tests ASK inside a longer pipeline. Governed
+writes produce $137/180$ correct answers, compared with $114/180$ for naive
+overwrite under the same slice and model protocol. Its $12{,}654$ logged
+decisions replay exactly, and the mechanism audit shows that marker burden,
+signed relation, and a discrete relation guard determine nearly all observed
+actions. LongMemEval does not supply gold actions for those writes, so this is
+downstream and execution evidence rather than direct controller accuracy.
 
-Downstream, the homogeneous \lme{} run places governed writes at $76.1\%$,
-above every structural baseline and $12.8$ points above naive overwrite, with
-the largest gain on knowledge update. Trace accounting adds a second systems
-finding: extraction and relation classification consume $92.8\%$ of prompt
-tokens, while the answer stage conventionally scored by memory benchmarks is
-only $7.2\%$. The contribution is therefore not a dataset, an action
-vocabulary, one controller, or an accuracy number. It is a reproducible
-protocol chain from evidence and frozen configuration, through an
-adapter-declared policy replay and auditable lineage transition, to a
-separately measured answer.
-
-The bounds remain important. The scorecard has no per-write gold on \lme{} and
-scores at chance through the \mgpc{} development adapter; only one v4.3 hidden
-configuration was authorised; the diagnostics are synthetic, English-only,
-single-slot, and single-step; the V12 result is one slice with one answer model
-and judge; and monetary cost is unavailable. A credible successor needs
-independent construction, natural multi-step trajectories, blinded multi-human
-labels, and pre-authorised hidden baselines and ablations. Within those limits,
-the paper's novelty is the controlled conjunction and its audit trail:
-three-way write governance, evidence/configuration-bound traces,
-adapter-declared replay scope, lineage-preserving state, construct-validity
-gates, exact decision replay, and layer-separated evaluation --- not priority
-for any individual mechanism.
+The implementation boundary is equally important. The evaluated SQLite runtime
+uses transactional supersession, retained predecessor identifiers, active-only
+retrieval, historical traversal, and decision logs, but it does not invoke the
+generic ASK invariant validator or emit the generic transition event. V12 also
+retains two provenance bookkeeping gaps, and MGP-Natural remains quarantined
+without independent gold or publication clearance. ASK therefore offers a
+defensible framework for auditable write governance and failure attribution,
+not a certificate of safe or general long-term memory. MGP-6, LongMemEval, and
+the executable tests are evidence about that framework, not its identity.
