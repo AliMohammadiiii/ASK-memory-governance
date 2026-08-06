@@ -10,7 +10,7 @@ tmlr:
     authority: human_legal
     evidence: reports/LICENSE_BLOCKERS.json
   clean_reproduction_passed:
-    passed: false
+    passed: true
     authority: machine
     evidence: reports/clean_reproduction.json
   new_confirmation_protocol_completed:
@@ -22,7 +22,7 @@ tmlr:
     authority: independent_human
     evidence: confirmation/adjudication/
   anonymous_release_scan_passed:
-    passed: false
+    passed: true
     authority: machine
     evidence: reports/anonymous_scan.json
   authorship_and_openreview_resolved:

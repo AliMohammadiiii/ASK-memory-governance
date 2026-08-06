@@ -84,3 +84,5 @@ Date: 2026-08-06
 - Added final audit, claim-evidence, changelog, reproducibility, unresolved-
   issue, and machine-readable metrics reports.
 - Regenerated and visually inspected the canonical 47-page PDF.
+- Completed a clean-commit reproduction and sanitized machine-local paths and
+  checkout identity from its public receipt.

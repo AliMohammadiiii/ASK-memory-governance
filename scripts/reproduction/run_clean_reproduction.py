@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import tempfile
 from datetime import UTC, datetime
@@ -17,14 +18,45 @@ DEFAULT_MD = ROOT / "reports/CLEAN_REPRODUCTION.md"
 DEFAULT_ARTIFACT = ROOT / "artifacts/reproduction/preflight-current/manifest.json"
 
 
+def _sanitize_text(value: str) -> str:
+    """Remove machine-local paths and checkout identity from public receipts."""
+    sanitized = value.replace(str(ROOT), "$REPO")
+    temporary_prefix = r"/(?:private/)?var/folders/[^/\s]+/[^/\s]+/T/"
+    sanitized = re.sub(
+        temporary_prefix + r"ask-repro-[^/\s\"]+",
+        "$REPRO_TMP",
+        sanitized,
+    )
+    sanitized = re.sub(
+        temporary_prefix + r"pip-ephem-wheel-cache-[^/\s\"]+",
+        "$PIP_EPHEMERAL_CACHE",
+        sanitized,
+    )
+    return re.sub(
+        r"-e git\+\S+#egg=ask_memory_governance",
+        "-e $REPRO_SOURCE#egg=ask_memory_governance",
+        sanitized,
+    )
+
+
+def _sanitize_value(value: object) -> object:
+    if isinstance(value, str):
+        return _sanitize_text(value)
+    if isinstance(value, list):
+        return [_sanitize_value(item) for item in value]
+    if isinstance(value, dict):
+        return {key: _sanitize_value(item) for key, item in value.items()}
+    return value
+
+
 def _run(command: list[str], *, cwd: Path = ROOT) -> dict[str, object]:
     result = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
     combined = result.stdout + result.stderr
     return {
-        "command": command,
+        "command": _sanitize_value(command),
         "exit_code": result.returncode,
         "output_sha256": hashlib.sha256(combined.encode()).hexdigest(),
-        "output_tail": combined[-4000:],
+        "output_tail": _sanitize_text(combined[-4000:]),
     }
 
 
@@ -35,6 +67,9 @@ def _git(*args: str) -> str:
 def _write_outputs(
     report: dict[str, object], *, json_out: Path, md_out: Path, artifact_out: Path
 ) -> None:
+    report = _sanitize_value(report)
+    if not isinstance(report, dict):
+        raise TypeError("sanitized reproduction report must remain a mapping")
     payload = json.dumps(report, indent=2, sort_keys=True) + "\n"
     json_out.parent.mkdir(parents=True, exist_ok=True)
     json_out.write_text(payload, encoding="utf-8")

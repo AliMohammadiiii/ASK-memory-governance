@@ -1,11 +1,11 @@
 {
   "claim_scope": "public deterministic path only",
-  "complete_logs_preserved": false,
-  "git_head": "51decd61c297cdd2af0f3227e79307baa4df5697",
-  "git_tree": "b1840968621041bc2c88949e3e76a108df51705b",
+  "complete_logs_preserved": true,
+  "git_head": "bcde14c1b12de8bb9ea0f6207f52a187e5e7ad35",
+  "git_tree": "9fa492643162d5f6da43257e6e3e54aa8d4f63e9",
   "report_path": "reports/clean_reproduction.json",
-  "report_sha256": "c3ac45f8db63647a2af3a152de180182a1d8e19626be04625de7ef5aaa549183",
+  "report_sha256": "00c39f8f65928ca877696be13d207d4ad998d3bc86a5e1b26a2bedd43be3401b",
   "run_id": "preflight-current",
   "schema_version": "1.0",
-  "status": "BLOCKED_DIRTY_WORKTREE"
+  "status": "PASS"
 }

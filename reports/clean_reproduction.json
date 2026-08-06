@@ -1,11 +1,73 @@
 {
-  "commands": [],
-  "git_head": "51decd61c297cdd2af0f3227e79307baa4df5697",
-  "git_tree": "b1840968621041bc2c88949e3e76a108df51705b",
+  "commands": [
+    {
+      "command": [
+        "python3.12",
+        "-m",
+        "venv",
+        "$REPRO_TMP/venv"
+      ],
+      "exit_code": 0,
+      "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "output_tail": ""
+    },
+    {
+      "command": [
+        "$REPRO_TMP/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--upgrade",
+        "pip"
+      ],
+      "exit_code": 0,
+      "output_sha256": "66859646518e21714fe03ab2b8f5b848d71ab7a6b88863249925d89cdd754176",
+      "output_tail": "Requirement already satisfied: pip in $REPRO_TMP/venv/lib/python3.12/site-packages (25.3)\nCollecting pip\n  Using cached pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)\nUsing cached pip-26.2.1-py3-none-any.whl (1.8 MB)\nInstalling collected packages: pip\n  Attempting uninstall: pip\n    Found existing installation: pip 25.3\n    Uninstalling pip-25.3:\n      Successfully uninstalled pip-25.3\nSuccessfully installed pip-26.2.1\n"
+    },
+    {
+      "command": [
+        "$REPRO_TMP/venv/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--constraint",
+        "$REPO/constraints/repro-py312.txt",
+        "-e",
+        ".[dev]"
+      ],
+      "exit_code": 0,
+      "output_sha256": "f7b10aae00f402cb67aa45d258fa6aa2dcd8040373955edf8b070fc7537def5d",
+      "output_tail": " (90 kB)\nUsing cached mypy-1.20.2-cp312-cp312-macosx_11_0_arm64.whl (13.4 MB)\nUsing cached numpy-2.4.6-cp312-cp312-macosx_14_0_arm64.whl (5.2 MB)\nUsing cached pydantic-2.13.4-py3-none-any.whl (472 kB)\nUsing cached pydantic_core-2.46.4-cp312-cp312-macosx_11_0_arm64.whl (2.0 MB)\nUsing cached pytest-9.1.1-py3-none-any.whl (386 kB)\nUsing cached pluggy-1.6.0-py3-none-any.whl (20 kB)\nUsing cached pytest_cov-6.3.0-py3-none-any.whl (25 kB)\nUsing cached pyyaml-6.0.3-cp312-cp312-macosx_11_0_arm64.whl (173 kB)\nDownloading tqdm-4.69.1-py3-none-any.whl (675 kB)\n   \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 675.5/675.5 kB 990.0 kB/s  0:00:01\nUsing cached annotated_types-0.8.0-py3-none-any.whl (13 kB)\nUsing cached attrs-26.1.0-py3-none-any.whl (67 kB)\nUsing cached cfgv-3.5.0-py2.py3-none-any.whl (7.4 kB)\nUsing cached coverage-7.15.3-cp312-cp312-macosx_11_0_arm64.whl (222 kB)\nUsing cached identify-2.6.19-py2.py3-none-any.whl (99 kB)\nUsing cached iniconfig-2.3.0-py3-none-any.whl (7.5 kB)\nUsing cached jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)\nUsing cached librt-0.13.0-cp312-cp312-macosx_11_0_arm64.whl (155 kB)\nUsing cached markupsafe-3.0.3-cp312-cp312-macosx_11_0_arm64.whl (12 kB)\nUsing cached mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)\nUsing cached nodeenv-1.10.0-py2.py3-none-any.whl (23 kB)\nUsing cached packaging-26.3-py3-none-any.whl (129 kB)\nUsing cached pathspec-1.1.1-py3-none-any.whl (57 kB)\nUsing cached pygments-2.20.0-py3-none-any.whl (1.2 MB)\nUsing cached referencing-0.37.0-py3-none-any.whl (26 kB)\nUsing cached rpds_py-2026.6.3-cp312-cp312-macosx_11_0_arm64.whl (338 kB)\nUsing cached types_pyyaml-6.0.12.20260724-py3-none-any.whl (20 kB)\nUsing cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)\nUsing cached typing_inspection-0.4.2-py3-none-any.whl (14 kB)\nUsing cached virtualenv-21.7.1-py3-none-any.whl (5.5 MB)\nUsing cached distlib-0.4.3-py2.py3-none-any.whl (470 kB)\nUsing cached filelock-3.32.2-py3-none-any.whl (98 kB)\nUsing cached platformdirs-4.11.0-py3-none-any.whl (23 kB)\nUsing cached python_discovery-1.5.1-py3-none-any.whl (35 kB)\nUsing cached pyproject_hooks-1.2.0-py3-none-any.whl (10 kB)\nBuilding wheels for collected packages: ask-memory-governance\n  Building editable for ask-memory-governance (pyproject.toml): started\n  Building editable for ask-memory-governance (pyproject.toml): finished with status 'done'\n  Created wheel for ask-memory-governance: filename=ask_memory_governance-0.2.0-0.editable-py3-none-any.whl size=5573 sha256=6883242d8e9b274e72bdd86e910f3d8148c2b7403d698520339580a248e821df\n  Stored in directory: $PIP_EPHEMERAL_CACHE/wheels/3d/63/8c/741c765cef5c1123aa9bd673fcee92995e66c15678be10916f\nSuccessfully built ask-memory-governance\nInstalling collected packages: distlib, typing_extensions, types-PyYAML, tqdm, ruff, rpds-py, pyyaml, pyproject_hooks, pygments, pluggy, platformdirs, pathspec, packaging, numpy, nodeenv, mypy_extensions, MarkupSafe, librt, iniconfig, identify, filelock, coverage, cfgv, attrs, annotated-types, typing-inspection, referencing, python-discovery, pytest, pydantic-core, mypy, Jinja2, build, virtualenv, pytest-cov, pydantic, jsonschema-specifications, pre-commit, jsonschema, ask-memory-governance\n\nSuccessfully installed Jinja2-3.1.6 MarkupSafe-3.0.3 annotated-types-0.8.0 ask-memory-governance-0.2.0 attrs-26.1.0 build-1.5.0 cfgv-3.5.0 coverage-7.15.3 distlib-0.4.3 filelock-3.32.2 identify-2.6.19 iniconfig-2.3.0 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 librt-0.13.0 mypy-1.20.2 mypy_extensions-1.1.0 nodeenv-1.10.0 numpy-2.4.6 packaging-26.3 pathspec-1.1.1 platformdirs-4.11.0 pluggy-1.6.0 pre-commit-4.6.1 pydantic-2.13.4 pydantic-core-2.46.4 pygments-2.20.0 pyproject_hooks-1.2.0 pytest-9.1.1 pytest-cov-6.3.0 python-discovery-1.5.1 pyyaml-6.0.3 referencing-0.37.0 rpds-py-2026.6.3 ruff-0.16.0 tqdm-4.69.1 types-PyYAML-6.0.12.20260724 typing-inspection-0.4.2 typing_extensions-4.16.0 virtualenv-21.7.1\n"
+    },
+    {
+      "command": [
+        "make",
+        "reproduce-public",
+        "PYTHON=$REPRO_TMP/venv/bin/python"
+      ],
+      "exit_code": 0,
+      "output_sha256": "1c2a7c76cd34f116c262a682dbed35515eae0dacc978360bd830397b95c3b363",
+      "output_tail": "......... [ 93%]\n...............................................                          [100%]\n=========================== short test summary info ============================\nSKIPPED [1] tests/test_flat_vector.py:35: could not import 'faiss': No module named 'faiss'\nSKIPPED [1] tests/test_flat_vector_store.py:28: could not import 'faiss': No module named 'faiss'\nSKIPPED [1] tests/test_recency_pruning.py:39: could not import 'faiss': No module named 'faiss'\nSKIPPED [1] tests/test_computation_replay.py:24: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:48: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:56: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:80: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:87: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:109: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:138: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:167: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_computation_replay.py:205: optional LongMemEval computation fixture is not redistributed\nSKIPPED [1] tests/test_embeddings.py:404: MiniLM smoke tests are gated by ASK_RUN_MINILM_SMOKE=1 (default off \u2014 Apple-Silicon libomp segfault risk; see test_embeddings.py)\nSKIPPED [1] tests/test_embeddings.py:429: MiniLM smoke tests are gated by ASK_RUN_MINILM_SMOKE=1 (default off \u2014 Apple-Silicon libomp segfault risk; see test_embeddings.py)\n684 passed, 14 skipped in 15.26s\n$REPRO_TMP/venv/bin/python -m ruff check src tests scripts benchmarks deploy/download_longmemeval_s.py thesis/latex/tools\nAll checks passed!\n$REPRO_TMP/venv/bin/python -m ruff format --check src tests scripts benchmarks deploy/download_longmemeval_s.py thesis/latex/tools\n292 files already formatted\n$REPRO_TMP/venv/bin/python -m mypy src/ask\nSuccess: no issues found in 74 source files\n$REPRO_TMP/venv/bin/python benchmarks/mgp6/validate_mgp6.py --input benchmarks/mgp6/data/mgp6_v2.jsonl --strict\nVALIDATION PASSED: 180 examples, 0 errors.\n$REPRO_TMP/venv/bin/python scripts/release/validate_public_data.py\n{\n  \"legal_clearance\": false,\n  \"matrix_rows\": 21,\n  \"problems\": [],\n  \"status\": \"PASS_BOUNDARY_DECLARATION\"\n}\n$REPRO_TMP/venv/bin/python scripts/validation/validate_ask_traces.py\n{\"status\": \"PASS\", \"events_validated\": 0, \"schema\": \"$REPO/schema/ask_transition_event.schema.json\"}\n$REPRO_TMP/venv/bin/python -m pytest -q tests/test_ask_protocol.py\n........                                                                 [100%]\n8 passed in 0.05s\n$REPRO_TMP/venv/bin/python scripts/experiments/validate_model_matrix.py\n{\"status\": \"PASS_DRY_CONFIGURATION\", \"families\": [\"Gemma\", \"Llama\", \"Mistral\", \"Qwen\"], \"systems\": 5, \"execution_authorized\": false}\n$REPRO_TMP/venv/bin/python scripts/paper/verify_generated_outputs.py\n{\"files_checked\": 5, \"fragments_checked\": 20, \"missing\": [], \"schema_version\": \"1.0\", \"scope\": \"headline LaTeX fragment drift; figures still require source-hash and visual review\", \"status\": \"PASS\", \"verified_at\": \"2026-08-06T10:42:03.511896+00:00\"}\n"
+    },
+    {
+      "command": [
+        "$REPRO_TMP/venv/bin/python",
+        "-m",
+        "pip",
+        "freeze",
+        "--all"
+      ],
+      "exit_code": 0,
+      "output_sha256": "862a271cc292070d3f6e7e82e0c231f96a2688290407426f6fba2704e2163e42",
+      "output_tail": "annotated-types==0.8.0\n-e $REPRO_SOURCE#egg=ask_memory_governance\nattrs==26.1.0\nbuild==1.5.0\ncfgv==3.5.0\ncoverage==7.15.3\ndistlib==0.4.3\nfilelock==3.32.2\nidentify==2.6.19\niniconfig==2.3.0\nJinja2==3.1.6\njsonschema==4.26.0\njsonschema-specifications==2025.9.1\nlibrt==0.13.0\nMarkupSafe==3.0.3\nmypy==1.20.2\nmypy_extensions==1.1.0\nnodeenv==1.10.0\nnumpy==2.4.6\npackaging==26.3\npathspec==1.1.1\npip==26.2.1\nplatformdirs==4.11.0\npluggy==1.6.0\npre_commit==4.6.1\npydantic==2.13.4\npydantic_core==2.46.4\nPygments==2.20.0\npyproject_hooks==1.2.0\npytest==9.1.1\npytest-cov==6.3.0\npython-discovery==1.5.1\nPyYAML==6.0.3\nreferencing==0.37.0\nrpds-py==2026.6.3\nruff==0.16.0\ntqdm==4.69.1\ntypes-PyYAML==6.0.12.20260724\ntyping-inspection==0.4.2\ntyping_extensions==4.16.0\nvirtualenv==21.7.1\n"
+    }
+  ],
+  "completed_at": "2026-08-06T10:42:03.722565+00:00",
+  "git_head": "bcde14c1b12de8bb9ea0f6207f52a187e5e7ad35",
+  "git_tree": "9fa492643162d5f6da43257e6e3e54aa8d4f63e9",
   "network_note": "pip package acquisition may use the configured index; research inference is never called",
-  "passed": false,
-  "reason": "clean reproduction requires a frozen clean commit",
+  "passed": true,
   "schema_version": "1.0",
-  "started_at": "2026-08-02T20:15:58.630867+00:00",
-  "status": "BLOCKED_DIRTY_WORKTREE"
+  "started_at": "2026-08-06T10:41:15.375643+00:00",
+  "status": "PASS"
 }

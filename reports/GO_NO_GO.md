@@ -7,10 +7,8 @@ Final status: **NO_GO**
 | Venue | Gate | Authority | Resolution evidence |
 |---|---|---|---|
 | TMLR | `licenses_and_redistribution_resolved` | `human_legal` | `reports/LICENSE_BLOCKERS.json` |
-| TMLR | `clean_reproduction_passed` | `machine` | `reports/clean_reproduction.json` |
 | TMLR | `new_confirmation_protocol_completed` | `independent_human_and_machine` | `confirmation/reports/` |
 | TMLR | `independent_annotation_satisfied` | `independent_human` | `confirmation/adjudication/` |
-| TMLR | `anonymous_release_scan_passed` | `machine` | `reports/anonymous_scan.json` |
 | TMLR | `authorship_and_openreview_resolved` | `human` | `publication/OPENREVIEW_PROFILE_CHECKLIST.md` |
 | TMLR | `current_venue_constraints_checked` | `machine_and_human` | `publication/VENUE_REQUIREMENTS_SNAPSHOT.md` |
 | JMLR | `natural_write_labelled_evidence_completed` | `independent_human_and_machine` | `confirmation/natural_challenge/` |

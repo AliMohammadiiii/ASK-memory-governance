@@ -75,10 +75,11 @@ the score source; the stale pre-adjudication aggregate is not.
 | `make paper PYTHON=.venv/bin/python` | PASS; 47-page PDF built |
 | `make verify-paper-artifacts PYTHON=.venv/bin/python` | PASS; 5 files and 20 required fragments |
 | `make verify-claims PYTHON=.venv/bin/python` | PASS; 26 claims, 0 mismatches |
-| `make advisor-check PYTHON=.venv/bin/python` | PASS; repository, prompt, prose, path, Ruff, format, mypy, compile, shell, claim, and provenance checks; 684 passed, 14 optional skips |
+| `make advisor-check PYTHON=.venv/bin/python` | PASS; repository, prompt, prose, path, Ruff, format, mypy, compile, shell, claim, and provenance checks; 686 passed, 14 optional skips |
 | `make release-check PYTHON=.venv/bin/python` | PASS; complete offline release gate and package build |
 | `make mgpn-natural-v022-test PYTHON=.venv/bin/python` | PASS; 132 tests, 1 expected duplicate-member warning in a tamper-rejection test |
-| `make release-audit PYTHON=.venv/bin/python` | Boundary checks PASS; publication readiness correctly remains `NO_GO` with 16 open gates |
+| `make clean-reproduction PYTHON=.venv/bin/python` | PASS from commit `bcde14c`; fresh environment, 684 tests passed and 14 optional tests skipped |
+| `make release-audit PYTHON=.venv/bin/python` | Boundary checks PASS; publication readiness correctly remains `NO_GO` with 14 open gates |
 | `git diff --check` | PASS before final validation |
 | PDF render and 47-page visual inspection | PASS; no clipping or unreadable figure/table found |
 
@@ -92,6 +93,5 @@ the score source; the stale pre-adjudication aggregate is not.
   license is selected.
 - Machine checks cannot substitute for MGP-Natural privacy, consent, rights,
   independent annotation, or adjudication decisions.
-- A clean-commit reproduction remains an explicit publication gate and must be
-  executed after the final source commit; the prior receipt is
-  `BLOCKED_DIRTY_WORKTREE` and is not counted as a pass here.
+- The clean-reproduction receipt removes local paths and checkout identity from
+  public command/output tails while retaining hashes and exit codes.

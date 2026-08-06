@@ -141,7 +141,7 @@ counterfactual replays are explicitly non-primary.
 The canonical PDF builds successfully as a 47-page anonymous manuscript. All
 47 pages were rendered and inspected for clipping, overflow, figure order,
 table readability, and unresolved references. The advisor and release checks
-pass, including 684 main tests with 14 documented optional skips; the vendored
+pass, including 686 main tests with 14 documented optional skips; the vendored
 MGP-Natural v0.2.2 suite passes 132 tests. The final validation outcomes are
 recorded in `reports/REPRODUCIBILITY_STATUS_FINAL.md`.
 
@@ -149,8 +149,8 @@ recorded in `reports/REPRODUCIBILITY_STATUS_FINAL.md`.
 
 **CONDITIONAL GO for the bounded manuscript.** The scientific story and
 manuscript are complete within the stated evidence boundaries. The repository's
-publication-readiness engine remains **NO_GO** with 16 external, human, legal,
-venue, or clean-reproduction gates open. Public artifact release and an
+publication-readiness engine remains **NO_GO** with 14 external, human, legal,
+venue, or scientific-evidence gates open. Public artifact release and an
 unqualified reproducibility claim remain blocked by licensing, V12 provenance
 anomalies, private-source restrictions, and the unfinished MGP-Natural human and
 legal gates.

@@ -1,16 +1,10 @@
 {
-  "blocker_count": 16,
+  "blocker_count": 14,
   "blockers": [
     {
       "authority": "human_legal",
       "evidence": "reports/LICENSE_BLOCKERS.json",
       "gate_id": "licenses_and_redistribution_resolved",
-      "venue": "TMLR"
-    },
-    {
-      "authority": "machine",
-      "evidence": "reports/clean_reproduction.json",
-      "gate_id": "clean_reproduction_passed",
       "venue": "TMLR"
     },
     {
@@ -23,12 +17,6 @@
       "authority": "independent_human",
       "evidence": "confirmation/adjudication/",
       "gate_id": "independent_annotation_satisfied",
-      "venue": "TMLR"
-    },
-    {
-      "authority": "machine",
-      "evidence": "reports/anonymous_scan.json",
-      "gate_id": "anonymous_release_scan_passed",
       "venue": "TMLR"
     },
     {
@@ -98,7 +86,7 @@
       "venue": "JMLR"
     }
   ],
-  "evaluated_at": "2026-08-06T10:37:17.665445+00:00",
+  "evaluated_at": "2026-08-06T10:46:52.873631+00:00",
   "gates": {
     "jmlr": {
       "cross_storage_or_native_system_evidence_completed": {
@@ -156,7 +144,7 @@
       "anonymous_release_scan_passed": {
         "authority": "machine",
         "evidence": "reports/anonymous_scan.json",
-        "passed": false
+        "passed": true
       },
       "authorship_and_openreview_resolved": {
         "authority": "human",
@@ -166,7 +154,7 @@
       "clean_reproduction_passed": {
         "authority": "machine",
         "evidence": "reports/clean_reproduction.json",
-        "passed": false
+        "passed": true
       },
       "current_venue_constraints_checked": {
         "authority": "machine_and_human",
