@@ -6,9 +6,9 @@ research snapshots from competing with current instructions.
 ## Start here
 
 - `../README.md`, project scope, setup, repository map, and release entry point.
-- `../ADVISOR_START_HERE.md`, supervisor reading order and review commands.
-- `ASK_PROTOCOL.md`, normative protocol, transition, and invariant contract.
-- `ADAPTER_CONTRACT.md`, ASK-MGP/ASK-LME trace and replay boundaries.
+- `development/ADVISOR_START_HERE.md`, supervisor reading order and review commands.
+- `architecture/ASK_PROTOCOL.md`, normative protocol, transition, and invariant contract.
+- `architecture/ADAPTER_CONTRACT.md`, ASK-MGP/ASK-LME trace and replay boundaries.
 - `architecture/REPOSITORY_ARCHITECTURE.md` - repository and protocol ownership.
 - `architecture/SOURCE_OF_TRUTH.md` - authority for code, data, experiments,
   evidence, manuscripts, and generated outputs.
@@ -18,13 +18,14 @@ research snapshots from competing with current instructions.
 - `reproducibility/ENVIRONMENT.md` - interpreter, dependency, and platform scope.
 - `reproducibility/RESULT_PROVENANCE.md` - source-to-claim lineage.
 - `reproducibility/GENERATED_FILES.md` - generated-output ownership and tracking policy.
-- `TMLR_READINESS.md` and `JMLR_READINESS.md`, venue-specific blockers.
+- `evaluation/TMLR_READINESS.md` and `evaluation/JMLR_READINESS.md`,
+  venue-specific blockers.
 - `reproduce_results.md`, benchmark-specific reproduction commands and evidence
   boundaries.
-- `evaluation_protocol.md`, evaluation semantics and required disclosures.
-- `limitations.md`, canonical technical and scientific limitations.
+- `evaluation/evaluation_protocol.md`, evaluation semantics and required disclosures.
+- `evaluation/limitations.md`, canonical technical and scientific limitations.
 - `troubleshooting.md`, common installation, external-data, and provider issues.
-- `release_checklist.md`, source-release and academic-handoff checklist.
+- `development/release_checklist.md`, source-release and academic-handoff checklist.
 
 Compatibility pages such as `known_limitations.md` contain pointers only. New
 links should target the canonical pages above.

@@ -6,18 +6,18 @@ scientific claim rules in `../audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 | Concern | Authority | Secondary material |
 |---|---|---|
 | Installable code | `src/ask/` | thin commands under `scripts/` |
-| ASK protocol | `src/ask/protocol/` and `../ASK_PROTOCOL.md` | manuscript explanations |
+| ASK protocol | `src/ask/protocol/` and `ASK_PROTOCOL.md` | manuscript explanations |
 | Public benchmark contracts | `benchmarks/` | reports and manuscript summaries |
 | Private evaluation material | configured `.private/` paths | hashes and public aggregate records |
 | Maintained defaults | `configs/` | command examples |
-| Experiment records | `experiments/` and run manifests | narrative run notes |
+| Experiment records | `configs/experiments/` and run manifests | narrative run notes |
 | Prompt identity | `prompts/registry.yaml` and prompt bytes | prompt descriptions in manuscripts |
 | Raw predictions and judgments | registered artifact or local evidence paths | derived reports |
 | Claim values | `claims/claims.csv`, source hashes, and generating commands | paper and thesis prose |
 | Public/private policy | `release/PUBLIC_PRIVATE_MATRIX.csv` | release checklists |
 | Paper | `paper/paper_1/main.tex` and its included sources | rendered local PDF |
 | Thesis | `thesis/latex/main.tex` and its included sources | Markdown and review exports |
-| Current limitations | `../limitations.md` | `../known_limitations.md` compatibility link |
+| Current limitations | `../evaluation/limitations.md` | `../evaluation/known_limitations.md` compatibility link |
 | Current repository instructions | root `README.md`, `Makefile`, and this directory | dated reports |
 | Historical decisions | `docs/history/` | references from current documents |
 

@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-MATRIX = ROOT / "release/PUBLIC_PRIVATE_MATRIX.csv"
+MATRIX = ROOT / "docs/release-policy/PUBLIC_PRIVATE_MATRIX.csv"
 BLOCKERS = ROOT / "reports/LICENSE_BLOCKERS.json"
 
 

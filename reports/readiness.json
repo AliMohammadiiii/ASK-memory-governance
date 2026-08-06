@@ -27,13 +27,13 @@
     },
     {
       "authority": "human",
-      "evidence": "publication/OPENREVIEW_PROFILE_CHECKLIST.md",
+      "evidence": "docs/publication/OPENREVIEW_PROFILE_CHECKLIST.md",
       "gate_id": "authorship_and_openreview_resolved",
       "venue": "TMLR"
     },
     {
       "authority": "machine_and_human",
-      "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+      "evidence": "docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
       "gate_id": "current_venue_constraints_checked",
       "venue": "TMLR"
     },
@@ -57,7 +57,7 @@
     },
     {
       "authority": "paid_or_external_execution",
-      "evidence": "experiments/model_matrix.yaml",
+      "evidence": "configs/experiments/model_matrix.yaml",
       "gate_id": "model_family_breadth_satisfied",
       "venue": "JMLR"
     },
@@ -81,18 +81,18 @@
     },
     {
       "authority": "scientific_review",
-      "evidence": "docs/JMLR_READINESS.md",
+      "evidence": "docs/evaluation/JMLR_READINESS.md",
       "gate_id": "generalizable_ml_lessons_demonstrated",
       "venue": "JMLR"
     },
     {
       "authority": "machine_and_human",
-      "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+      "evidence": "docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
       "gate_id": "jmlr_compliance_satisfied",
       "venue": "JMLR"
     }
   ],
-  "evaluated_at": "2026-08-06T12:57:54.895693+00:00",
+  "evaluated_at": "2026-08-06T22:00:21.705227+00:00",
   "gates": {
     "jmlr": {
       "cross_storage_or_native_system_evidence_completed": {
@@ -107,7 +107,7 @@
       },
       "generalizable_ml_lessons_demonstrated": {
         "authority": "scientific_review",
-        "evidence": "docs/JMLR_READINESS.md",
+        "evidence": "docs/evaluation/JMLR_READINESS.md",
         "passed": false
       },
       "independent_annotation_completed": {
@@ -117,12 +117,12 @@
       },
       "jmlr_compliance_satisfied": {
         "authority": "machine_and_human",
-        "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+        "evidence": "docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
         "passed": false
       },
       "model_family_breadth_satisfied": {
         "authority": "paid_or_external_execution",
-        "evidence": "experiments/model_matrix.yaml",
+        "evidence": "configs/experiments/model_matrix.yaml",
         "passed": false
       },
       "multi_judge_or_human_validation_completed": {
@@ -154,7 +154,7 @@
       },
       "authorship_and_openreview_resolved": {
         "authority": "human",
-        "evidence": "publication/OPENREVIEW_PROFILE_CHECKLIST.md",
+        "evidence": "docs/publication/OPENREVIEW_PROFILE_CHECKLIST.md",
         "passed": false
       },
       "clean_reproduction_passed": {
@@ -164,7 +164,7 @@
       },
       "current_venue_constraints_checked": {
         "authority": "machine_and_human",
-        "evidence": "publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
+        "evidence": "docs/publication/VENUE_REQUIREMENTS_SNAPSHOT.md",
         "passed": false
       },
       "headline_claims_verified": {

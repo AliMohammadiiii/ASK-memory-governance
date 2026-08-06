@@ -139,11 +139,11 @@ def category(relative: str) -> str:
         return "test_source"
     if relative.startswith("scripts/"):
         return "research_tooling"
-    if relative.startswith(("paper/", "thesis/", "publication/")):
+    if relative.startswith(("paper/", "thesis/", "docs/publication/")):
         return "manuscript_source"
-    if relative.startswith(("claims/", "release/", "releases/")):
+    if relative.startswith(("claims/", "docs/release-policy/", "releases/")):
         return "release_evidence"
-    if relative.startswith(("configs/", "experiments/", "prompts/")):
+    if relative.startswith(("configs/", "prompts/")):
         return "experiment_definition"
     if first.startswith("."):
         return "repository_configuration"
@@ -157,7 +157,7 @@ def scientific_role(relative: str) -> str:
         return "reported or derived research evidence"
     if relative.startswith("benchmarks/"):
         return "benchmark source, fixture, or protocol"
-    if relative.startswith(("claims/", "experiments/")):
+    if relative.startswith(("claims/", "configs/experiments/")):
         return "claim or experiment provenance"
     if relative.startswith(("paper/", "thesis/")):
         return "scientific manuscript"
@@ -240,7 +240,7 @@ def proposed_disposition(
             "ambiguous backup name; preserve content under a semantic historical path",
             "hash comparison and reference scan",
         )
-    if relative.startswith(("artifacts/", "claims/", "experiments/", "docs/history/")):
+    if relative.startswith(("artifacts/", "claims/", "configs/experiments/", "docs/history/")):
         return (
             "retained_evidence",
             "RETAIN_AUDIT_EVIDENCE",

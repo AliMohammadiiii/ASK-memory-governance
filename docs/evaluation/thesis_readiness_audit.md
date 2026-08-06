@@ -19,8 +19,8 @@ in `MASTER_EXECUTION_STATUS.md` and `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`.
 | T-05 MGP-6 rerun if controller/extraction changed | P0 conditional | not triggered | no controller/extraction semantic change was made after accepting the Jun-8 valid run |
 | T-06 initialize git | P1 | complete | baseline commit exists before thesis-readiness changes |
 | T-07 Ruff cleanup | P1 | complete | `ruff check .` passes |
-| T-08 frozen-test protocol | P1 | complete | `docs/evaluation_protocol.md` |
-| T-09 transient-scope decision | P1 | documented limitation | `docs/known_limitations.md`; no behavior change without rerun |
+| T-08 frozen-test protocol | P1 | complete | `docs/evaluation/evaluation_protocol.md` |
+| T-09 transient-scope decision | P1 | documented limitation | `docs/evaluation/known_limitations.md`; no behavior change without rerun |
 | T-10 action-log docs/export/retrieved priors | P1 | open | not implemented in this pass |
 | T-11 keep-only baseline | P1 | open | not implemented in this pass |
 | T-12 extra unit/integration tests | P1 | open | not implemented beyond existing suite |

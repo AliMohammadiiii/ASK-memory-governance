@@ -13,8 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def main() -> int:
-    matrix = yaml.safe_load((ROOT / "experiments/model_matrix.yaml").read_text())
-    schema = json.loads((ROOT / "experiments/model_matrix.schema.json").read_text())
+    matrix = yaml.safe_load((ROOT / "configs/experiments/model_matrix.yaml").read_text())
+    schema = json.loads((ROOT / "configs/experiments/model_matrix.schema.json").read_text())
     Draft202012Validator(schema).validate(matrix)
     families = {row["family"] for row in matrix["systems"]}
     required = {"Qwen", "Gemma", "Llama"}

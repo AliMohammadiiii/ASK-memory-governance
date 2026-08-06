@@ -2,7 +2,7 @@
 
 > Historical protocol note: the MGP-6 v1/v2 and partial LongMemEval statements
 > below are retained for lineage. For current claim eligibility use
-> `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`, `docs/EXPERIMENT_LINEAGE.md`, and
+> `docs/audit/SCIENTIFIC_SOURCE_OF_TRUTH.md`, `docs/audit/EXPERIMENT_LINEAGE.md`, and
 > the machine ledger under `claims/`. They supersede this older snapshot.
 
 This repository treats benchmark artifacts as evidence only when both the run
@@ -65,7 +65,7 @@ otherwise.
 ## Temporary-Update Claims
 
 Temporary/context-bound memory remains a documented limitation in
-`docs/known_limitations.md`. Do not claim scoped temporary-memory correctness
+`docs/evaluation/known_limitations.md`. Do not claim scoped temporary-memory correctness
 from the current valid MGP-6 run; T5/T6 are explicitly weak slices.
 
 ## Promotion Gates

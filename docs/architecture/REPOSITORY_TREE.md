@@ -9,6 +9,7 @@ ask-memory-governance/
 ├── tests/                   # automated verification
 ├── benchmarks/              # diagnostic data, protocols, adapters, and fixtures
 ├── configs/                 # active and recorded configuration
+│   ├── experiments/      # experiment and model configuration, frozen hidden controls
 ├── prompts/                 # prompt sources
 ├── schema/                  # LinkML, SQL, and JSON schema sources
 ├── scripts/
@@ -23,8 +24,13 @@ ask-memory-governance/
 ├── docs/
 │   ├── audit/               # scientific source-of-truth and traceability
 │   ├── architecture/        # ownership, authority, and maintained tree
+│   ├── development/         # advisor and contributor runbooks
+│   ├── evaluation/          # evaluation protocols, metrics, and run matrix
 │   ├── figures/             # canonical reusable figures
 │   ├── history/             # superseded and dated research snapshots
+│   ├── publication/         # venue requirements and submission checklists
+│   ├── release-policy/      # public/private, license, and provenance policy
+│   ├── research/            # research notes and provenance records
 │   └── reproducibility/     # environment, quickstart, and result lineage
 ├── artifacts/               # committed evidence, ledgers, and manifests
 ├── claims/                  # machine-verifiable claims and source inventory
@@ -32,9 +38,7 @@ ask-memory-governance/
 ├── reports/                 # dated human-readable analytical outputs
 │   └── repository_cleanup/  # baseline, disposition, migration, and validation
 ├── paper/                   # paper sources and publication strategy
-├── publication/             # venue requirements and submission checklists
 ├── readiness/               # executable publication-gate definitions
-├── release/                 # public/private, license, and provenance policy
 ├── thesis/                  # thesis sources and administrative field record
 ├── presentation/            # defense decks, notes, and deck-specific exports
 └── .github/workflows/       # continuous integration

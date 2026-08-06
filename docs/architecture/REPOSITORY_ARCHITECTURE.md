@@ -38,7 +38,7 @@ and adapter contracts. A benchmark label must never enter model-facing code.
 Private labels, mappings, and non-redistributable inputs remain outside Git.
 
 `configs/` contains maintained defaults and prospective run definitions.
-`experiments/` records configurations and authorizations associated with
+`configs/experiments/` records configurations and authorizations associated with
 consumed or registered experiments. `prompts/registry.yaml` identifies every
 prompt, its status, hash, and experiment relations. Reported configurations and
 prompts are preserved by content hash even if a newer active default exists.
@@ -72,7 +72,7 @@ scientific claims must link to maintained documentation instead.
 - Verification: `tests/` and validation scripts
 - Benchmark contracts: `benchmarks/`
 - Active configuration: `configs/`
-- Experiment records: `experiments/`
+- Experiment records: `configs/experiments/`
 - Prompt authority: `prompts/registry.yaml` and the referenced prompt files
 - Machine evidence: `artifacts/`, `claims/`, and registered local evidence
 - Human reports: `reports/`

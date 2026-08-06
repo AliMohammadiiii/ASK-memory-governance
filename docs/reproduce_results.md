@@ -35,7 +35,7 @@ generator, not a population capability estimate. See
 ## MGP-6 v4.3 integration
 
 Public train/dev validation and dry-run commands are documented in
-`../experiments/mgp6_v43/README.md` and
+`../configs/experiments/mgp6_v43/README.md` and
 `benchmarks/mgp6/v4.3/README.md`. Hidden input is intentionally unavailable to
 post-final successor development, and the runner rejects attempts to combine
 that system with hidden input.

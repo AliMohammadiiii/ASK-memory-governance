@@ -39,9 +39,9 @@ rules are in `docs/README.md`.
 
 ## Advisor review
 
-Start with `ADVISOR_START_HERE.md`. It gives a short reading order for the
-manuscript, protocol contribution, evidence ledger, and publication blockers.
-The complete offline review gate is:
+Start with `docs/development/ADVISOR_START_HERE.md`. It gives a short reading
+order for the manuscript, protocol contribution, evidence ledger, and publication
+blockers. The complete offline review gate is:
 
 ```bash
 make advisor-check PYTHON=.venv/bin/python
@@ -128,7 +128,7 @@ make readiness
 ```
 
 Use `docs/reproducibility/README.md` for environment and provenance rules,
-`docs/ASK_PROTOCOL.md` for the protocol contract, and
+`docs/architecture/ASK_PROTOCOL.md` for the protocol contract, and
 `docs/reproduce_results.md` for benchmark-specific commands. Generated runs,
 caches, local databases, compiled publications, and handoff ZIPs are ignored and
 must not be added back to the source tree.
@@ -163,7 +163,7 @@ publish a release.
 ## License and security
 
 Code is MIT-licensed. Dataset and annotation terms are documented separately in
-`LICENSE-DATA.md` and `release/LICENSE_DECISION_MATRIX.md`; unresolved rows are
-release blockers. Never commit credentials, private conversations,
+`LICENSE-DATA.md` and `docs/release-policy/LICENSE_DECISION_MATRIX.md`; unresolved
+rows are release blockers. Never commit credentials, private conversations,
 non-redistributable external datasets, participant identities, or local model
 stores. See `SECURITY.md` for reporting and release-safety guidance.
