@@ -33,7 +33,9 @@ RELEASE_FACTS_PATH = REPO / "benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_
 DEV_CONFIG_PATH = REPO / "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json"
 FINAL_STATUS_PATH = REPO / "artifacts/mgp6_v43_integration/FINAL_STATUS.json"
 DEFAULT_CONFIG_PATH = REPO / "configs/experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json"
-DEFAULT_AUTHORIZATION_PATH = REPO / "configs/experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
+DEFAULT_AUTHORIZATION_PATH = (
+    REPO / "configs/experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
+)
 PROHIBITED_KEYS = {
     "gold_action",
     "design_target",

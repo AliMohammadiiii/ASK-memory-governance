@@ -46,7 +46,9 @@ PUBLIC = ROOT / "benchmarks/mgp6/mgp6_v4_3/public"
 FACTS = ROOT / "benchmarks/mgp6/mgp6_v4_3/release_metadata/RELEASE_FACTS.json"
 DEV_CONFIG = ROOT / "configs/experiments/mgp6_v43/DEV_EXPERIMENTS.json"
 FINAL_HIDDEN_CONFIG = ROOT / "configs/experiments/mgp6_v43/FINAL_HIDDEN_CONFIG.json"
-FINAL_HIDDEN_AUTHORIZATION = ROOT / "configs/experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
+FINAL_HIDDEN_AUTHORIZATION = (
+    ROOT / "configs/experiments/mgp6_v43/FINAL_HIDDEN_RUN_AUTHORIZATION.json"
+)
 
 
 @pytest.fixture(scope="module")
