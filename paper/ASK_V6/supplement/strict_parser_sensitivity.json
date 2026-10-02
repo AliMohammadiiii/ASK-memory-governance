@@ -1,0 +1,320 @@
+{
+ "Gemini 3.8 Flash low": {
+  "A_zero_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.7611111111111111,
+   "strict_acc": 0.7138888888888889,
+   "strict_invalid_per_repeat": [
+    16,
+    8
+   ],
+   "fenced_per_repeat": [
+    16,
+    8
+   ]
+  },
+  "D_zero_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.7916666666666667,
+   "strict_acc": 0.7722222222222223,
+   "strict_invalid_per_repeat": [
+    7,
+    1
+   ],
+   "fenced_per_repeat": [
+    7,
+    1
+   ]
+  },
+  "E_live_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8805555555555555,
+   "strict_acc": 0.8555555555555555,
+   "strict_invalid_per_repeat": [
+    6,
+    6
+   ],
+   "fenced_per_repeat": [
+    6,
+    6
+   ]
+  },
+  "B_live_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8916666666666666,
+   "strict_acc": 0.8833333333333333,
+   "strict_invalid_per_repeat": [
+    4,
+    1
+   ],
+   "fenced_per_repeat": [
+    4,
+    1
+   ]
+  }
+ },
+ "Gemini 3.8 Flash medium": {
+  "A_zero_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8083333333333333,
+   "strict_acc": 0.40555555555555556,
+   "strict_invalid_per_repeat": [
+    99,
+    100
+   ],
+   "fenced_per_repeat": [
+    99,
+    100
+   ]
+  },
+  "D_zero_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8111111111111111,
+   "strict_acc": 0.6,
+   "strict_invalid_per_repeat": [
+    55,
+    50
+   ],
+   "fenced_per_repeat": [
+    55,
+    50
+   ]
+  },
+  "E_live_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8888888888888888,
+   "strict_acc": 0.5777777777777777,
+   "strict_invalid_per_repeat": [
+    67,
+    67
+   ],
+   "fenced_per_repeat": [
+    67,
+    67
+   ]
+  },
+  "B_live_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8833333333333333,
+   "strict_acc": 0.8083333333333333,
+   "strict_invalid_per_repeat": [
+    16,
+    17
+   ],
+   "fenced_per_repeat": [
+    16,
+    17
+   ]
+  }
+ },
+ "Gemini 3.8 Flash high": {
+  "A_zero_payload": {
+   "n_per_repeat": [
+    180
+   ],
+   "tolerant_acc": 0.9611111111111111,
+   "strict_acc": 0.4777777777777778,
+   "strict_invalid_per_repeat": [
+    93
+   ],
+   "fenced_per_repeat": [
+    93
+   ]
+  },
+  "D_zero_routed": {
+   "n_per_repeat": [
+    180
+   ],
+   "tolerant_acc": 0.9166666666666666,
+   "strict_acc": 0.7666666666666667,
+   "strict_invalid_per_repeat": [
+    34
+   ],
+   "fenced_per_repeat": [
+    34
+   ]
+  },
+  "E_live_payload": {
+   "n_per_repeat": [
+    180
+   ],
+   "tolerant_acc": 0.8666666666666667,
+   "strict_acc": 0.5666666666666667,
+   "strict_invalid_per_repeat": [
+    66
+   ],
+   "fenced_per_repeat": [
+    66
+   ]
+  },
+  "B_live_routed": {
+   "n_per_repeat": [
+    180
+   ],
+   "tolerant_acc": 0.85,
+   "strict_acc": 0.7833333333333333,
+   "strict_invalid_per_repeat": [
+    19
+   ],
+   "fenced_per_repeat": [
+    19
+   ]
+  }
+ },
+ "GLM 5.3 Flash": {
+  "A_zero_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.5027777777777778,
+   "strict_acc": 0.5027777777777778,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "D_zero_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.7972222222222223,
+   "strict_acc": 0.7972222222222223,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "E_live_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.7833333333333333,
+   "strict_acc": 0.7833333333333333,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "B_live_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.8611111111111112,
+   "strict_acc": 0.8611111111111112,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  }
+ },
+ "gpt-oss-120b medium": {
+  "A_zero_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.3388888888888889,
+   "strict_acc": 0.3388888888888889,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "D_zero_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.6583333333333333,
+   "strict_acc": 0.6583333333333333,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "E_live_payload": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.575,
+   "strict_acc": 0.575,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  },
+  "B_live_routed": {
+   "n_per_repeat": [
+    180,
+    180
+   ],
+   "tolerant_acc": 0.7416666666666667,
+   "strict_acc": 0.7416666666666667,
+   "strict_invalid_per_repeat": [
+    0,
+    0
+   ],
+   "fenced_per_repeat": [
+    0,
+    0
+   ]
+  }
+ }
+}

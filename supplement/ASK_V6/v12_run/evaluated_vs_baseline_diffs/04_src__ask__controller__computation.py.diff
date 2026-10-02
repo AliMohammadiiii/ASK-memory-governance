@@ -1,0 +1,175 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: src/ask/controller/computation.py
+# raw changed lines (deleted+added): 129 (deleted 48, added 81); hunks 5
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 129 (deleted 48, added 81)
+--- evaluated:src/ask/controller/computation.py (git blob 6999a2dc0d148a3e6114dd6fe48451725984198e, sha256 bf966049d447)
++++ baseline-commit f6bf66e4766d:src/ask/controller/computation.py (git blob 0f5d498c6dbe32dcb3fdc7810f95879913b0dc3b)
+@@ -9,7 +9,7 @@ answer or an auditable computation block for the LLM prompt.
+ from __future__ import annotations
+ 
+ import re
+-from collections.abc import Iterable
++from collections.abc import Callable, Iterable
+ from dataclasses import dataclass
+ from datetime import date, timedelta
+ from decimal import ROUND_HALF_UP, Decimal
+@@ -240,54 +240,88 @@ _IMPLICIT_SUM_RE = re.compile(
+ )
+ 
+ 
++# First match wins. The order preserves the historical classifier precedence:
++# date arithmetic must be resolved before generic "difference" or "how many"
++# wording, and explicit duration totals must precede relative-time phrases.
++_COMPUTE_INTENT_RULES: tuple[tuple[ComputeIntent, Callable[[str], bool]], ...] = (
++    (
++        ComputeIntent.NUMERIC_DIFF,
++        lambda question: re.search(r"\bhow many years (?:older|younger)\b", question) is not None,
++    ),
++    (
++        ComputeIntent.DATE_DIFF,
++        lambda question: any(
++            phrase in question for phrase in ("days had passed", "days have passed", "days passed")
++        ),
++    ),
++    (
++        ComputeIntent.DATE_DIFF,
++        lambda question: (
++            any(
++                phrase in question
++                for phrase in ("how many days", "how many weeks", "how many months")
++            )
++            and ("between" in question or " since " in question)
++        ),
++    ),
++    (
++        ComputeIntent.COUNT_EVENTS,
++        lambda question: "how many hours" in question or "how many minutes" in question,
++    ),
++    (
++        ComputeIntent.RELATIVE_TIME,
++        lambda question: _RELATIVE_RE.search(question) is not None or "last week" in question,
++    ),
++    (
++        ComputeIntent.CHRONOLOGICAL_ORDER,
++        lambda question: (
++            "order of" in question
++            or "what is the order" in question
++            or (
++                "which" in question
++                and any(marker in question for marker in ("first", "earliest", "latest"))
++            )
++        ),
++    ),
++    (
++        ComputeIntent.NUMERIC_AVERAGE,
++        lambda question: "average" in question or "mean" in question,
++    ),
++    (
++        ComputeIntent.PERCENTAGE,
++        lambda question: any(
++            phrase in question for phrase in ("percentage", "percent of", "percent ")
++        ),
++    ),
++    (
++        ComputeIntent.NUMERIC_DIFF,
++        lambda question: "save" in question and "instead of" in question,
++    ),
++    (
++        ComputeIntent.NUMERIC_DIFF,
++        lambda question: any(
++            phrase in question for phrase in ("how much more", "how much less", "difference")
++        ),
++    ),
++    (
++        ComputeIntent.NUMERIC_SUM,
++        lambda question: any(phrase in question for phrase in ("total", "combined", "altogether")),
++    ),
++    (ComputeIntent.NUMERIC_SUM, lambda question: _IMPLICIT_SUM_RE.search(question) is not None),
++    (
++        ComputeIntent.COUNT_EVENTS,
++        lambda question: question.startswith("how many ") or " how many " in question,
++    ),
++)
++
++
+ def classify_compute_intent(question: str) -> ComputeIntent:
+     q = (question or "").casefold()
+     if _ordinal_from_question(q) is not None:
+         return ComputeIntent.ORDINAL_LIST_ITEM
+-    if re.search(r"\bhow many years (?:older|younger)\b", q):
+-        return ComputeIntent.NUMERIC_DIFF
+-    # DATE_DIFF phrasings (v4-run fix, session 4dfccbf7): the original gate
+-    # required "between", so "how many days had passed SINCE I started X when
+-    # Y" fell through to COUNT_EVENTS and the solver returned nothing. Elapsed
+-    # ("passed") phrasings are date subtraction regardless of the preposition.
+-    if "days had passed" in q or "days have passed" in q or "days passed" in q:
+-        return ComputeIntent.DATE_DIFF
+-    if ("how many days" in q or "how many weeks" in q or "how many months" in q) and (
+-        "between" in q or " since " in q
+-    ):
+-        return ComputeIntent.DATE_DIFF
+-    if "how many hours" in q or "how many minutes" in q:
+-        # Duration totals ("how many hours of jogging ... last week") are count
+-        # work, not relative-time work, even when the window says "last week".
+-        return ComputeIntent.COUNT_EVENTS
+-    # Use the grammar rather than plural-only substrings so "a week ago" and
+-    # "one day ago" do not silently fall through to NONE.
+-    if _RELATIVE_RE.search(q) or "last week" in q:
+-        return ComputeIntent.RELATIVE_TIME
+-    if (
+-        "order of" in q
+-        or "what is the order" in q
+-        or "which" in q
+-        and ("first" in q or "earliest" in q or "latest" in q)
+-    ):
+-        return ComputeIntent.CHRONOLOGICAL_ORDER
+-    if "average" in q or "mean" in q:
+-        return ComputeIntent.NUMERIC_AVERAGE
+-    if "percentage" in q or "percent of" in q or "percent " in q:
+-        return ComputeIntent.PERCENTAGE
+-    if "save" in q and "instead of" in q:
+-        return ComputeIntent.NUMERIC_DIFF
+-    if "how much more" in q or "how much less" in q or "difference" in q:
+-        return ComputeIntent.NUMERIC_DIFF
+-    if "total" in q or "combined" in q or "altogether" in q:
+-        return ComputeIntent.NUMERIC_SUM
+-    # Implicit-sum phrasing (v4-run fix, session 37f165cf): "What was the page
+-    # count of the two novels I finished ..." asks for one aggregated value
+-    # over an explicitly counted set of items, without saying "total".
+-    if _IMPLICIT_SUM_RE.search(q):
+-        return ComputeIntent.NUMERIC_SUM
+-    if q.startswith("how many ") or " how many " in q:
+-        return ComputeIntent.COUNT_EVENTS
++    for intent, matches in _COMPUTE_INTENT_RULES:
++        if matches(q):
++            return intent
+     return ComputeIntent.NONE
+ 
+ 
+@@ -1264,7 +1298,7 @@ def _solve_count_events(
+             additions.append(_with_value(ev, Decimal(1), "coins"))
+         if base is not None and additions:
+             total = (base.value or Decimal(0)) + Decimal(len(additions))
+-            evs = [base] + additions
++            evs = [base, *additions]
+             return ComputedAnswer(
+                 answer=_format_decimal(total),
+                 intent=ComputeIntent.COUNT_EVENTS,
+@@ -2016,7 +2050,7 @@ def _candidate_for_item(
+     for ev in candidates:
+         if ev.session_id == item.session_id and ev.turn_idx == item.turn_idx:
+             return _with_value(ev, value, unit) if value is not None and unit is not None else ev
+-    fallback = EvidenceCandidate(
++    return EvidenceCandidate(
+         session_id=item.session_id,
+         turn_idx=item.turn_idx,
+         role=item.role,
+@@ -2030,7 +2064,6 @@ def _candidate_for_item(
+         confidence=0.5,
+         date_source="timestamp" if item.timestamp else None,
+     )
+-    return fallback
+ 
+ 
+ def _clean_event_label(label: str) -> str:
+

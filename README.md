@@ -1,3 +1,8 @@
+<!-- ASK_V6_RELEASE -->
+> **ASK V6 audited release:** see [`ASK_V6_RELEASE.md`](ASK_V6_RELEASE.md)
+> for the frozen paper, reproducibility material, audit branches, hashes,
+> known limitations, and handoff instructions.
+
 # ASK: Auditable Memory Governance Protocol
 
 ASK is a storage-agnostic protocol and state-transition contract for auditable

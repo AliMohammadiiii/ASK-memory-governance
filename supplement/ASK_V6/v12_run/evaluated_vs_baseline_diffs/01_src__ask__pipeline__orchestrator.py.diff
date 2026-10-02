@@ -1,0 +1,1156 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: src/ask/pipeline/orchestrator.py
+# raw changed lines (deleted+added): 914 (deleted 372, added 542); hunks 29
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 912 (deleted 371, added 541)
+--- evaluated:src/ask/pipeline/orchestrator.py (git blob 9b316b1f4247f6060fbf9b5a57c6cb7f125489a9, sha256 e6ce596b041e)
++++ baseline-commit f6bf66e4766d:src/ask/pipeline/orchestrator.py (git blob 31306ff315c42931715a1413b765e62d6d03d7cf)
+@@ -10,19 +10,20 @@ from __future__ import annotations
+ 
+ import hashlib
+ import json
++import logging
+ import math
+ import re
+ import sqlite3
+ import threading
+ import time
+-from collections.abc import Iterable, Mapping
++from collections.abc import Callable, Iterable, Mapping
+ from concurrent.futures import ThreadPoolExecutor, as_completed
+ from dataclasses import dataclass, field
+ from datetime import UTC, date, datetime, timedelta
+ from pathlib import Path
+ from typing import Any
+ 
+-from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoescape
++from pydantic import ValidationError
+ 
+ from ..audit import ActionLogWriter
+ from ..baselines.base import BaselineAnswer
+@@ -34,6 +35,7 @@ from ..baselines.flat_vector_store import (
+ from ..baselines.flat_vector_store import (
+     MemoryItem as RetrievalMemoryItem,
+ )
++from ..baselines.prompts import build_prompt_environment
+ from ..classifier import CandidateMemory, PriorMemory, RelationOutput
+ from ..controller.active import (
+     DEFAULT_SCORECARD_CONFIG,
+@@ -68,7 +70,13 @@ from ..controller.temporal import (
+     reference_date,
+ )
+ from ..data.longmemeval import LongMemEvalSession, LongMemEvalTurn, memory_session_ids
+-from ..extraction import EvidenceSpan, ExtractedItem, ExtractionOutput, empty_extraction_output
++from ..extraction import (
++    EvidenceSpan,
++    ExtractedItem,
++    ExtractionOutput,
++    ExtractionUnavailableError,
++    empty_extraction_output,
++)
+ from ..inference.llm import LLM
+ from ..memory import (
+     ActionLogEntry,
+@@ -82,9 +90,9 @@ from ..memory import (
+     retrieve_active,
+     supersede,
+ )
+-from ..memory import (
+-    MemoryItem as DBMemoryItem,
+-)
++from ..memory import MemoryItem as DBMemoryItem
++
++logger = logging.getLogger(__name__)
+ 
+ DEFAULT_SYSTEM_PROMPT = (
+     "Answer the question using only the retrieved memory and dialog below. "
+@@ -345,8 +353,6 @@ def _extract_final_answer(text: str) -> str:
+     return lines[-1] if lines else raw
+ 
+ 
+-_PROMPT_DIR = Path(__file__).resolve().parents[1] / "baselines" / "prompts"
+-
+ # --- Prompt-budget guard (M4W13 context-saturation fix) --------------------
+ # Background: on the failed-slice T4 runs some answer prompts filled the entire
+ # Ollama context window (`prompt_tokens >= num_ctx`), so the model had no room
+@@ -395,7 +401,7 @@ def _load_token_encoder() -> Any | None:
+         import tiktoken
+ 
+         return tiktoken.get_encoding("cl100k_base")
+-    except Exception:  # noqa: BLE001 — any import/lookup failure -> char fallback
++    except (AttributeError, ImportError, KeyError, ValueError):
+         return None
+ 
+ 
+@@ -412,7 +418,7 @@ def _estimate_prompt_tokens(text: str) -> int:
+     if _TOKEN_ENCODER is not None:
+         try:
+             return int(len(_TOKEN_ENCODER.encode(text)) * 1.05) + 1
+-        except Exception:  # noqa: BLE001
++        except (KeyError, RuntimeError, TypeError, ValueError):
+             pass
+     return int(len(text) / _CHARS_PER_TOKEN_ESTIMATE * _TOKEN_ESTIMATE_SAFETY) + 1
+ 
+@@ -451,6 +457,70 @@ class PipelineRunSummary:
+     memory_item_count: int
+ 
+ 
++@dataclass(frozen=True)
++class _IngestionResult:
++    memory_ids: tuple[str, ...]
++    unresolved_memory_ids: list[str]
++    prefilter_selected: int | None
++    prefilter_total: int | None
++
++
++@dataclass(frozen=True)
++class _CacheCounters:
++    extraction_hits: int
++    extraction_misses: int
++    extraction_uncached_failures: int
++    relation_hits: int
++    relation_misses: int
++
++
++@dataclass(frozen=True)
++class _AnswerState:
++    retrieved: list[RetrievedItem]
++    answer_retrieved: list[RetrievedItem]
++    computed: ComputedAnswer | None
++    answer_text: str
++    answer_raw_text: str
++    prompt_tokens: int
++    completion_tokens: int
++    generation_latency_ms: float
++    final_prompt: str
++    model_id: str
++    num_ctx: int | None
++    reserved_output_tokens: int
++    prompt_budget_tokens: int
++    budget_debug: dict[str, Any]
++    preference_focus_session_id: str | None
++    preference_exclusions: tuple[str, ...]
++    answer_retry_used: bool
++    answer_retry_reason: str | None
++    answer_retry_original_text: str | None
++    answer_llm_calls: list[dict[str, Any]]
++    computation_bypass_used: bool
++    computation_bypass_eligible: bool
++    verify_bypass: bool
++    computation_verify_disagreed: bool
++    computation_preferred_over_llm: bool
++    answer_looks_truncated: bool
++
++
++@dataclass(frozen=True)
++class _PreparedAnswer:
++    retrieved: list[RetrievedItem]
++    answer_retrieved: list[RetrievedItem]
++    computed: ComputedAnswer | None
++    computation_bypass_eligible: bool
++    verify_bypass: bool
++    computation_bypass_used: bool
++    num_ctx: int | None
++    reserved_output_tokens: int
++    prompt_budget_tokens: int
++    budget_debug: dict[str, Any]
++    preference_focus_session_id: str | None
++    preference_exclusions: tuple[str, ...]
++    prompt: str
++
++
+ @dataclass(frozen=True)
+ class CandidateContext:
+     candidate_id: int
+@@ -462,15 +532,24 @@ class CandidateContext:
+     source_turn: str
+ 
+ 
+-def build_jinja_env() -> Environment:
+-    return Environment(
+-        loader=FileSystemLoader(str(_PROMPT_DIR)),
+-        autoescape=select_autoescape(disabled_extensions=("j2",), default=False),
+-        undefined=StrictUndefined,
+-        keep_trailing_newline=True,
+-        trim_blocks=False,
+-        lstrip_blocks=False,
+-    )
++def _coverage(numerator: int, denominator: int) -> float | None:
++    if denominator == 0:
++        return None
++    return numerator / denominator
++
++
++def _reconcile_computed_answer(
++    answer_text: str,
++    model_id: str,
++    computed: ComputedAnswer,
++    *,
++    prefer_unambiguous: bool,
++) -> tuple[str, str, bool, bool]:
++    if _answers_equivalent(answer_text, computed.answer):
++        return computed.answer, f"{model_id}+computation-verified", False, False
++    if prefer_unambiguous and _prefer_computed_answer(computed):
++        return computed.answer, f"{model_id}+computation-preferred", False, True
++    return answer_text, f"{model_id}+computation-override", True, False
+ 
+ 
+ def turn_payload(
+@@ -591,6 +670,7 @@ class ControllerOrchestrator:
+     prompt_template: str = "controller_cot.j2"
+     system_prompt: str = DEFAULT_SYSTEM_PROMPT
+     progress: bool = False
++    reporter: Callable[[str], None] | None = None
+     memory_prefilter_top_k: int | None = None
+     raw_turn_fallback: bool = False
+     retrieval_neighbor_window: int = 0
+@@ -679,7 +759,7 @@ class ControllerOrchestrator:
+ 
+     def __post_init__(self) -> None:
+         self.embedder = self.embedder or TurnEmbedder(device="cpu")
+-        self._env = build_jinja_env()
++        self._env = build_prompt_environment()
+         self._template = self._env.get_template(self.prompt_template)
+         self._action_log_started = self.append_action_log
+         self._next_log_id = _next_jsonl_id(self.action_log_path) if self.append_action_log else 1
+@@ -749,183 +829,35 @@ class ControllerOrchestrator:
+         decisions: list[PipelineDecision] = []
+         log_cm = self._open_log()
+         t0 = time.perf_counter()
+-        cache_hits_before = self._extraction_cache_hits
+-        cache_misses_before = self._extraction_cache_misses
+-        uncached_failures_before = self._extraction_uncached_failures
+-        relation_cache_hits_before = self._relation_cache_hits
+-        relation_cache_misses_before = self._relation_cache_misses
++        cache_before = self._cache_counters()
+         try:
+             if log_cm is not None:
+                 log_cm.__enter__()
+ 
+-            # Build prior memory from the allowed memory corpus. The current
+-            # session is not ingested before retrieval, which is the
+-            # anti-leakage invariant measured below.
+-            memory_ids = memory_session_ids(session)
+-            unresolved_memory_ids = [sid for sid in memory_ids if sid not in self.corpus]
+-            supporting_sessions = self._supporting_sessions_from_ids(memory_ids)
+-            prefilter_turns = self._prefilter_memory_turns(session, supporting_sessions)
+-            prefilter_selected = (
+-                sum(len(turns) for turns in prefilter_turns.values())
+-                if prefilter_turns is not None
+-                else None
+-            )
+-            prefilter_total = (
+-                sum(
+-                    1
+-                    for support in supporting_sessions
+-                    for turn in support.turns
+-                    if turn.role == "user"
+-                )
+-                if prefilter_turns is not None
+-                else None
+-            )
+-            self._log_progress(
+-                f"{session.session_id}: start; memory_sessions={len(memory_ids)} "
+-                f"resolved={len(supporting_sessions)} unresolved={len(unresolved_memory_ids)}"
++            ingestion = self._ingest_supporting_memory(
++                conn,
++                session,
++                provenance,
++                decisions,
++                log_cm,
+             )
+-            if prefilter_turns is not None:
+-                self._log_progress(
+-                    f"{session.session_id}: memory_prefilter selected="
+-                    f"{prefilter_selected}/{prefilter_total} user_turns"
+-                )
+ 
+-            for support_i, support in enumerate(supporting_sessions, start=1):
+-                selected_for_session = (
+-                    prefilter_turns.get(support.session_id, set())
+-                    if prefilter_turns is not None
+-                    else None
+-                )
+-                if prefilter_turns is not None and not selected_for_session:
+-                    continue
+-                self._log_progress(
+-                    f"{session.session_id}: ingest memory_session "
+-                    f"{support_i}/{len(supporting_sessions)} {support.session_id} "
+-                    f"turns={len(support.turns)}"
+-                )
+-                self._process_session(
+-                    conn,
+-                    support,
+-                    provenance,
+-                    decisions,
+-                    log_cm,
+-                    progress_label=f"{session.session_id}: memory {support_i}/{len(supporting_sessions)}",
+-                    allowed_user_turn_idxs=selected_for_session,
+-                )
+-
+-            self._log_progress(f"{session.session_id}: retrieve and answer")
+-            retrieved = self._retrieve(conn, provenance, session)
+-            computed = self._compute_answer(session, retrieved)
+-            # §4 fix 5: gate the deterministic bypass on a confidence floor, and
+-            # in verify mode do NOT bypass the LLM — run it and reconcile below.
+-            computation_bypass_eligible = bool(
+-                computed
+-                and computed.safe_to_bypass_llm
+-                and float(computed.confidence) >= float(self.computation_bypass_min_confidence)
+-            )
+-            verify_bypass = computation_bypass_eligible and self.verify_computation_bypass
+-            computation_bypass_used = (
+-                computation_bypass_eligible and not self.verify_computation_bypass
+-            )
++            prepared = self._prepare_answer_context(conn, provenance, session)
++            retrieved = prepared.retrieved
++            answer_retrieved = prepared.answer_retrieved
++            computed = prepared.computed
++            computation_bypass_eligible = prepared.computation_bypass_eligible
++            verify_bypass = prepared.verify_bypass
++            computation_bypass_used = prepared.computation_bypass_used
++            num_ctx = prepared.num_ctx
++            reserved_output_tokens = prepared.reserved_output_tokens
++            prompt_budget_tokens = prepared.prompt_budget_tokens
++            budget_debug = prepared.budget_debug
++            preference_focus_session_id = prepared.preference_focus_session_id
++            preference_exclusions = prepared.preference_exclusions
++            prompt = prepared.prompt
+             computation_verify_disagreed = False
+             computation_preferred_over_llm = False
+-            # §4 fix 1: preference questions need a preference-profile answer.
+-            effective_system_prompt = self._effective_system_prompt(session)
+-            # Lineage instructions only when the historical gate fired (set in
+-            # _retrieve above); current-state prompts stay lineage-free.
+-            if self._last_history_query_detected:
+-                effective_system_prompt = effective_system_prompt + HISTORY_LINEAGE_INSTRUCTION
+-
+-            # Prompt-budget guard: keep the answer prompt strictly under the
+-            # answerer's context window so the model always has room to
+-            # generate (see _budget_trim_for_answer). The deterministic bypass
+-            # never calls the LLM, so its prompt is left untrimmed and is only
+-            # used for token accounting.
+-            num_ctx, reserved_output_tokens, prompt_budget_tokens = self._answer_token_budget()
+-            # §5 fix 4: optionally cap the answer context below num_ctx so the
+-            # small model sees a tighter, reranked context.
+-            if self.answer_context_max_tokens and self.answer_context_max_tokens > 0:
+-                prompt_budget_tokens = (
+-                    min(prompt_budget_tokens, self.answer_context_max_tokens)
+-                    if prompt_budget_tokens > 0
+-                    else self.answer_context_max_tokens
+-                )
+-            preference_focus_session_id: str | None = None
+-            if computation_bypass_used:
+-                answer_retrieved = retrieved
+-                budget_debug: dict[str, Any] = {
+-                    "prompt_trimmed": False,
+-                    "memory_items_before_trim": len(retrieved),
+-                    "memory_items_after_trim": len(retrieved),
+-                    "estimated_prompt_tokens": None,
+-                    "estimated_prompt_tokens_before_trim": None,
+-                }
+-            else:
+-                # §5 fix 4: rerank retrieved by score (question-similarity) so
+-                # the highest-signal items survive the cap.
+-                trim_input = (
+-                    self._rerank_for_answer(session, retrieved)
+-                    if self.answer_context_rerank
+-                    else retrieved
+-                )
+-                focused_input = self._focus_preference_answer_context(session, trim_input)
+-                if len(focused_input) < len(trim_input) and focused_input:
+-                    preference_focus_session_id = focused_input[0].item.session_id
+-                trim_input = focused_input
+-                answer_retrieved, budget_debug = self._budget_trim_for_answer(
+-                    session, trim_input, computed, prompt_budget_tokens
+-                )
+-                # Run the model-assisted enumerator only on the evidence that
+-                # will actually fit in the answer prompt. The v7 path ran it on
+-                # the much larger pre-trim pool, which amplified distractors and
+-                # could exceed the answerer's intended context budget.
+-                if computed is None and self.computation_answerer and self.aggregation_scaffold:
+-                    computed = self._aggregation_scaffold(session, answer_retrieved)
+-                    if computed is not None:
+-                        first_trim_debug = budget_debug
+-                        answer_retrieved, scaffold_trim_debug = self._budget_trim_for_answer(
+-                            session,
+-                            answer_retrieved,
+-                            computed,
+-                            prompt_budget_tokens,
+-                        )
+-                        scaffold_trim_debug["memory_items_before_trim"] = first_trim_debug[
+-                            "memory_items_before_trim"
+-                        ]
+-                        scaffold_trim_debug["estimated_prompt_tokens_before_trim"] = (
+-                            first_trim_debug["estimated_prompt_tokens_before_trim"]
+-                        )
+-                        scaffold_trim_debug["prompt_trimmed"] = bool(
+-                            first_trim_debug["prompt_trimmed"]
+-                            or scaffold_trim_debug["prompt_trimmed"]
+-                        )
+-                        budget_debug = scaffold_trim_debug
+-                if budget_debug["prompt_trimmed"]:
+-                    self._log_progress(
+-                        f"{session.session_id}: prompt-budget trim "
+-                        f"{budget_debug['memory_items_before_trim']}->"
+-                        f"{budget_debug['memory_items_after_trim']} items; "
+-                        f"est_tokens {budget_debug['estimated_prompt_tokens_before_trim']}->"
+-                        f"{budget_debug['estimated_prompt_tokens']} "
+-                        f"(num_ctx={num_ctx} reserved_out={reserved_output_tokens} "
+-                        f"budget={prompt_budget_tokens}; token estimate is approximate)"
+-                    )
+-
+-            preference_exclusions = (
+-                _branch_out_exclusions(answer_retrieved)
+-                if self._uses_preference_prompt(session)
+-                else ()
+-            )
+-            if preference_exclusions:
+-                effective_system_prompt += _preference_exclusion_instruction(
+-                    preference_exclusions
+-                )
+-            prompt = self._render_prompt(
+-                session,
+-                answer_retrieved,
+-                system_prompt=effective_system_prompt,
+-                computed_answer=computed,
+-            )
+             answer_retry_used = False
+             answer_retry_original_text: str | None = None
+             answer_retry_reason: str | None = None
+@@ -957,16 +889,17 @@ class ControllerOrchestrator:
+                 # form; on disagreement, keep the LLM answer (the deterministic
+                 # subset selection was likely wrong, e.g. 85fa3a3f: $120 vs $50).
+                 if verify_bypass and computed is not None:
+-                    if _answers_equivalent(answer_text, computed.answer):
+-                        answer_text = computed.answer
+-                        model_id = f"{model_id}+computation-verified"
+-                    elif self.prefer_unambiguous_computation and _prefer_computed_answer(computed):
+-                        answer_text = computed.answer
+-                        computation_preferred_over_llm = True
+-                        model_id = f"{model_id}+computation-preferred"
+-                    else:
+-                        computation_verify_disagreed = True
+-                        model_id = f"{model_id}+computation-override"
++                    (
++                        answer_text,
++                        model_id,
++                        computation_verify_disagreed,
++                        computation_preferred_over_llm,
++                    ) = _reconcile_computed_answer(
++                        answer_text,
++                        model_id,
++                        computed,
++                        prefer_unambiguous=self.prefer_unambiguous_computation,
++                    )
+                 # Retry on an exact 'Unknown', an empty answer, OR a degenerate
+                 # bare-symbol answer like '$' (all signal a non-answer; the last
+                 # is the silent-truncation case from session 852ce960 that the
+@@ -1075,164 +1008,401 @@ class ControllerOrchestrator:
+                 progress_label=f"{session.session_id}: current",
+             )
+ 
+-            action_counts = _action_counts(decisions)
+-            retrieved_session_ids = [r.item.session_id for r in retrieved]
+-            answer_context_session_ids = [r.item.session_id for r in answer_retrieved]
+-            answer_context_item_refs = [
+-                {
+-                    "session_id": r.item.session_id,
+-                    "turn_idx": r.item.turn_idx,
+-                    "role": r.item.role,
+-                    "text_sha256": _fingerprint(r.item.text),
+-                }
+-                for r in answer_retrieved
+-            ]
+-            supporting_id_set = set(session.supporting_session_ids)
+-            retrieved_supporting = supporting_id_set & set(retrieved_session_ids)
+-            answer_context_supporting = supporting_id_set & set(answer_context_session_ids)
+-            support_denominator = len(supporting_id_set)
+-            leakage_count = sum(1 for sid in retrieved_session_ids if sid == session.session_id)
+-            cache_hits = self._extraction_cache_hits - cache_hits_before
+-            cache_misses = self._extraction_cache_misses - cache_misses_before
+-            uncached_failures = self._extraction_uncached_failures - uncached_failures_before
+-            relation_cache_hits = self._relation_cache_hits - relation_cache_hits_before
+-            relation_cache_misses = self._relation_cache_misses - relation_cache_misses_before
+-            self._log_progress(
+-                f"{session.session_id}: done; retrieved={len(retrieved)} "
+-                f"leakage={leakage_count} extraction_cache="
+-                f"{cache_hits}/{cache_hits + cache_misses} hits relation_cache="
+-                f"{relation_cache_hits}/{relation_cache_hits + relation_cache_misses} "
+-                f"hits actions={action_counts}"
+-            )
+-            self._last_summary = PipelineRunSummary(
+-                decisions=list(decisions),
+-                action_counts=action_counts,
+-                retrieved_session_ids=retrieved_session_ids,
+-                leakage_count=leakage_count,
+-                action_log_path=str(self.action_log_path) if self.action_log_path else None,
+-                memory_item_count=len(retrieve_active(conn)),
+-            )
+-
+-            return BaselineAnswer(
+-                session_id=session.session_id,
+-                text=answer_text,
++            state = _AnswerState(
++                retrieved=retrieved,
++                answer_retrieved=answer_retrieved,
++                computed=computed,
++                answer_text=answer_text,
++                answer_raw_text=answer_raw_text,
+                 prompt_tokens=prompt_tokens,
+                 completion_tokens=completion_tokens,
+-                latency_ms=generation_latency_ms + (time.perf_counter() - t0) * 1000.0,
+-                raw_prompt=final_prompt,
+-                seed=self.seed,
++                generation_latency_ms=generation_latency_ms,
++                final_prompt=final_prompt,
+                 model_id=model_id,
+-                baseline=self.BASELINE_NAME,
+-                extras={
+-                    "k": self.k,
+-                    "n_retrieved": len(retrieved),
+-                    "n_answer_context": len(answer_retrieved),
+-                    "smrr_status": "not_computed_longmemeval_lacks_gold_supersession",
+-                    "stale_retrieval_count": 0,
+-                    "smrr_denominator": 0,
+-                    "retrieval_session_ids": retrieved_session_ids,
+-                    # Explicit pre/post-trim telemetry. Historical v7 reports
+-                    # treated the legacy retrieval_session_ids field as prompt
+-                    # coverage even though it is measured before budget trim;
+-                    # use answer_context_* for the evidence actually shown.
+-                    "retrieval_session_ids_before_trim": retrieved_session_ids,
+-                    "answer_context_session_ids": answer_context_session_ids,
+-                    "answer_context_item_refs": answer_context_item_refs,
+-                    "retrieval_supporting_sessions_before_trim": sorted(retrieved_supporting),
+-                    "answer_context_supporting_sessions": sorted(answer_context_supporting),
+-                    "retrieval_support_coverage_before_trim": (
+-                        None
+-                        if support_denominator == 0
+-                        else len(retrieved_supporting) / support_denominator
+-                    ),
+-                    "answer_context_support_coverage": (
+-                        None
+-                        if support_denominator == 0
+-                        else len(answer_context_supporting) / support_denominator
+-                    ),
+-                    "retrieval_turn_idxs": [r.item.turn_idx for r in retrieved],
+-                    "current_session_leakage_count": leakage_count,
+-                    "action_counts": action_counts,
+-                    "action_log_path": str(self.action_log_path) if self.action_log_path else None,
+-                    "memory_session_ids": list(memory_ids),
+-                    "unresolved_memory_ids": unresolved_memory_ids,
+-                    "supporting_session_ids": list(session.supporting_session_ids),
+-                    "extraction_cache_hits": cache_hits,
+-                    "extraction_cache_misses": cache_misses,
+-                    "extraction_cache_size": len(self._extraction_cache),
+-                    "extraction_uncached_failures": uncached_failures,
+-                    "relation_cache_hits": relation_cache_hits,
+-                    "relation_cache_misses": relation_cache_misses,
+-                    "relation_cache_size": len(self._relation_cache),
+-                    "relation_model_id": self._relation_model_id,
+-                    "relation_escalation_model_id": self._escalation_model_id,
+-                    "relation_escalations": self._relation_escalations,
+-                    "relation_escalation_eligible": self._relation_escalation_eligible,
+-                    "memory_prefilter_top_k": self.memory_prefilter_top_k,
+-                    "memory_prefilter_selected_turns": prefilter_selected,
+-                    "memory_prefilter_total_user_turns": prefilter_total,
+-                    "answer_retry_used": answer_retry_used,
+-                    "answer_retry_reason": answer_retry_reason,
+-                    "answer_retry_original_text": answer_retry_original_text,
+-                    "answer_raw_text": answer_raw_text,
+-                    "answer_final_line_parsed": answer_raw_text != answer_text,
+-                    "answer_llm_calls": answer_llm_calls,
+-                    "controller_prior_top_k": self.prior_top_k,
+-                    "question_date": session.question_date,
+-                    "computation_answerer": self.computation_answerer,
+-                    "computation_intent": computed.intent.value if computed else None,
+-                    "computation_answer": computed.answer if computed else None,
+-                    "computation_confidence": computed.confidence if computed else None,
+-                    "computation_safe_to_bypass": (
+-                        computed.safe_to_bypass_llm if computed else False
+-                    ),
+-                    "computation_bypass_used": computation_bypass_used,
+-                    "computation_bypass_eligible": computation_bypass_eligible,
+-                    "computation_bypass_verified": verify_bypass,
+-                    "computation_verify_disagreed": computation_verify_disagreed,
+-                    "computation_preferred_over_llm": computation_preferred_over_llm,
+-                    "controller_retrieval_strategy": self._last_retrieval_strategy,
+-                    "preference_focus_session_id": preference_focus_session_id,
+-                    "preference_branch_out_exclusions": list(preference_exclusions),
+-                    "controller_competency_candidate_count": (
+-                        self._last_competency_candidate_count
+-                    ),
+-                    "controller_competency_session_top_k": self.competency_session_top_k,
+-                    "controller_competency_preference_session_top_k": (
+-                        self.competency_preference_session_top_k
+-                    ),
+-                    "answer_system_prompt_variant": (
+-                        "preference" if self._uses_preference_prompt(session) else "default"
+-                    ),
+-                    # --- prompt-budget guard (M4W13) ---
+-                    "question": session.question,
+-                    "prompt_num_ctx": num_ctx,
+-                    "prompt_reserved_output_tokens": reserved_output_tokens,
+-                    "prompt_generation_budget_tokens": prompt_budget_tokens,
+-                    "prompt_estimated_tokens": budget_debug.get("estimated_prompt_tokens"),
+-                    "prompt_estimated_tokens_before_trim": budget_debug.get(
+-                        "estimated_prompt_tokens_before_trim"
+-                    ),
+-                    "prompt_token_estimate_is_approximate": True,
+-                    "prompt_memory_items_before_trim": budget_debug.get("memory_items_before_trim"),
+-                    "prompt_memory_items_after_trim": budget_debug.get("memory_items_after_trim"),
+-                    "prompt_trimmed": bool(budget_debug.get("prompt_trimmed", False)),
+-                    "prompt_assistant_context_included": self.include_assistant_context,
+-                    "prompt_neighbor_window": self.retrieval_neighbor_window,
+-                    "prompt_session_diversity_cap": self.answer_context_session_cap,
+-                    "history_query_detected": self._last_history_query_detected,
+-                    "history_candidate_count": self._last_history_candidate_count,
+-                    "history_retrieved_count": self._last_history_retrieved_count,
+-                    "answer_text_length": len(answer_text),
+-                    "answer_looks_truncated": answer_looks_truncated,
+-                    "prompt_artifact": "raw_prompt (inline in this record)",
+-                },
++                num_ctx=num_ctx,
++                reserved_output_tokens=reserved_output_tokens,
++                prompt_budget_tokens=prompt_budget_tokens,
++                budget_debug=budget_debug,
++                preference_focus_session_id=preference_focus_session_id,
++                preference_exclusions=preference_exclusions,
++                answer_retry_used=answer_retry_used,
++                answer_retry_reason=answer_retry_reason,
++                answer_retry_original_text=answer_retry_original_text,
++                answer_llm_calls=answer_llm_calls,
++                computation_bypass_used=computation_bypass_used,
++                computation_bypass_eligible=computation_bypass_eligible,
++                verify_bypass=verify_bypass,
++                computation_verify_disagreed=computation_verify_disagreed,
++                computation_preferred_over_llm=computation_preferred_over_llm,
++                answer_looks_truncated=answer_looks_truncated,
++            )
++            return self._finalize_answer(
++                conn,
++                session,
++                decisions,
++                ingestion,
++                cache_before,
++                state,
++                started_at=t0,
+             )
+         finally:
+             if log_cm is not None:
+                 log_cm.__exit__(None, None, None)
+             conn.close()
+ 
++    def _prepare_answer_context(
++        self,
++        conn: sqlite3.Connection,
++        provenance: dict[int, MemoryProvenance],
++        session: LongMemEvalSession,
++    ) -> _PreparedAnswer:
++        self._log_progress(f"{session.session_id}: retrieve and answer")
++        retrieved = self._retrieve(conn, provenance, session)
++        computed = self._compute_answer(session, retrieved)
++        computation_bypass_eligible = bool(
++            computed
++            and computed.safe_to_bypass_llm
++            and float(computed.confidence) >= float(self.computation_bypass_min_confidence)
++        )
++        verify_bypass = computation_bypass_eligible and self.verify_computation_bypass
++        computation_bypass_used = computation_bypass_eligible and not self.verify_computation_bypass
++        effective_system_prompt = self._effective_system_prompt(session)
++        if self._last_history_query_detected:
++            effective_system_prompt += HISTORY_LINEAGE_INSTRUCTION
++
++        num_ctx, reserved_output_tokens, prompt_budget_tokens = self._answer_token_budget()
++        if self.answer_context_max_tokens and self.answer_context_max_tokens > 0:
++            prompt_budget_tokens = (
++                min(prompt_budget_tokens, self.answer_context_max_tokens)
++                if prompt_budget_tokens > 0
++                else self.answer_context_max_tokens
++            )
++        preference_focus_session_id: str | None = None
++        if computation_bypass_used:
++            answer_retrieved = retrieved
++            budget_debug: dict[str, Any] = {
++                "prompt_trimmed": False,
++                "memory_items_before_trim": len(retrieved),
++                "memory_items_after_trim": len(retrieved),
++                "estimated_prompt_tokens": None,
++                "estimated_prompt_tokens_before_trim": None,
++            }
++        else:
++            trim_input = (
++                self._rerank_for_answer(session, retrieved)
++                if self.answer_context_rerank
++                else retrieved
++            )
++            focused_input = self._focus_preference_answer_context(session, trim_input)
++            if len(focused_input) < len(trim_input) and focused_input:
++                preference_focus_session_id = focused_input[0].item.session_id
++            answer_retrieved, budget_debug = self._budget_trim_for_answer(
++                session,
++                focused_input,
++                computed,
++                prompt_budget_tokens,
++            )
++            if computed is None and self.computation_answerer and self.aggregation_scaffold:
++                computed = self._aggregation_scaffold(session, answer_retrieved)
++                if computed is not None:
++                    first_trim_debug = budget_debug
++                    answer_retrieved, scaffold_trim_debug = self._budget_trim_for_answer(
++                        session,
++                        answer_retrieved,
++                        computed,
++                        prompt_budget_tokens,
++                    )
++                    scaffold_trim_debug["memory_items_before_trim"] = first_trim_debug[
++                        "memory_items_before_trim"
++                    ]
++                    scaffold_trim_debug["estimated_prompt_tokens_before_trim"] = first_trim_debug[
++                        "estimated_prompt_tokens_before_trim"
++                    ]
++                    scaffold_trim_debug["prompt_trimmed"] = bool(
++                        first_trim_debug["prompt_trimmed"] or scaffold_trim_debug["prompt_trimmed"]
++                    )
++                    budget_debug = scaffold_trim_debug
++            if budget_debug["prompt_trimmed"]:
++                self._log_progress(
++                    f"{session.session_id}: prompt-budget trim "
++                    f"{budget_debug['memory_items_before_trim']}->"
++                    f"{budget_debug['memory_items_after_trim']} items; "
++                    f"est_tokens {budget_debug['estimated_prompt_tokens_before_trim']}->"
++                    f"{budget_debug['estimated_prompt_tokens']} "
++                    f"(num_ctx={num_ctx} reserved_out={reserved_output_tokens} "
++                    f"budget={prompt_budget_tokens}; token estimate is approximate)"
++                )
++
++        preference_exclusions = (
++            _branch_out_exclusions(answer_retrieved)
++            if self._uses_preference_prompt(session)
++            else ()
++        )
++        if preference_exclusions:
++            effective_system_prompt += _preference_exclusion_instruction(preference_exclusions)
++        prompt = self._render_prompt(
++            session,
++            answer_retrieved,
++            system_prompt=effective_system_prompt,
++            computed_answer=computed,
++        )
++        return _PreparedAnswer(
++            retrieved=retrieved,
++            answer_retrieved=answer_retrieved,
++            computed=computed,
++            computation_bypass_eligible=computation_bypass_eligible,
++            verify_bypass=verify_bypass,
++            computation_bypass_used=computation_bypass_used,
++            num_ctx=num_ctx,
++            reserved_output_tokens=reserved_output_tokens,
++            prompt_budget_tokens=prompt_budget_tokens,
++            budget_debug=budget_debug,
++            preference_focus_session_id=preference_focus_session_id,
++            preference_exclusions=preference_exclusions,
++            prompt=prompt,
++        )
++
++    def _finalize_answer(
++        self,
++        conn: sqlite3.Connection,
++        session: LongMemEvalSession,
++        decisions: list[PipelineDecision],
++        ingestion: _IngestionResult,
++        cache_before: _CacheCounters,
++        state: _AnswerState,
++        *,
++        started_at: float,
++    ) -> BaselineAnswer:
++        retrieved_session_ids = [item.item.session_id for item in state.retrieved]
++        answer_context_session_ids = [item.item.session_id for item in state.answer_retrieved]
++        answer_context_item_refs = [
++            {
++                "session_id": item.item.session_id,
++                "turn_idx": item.item.turn_idx,
++                "role": item.item.role,
++                "text_sha256": _fingerprint(item.item.text),
++            }
++            for item in state.answer_retrieved
++        ]
++        supporting_id_set = set(session.supporting_session_ids)
++        retrieved_supporting = supporting_id_set & set(retrieved_session_ids)
++        answer_context_supporting = supporting_id_set & set(answer_context_session_ids)
++        support_denominator = len(supporting_id_set)
++        leakage_count = sum(
++            session_id == session.session_id for session_id in retrieved_session_ids
++        )
++        cache_after = self._cache_counters()
++        cache_hits = cache_after.extraction_hits - cache_before.extraction_hits
++        cache_misses = cache_after.extraction_misses - cache_before.extraction_misses
++        uncached_failures = (
++            cache_after.extraction_uncached_failures - cache_before.extraction_uncached_failures
++        )
++        relation_cache_hits = cache_after.relation_hits - cache_before.relation_hits
++        relation_cache_misses = cache_after.relation_misses - cache_before.relation_misses
++        action_counts = _action_counts(decisions)
++        self._log_progress(
++            f"{session.session_id}: done; retrieved={len(state.retrieved)} "
++            f"leakage={leakage_count} extraction_cache="
++            f"{cache_hits}/{cache_hits + cache_misses} hits relation_cache="
++            f"{relation_cache_hits}/{relation_cache_hits + relation_cache_misses} "
++            f"hits actions={action_counts}"
++        )
++        action_log_path = str(self.action_log_path) if self.action_log_path else None
++        self._last_summary = PipelineRunSummary(
++            decisions=list(decisions),
++            action_counts=action_counts,
++            retrieved_session_ids=retrieved_session_ids,
++            leakage_count=leakage_count,
++            action_log_path=action_log_path,
++            memory_item_count=len(retrieve_active(conn)),
++        )
++
++        computed = state.computed
++        computation_intent = computed.intent.value if computed else None
++        computation_answer = computed.answer if computed else None
++        computation_confidence = computed.confidence if computed else None
++        computation_safe_to_bypass = computed.safe_to_bypass_llm if computed else False
++        prompt_variant = "preference" if self._uses_preference_prompt(session) else "default"
++        extras: dict[str, Any] = {
++            "k": self.k,
++            "n_retrieved": len(state.retrieved),
++            "n_answer_context": len(state.answer_retrieved),
++            "smrr_status": "not_computed_longmemeval_lacks_gold_supersession",
++            "stale_retrieval_count": 0,
++            "smrr_denominator": 0,
++            "retrieval_session_ids": retrieved_session_ids,
++            "retrieval_session_ids_before_trim": retrieved_session_ids,
++            "answer_context_session_ids": answer_context_session_ids,
++            "answer_context_item_refs": answer_context_item_refs,
++            "retrieval_supporting_sessions_before_trim": sorted(retrieved_supporting),
++            "answer_context_supporting_sessions": sorted(answer_context_supporting),
++            "retrieval_support_coverage_before_trim": _coverage(
++                len(retrieved_supporting), support_denominator
++            ),
++            "answer_context_support_coverage": _coverage(
++                len(answer_context_supporting), support_denominator
++            ),
++            "retrieval_turn_idxs": [item.item.turn_idx for item in state.retrieved],
++            "current_session_leakage_count": leakage_count,
++            "action_counts": action_counts,
++            "action_log_path": action_log_path,
++            "memory_session_ids": list(ingestion.memory_ids),
++            "unresolved_memory_ids": ingestion.unresolved_memory_ids,
++            "supporting_session_ids": list(session.supporting_session_ids),
++            "extraction_cache_hits": cache_hits,
++            "extraction_cache_misses": cache_misses,
++            "extraction_cache_size": len(self._extraction_cache),
++            "extraction_uncached_failures": uncached_failures,
++            "relation_cache_hits": relation_cache_hits,
++            "relation_cache_misses": relation_cache_misses,
++            "relation_cache_size": len(self._relation_cache),
++            "relation_model_id": self._relation_model_id,
++            "relation_escalation_model_id": self._escalation_model_id,
++            "relation_escalations": self._relation_escalations,
++            "relation_escalation_eligible": self._relation_escalation_eligible,
++            "memory_prefilter_top_k": self.memory_prefilter_top_k,
++            "memory_prefilter_selected_turns": ingestion.prefilter_selected,
++            "memory_prefilter_total_user_turns": ingestion.prefilter_total,
++            "answer_retry_used": state.answer_retry_used,
++            "answer_retry_reason": state.answer_retry_reason,
++            "answer_retry_original_text": state.answer_retry_original_text,
++            "answer_raw_text": state.answer_raw_text,
++            "answer_final_line_parsed": state.answer_raw_text != state.answer_text,
++            "answer_llm_calls": state.answer_llm_calls,
++            "controller_prior_top_k": self.prior_top_k,
++            "question_date": session.question_date,
++            "computation_answerer": self.computation_answerer,
++            "computation_intent": computation_intent,
++            "computation_answer": computation_answer,
++            "computation_confidence": computation_confidence,
++            "computation_safe_to_bypass": computation_safe_to_bypass,
++            "computation_bypass_used": state.computation_bypass_used,
++            "computation_bypass_eligible": state.computation_bypass_eligible,
++            "computation_bypass_verified": state.verify_bypass,
++            "computation_verify_disagreed": state.computation_verify_disagreed,
++            "computation_preferred_over_llm": state.computation_preferred_over_llm,
++            "controller_retrieval_strategy": self._last_retrieval_strategy,
++            "preference_focus_session_id": state.preference_focus_session_id,
++            "preference_branch_out_exclusions": list(state.preference_exclusions),
++            "controller_competency_candidate_count": self._last_competency_candidate_count,
++            "controller_competency_session_top_k": self.competency_session_top_k,
++            "controller_competency_preference_session_top_k": (
++                self.competency_preference_session_top_k
++            ),
++            "answer_system_prompt_variant": prompt_variant,
++            "question": session.question,
++            "prompt_num_ctx": state.num_ctx,
++            "prompt_reserved_output_tokens": state.reserved_output_tokens,
++            "prompt_generation_budget_tokens": state.prompt_budget_tokens,
++            "prompt_estimated_tokens": state.budget_debug.get("estimated_prompt_tokens"),
++            "prompt_estimated_tokens_before_trim": state.budget_debug.get(
++                "estimated_prompt_tokens_before_trim"
++            ),
++            "prompt_token_estimate_is_approximate": True,
++            "prompt_memory_items_before_trim": state.budget_debug.get("memory_items_before_trim"),
++            "prompt_memory_items_after_trim": state.budget_debug.get("memory_items_after_trim"),
++            "prompt_trimmed": bool(state.budget_debug.get("prompt_trimmed", False)),
++            "prompt_assistant_context_included": self.include_assistant_context,
++            "prompt_neighbor_window": self.retrieval_neighbor_window,
++            "prompt_session_diversity_cap": self.answer_context_session_cap,
++            "history_query_detected": self._last_history_query_detected,
++            "history_candidate_count": self._last_history_candidate_count,
++            "history_retrieved_count": self._last_history_retrieved_count,
++            "answer_text_length": len(state.answer_text),
++            "answer_looks_truncated": state.answer_looks_truncated,
++            "prompt_artifact": "raw_prompt (inline in this record)",
++        }
++        return BaselineAnswer(
++            session_id=session.session_id,
++            text=state.answer_text,
++            prompt_tokens=state.prompt_tokens,
++            completion_tokens=state.completion_tokens,
++            latency_ms=(state.generation_latency_ms + (time.perf_counter() - started_at) * 1000.0),
++            raw_prompt=state.final_prompt,
++            seed=self.seed,
++            model_id=state.model_id,
++            baseline=self.BASELINE_NAME,
++            extras=extras,
++        )
++
++    def _cache_counters(self) -> _CacheCounters:
++        return _CacheCounters(
++            extraction_hits=self._extraction_cache_hits,
++            extraction_misses=self._extraction_cache_misses,
++            extraction_uncached_failures=self._extraction_uncached_failures,
++            relation_hits=self._relation_cache_hits,
++            relation_misses=self._relation_cache_misses,
++        )
++
++    def _ingest_supporting_memory(
++        self,
++        conn: sqlite3.Connection,
++        session: LongMemEvalSession,
++        provenance: dict[int, MemoryProvenance],
++        decisions: list[PipelineDecision],
++        log_cm: ActionLogWriter | None,
++    ) -> _IngestionResult:
++        """Ingest only the allowed prior corpus, preserving the anti-leakage boundary."""
++        memory_ids = memory_session_ids(session)
++        unresolved_memory_ids = [sid for sid in memory_ids if sid not in self.corpus]
++        supporting_sessions = self._supporting_sessions_from_ids(memory_ids)
++        prefilter_turns = self._prefilter_memory_turns(session, supporting_sessions)
++        prefilter_selected = (
++            sum(len(turns) for turns in prefilter_turns.values())
++            if prefilter_turns is not None
++            else None
++        )
++        prefilter_total = (
++            sum(
++                1
++                for support in supporting_sessions
++                for turn in support.turns
++                if turn.role == "user"
++            )
++            if prefilter_turns is not None
++            else None
++        )
++        self._log_progress(
++            f"{session.session_id}: start; memory_sessions={len(memory_ids)} "
++            f"resolved={len(supporting_sessions)} unresolved={len(unresolved_memory_ids)}"
++        )
++        if prefilter_turns is not None:
++            self._log_progress(
++                f"{session.session_id}: memory_prefilter selected="
++                f"{prefilter_selected}/{prefilter_total} user_turns"
++            )
++
++        for support_i, support in enumerate(supporting_sessions, start=1):
++            selected_for_session = (
++                prefilter_turns.get(support.session_id, set())
++                if prefilter_turns is not None
++                else None
++            )
++            if prefilter_turns is not None and not selected_for_session:
++                continue
++            self._log_progress(
++                f"{session.session_id}: ingest memory_session "
++                f"{support_i}/{len(supporting_sessions)} {support.session_id} "
++                f"turns={len(support.turns)}"
++            )
++            self._process_session(
++                conn,
++                support,
++                provenance,
++                decisions,
++                log_cm,
++                progress_label=(
++                    f"{session.session_id}: memory {support_i}/{len(supporting_sessions)}"
++                ),
++                allowed_user_turn_idxs=selected_for_session,
++            )
++        return _IngestionResult(
++            memory_ids=memory_ids,
++            unresolved_memory_ids=unresolved_memory_ids,
++            prefilter_selected=prefilter_selected,
++            prefilter_total=prefilter_total,
++        )
++
+     def _open_log(self) -> ActionLogWriter | None:
+         if self.action_log_path is None:
+             return None
+@@ -1330,7 +1500,11 @@ class ControllerOrchestrator:
+     def _log_progress(self, message: str) -> None:
+         if not self.progress:
+             return
+-        print(f"[{self.BASELINE_NAME}] {message}", flush=True)
++        rendered = f"[{self.BASELINE_NAME}] {message}"
++        if self.reporter is not None:
++            self.reporter(rendered)
++        else:
++            logger.info(rendered)
+ 
+     def _load_persistent_caches(self) -> None:
+         # §5 fix 3: read a content-keyed cache shared across runs/ranges/systems
+@@ -1361,7 +1535,7 @@ class ControllerOrchestrator:
+                 continue
+             try:
+                 self._extraction_cache[key] = ExtractionOutput.model_validate(output)
+-            except Exception:
++            except ValidationError:
+                 continue
+ 
+     def _load_relation_cache_file(self, path: Path | None) -> None:
+@@ -1374,7 +1548,7 @@ class ControllerOrchestrator:
+                 continue
+             try:
+                 self._relation_cache[key] = RelationOutput.model_validate(output)
+-            except Exception:
++            except ValidationError:
+                 continue
+ 
+     def _load_extraction_trace_file(self, path: Path) -> None:
+@@ -1395,7 +1569,7 @@ class ControllerOrchestrator:
+                 self._extraction_cache[self._extraction_key(turn)] = (
+                     ExtractionOutput.model_validate(output)
+                 )
+-            except Exception:
++            except ValidationError:
+                 continue
+ 
+     def _load_relation_trace_file(self, path: Path) -> None:
+@@ -1428,7 +1602,7 @@ class ControllerOrchestrator:
+                         prior_timestamp=prior.get("timestamp"),
+                     )
+                 ] = RelationOutput.model_validate(output)
+-            except Exception:
++            except ValidationError:
+                 continue
+ 
+     def _process_session(
+@@ -1540,7 +1714,7 @@ class ControllerOrchestrator:
+                 temperature=0.0,
+                 seed=self.seed,
+             )
+-        except Exception as exc:
++        except ExtractionUnavailableError as exc:
+             if self.fail_on_extraction_error:
+                 raise
+             # Local models can occasionally emit unrecoverable structured output
+@@ -1751,9 +1925,7 @@ class ControllerOrchestrator:
+         conf = getattr(candidate.item, "extraction_confidence", None)
+         if conf is not None and float(conf) < self.escalation_extraction_confidence:
+             return True
+-        if self._marker_burden(candidate) > self.escalation_marker_burden:
+-            return True
+-        return False
++        return self._marker_burden(candidate) > self.escalation_marker_burden
+ 
+     @staticmethod
+     def _marker_burden(candidate: CandidateContext) -> float:
+@@ -2350,9 +2522,7 @@ class ControllerOrchestrator:
+                     score += 0.06
+                 if q_tokens and any(
+                     stable_identity_re.search(fragment)
+-                    and any(
+-                        _token_in_text(token, fragment.casefold()) for token in q_tokens
+-                    )
++                    and any(_token_in_text(token, fragment.casefold()) for token in q_tokens)
+                     for text in identity_texts
+                     for fragment in re.split(r"(?<=[.!?])\s+|\n+", text)
+                 ):
+@@ -2905,10 +3075,9 @@ class ControllerOrchestrator:
+             ):
+                 value += 0.12
+             competency = (getattr(session, "competency", "") or "").casefold()
+-            if "assistant" in competency and hit.item.role == "assistant":
+-                value += 0.03
+-            elif any(name in competency for name in ("user", "preference")) and (
+-                hit.item.role == "user"
++            if ("assistant" in competency and hit.item.role == "assistant") or (
++                any(name in competency for name in ("user", "preference"))
++                and (hit.item.role == "user")
+             ):
+                 value += 0.03
+             return value
+@@ -3179,12 +3348,11 @@ class ControllerOrchestrator:
+             classify_compute_intent(session.question) is ComputeIntent.ORDINAL_LIST_ITEM
+         ):
+             evidence.extend(self._ordinal_list_evidence(session))
+-        computed = compute_answer(
++        return compute_answer(
+             session.question,
+             evidence,
+             question_date=session.question_date,
+         )
+-        return computed
+ 
+     def _aggregation_scaffold(
+         self, session: LongMemEvalSession, retrieved: list[RetrievedItem]
+@@ -3213,7 +3381,7 @@ class ControllerOrchestrator:
+             resp = self.llm.generate(
+                 prompt, max_new_tokens=self.max_new_tokens, temperature=0.0, seed=self.seed
+             )
+-        except Exception:  # noqa: BLE001 — scaffold is best-effort
++        except (OSError, TimeoutError, RuntimeError):
+             return None
+         items = _parse_json_array(resp.text)
+         if not items:
+@@ -3622,7 +3790,7 @@ def _append_lexical_complement(
+     n_docs = len(cand_items)
+     seen = {(hit.item.session_id, hit.item.turn_idx, hit.item.text) for hit in retrieved}
+     scored: list[tuple[float, RetrievalMemoryItem]] = []
+-    for item, overlap in zip(cand_items, item_overlaps):
++    for item, overlap in zip(cand_items, item_overlaps, strict=True):
+         if not overlap:
+             continue
+         score = sum(math.log(1.0 + n_docs / df[tok]) for tok in overlap)
+@@ -3635,7 +3803,7 @@ def _append_lexical_complement(
+         scored.append((score, item))
+     scored.sort(key=lambda pair: -pair[0])
+     out = list(retrieved)
+-    for score, item in scored[:cap]:
++    for _score, item in scored[:cap]:
+         seen.add((item.session_id, item.turn_idx, item.text))
+         out.append(RetrievedItem(item=item, score=0.25, rank=len(out)))
+     return out
+@@ -4053,7 +4221,7 @@ _PREFERENCE_ABSTENTION_RE = re.compile(
+ def _looks_degenerate_answer(text: str) -> bool:
+     """Non-empty answer carrying no alphanumeric content (e.g. a bare ``$``).
+ 
+-    Mirrors ``ksa.eval.longmemeval.looks_degenerate_answer`` but is kept local so
++    Mirrors ``ask.eval.longmemeval.looks_degenerate_answer`` but is kept local so
+     the hot answer path takes on no eval-module import. This is the
+     silent-truncation signature behind session 852ce960 ("$" instead of
+     "$400,000"): a saturated context window left no room to generate. A genuine
+@@ -4150,8 +4318,10 @@ def _answer_retry_reason(
+     )
+     if exhausted and not _FINAL_ANSWER_RE.search(raw_text or ""):
+         return "truncated"
+-    if preference and preference_exclusions and _positive_preference_contains_exclusion(
+-        text, preference_exclusions
++    if (
++        preference
++        and preference_exclusions
++        and _positive_preference_contains_exclusion(text, preference_exclusions)
+     ):
+         return "preference_polarity"
+     if preference and _PREFERENCE_ABSTENTION_RE.search(text):
+

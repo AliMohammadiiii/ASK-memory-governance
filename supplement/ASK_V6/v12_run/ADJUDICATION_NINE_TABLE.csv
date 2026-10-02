@@ -1,0 +1,10 @@
+item_id,shard,competency,verdict_before,verdict_after,judge_was_called,model_judgment_overridden,len_find_cases_preliminary_reason,len_note_adjudicate_nine,len_note_final_script,stored_note_equals_final_script_note,nine_script_note_equals_final_script_note,merged_pre_rationale_equals_nine_script_note,b1_correct,b2_correct,b3_correct,b4_correct
+6b7dfb22,0,single-session-preference,incorrect,correct,True,True,47,87,87,True,True,False,False,False,False,False
+06878be2,1,single-session-preference,incorrect,correct,True,True,90,135,144,True,False,False,False,False,False,False
+0a34ad58,2,single-session-preference,incorrect,correct,True,True,71,103,103,True,True,False,False,False,False,True
+57f827a0,2,single-session-preference,incorrect,correct,True,True,64,107,107,True,True,False,False,False,False,False
+b0479f84,3,single-session-preference,incorrect,correct,True,True,61,92,92,True,True,False,False,False,False,True
+a82c026e,4,single-session-user,incorrect,correct,True,True,91,131,131,True,True,True,False,False,False,False
+a89d7624,5,single-session-preference,incorrect,correct,True,True,46,89,89,True,True,False,False,True,False,True
+b6025781,5,single-session-preference,incorrect,correct,True,True,62,107,107,True,True,False,False,True,False,True
+gpt4_7a0daae1,7,temporal-reasoning,incorrect,correct,False,False,20,56,69,True,False,False,False,False,False,True

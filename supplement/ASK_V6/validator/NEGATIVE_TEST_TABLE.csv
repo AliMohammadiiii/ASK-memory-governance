@@ -1,0 +1,22 @@
+probe_id,description,baseline_result,patched_result,rejection_reason
+S01,SUPERSEDE: retained predecessor value altered while deactivated,ACCEPTED,REJECTED,retained_predecessor_mutated
+S02,SUPERSEDE: retained predecessor memory_type altered,ACCEPTED,REJECTED,retained_predecessor_mutated
+S03,SUPERSEDE: retained predecessor evidence_digest altered,ACCEPTED,REJECTED,retained_predecessor_mutated
+S04,SUPERSEDE: unrelated active record deleted,ACCEPTED,REJECTED,unaccounted_record_removed
+S05,SUPERSEDE: unrelated record value mutated,ACCEPTED,REJECTED,unaccounted_record_changed
+S06,SUPERSEDE: successor value differs from candidate value,ACCEPTED,REJECTED,successor_differs_from_candidate
+S07,SUPERSEDE: unrelated record deactivated,ACCEPTED,REJECTED,unaccounted_record_changed
+S08,SUPERSEDE: extra unannounced active record inserted,ACCEPTED,REJECTED,unaccounted_record_added
+S09,SUPERSEDE: event predecessor_record_id field wrong (points to unrelated record),ACCEPTED,REJECTED,event_predecessor_id_mismatch
+S10,SUPERSEDE: event candidate_record_id field wrong,ACCEPTED,REJECTED,event_candidate_id_mismatch
+S11,SUPERSEDE of a prior that was already inactive before the transition,ACCEPTED,REJECTED,prior_not_active_before
+S12,SINGLE_SLOT SUPERSEDE: older inactive ancestor deleted and lineage pointer rewritten,ACCEPTED,REJECTED,unaccounted_record_removed;retained_predecessor_mutated
+K01,MULTI KEEP (keep_admitted_candidate=False): candidate silently inserted,ACCEPTED,REJECTED,unaccounted_record_added
+K02,MULTI KEEP: unrelated record deleted,ACCEPTED,REJECTED,unaccounted_record_removed
+K03,MULTI KEEP: unrelated record value mutated,ACCEPTED,REJECTED,unaccounted_record_changed
+K04,MULTI KEEP with prior_record_id=None: compared prior rewritten,ACCEPTED,REJECTED,unaccounted_record_changed
+K05,TEMPORAL_EVENT KEEP: arbitrary mutation of unrelated record,ACCEPTED,REJECTED,unaccounted_record_changed
+I01,Event id not equal to digest of event body,ACCEPTED,REJECTED,event_id_mismatch
+I02,Trace evidence_digest does not equal digest of its evidence_references,ACCEPTED,REJECTED,trace_evidence_digest_mismatch
+R01,ConfigurationIdentity sha256 = 64 zeros checked against its frozen configuration,ACCEPTED (constructor checks format only; no verification step),REJECTED,configuration_digest_mismatch
+R02,"Replay with thresholds shifted +0.01 under an unchanged identity (action unchanged), strict replay",ACCEPTED (no strict mode),REJECTED,configuration_digest_mismatch

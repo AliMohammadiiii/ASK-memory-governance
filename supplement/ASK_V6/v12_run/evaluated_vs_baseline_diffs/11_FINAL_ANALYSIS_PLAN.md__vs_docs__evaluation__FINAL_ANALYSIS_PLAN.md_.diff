@@ -1,0 +1,69 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: FINAL_ANALYSIS_PLAN.md [vs docs/evaluation/FINAL_ANALYSIS_PLAN.md]
+# raw changed lines (deleted+added): 20 (deleted 10, added 10); hunks 5
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 10 (deleted 5, added 5)
+--- evaluated:FINAL_ANALYSIS_PLAN.md (git blob 43937b07863aa1b7d3b5b5e750adefd8061fd445, sha256 690b54b26942)
++++ baseline-commit f6bf66e4766d:docs/evaluation/FINAL_ANALYSIS_PLAN.md (git blob ad65e33eaf87f8d1470540cd7fc63680b268a0cc) [relocated path]
+@@ -9,16 +9,16 @@ pre-specified confirmatory claim.
+ Implementation anchors: `benchmarks/mgp6/metrics_mgp6.py` (`paired_mcnemar`,
+ `BootstrapReporter`), `scripts/analysis/mcnemar_mgp6.py` (MGP-6 family, stdlib,
+ read-only), `scripts/evaluation/evaluate_single_session_preferences.py` (SSP
+-bootstrap), `src/ksa/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
++bootstrap), `src/ask/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
+ 
+ ---
+ 
+-## 1. Confidence intervals — stratified bootstrap
++## 1. Confidence intervals, stratified bootstrap
+ 
+ - **Resamples:** 10,000. **Seed:** 0. **Method:** stratified percentile bootstrap
+   (2.5% / 97.5% percentiles).
+ - **Strata:**
+-  - MGP-6: `(type, gold_action)` — the strata already used by
++  - MGP-6: `(type, gold_action)`, the strata already used by
+     `metrics_mgp6.BootstrapReporter` (resample within each stratum, with
+     replacement, preserving stratum sizes).
+   - LongMemEval: `competency` (6 strata x 30). SSP-only selections are a single
+@@ -29,7 +29,7 @@ bootstrap), `src/ksa/eval/longmemeval.py` (`build_eval_report` bootstrap CIs).
+ - Note: the shipped MGP-6 scorer defaults to 1,000 bootstrap iterations for speed;
+   the **final** CIs are recomputed at 10,000 (`--bootstrap 10000`) with seed 0.
+ 
+-## 2. Paired system comparisons — exact McNemar
++## 2. Paired system comparisons, exact McNemar
+ 
+ - For two systems evaluated on the **same items**, build the 2x2 discordance table
+   (a_only_correct, b_only_correct) and compute the **exact two-sided McNemar
+@@ -56,10 +56,10 @@ family; SSP family) to the McNemar p-values, sorted ascending, threshold
+ `alpha / (m - i + 1)` at rank `i` of `m`, alpha = 0.05.
+ 
+ ### 4a. MGP-6 family (m = 4; on the locked 180-item predictions)
+-1. rule-KSA controller **vs** b4 (naive-overwrite)
+-2. rule-KSA controller **vs** b2 (flat-retrieval)
+-3. LLM-KSA controller (qwen3.5-9b) **vs** zero-shot decision baseline
+-4. rule-KSA controller **vs** LLM-KSA controller (qwen3.5-9b)
++1. rule-ASK controller **vs** b4 (naive-overwrite)
++2. rule-ASK controller **vs** b2 (flat-retrieval)
++3. LLM-ASK controller (qwen3.5-9b) **vs** zero-shot decision baseline
++4. rule-ASK controller **vs** LLM-ASK controller (qwen3.5-9b)
+    (`scripts/analysis/mcnemar_mgp6.py` computes comparisons 1-4; comparison 3 here
+    is that script's "llm_controller vs zero_shot"; it also reports controller-vs-
+    llm_controller.)
+@@ -69,7 +69,7 @@ family; SSP family) to the McNemar p-values, sorted ascending, threshold
+ 2. controller **vs** b2 (flat-vector)
+ 
+ ### 4c. SSP ablation family (m = 6; on the 30 SSP items, paired vs baseline arm A)
+-Full method (arm F) **vs each** of arms A (baseline), B, C, D, E, G — i.e. the
++Full method (arm F) **vs each** of arms A (baseline), B, C, D, E, G, i.e. the
+ five contrasts F-vs-{A,B,C,D,E} plus F-vs-G, per
+ `docs/research/SINGLE_SESSION_PREFERENCE_METHOD.md`. (Runs only after the PROPOSED
+ correction code is implemented; see the run matrix statuses.)
+@@ -87,7 +87,7 @@ confirmatory result.
+ - For SSP rates (unsupported-preference, cross-person contamination): risk
+   difference vs baseline with paired-bootstrap CI.
+ 
+-## 6. Decision rule — diagnostic -> verified
++## 6. Decision rule, diagnostic -> verified
+ 
+ A claim is **upgraded from diagnostic to verified** only when ALL hold:
+ 
+

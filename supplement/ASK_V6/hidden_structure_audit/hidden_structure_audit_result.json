@@ -1,0 +1,158 @@
+{
+ "all_part_a_checks_pass": true,
+ "components": {
+  "components_with_items_in_more_than_one_file": 0,
+  "definition": "proxy(principal,memory_slot,standing_value)",
+  "items_missing_from_supplied_map": null,
+  "n_components": 60,
+  "n_proxy_groups": 60,
+  "proxy_partition_equals_supplied_map": null,
+  "triples_total": 180
+ },
+ "content_sha256": "dd0ff377326dcdec98aa49da1938005fd72f753ad22724e76ca42a0bf0ef8691",
+ "expected_counts_checked": {
+  "components_equal_expected": true,
+  "items_equal_expected": true
+ },
+ "inputs": {
+  "component_map_sha256": null,
+  "labels_file_sha256": "c038a3127c6ccec960705c85277bfd468564bd46f752909820b06cab54b3d091",
+  "labels_source": "file",
+  "record_files": [
+   {
+    "sha256": "e29b61e08da7c45b350e6c620d0aba12e8da46a112ed2ae02c0b75f359282b47",
+    "split": "hidden_inputs"
+   }
+  ]
+ },
+ "parse": {
+  "failures": {},
+  "items_distinct_ids": 540,
+  "items_per_file": {
+   "hidden_inputs": 540
+  },
+  "items_read": 540
+ },
+ "part_a_label_free": {
+  "component_all_three_triples_partition_the_pool": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_has_nine_items": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_lengths_9_11_13_present": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_one_pool_of_six_distinct_sentences_across_all_items": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_one_principal_and_one_slot": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_one_proposed_value": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_one_standing_value": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "component_three_items_per_length": {
+   "all_pass": true,
+   "of": 60,
+   "pass": 60
+  },
+  "triple_indexed_pairs_partition_the_pool": {
+   "all_pass": true,
+   "of": 180,
+   "pass": 180
+  },
+  "triple_pool_of_six_identical_for_the_three_items": {
+   "all_pass": true,
+   "of": 180,
+   "pass": 180
+  },
+  "triple_three_items": {
+   "all_pass": true,
+   "of": 180,
+   "pass": 180
+  }
+ },
+ "part_b_label_dependent": {
+  "all_pass_including_position_means_identical_across_actions": true,
+  "checks": {
+   "component_one_item_per_action_in_each_length": {
+    "all_pass": true,
+    "of": 60,
+    "pass": 60
+   },
+   "component_three_items_per_action": {
+    "all_pass": true,
+    "of": 60,
+    "pass": 60
+   }
+  },
+  "components_with_equal_mean_position_across_actions_informational": {
+   "equal": 60,
+   "of": 60
+  },
+  "label_source": "file",
+  "mean_indexed_position_by_action": {
+   "hidden_inputs": {
+    "ABSTAIN": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "KEEP": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "SUPERSEDE": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "identical_across_actions": true
+   },
+   "pooled": {
+    "ABSTAIN": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "KEEP": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "SUPERSEDE": {
+     "exact": "413/120",
+     "n_positions": 360,
+     "value": 3.441667
+    },
+    "identical_across_actions": true
+   }
+  },
+  "run": true
+ },
+ "schema": "ask-hidden-structure-audit/1",
+ "script": {
+  "sha256": "8428d5f4a19cff04897bcf18bbbd4b38ad3d15e580403ac6de5cf46b4e1b3377",
+  "version": "hidden_structure_audit/1.0.0"
+ },
+ "statement": "Post-hoc structural verification of construction files. Aggregates only. Not a performance evaluation and not to be used for any tuning."
+}

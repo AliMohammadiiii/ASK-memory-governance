@@ -1,0 +1,268 @@
+{
+  "reference": {
+    "accepted_tampering": [],
+    "pytest": {
+      "exit_code": 0,
+      "summary": "98 passed in 0.05s",
+      "failed_tests": []
+    }
+  },
+  "ablations": [
+    {
+      "ablation": "event_id_recompute",
+      "replaced": "if event.event_id != compute_event_id(event):",
+      "with": "if False:",
+      "probes_accepted_after_ablation": [
+        "I01"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "1 failed, 97 passed in 0.13s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[I01]"
+      ]
+    },
+    {
+      "ablation": "trace_evidence_set_digest",
+      "replaced": "if trace.evidence_digest != evidence_set_digest(trace.evidence_references):",
+      "with": "if False:",
+      "probes_accepted_after_ablation": [
+        "I02"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "1 failed, 97 passed in 0.13s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[I02]"
+      ]
+    },
+    {
+      "ablation": "event_field_accounting",
+      "replaced": "self._validate_event_fields(event=event, candidate=candidate)",
+      "with": "pass",
+      "probes_accepted_after_ablation": [
+        "S09",
+        "S10"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "6 failed, 92 passed in 0.18s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[S09]",
+        "test_tampering_probe_is_rejected_with_named_reason[S10]",
+        "test_keep_event_must_not_report_a_resulting_record",
+        "test_admission_flag_on_supersede_event_is_rejected",
+        "test_candidate_identifier_colliding_with_existing_record_is_rejected",
+        "test_candidate_is_required_for_a_committing_action"
+      ]
+    },
+    {
+      "ablation": "record_accounting_all",
+      "replaced": "self._validate_transition_accounting(",
+      "with": "(lambda **_kw: None)(",
+      "probes_accepted_after_ablation": [
+        "K01",
+        "K02",
+        "K03",
+        "K04",
+        "K05",
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S11",
+        "S12"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "24 failed, 74 passed in 0.27s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[K01]",
+        "test_tampering_probe_is_rejected_with_named_reason[K02]",
+        "test_tampering_probe_is_rejected_with_named_reason[K03]",
+        "test_tampering_probe_is_rejected_with_named_reason[K04]",
+        "test_tampering_probe_is_rejected_with_named_reason[K05]",
+        "test_tampering_probe_is_rejected_with_named_reason[S01]",
+        "test_tampering_probe_is_rejected_with_named_reason[S02]",
+        "test_tampering_probe_is_rejected_with_named_reason[S03]",
+        "test_tampering_probe_is_rejected_with_named_reason[S04]",
+        "test_tampering_probe_is_rejected_with_named_reason[S05]",
+        "test_tampering_probe_is_rejected_with_named_reason[S06]",
+        "test_tampering_probe_is_rejected_with_named_reason[S07]",
+        "test_tampering_probe_is_rejected_with_named_reason[S08]",
+        "test_tampering_probe_is_rejected_with_named_reason[S11]",
+        "test_tampering_probe_is_rejected_with_named_reason[S12]",
+        "test_retained_predecessor_lineage_pointer_rewritten_is_rejected",
+        "test_successor_fields_must_equal_candidate[memory_type-episodic_fact]",
+        "test_successor_fields_must_equal_candidate[evidence_digest-d9298a10d1b0735837dc4bd85dac641b0f3cef27a47e5d53a54f2f3f5b2fcffa]",
+        "test_admitted_record_must_equal_candidate",
+        "test_admission_with_an_extra_record_is_rejected",
+        "test_keep_with_inactive_prior_is_rejected",
+        "test_prior_missing_from_before_state_is_rejected",
+        "test_candidate_is_required_for_a_committing_action",
+        "test_unverified_candidate_still_enforces_record_accounting"
+      ]
+    },
+    {
+      "ablation": "prior_active_before",
+      "replaced": "and not prior_before.active",
+      "with": "and False",
+      "probes_accepted_after_ablation": [
+        "S11"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "2 failed, 96 passed in 0.14s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[S11]",
+        "test_keep_with_inactive_prior_is_rejected"
+      ]
+    },
+    {
+      "ablation": "removed_records",
+      "replaced": "for record_id in sorted(set(before_by_id) - set(after_by_id)):",
+      "with": "for record_id in []:",
+      "probes_accepted_after_ablation": [
+        "K02",
+        "S04"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "3 failed, 95 passed in 0.14s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[K02]",
+        "test_tampering_probe_is_rejected_with_named_reason[S04]",
+        "test_tampering_probe_is_rejected_with_named_reason[S12]"
+      ]
+    },
+    {
+      "ablation": "changed_records",
+      "replaced": "for record_id in sorted(set(before_by_id) & set(after_by_id)):",
+      "with": "for record_id in []:",
+      "probes_accepted_after_ablation": [
+        "K03",
+        "K04",
+        "K05",
+        "S01",
+        "S02",
+        "S03",
+        "S05",
+        "S07"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "9 failed, 89 passed in 0.18s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[K03]",
+        "test_tampering_probe_is_rejected_with_named_reason[K04]",
+        "test_tampering_probe_is_rejected_with_named_reason[K05]",
+        "test_tampering_probe_is_rejected_with_named_reason[S01]",
+        "test_tampering_probe_is_rejected_with_named_reason[S02]",
+        "test_tampering_probe_is_rejected_with_named_reason[S03]",
+        "test_tampering_probe_is_rejected_with_named_reason[S05]",
+        "test_tampering_probe_is_rejected_with_named_reason[S07]",
+        "test_retained_predecessor_lineage_pointer_rewritten_is_rejected"
+      ]
+    },
+    {
+      "ablation": "added_records",
+      "replaced": "for record_id in added:",
+      "with": "for record_id in []:",
+      "probes_accepted_after_ablation": [
+        "K01",
+        "S06",
+        "S08"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "8 failed, 90 passed in 0.19s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[K01]",
+        "test_tampering_probe_is_rejected_with_named_reason[S06]",
+        "test_tampering_probe_is_rejected_with_named_reason[S08]",
+        "test_successor_fields_must_equal_candidate[memory_type-episodic_fact]",
+        "test_successor_fields_must_equal_candidate[evidence_digest-d9298a10d1b0735837dc4bd85dac641b0f3cef27a47e5d53a54f2f3f5b2fcffa]",
+        "test_admitted_record_must_equal_candidate",
+        "test_admission_with_an_extra_record_is_rejected",
+        "test_unverified_candidate_still_enforces_record_accounting"
+      ]
+    },
+    {
+      "ablation": "retained_predecessor_fields",
+      "replaced": "if illegal:",
+      "with": "if False:",
+      "probes_accepted_after_ablation": [
+        "S01",
+        "S02",
+        "S03"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "4 failed, 94 passed in 0.16s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[S01]",
+        "test_tampering_probe_is_rejected_with_named_reason[S02]",
+        "test_tampering_probe_is_rejected_with_named_reason[S03]",
+        "test_retained_predecessor_lineage_pointer_rewritten_is_rejected"
+      ]
+    },
+    {
+      "ablation": "successor_content_vs_candidate",
+      "replaced": "differing = _changed_fields(expected_new, record)",
+      "with": "differing = ()",
+      "probes_accepted_after_ablation": [
+        "S06"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "4 failed, 94 passed in 0.16s",
+      "failed_tests": [
+        "test_tampering_probe_is_rejected_with_named_reason[S06]",
+        "test_successor_fields_must_equal_candidate[memory_type-episodic_fact]",
+        "test_successor_fields_must_equal_candidate[evidence_digest-d9298a10d1b0735837dc4bd85dac641b0f3cef27a47e5d53a54f2f3f5b2fcffa]",
+        "test_admitted_record_must_equal_candidate"
+      ]
+    },
+    {
+      "ablation": "identity_verify",
+      "replaced": "if self.sha256.lower() != expected:",
+      "with": "if False:",
+      "probes_accepted_after_ablation": [
+        "R01",
+        "R01(validator path)"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "8 failed, 90 passed in 0.18s",
+      "failed_tests": [
+        "test_validator_rejects_a_configuration_that_does_not_hash_to_the_identity",
+        "test_apply_transition_verifies_configuration_when_supplied",
+        "test_identity_computed_from_configuration_verifies",
+        "test_all_zero_identity_is_not_bound_to_any_configuration",
+        "test_zero_identity_adapter_fails_identity_verification",
+        "test_zero_identity_transition_fails_validation_against_frozen_configuration",
+        "test_shifted_thresholds_under_the_same_identity_fail_strict_replay",
+        "test_adapter_with_arbitrary_digest_keeps_working_in_default_mode"
+      ]
+    },
+    {
+      "ablation": "validator_configuration_verify",
+      "replaced": "event.configuration.verify(configuration)",
+      "with": "pass",
+      "probes_accepted_after_ablation": [
+        "R01(validator path)"
+      ],
+      "pytest_exit_code": 1,
+      "pytest_summary": "3 failed, 95 passed in 0.15s",
+      "failed_tests": [
+        "test_validator_rejects_a_configuration_that_does_not_hash_to_the_identity",
+        "test_apply_transition_verifies_configuration_when_supplied",
+        "test_zero_identity_transition_fails_validation_against_frozen_configuration"
+      ]
+    },
+    {
+      "ablation": "trace_event_binding",
+      "replaced": "self._validate_trace_event_binding(event=event, trace=trace)",
+      "with": "pass",
+      "probes_accepted_after_ablation": [],
+      "pytest_exit_code": 1,
+      "pytest_summary": "1 failed, 97 passed in 0.14s",
+      "failed_tests": [
+        "test_trace_logged_record_identifiers_must_match_the_event"
+      ]
+    }
+  ]
+}

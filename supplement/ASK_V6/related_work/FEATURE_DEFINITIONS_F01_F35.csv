@@ -1,0 +1,36 @@
+﻿feature_id,definition
+F01,explicit persistent-write governance object
+F02,candidate update separated from persistence
+F03,evidence bound to write decision
+F04,preserve-incumbent action
+F05,replace action
+F06,explicit write abstention
+F07,clarification or re-verification before persistence
+F08,proposal separated from execution
+F09,controller-independent interface
+F10,storage-independent interface
+F11,typed records
+F12,state provenance
+F13,retained predecessor/history
+F14,explicit lineage edge
+F15,temporal or bitemporal validity
+F16,state invariants
+F17,validated transition at commit
+F18,durable auditable transition
+F19,configuration identity
+F20,evidence identity/digest
+F21,before/after state identity
+F22,explicit replay scope
+F23,exact decision replay
+F24,exact transition replay
+F25,action evaluation
+F26,post-transition state evaluation
+F27,lineage evaluation
+F28,retrieval consequence evaluation
+F29,downstream answer evaluation
+F30,layer-separated failure attribution
+F31,controlled write-label diagnostic
+F32,naturalistic write labels
+F33,downstream long-memory benchmark
+F34,retained negative construct
+F35,shortcut/leakage audit

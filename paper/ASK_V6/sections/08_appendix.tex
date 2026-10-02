@@ -1,0 +1,113 @@
+\appendix
+\section{Provenance of the LongMemEval run}
+\label{app:prov}
+The run directory was verified against the output hashes recorded in the repository's derived manifest: the judgments, report and action log of the controller and the judgments and report of the baseline b4 match the recorded SHA-256 values (the derived manifest covers b4 among the baselines). The files of baselines b1 to b3 were verified by byte identity with the corresponding files of the earlier run. The run manifest records 17 code and protocol files by hash. All 17 hashes were recovered from the object store of the development repository and equal the manifest values. Seven blobs are reachable from commits (the only commit holding them at their paths is a tag dated 2026-07-25, after the run). Ten blobs are not referenced by any branch, tag, stash or reflog entry; all ten lie in one cruft pack with a recorded object time of 2026-08-05, and none is present in the public repository clone. Under default git maintenance they are at risk of removal (not tested). The supplement contains the manifest (logical name, SHA-256, object identifier, reachability, relation to the baseline file), the 17 recovered files, the unified diffs against the baseline commit, and a script that archives the ten blobs without rewriting history. We subsequently executed the archive script, and all ten archived blobs matched their recorded hashes. The released orchestrator, longmemeval module, computation module and inference client differ from the recovered versions (the orchestrator by 912 changed lines after normalizing a package rename; the evaluated file has 4\,301 lines and the baseline file 4\,471). Eleven of the 17 files differ from the baseline-commit file of the same path, two are identical, and four are protocol documents that sit at a different path in the baseline commit. The manifest keys use the package name \texttt{ask}, whereas the evaluated launcher builds its list with the earlier package name; we could not explain this difference. We did not test whether the released code reproduces the evaluated behavior.
+
+The result coverage of the controller run was checked as described in Section~\ref{sec:lme}; the merged predictions, answers and judgments each hold the 180 expected identifiers exactly once, and their hashes are recorded in the supplement. The judgments file differs from the concatenation of the shard files in one field of one row (a stored rationale of the earlier pass); verdict fields are identical in all 180 rows.
+
+\section{Replay levels}
+\label{app:replay}
+\begin{table}[h]
+\centering\small
+\caption{Replay levels and their status for the LongMemEval run.}
+\begin{tabular}{p{1.0cm}p{3.6cm}p{9.2cm}}
+\toprule
+Level & Name & Status \\
+\midrule
+R1 & Decision-rule replay & Established: all 12\,654 actions and scores recomputed from logged features and thresholds \\
+R2 & Transition replay & Not established: transitions were SQLite statements and no state digests were logged \\
+R3 & Serialization replay & Partial, reference code only: events are tested against a schema; no round trip from logged rows to state \\
+R4 & Persistent-state replay & Not established: the store was in memory and discarded \\
+R5 & Retrieval replay & Not established \\
+R6 & Answer-generation replay & Not established: hosted model; a request seed of 0 was sent but provider determinism is not established \\
+R7 & End-to-end reproduction & Not established \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Baseline counts, as context only}
+\label{app:baselines}
+\begin{table}[h]
+\centering\small
+\caption{Correct answers out of 180 for the baselines found in the run directory, as recorded context only. They come from an earlier configuration and are not comparable with the controller; no comparison or test is made, and three of the counts carry manual judgment overrides that the study owner attributes to an independent human reviewer; the available artifacts record neither reviewer identity nor selection criteria.}
+\begin{tabularx}{\linewidth}{lcX}
+\toprule
+Baseline & Correct & Source and status \\
+\midrule
+B1 no memory & 9 & Earlier run (different freeze and judge routing); 10 before one manual override (one item changed from correct to incorrect) \\
+B3 recency & 43 & Earlier run; no override \\
+B2 flat retrieval & 80 & Earlier run; no override \\
+B4 naive overwrite & 114 & Earlier run; 112 before two manual overrides (two items changed from incorrect to correct) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Claims and their evidence}
+\label{app:claims}
+\begin{table}[h]
+\centering\small
+\caption{Selected claims and the status of their evidence in this paper.}
+\begin{tabular}{p{5.7cm}p{3.2cm}p{5.2cm}}
+\toprule
+Claim & Status & Basis \\
+\midrule
+Frozen configuration reaches 0.848 accuracy on 540 hidden items & Supported as an observation on this construction & Public aggregate; Table~\ref{tab:hidden} \\
+Distractor capture explains the errors & Not supported & Distractors are not seen by the controller; check holds by construction \\
+Live controller outperforms baselines on the development split because of the write policy & Not supported & Evidence routing and prompt are confounded; Tables~\ref{tab:models-acc} to~\ref{tab:models-routing} (substitute models) show configuration-dependent differences \\
+Controller answered 128 of 180 (primary grader result; 137 after one-sided adjudication) & Supported as an exploratory observation & Raw files, hash-bound; Table~\ref{tab:lme} \\
+Controller outperforms naive overwrite on LongMemEval-M & Not claimed & Baselines from a different configuration \\
+All 12\,654 decisions replay exactly & Supported at level R1 only & Recomputed from the log, hash-bound \\
+The validator rejects non-conforming states & Not supported & 19 of 19 tampering probes accepted \\
+Write governance, abstention or supersession are new & Not claimed & Each element has prior or concurrent precedent \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Substitute-model runs of the development contrast}
+\label{app:subs}
+\begin{table}[h]
+\centering\small
+\caption{Runs used in the 2 $\times$ 2 diagnostic contrast. All used the public development split (180 items), temperature 0 and a gateway (local for four rows, through a tunnel for Gemini low). The three Gemini rows are three reasoning settings of one model.}
+\begin{tabularx}{\linewidth}{lcccX}
+\toprule
+Model and setting & Repeats & Max new tokens & Seed sent & Run window (UTC, 2026) \\
+\midrule
+Gemini 3.8 Flash, low & 2 & 512 & no & 1 October, 16:59 to 17:16 \\
+Gemini 3.8 Flash, medium & 2 & 4096 & yes (4301) & 2 October, 11:01 to 11:44 \\
+Gemini 3.8 Flash, high & 1 & 4096 & yes (4301) & 2 October, 11:50 to 12:39 \\
+GLM 5.3 Flash & 2 & 4096 & no & 2 October, 09:58 to 10:47 \\
+gpt-oss-120b, medium & 2 & 4096 & yes (4301) & 2 October, 09:37 to 09:55 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Gemini 3.8 Flash at low reasoning was run first, and its accuracies had been inspected before the four later configurations were chosen; those were chosen by availability through one-request tests. Gemini 3.8 Flash at high reasoning was still running when we first analyzed the output directory and is included after completion, with one repeat. None of the completed runs was dropped. Transport failures (two HTTP 503 responses in GLM 5.3 Flash and two SSL errors in Gemini low) were retried and are not counted. The manuscript model \texttt{qwen/qwen3.5-9b} was not run.
+
+Candidates that were not used. A Qwen-family hosted model (qwen3.5-plus) returned HTTP 400 on both smoke requests (the error body was not stored; the two records are in the supplement). DeepSeek v4.1 Flash produced 8 records for 5 distinct items. At a first cap of 1\,024 completion tokens (inferred from the usage counters, because the cap was not stored in the record) 4 items were attempted: 3 returned no answer after 3 attempts each, with all 1\,024 tokens spent on hidden reasoning, and 1 was answered with 725 tokens. At a cap of 4\,096 tokens 4 items were attempted, namely the 3 unanswered items and 1 further item, and all 4 returned no answer, with all 4\,096 tokens spent on hidden reasoning (finish reason length). Kimi K2.5 was reported to be unavailable and MiMo v2.6 Flash was reported to take 33.8 seconds for a one-line request and was not run; both reports come from our own terminal sessions and there is no raw record for either.
+
+\section{Reply parsing in the substitute runs}
+\label{app:parser}
+Three parsing rules are involved (Section~\ref{sec:mgp6}). \emph{baseline-strict} is \texttt{parse\_action\_response} at the baseline commit (file SHA-256 \texttt{f1d70129\ldots}), which rejects a reply that is wrapped in a Markdown code fence. \emph{json-fence-tolerant} is the same function with one change: an exact surrounding JSON fence is removed before parsing, and nested fences, surrounding prose and non-object JSON are still rejected. The change was made in an uncommitted working copy at 2026-10-02 11:00:26 UTC (modified file SHA-256 \texttt{9a39ce09\ldots}; a backup file with the baseline hash \texttt{f1d70129\ldots} was written three seconds earlier); the unified diff against the baseline commit (44 lines, SHA-256 \texttt{6d5deda5\ldots}) is in the supplement as \texttt{parser\_fence\_normalization.patch}. The Gemini low run used the runner's own extraction of the text between the first and last brace; on every stored reply it gives the action of json-fence-tolerant.
+
+\begin{table}[h]
+\centering\small
+\caption{Parser in use for each substitute run.}
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+Run & Parser at run time \\
+\midrule
+Gemini 3.8 Flash, low (1 October) & Runner's own brace extraction (first to last brace, parsed as JSON); equal to json-fence-tolerant on all stored replies \\
+gpt-oss-120b, GLM 5.3 Flash (2 October, ending 09:55 and 10:47 UTC) & Repository parser before the working-copy change (the working copy equalled the baseline file when the backup was written at 11:00:23 UTC); replies parse identically under both repository rules \\
+Gemini 3.8 Flash, medium and high (2 October, from 11:01 UTC) & Repository parser with the uncommitted fence change \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+All accuracies in Section~\ref{sec:mgp6} are recomputed from the stored replies under each rule (Table~\ref{tab:parser}); no stored reply reaches the 120 characters kept, so none is truncated. A reply that a rule rejects counts as incorrect, and the repository's guard is applied only to valid \abstain{} outputs.
+
+\begin{table}[h]
+\centering\footnotesize\setlength{\tabcolsep}{4pt}
+\caption{Accuracy of cells A, D, E, B and B+g (defined in Table~\ref{tab:models-acc}) under json-fence-tolerant (tolerant) and baseline-strict (strict) parsing, and the number of replies that baseline-strict rejects (of all replies for the configuration).}
+\label{tab:parser}
+\input{tables/tab_parser_sensitivity}
+\end{table}
+The tracked results for the manuscript model in Table~\ref{tab:dev} were produced in July, before the working-copy change. We re-parsed the stored replies of the located set of 12 model-run directories from the earlier July development run (180 replies each): every reply parses under baseline-strict and none is fenced. We did not locate the second set of 12 model-run directories described in the earlier analysis, so this check does not establish parsing invariance for the complete development rerun behind Table~\ref{tab:dev}. We did not inspect the stored replies of the hidden run, which is private; the tracked analysis records no model fallbacks for it.

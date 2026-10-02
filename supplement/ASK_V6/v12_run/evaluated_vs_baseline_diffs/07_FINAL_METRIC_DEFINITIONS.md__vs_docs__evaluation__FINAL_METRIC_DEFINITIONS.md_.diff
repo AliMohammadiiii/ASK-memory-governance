@@ -1,0 +1,107 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: FINAL_METRIC_DEFINITIONS.md [vs docs/evaluation/FINAL_METRIC_DEFINITIONS.md]
+# raw changed lines (deleted+added): 26 (deleted 13, added 13); hunks 10
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 22 (deleted 11, added 11)
+--- evaluated:FINAL_METRIC_DEFINITIONS.md (git blob 5aa2245509ccd3fe00c8ca26ce5e64af67c44a07, sha256 54f02b87ef98)
++++ baseline-commit f6bf66e4766d:docs/evaluation/FINAL_METRIC_DEFINITIONS.md (git blob a316f07b3f3c0a4ff07549b1e71a0b75d4523019) [relocated path]
+@@ -9,7 +9,7 @@ tables (section "Excluded metrics").
+ Implementation anchors:
+ - MGP-6 scorer: `benchmarks/mgp6/metrics_mgp6.py`
+ - MGP-6 schema / gold access: `benchmarks/mgp6/mgp6_schema_v2.py`
+-- LongMemEval scorer: `src/ksa/eval/longmemeval.py` (`build_eval_report`, `LongMemEvalGrader`)
++- LongMemEval scorer: `src/ask/eval/longmemeval.py` (`build_eval_report`, `LongMemEvalGrader`)
+ - SSP evaluator: `scripts/evaluation/evaluate_single_session_preferences.py`
+ - Paired significance: `benchmarks/mgp6/metrics_mgp6.py` (`paired_mcnemar`) and
+   `scripts/analysis/mcnemar_mgp6.py`
+@@ -111,7 +111,7 @@ by `canonical_action()` before any comparison.
+ 
+ ## C. Memory-state / lineage metrics (MGP-6)
+ 
+-### C1. Artifact (memory-state) correctness — exact
++### C1. Artifact (memory-state) correctness, exact
+ - **Definition:** predicted memory state equals gold memory state field-for-field
+   after normalisation and id-sort.
+ - **Formula:** mean over items of `1[ normalized_state(pred) == normalized_state(gold) ]`.
+@@ -121,7 +121,7 @@ by `canonical_action()` before any comparison.
+   non-dict records are dropped.
+ - **Code:** `artifact_exact` (207), `normalized_state` (183).
+ 
+-### C2. Artifact (memory-state) correctness — semantic
++### C2. Artifact (memory-state) correctness, semantic
+ - **Definition:** the set of *active* records matches on
+   `(semantic_slot, type, canonicalised text)`, ignoring ids/order/inactive rows.
+ - **Formula:** mean of `1[ active_signature(pred) == active_signature(gold) ]`.
+@@ -137,7 +137,7 @@ by `canonical_action()` before any comparison.
+   active in the same slot; (5) exactly one active record of the new type in the slot.
+ - **Numerator / denominator:** summed points / (5 x #SUPERSEDE items).
+ - **Direction:** up. (Rule controller 0.8556; `no_lineage` ablation drops it to 0.3689
+-  while leaving action accuracy unchanged — this metric is what isolates lineage.)
++  while leaving action accuracy unchanged, this metric is what isolates lineage.)
+ - **Code:** `lineage_correctness` (293), `lineage_row` (268).
+ 
+ ### C4. Stale-retrieval rate
+@@ -157,16 +157,16 @@ by `canonical_action()` before any comparison.
+ These support the analysis but are not headline table columns. Included for
+ completeness because the ledger and reports reference them.
+ 
+-- **Premise-resistance rate** — on `query_mode == premise_resistance` items, the
++- **Premise-resistance rate**, on `query_mode == premise_resistance` items, the
+   answer must include all required spans, exclude all forbidden spans, AND contain
+   an explicit rejection token. Direction up. `premise_resistance` (378).
+-- **Implicit-application accuracy** — on `query_mode == implicit_application`
++- **Implicit-application accuracy**, on `query_mode == implicit_application`
+   items, the answer satisfies both include and exclude constraints. Up.
+   `implicit_application` (388).
+-- **Judge include / exclude / conjunction rate** — deterministic
++- **Judge include / exclude / conjunction rate**, deterministic
+   pattern-based answer check (`judge_flags`, 364; `judge_rate`, 370).
+ - **Implicit-conflict recall / explicit-cue supersede recall / cue-dependence
+-  gap** — SUPERSEDE recall split by cue type (396-413).
++  gap**, SUPERSEDE recall split by cue type (396-413).
+ 
+ ---
+ 
+@@ -181,7 +181,7 @@ completeness because the ledger and reports reference them.
+   judge; the hard gold-token reject fires only on a provable numeric conflict
+   (all other mismatches defer to the semantic judge). Every verdict logs the
+   judge that produced it (`judge_model_id`, `used_fallback`).
+-- **Code:** `src/ksa/eval/longmemeval.py` `build_eval_report` (904) over
++- **Code:** `src/ask/eval/longmemeval.py` `build_eval_report` (904) over
+   `GradeResult`s; grading in `LongMemEvalGrader.grade` (646).
+ 
+ ### E2. Per-competency accuracy
+@@ -225,7 +225,7 @@ are the LongMemEval competency whose label contains `preference`.
+ - **Numerator / denominator:** answer-asserted tuples with no retrieved provenance
+   / all answer-asserted tuples.
+ - **Direction:** down. Scores the "assert-only-grounded" answer contract.
+-- **Code:** PROPOSED (method doc section 5); not yet implemented — flagged pending.
++- **Code:** PROPOSED (method doc section 5); not yet implemented, flagged pending.
+ 
+ ### F3. Cross-person contamination rate
+ - **Definition:** fraction of answers whose asserted preference binds to an
+@@ -233,7 +233,7 @@ are the LongMemEval competency whose label contains `preference`.
+   evaluated user.
+ - **Formula:** `#answers_bound_to_distractor_persona / #SSP_answers`.
+ - **Direction:** down. (The `75832dbd` / `75f70248` failure mode.)
+-- **Code:** PROPOSED (method doc section 5); not yet implemented — flagged pending.
++- **Code:** PROPOSED (method doc section 5); not yet implemented, flagged pending.
+ 
+ ### F4. Per-subtype breakdown
+ - Accuracy plus F2/F3 broken out by the taxonomy's primary categories
+@@ -246,7 +246,7 @@ are the LongMemEval competency whose label contains `preference`.
+ 
+ ## Excluded metrics (never in final tables)
+ 
+-- **`over_forgetting_rate`** and **`under_forgetting_rate`** — these **saturate at
++- **`over_forgetting_rate`** and **`under_forgetting_rate`**, these **saturate at
+   1.0 for every system** in the shipped implementation and are therefore
+   uninformative. They are computed (`over_forgetting` line 225, `under_forgetting`
+   line 239) and remain in `report.json` for provenance, but MUST NOT appear in any
+@@ -258,5 +258,5 @@ are the LongMemEval competency whose label contains `preference`.
+   definition are preserved. Final tables use the current
+   `metrics_mgp6.invalid_commit` (gold-ABSTAIN commit violation).
+ - MGP-6 v2 is an author-designed diagnostic slice with **one** independent human
+-  annotator (Cohen's kappa ~0.98) plus a four-model audit panel — never described
++  annotator (Cohen's kappa ~0.98) plus a four-model audit panel, never described
+   as multi-annotator human IAA.
+

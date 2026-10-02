@@ -1,0 +1,130 @@
+{
+ "ask_n_at_2": 19,
+ "ask_col": "19",
+ "count_recomputed_vs_column_mismatch": {},
+ "ranking_top15": [
+  [
+   "GPM",
+   13
+  ],
+  [
+   "MemTX",
+   11
+  ],
+  [
+   "TARL",
+   11
+  ],
+  [
+   "Persona",
+   11
+  ],
+  [
+   "TOKI",
+   10
+  ],
+  [
+   "MemGuard-verifier",
+   10
+  ],
+  [
+   "Quipu",
+   10
+  ],
+  [
+   "ECHO",
+   9
+  ],
+  [
+   "STALE",
+   8
+  ],
+  [
+   "SodaMem",
+   8
+  ],
+  [
+   "Eywa",
+   8
+  ],
+  [
+   "TEPA",
+   7
+  ],
+  [
+   "GraphNativeBeliefRevision",
+   7
+  ],
+  [
+   "MGP",
+   6
+  ],
+  [
+   "MemGuard-contamination",
+   6
+  ],
+  [
+   "Memory-R1",
+   6
+  ]
+ ],
+ "table_cells_checked": 72,
+ "table_rows_parsed": 12,
+ "cell_mismatches": [],
+ "selected12_in_top12_by_count": false,
+ "selected12_counts": {
+  "GPM": [
+   13,
+   13
+  ],
+  "MemTX": [
+   11,
+   11
+  ],
+  "TARL": [
+   11,
+   11
+  ],
+  "Persona": [
+   11,
+   11
+  ],
+  "TOKI": [
+   10,
+   10
+  ],
+  "Quipu": [
+   10,
+   10
+  ],
+  "MemGuard-verifier": [
+   10,
+   10
+  ],
+  "ECHO": [
+   9,
+   9
+  ],
+  "STALE": [
+   8,
+   8
+  ],
+  "SodaMem": [
+   8,
+   8
+  ],
+  "Eywa": [
+   8,
+   8
+  ],
+  "GraphNativeBeliefRevision": [
+   7,
+   7
+  ]
+ },
+ "classification_counts": {
+  "PARTIAL_COMPONENT_PRECEDENT": 24,
+  "CONCEPTUAL_PRECEDENT": 1,
+  "ADJACENT": 5
+ }
+}

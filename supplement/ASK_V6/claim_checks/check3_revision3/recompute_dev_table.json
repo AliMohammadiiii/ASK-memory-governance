@@ -1,0 +1,142 @@
+{
+ "ablation_no_abstain_qwen35_9b_v3": {
+  "n": 180,
+  "acc": 0.3278,
+  "macro_f1": 0.2398,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "ablation_no_lineage_qwen35_9b_v3": {
+  "n": 180,
+  "acc": 0.3444,
+  "macro_f1": 0.1995,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "ablation_no_provenance_qwen35_9b_v3": {
+  "n": 180,
+  "acc": 0.3444,
+  "macro_f1": 0.2002,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "ablation_no_typing_qwen35_9b_v3": {
+  "n": 180,
+  "acc": 0.3444,
+  "macro_f1": 0.1905,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "b1_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3667,
+  "macro_f1": 0.315,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "b2_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3556,
+  "macro_f1": 0.238,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "b3_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3389,
+  "macro_f1": 0.2309,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "b4_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3444,
+  "macro_f1": 0.2064,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "decision_zero_shot_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3333,
+  "macro_f1": 0.1765,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "live_model_controller_evidence_v2_qwen35_9b_clean": {
+  "n": 180,
+  "acc": 0.7667,
+  "macro_f1": 0.7674,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "live_model_controller_hybrid_v3_qwen35_9b": {
+  "n": 180,
+  "acc": 0.8556,
+  "macro_f1": 0.8566,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "live_model_controller_qwen35_9b": {
+  "n": 180,
+  "acc": 0.3333,
+  "macro_f1": 0.1771,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "rules_controller_v1": {
+  "n": 180,
+  "acc": 0.3333,
+  "macro_f1": 0.2434,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ },
+ "rules_controller_v1_c37b887": {
+  "n": 180,
+  "acc": 0.3333,
+  "macro_f1": 0.2434,
+  "gold_counts": {
+   "ABSTAIN": 60,
+   "KEEP": 60,
+   "SUPERSEDE": 60
+  }
+ }
+}

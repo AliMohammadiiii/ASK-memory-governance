@@ -1,0 +1,122 @@
+{
+ "max_tokens": 4096,
+ "sent_seed": false,
+ "reasoning_effort_arg": "omit",
+ "model": "ocg/glm-5.3-flash",
+ "base_url": "http://localhost:20128/v1",
+ "dev_sha256": "d4dbf740d9fa5239829842e2ab6f5ce67b11d6d909628ff38f4a19fc0242cde5",
+ "python": "3.12.14",
+ "n_rows": 1440,
+ "cells": {
+  "A_zero_payload|repeat0": {
+   "accuracy": 0.5166666666666667,
+   "macro_f1": 0.4869252719814517,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 36,
+    "SUPERSEDE": 115,
+    "ABSTAIN": 29
+   }
+  },
+  "B_live_routed|repeat0": {
+   "accuracy": 0.8555555555555555,
+   "macro_f1": 0.856952169076752,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 64,
+    "SUPERSEDE": 56,
+    "ABSTAIN": 60
+   }
+  },
+  "D_zero_routed|repeat0": {
+   "accuracy": 0.8166666666666667,
+   "macro_f1": 0.8106125747687045,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 57,
+    "SUPERSEDE": 76,
+    "ABSTAIN": 47
+   }
+  },
+  "E_live_payload|repeat0": {
+   "accuracy": 0.7777777777777778,
+   "macro_f1": 0.7755512461394815,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 70,
+    "SUPERSEDE": 59,
+    "ABSTAIN": 51
+   }
+  },
+  "B_guarded|repeat0": {
+   "accuracy": 0.8888888888888888,
+   "macro_f1": 0.888422035480859,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 73,
+    "SUPERSEDE": 59,
+    "ABSTAIN": 48
+   }
+  },
+  "A_zero_payload|repeat1": {
+   "accuracy": 0.4888888888888889,
+   "macro_f1": 0.45306513409961685,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 36,
+    "SUPERSEDE": 114,
+    "ABSTAIN": 30
+   }
+  },
+  "B_live_routed|repeat1": {
+   "accuracy": 0.8666666666666667,
+   "macro_f1": 0.8670779606608484,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 60,
+    "SUPERSEDE": 59,
+    "ABSTAIN": 61
+   }
+  },
+  "D_zero_routed|repeat1": {
+   "accuracy": 0.7777777777777778,
+   "macro_f1": 0.7699973882084484,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 58,
+    "SUPERSEDE": 77,
+    "ABSTAIN": 45
+   }
+  },
+  "E_live_payload|repeat1": {
+   "accuracy": 0.7888888888888889,
+   "macro_f1": 0.7885614902368916,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 68,
+    "SUPERSEDE": 58,
+    "ABSTAIN": 54
+   }
+  },
+  "B_guarded|repeat1": {
+   "accuracy": 0.8888888888888888,
+   "macro_f1": 0.888094475409486,
+   "invalid_or_failed": 0,
+   "pred_distribution": {
+    "KEEP": 69,
+    "SUPERSEDE": 61,
+    "ABSTAIN": 50
+   }
+  }
+ },
+ "tracked_reference_accuracy": {
+  "decision_zero_shot": 0.3388888888888889,
+  "live_model_controller": 0.8444444444444444
+ },
+ "completed_ok_per_cell_repeat0": {
+  "A_zero_payload": 180,
+  "B_live_routed": 180,
+  "D_zero_routed": 180,
+  "E_live_payload": 180
+ }
+}

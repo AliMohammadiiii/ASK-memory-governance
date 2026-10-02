@@ -1,0 +1,61 @@
+date_utc: 2026-10-02T14:21:51Z
+python: 3.12.14 | executable: /Users/alimohammadi/.claude-science/orgs/f3f39d3f-bf72-43ae-acc5-0b5946ab8010/workspaces/ea45d171-77ab-45a2-a2a9-42d0a2a2831c/.venv/ask-audit/bin/python
+pytest: 9.1.1
+pydantic: 2.13.5
+jsonschema: 4.26.0
+PyYAML: 6.0.3
+baseline commit: f6bf66e4766d769727edf6b42c76b9977b14978a (git archive export; .gitmodules and thesis/template submodule not exported)
+
+=== A. baseline tree, 5-file subset (expect 34 passed)
+cwd: /tmp/p17_base
+command: python -m pytest -q -p no:cacheprovider tests/test_ask_protocol.py tests/test_ask_formal_properties.py tests/test_memory_operations.py tests/test_temporal.py tests/test_supersede.py
+..................................                                       [100%]
+34 passed in 0.12s
+exit_code: 0
+
+=== B. patched tree, same 5-file subset (existing tests, unmodified)
+cwd: /tmp/p17_apply
+command: python -m pytest -q -p no:cacheprovider tests/test_ask_protocol.py tests/test_ask_formal_properties.py tests/test_memory_operations.py tests/test_temporal.py tests/test_supersede.py
+..................................                                       [100%]
+34 passed in 0.13s
+exit_code: 0
+
+=== C. patched tree, new file only
+cwd: /tmp/p17_apply
+command: python -m pytest -q -p no:cacheprovider tests/test_ask_protocol_tampering.py
+........................................................................ [ 73%]
+..........................                                               [100%]
+98 passed in 0.07s
+exit_code: 0
+
+=== D. patched tree, 5-file subset plus new file
+cwd: /tmp/p17_apply
+command: python -m pytest -q -p no:cacheprovider tests/test_ask_protocol.py tests/test_ask_formal_properties.py tests/test_memory_operations.py tests/test_temporal.py tests/test_supersede.py tests/test_ask_protocol_tampering.py
+........................................................................ [ 54%]
+............................................................             [100%]
+132 passed in 0.13s
+exit_code: 0
+
+=== E. collected test counts in the patched tree
+tests/test_ask_protocol.py: 8 tests collected in 0.04s
+tests/test_ask_formal_properties.py: 2 tests collected in 0.01s
+tests/test_memory_operations.py: 13 tests collected in 0.01s
+tests/test_temporal.py: 8 tests collected in 0.01s
+tests/test_supersede.py: 3 tests collected in 0.01s
+tests/test_ask_protocol_tampering.py: 98 tests collected in 0.02s
+
+=== G. full test directory, both trees (extra, run before the recorded runs above, same python)
+command (each tree): cd <tree> && HOME=/tmp python -m pytest -q -p no:cacheprovider tests
+baseline tree /tmp/p17_base: 9 failed, 672 passed, 19 skipped in 8.17s | exit_code: 1
+patched tree /tmp/p17_apply: 9 failed, 770 passed, 19 skipped in 8.21s | exit_code: 1
+failing test names identical in both trees (9):
+  FAILED tests/test_artifact_inventory.py::test_hidden_gold_is_never_model_facing_or_public
+  FAILED tests/test_artifact_inventory.py::test_inventory_has_required_fields_and_path_neutral_root
+  FAILED tests/test_mgp6_v43.py::test_private_boundary_is_ignored
+  FAILED tests/test_mgp6_v43.py::test_v43_runner_dry_run_and_engineering_fixture
+  FAILED tests/test_mgp6_v43.py::test_v43_runner_supports_rule_and_registered_model_systems
+  FAILED tests/test_repository_hygiene.py::test_authored_prose_has_no_strong_leakage
+  FAILED tests/test_repository_hygiene.py::test_document_paths_resolve
+  FAILED tests/test_run_baseline_resume.py::test_run_baseline_resume_appends_remaining_sessions
+  FAILED tests/test_run_baseline_resume.py::test_run_baseline_sample_from_to_is_one_based_inclusive
+Observed cause in the sampled failure messages: git commands exit 128 inside the non-repository export, and the repo-local ./.venv interpreter cannot run in this sandbox. Not investigated test by test. These 9 failures are unchanged by the patch (same names, same count); the 98 additional passes are the new file.

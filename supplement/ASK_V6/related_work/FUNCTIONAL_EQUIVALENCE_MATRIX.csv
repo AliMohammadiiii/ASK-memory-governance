@@ -1,0 +1,32 @@
+short_name,group,classification,chronology,n_ASK2_features_at_2,F01,F02,F03,F04,F05,F06,F07,F08,F09,F10,F11,F12,F13,F14,F15,F16,F17,F18,F19,F20,F21,F22,F23,F24,F25,F26,F27,F28,F29,F30,F31,F32,F33,F34,F35
+"ASK (audited; reference code or evaluated runtime, whichever has evidence)",ASK,SELF,,19,2,2,1,2,2,2,0,2,1,1,2,1,2,2,0,2,1,1,1,1,2,2,2,1,2,1,1,U,2,1,2,0,2,2,2
+TOKI,Transactions,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (arXiv v1 2026-06-04, before ASK repository initial co",10,2,2,1,2,2,0,2,2,1,1,1,2,2,1,2,2,1,2,2,1,U,1,2,1,1,1,2,U,2,1,1,U,2,1,U
+MemTX,Transactions,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (arXiv v1 2026-07-27, after ASK repository initia",11,2,2,2,2,2,2,1,2,2,1,2,2,2,1,2,2,2,1,U,U,U,1,1,U,2,2,2,1,1,1,2,0,0,1,U
+TARL,Transactions,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (v1 2026-08-04, after ASK repository initial comm",11,2,2,1,2,2,2,1,2,2,U,1,1,2,2,1,1,1,1,U,U,U,U,U,U,2,2,1,1,2,2,1,2,1,U,2
+Persona,Transactions,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (published 2026-06-16, before ASK repository initial c",11,2,2,2,2,2,2,2,2,1,U,2,1,1,U,1,2,2,1,U,U,U,U,U,U,2,2,U,2,2,1,1,U,2,U,1
+GPM,Transactions,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (arXiv v1 2026-08-12, after ASK repository initia",13,2,2,2,1,2,1,1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,U,1,2,1,2,1,1,2,2,1,0,2,2,2
+MGP,Protocols,PARTIAL_COMPONENT_PRECEDENT,PRIOR (public artifacts 2026-04-09 / 2026-04-21; inspected s,6,2,2,1,1,2,2,1,2,2,2,2,2,1,1,1,1,1,1,1,1,U,U,U,U,1,1,U,U,U,U,U,U,U,U,U
+ECHO,Protocols,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (v1 2026-08-22, after ASK repo initial commit 202",9,1,1,1,U,2,U,U,1,U,U,2,2,2,2,2,2,U,1,1,1,1,U,1,U,U,1,1,2,2,2,U,U,2,2,2
+SSGM,Protocols,CONCEPTUAL_PRECEDENT,"PRIOR (v1 2026-03-12; v2 2026-05-19, both before 2026-07-11)",0,1,1,1,1,0,1,1,1,1,U,U,1,1,U,1,1,1,1,U,1,U,U,U,1,0,1,0,0,0,0,0,0,1,0,0
+A-MAC,Protocols,PARTIAL_COMPONENT_PRECEDENT,PRIOR (v1 2026-03-04).,4,2,2,1,1,1,2,U,U,U,U,1,U,0,U,1,U,U,U,U,U,U,U,U,U,2,U,U,U,U,U,U,1,1,U,U
+MCB,Protocols,PARTIAL_COMPONENT_PRECEDENT,CONCURRENT (v1 2026-08-20; after ASK repo initial commit 202,5,1,2,U,U,U,2,2,1,1,U,U,U,U,U,U,U,U,U,1,U,U,U,U,U,2,0,U,0,0,1,2,0,0,U,2
+STALE,Updates,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (v1 2026-05-07, before ASK repo initial commit 2026-07",8,1,2,2,2,2,1,U,2,U,U,2,2,2,1,1,1,1,1,U,1,1,U,U,U,1,U,U,2,2,2,1,0,2,U,1
+Supersede,Updates,ADJACENT,PRIOR (v1 2026-06-25; code repo created 2026-06-19),3,0,0,0,0,1,0,U,0,1,U,0,0,0,0,1,U,U,U,U,U,U,U,1,U,U,1,U,0,2,2,1,0,2,2,1
+TEPA,Updates,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (v1 2026-08-07, after ASK repo initial commit 202",7,1,2,2,2,2,1,2,1,1,U,1,1,2,U,1,U,1,1,U,U,U,U,1,1,U,1,U,1,2,1,1,U,2,1,2
+TRUSTMEM,Updates,PARTIAL_COMPONENT_PRECEDENT,PRIOR (v1 2026-06-23),5,1,1,1,1,2,1,1,2,U,U,1,U,0,U,U,U,1,1,U,U,U,U,U,U,2,2,U,U,2,2,1,U,2,U,1
+EvoGraph-Mem,Updates,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT (v1 2026-08-03, same date as the ASK reference pr",4,1,1,2,2,2,1,U,1,U,U,1,1,2,1,U,U,1,1,U,U,U,U,U,U,U,1,U,1,2,U,U,U,0,U,U
+SodaMem,Updates,PARTIAL_COMPONENT_PRECEDENT,CONCURRENT (v1 2026-08-08; code repo created 2026-08-07),8,1,2,2,2,2,1,U,1,1,U,2,2,2,2,2,1,1,1,2,1,U,U,U,U,U,U,U,U,2,U,U,U,2,U,U
+MemOps,Lifecycle,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT: arXiv v1 2026-07-14 (repo created 2026-07-13), a",3,1,0,1,1,1,1,0,0,0,0,1,1,1,1,1,1,0,0,0,0,1,0,0,0,2,2,1,1,2,2,2,0,1,U,1
+MemGuard-verifier,Lifecycle,PARTIAL_COMPONENT_PRECEDENT,"CONCURRENT: arXiv v1 2026-08-22, after ASK repo initial comm",10,2,2,2,2,2,2,2,1,1,U,2,2,2,2,1,U,U,1,1,1,U,U,U,U,2,2,U,2,2,2,U,1,1,U,1
+MemGuard-contamination,Lifecycle,PARTIAL_COMPONENT_PRECEDENT,"PRIOR: arXiv v1 2026-05-27, before ASK repo initial commit 2",6,1,2,1,2,2,1,1,1,U,U,2,1,U,1,1,U,U,U,U,U,U,U,U,U,1,2,U,2,2,2,1,U,2,U,U
+Memory-R1,Lifecycle,PARTIAL_COMPONENT_PRECEDENT,PRIOR: arXiv v1 2025-08-27; ACL 2026 publication (July 2026),6,2,2,1,2,2,1,U,1,1,U,U,U,0,U,U,U,U,U,U,U,U,U,U,U,1,U,U,U,2,1,0,0,2,U,U
+HaluMem,Lifecycle,PARTIAL_COMPONENT_PRECEDENT,PRIOR: arXiv v1 2025-11-05.,2,0,0,1,U,1,1,0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,1,2,1,0,2,2,2,0,1,U,U
+MemTrace,Lifecycle,ADJACENT,PRIOR: arXiv v1 2026-06-15.,1,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,1,2,2,0,0,1,U,1
+GraphNativeBeliefRevision,Neighbors,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (arXiv v1 2026-03-18, before ASK repository initial co",7,1,1,1,1,2,U,U,1,2,1,2,2,2,2,1,2,U,2,U,U,U,U,U,U,U,2,1,1,2,1,U,U,2,U,U
+GovernedSharedMemory,Neighbors,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (arXiv v1 2026-06-23, before ASK repository initial co",5,1,1,U,1,2,U,U,U,1,U,2,2,2,2,1,1,0,1,1,U,U,U,1,U,2,2,2,2,U,2,1,U,U,1,U
+Quipu,Neighbors,PARTIAL_COMPONENT_PRECEDENT,CONCURRENT (arXiv v1 2026-08-17; after ASK repository initia,10,2,2,2,1,2,1,2,2,2,1,2,2,2,U,2,2,2,2,2,2,1,1,2,1,2,2,U,1,U,1,2,1,U,1,1
+LogIsAgent,Neighbors,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (arXiv v1 2026-05-21, before ASK repository initial co",5,U,U,1,U,U,U,U,1,1,U,2,2,2,2,1,1,0,2,1,1,U,2,2,2,U,U,1,U,0,U,U,U,0,U,U
+DMF,Neighbors,ADJACENT,"PRIOR (arXiv v1 2026-06-02, before ASK repository initial co",5,0,0,1,U,1,0,U,U,U,1,2,2,2,2,1,1,U,U,1,U,U,U,1,1,U,U,U,U,2,U,U,U,2,U,U
+StoredNotSupported,Neighbors,ADJACENT,CONCURRENT (arXiv v1 2026-09-02; after ASK repository initia,1,1,1,1,U,1,U,U,U,1,1,2,1,1,1,2,1,U,U,1,1,U,U,U,U,1,U,U,U,0,U,1,U,0,U,U
+Eywa,Neighbors,PARTIAL_COMPONENT_PRECEDENT,"PRIOR (arXiv v1 2026-05-29, before ASK repository initial co",8,2,2,2,U,1,2,U,2,1,1,2,2,2,1,2,1,2,1,1,1,U,U,U,U,1,U,U,2,2,2,U,U,2,U,1
+RevokedAuthoritative,Neighbors,ADJACENT,CONCURRENT (arXiv v1 2026-09-08),1,U,U,U,U,U,U,U,U,U,U,U,U,1,U,1,U,U,U,U,U,U,U,U,U,U,2,U,2,2,2,U,U,U,1,U

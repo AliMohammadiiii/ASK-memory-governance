@@ -1,0 +1,9 @@
+{
+ "n_rows": 177,
+ "counts": {
+  "WEAKER_THAN_STATED": 30,
+  "SUPPORTED": 137,
+  "UNVERIFIABLE": 7,
+  "CONTRADICTED": 3
+ }
+}

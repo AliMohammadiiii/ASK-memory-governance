@@ -1,0 +1,22 @@
+== A baseline export, 5-file subset
+..................................                                       [100%]
+34 passed in 0.15s
+== B patched export, 5-file subset
+..................................                                       [100%]
+34 passed in 0.13s
+== C patched export, new file only
+........................................................................ [ 73%]
+..........................                                               [100%]
+98 passed in 0.08s
+== D patched, subset + new file
+........................................................................ [ 54%]
+............................................................             [100%]
+132 passed in 0.20s
+== E collected
+132
+tests/test_ask_protocol.py: 8
+tests/test_ask_formal_properties.py: 2
+tests/test_memory_operations.py: 13
+tests/test_temporal.py: 8
+tests/test_supersede.py: 3
+tests/test_ask_protocol_tampering.py: 98

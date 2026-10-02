@@ -1,0 +1,50 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: scripts/run_vllm_cascade.py
+# raw changed lines (deleted+added): 21 (deleted 10, added 11); hunks 3
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 17 (deleted 8, added 9)
+--- evaluated:scripts/run_vllm_cascade.py (git blob dfc9530335591166997b38f1bebd6f9bfd0767d4, sha256 a9508ecd75eb)
++++ baseline-commit f6bf66e4766d:scripts/run_vllm_cascade.py (git blob 23c238699b226920da3a86021cf19f31336e3aeb)
+@@ -51,7 +51,7 @@ def _repo_root() -> Path:
+ 
+ 
+ def _python() -> str:
+-    return os.environ.get("KSA_PYTHON") or sys.executable
++    return os.environ.get("ASK_PYTHON") or sys.executable
+ 
+ 
+ def _base_cmd(alias: str, baseline: str, out_dir: Path, args: argparse.Namespace) -> list[str]:
+@@ -317,15 +317,16 @@ def _command_for_log(cmd: list[str]) -> list[str]:
+     redacted = list(cmd)
+     for index, token in enumerate(cmd[:-1]):
+         next_index = index + 1
+-        if token == "--openai-api-key":
++        if token == "--openai-api-key" or (
++            token
++            in {
++                "--openai-api-key-env",
++                "--openmodel-api-key-env",
++                "--openmodel-api-key-envs",
++            }
++            and _looks_like_api_key(cmd[next_index])
++        ):
+             redacted[next_index] = "<redacted>"
+-        elif token in {
+-            "--openai-api-key-env",
+-            "--openmodel-api-key-env",
+-            "--openmodel-api-key-envs",
+-        }:
+-            if _looks_like_api_key(cmd[next_index]):
+-                redacted[next_index] = "<redacted>"
+     return redacted
+ 
+ 
+@@ -460,7 +461,7 @@ def _run_system(alias: str, baseline: str, out_dir: Path, args: argparse.Namespa
+         raise RuntimeError(f"{alias}: {len(failures)} shard(s) failed: {failures}")
+     if "src" not in sys.path:
+         sys.path.insert(0, "src")
+-    from ksa.eval.merge import merge_run_shards
++    from ask.eval.merge import merge_run_shards
+ 
+     meta = json.loads((shard_dirs[0] / "report.json").read_text(encoding="utf-8"))
+     report = merge_run_shards(
+

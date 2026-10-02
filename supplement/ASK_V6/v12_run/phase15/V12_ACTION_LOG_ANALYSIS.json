@@ -1,0 +1,57 @@
+{
+ "n_rows": 12654,
+ "sha256_file": "08ebd01376534dbab37f084cc9384ab53b400d950f045aef041af10eb9c3912c",
+ "actions": {
+  "Keep": 11478,
+  "Supersede": 397,
+  "Abstain": 779
+ },
+ "baseline_field": {
+  "controller": 12654
+ },
+ "candidate_types": {
+  "transient_pref": 2416,
+  "episodic_fact": 9857,
+  "stable_pref": 381
+ },
+ "n_sessions": 3547,
+ "id_unique": 1881,
+ "id_min": 1,
+ "id_max": 1881,
+ "dup_session_candidate_pairs": 88,
+ "ts_min": "2026-07-18T19:44:04.784184Z",
+ "ts_max": "2026-07-19T09:34:47.026602Z",
+ "rule_replay_undefined_rows": 0,
+ "rule_replay_mismatch_rows": 11091,
+ "rule_replay_mismatch_breakdown": {
+  "Keep->SUPERSEDE|prior_memory_id_set=False": 10411,
+  "Keep->SUPERSEDE|prior_memory_id_set=True": 680
+ },
+ "supersede_rows": 397,
+ "supersede_with_prior_memory_id": 397,
+ "supersede_with_resulting_memory_id": 397,
+ "keep_with_resulting_memory_id": 11464,
+ "abstain_with_resulting_memory_id": 0,
+ "keys": [
+  "action",
+  "baseline",
+  "candidate_id",
+  "candidate_text",
+  "candidate_type",
+  "feature_c",
+  "feature_e",
+  "feature_f",
+  "feature_r",
+  "feature_rho",
+  "id",
+  "prior_memory_id",
+  "rationale",
+  "resulting_memory_id",
+  "s_abs",
+  "s_rev",
+  "session_id",
+  "theta_abs",
+  "theta_sup",
+  "timestamp"
+ ]
+}

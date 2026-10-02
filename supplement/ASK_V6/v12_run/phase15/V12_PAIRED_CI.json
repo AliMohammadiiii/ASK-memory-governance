@@ -1,0 +1,74 @@
+{
+ "reported (controller adjudicated, b4 override as reported)": {
+  "b4": {
+   "diff": 0.12777777777777777,
+   "paired_bootstrap_ci_unstratified": [
+    0.06111111111111111,
+    0.19444444444444445
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.06652777777777791,
+    0.19444444444444445
+   ]
+  },
+  "b2": {
+   "diff": 0.31666666666666665,
+   "paired_bootstrap_ci_unstratified": [
+    0.2388888888888889,
+    0.39444444444444443
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.24444444444444444,
+    0.3888888888888889
+   ]
+  }
+ },
+ "raw (controller pre-manual, b4/b2 pre-override)": {
+  "b4": {
+   "diff": 0.08888888888888889,
+   "paired_bootstrap_ci_unstratified": [
+    0.016666666666666666,
+    0.16111111111111112
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.022222222222222223,
+    0.15555555555555556
+   ]
+  },
+  "b2": {
+   "diff": 0.26666666666666666,
+   "paired_bootstrap_ci_unstratified": [
+    0.19444444444444445,
+    0.34444444444444444
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.19444444444444445,
+    0.3388888888888889
+   ]
+  }
+ },
+ "controller raw vs b4 as reported": {
+  "b4": {
+   "diff": 0.07777777777777778,
+   "paired_bootstrap_ci_unstratified": [
+    0.011111111111111112,
+    0.14444444444444443
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.011111111111111112,
+    0.14444444444444443
+   ]
+  },
+  "b2": {
+   "diff": 0.26666666666666666,
+   "paired_bootstrap_ci_unstratified": [
+    0.19444444444444445,
+    0.34444444444444444
+   ],
+   "paired_bootstrap_ci_stratified_by_competency": [
+    0.19444444444444445,
+    0.3388888888888889
+   ]
+  }
+ }
+}

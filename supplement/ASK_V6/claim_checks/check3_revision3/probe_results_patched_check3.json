@@ -1,0 +1,2040 @@
+{
+  "summary": {
+    "tree": "/tmp/ask_val",
+    "patched_api_detected": true,
+    "legacy_event_id_formula": false,
+    "python": "3.12.14",
+    "tamper_total": 19,
+    "tamper_rejected": 19,
+    "tamper_accepted": [],
+    "controls_total": 8,
+    "controls_accepted": 8,
+    "unexpected_control_rejections": []
+  },
+  "validator_probes": [
+    {
+      "probe_id": "C01",
+      "description": "Control: builder-produced SUPERSEDE (multi-record)",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "ffdec22c74ddfb405aefe3f6a9d92ddf1f0664c1db6b4269c4120467bf26eaa1",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C02",
+      "description": "Control: builder-produced ABSTAIN",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "event": {
+        "event_id": "85b0432ec50a77d888ce28a976655535065fb33150934b8380a2c75b88154ede",
+        "action": "Abstain",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S01",
+      "description": "SUPERSEDE: retained predecessor value altered while deactivated",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "retained_predecessor_mutated"
+      ],
+      "message": "[retained_predecessor_mutated] retained predecessor 'p1' changed fields ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "REWRITTEN HISTORY",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "0948a67b3a80bfeae0760eec17ad4409d646010f4bef4e311154e2ff2b9dbdd2",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "d7541e3d2d3a0be0756623ae87c7f4c23ff0d7cdba868efa88683d5b28fa899b",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S02",
+      "description": "SUPERSEDE: retained predecessor memory_type altered",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "retained_predecessor_mutated"
+      ],
+      "message": "[retained_predecessor_mutated] retained predecessor 'p1' changed fields ['memory_type']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "episodic_fact",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "1e2893a06f1489086342ff0abf3a9661cc420cabfa06776d1062b79e5f835677",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "a3feae343419f040b08bbb82ab86c365e0eafaf52140e8a7b10feabe6b7f6a34",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S03",
+      "description": "SUPERSEDE: retained predecessor evidence_digest altered",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "retained_predecessor_mutated"
+      ],
+      "message": "[retained_predecessor_mutated] retained predecessor 'p1' changed fields ['evidence_digest']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "ccdd35168ab474fa5764a526cfb83621351e23682c5075b2e18d56bddf96aa30"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "11a78c95500ffd2e1a9ff14285652ba609fc330d86e762813d584889737105b8",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "7b8d8cdd7bff3f08373c44721e63f18161804e9485667a8bc90bc5aabff5c010",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S04",
+      "description": "SUPERSEDE: unrelated active record deleted",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_removed"
+      ],
+      "message": "[unaccounted_record_removed] record 'u1' was deleted",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "511c3d95f186e06ee355b17739c586471517e79c41fd45a1e875f1325189a38d",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "bd591392a1a64bcccfe1cadf5024e6f3eb28aaf653514a753e8adbd9249b0c51",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S05",
+      "description": "SUPERSEDE: unrelated record value mutated",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_changed"
+      ],
+      "message": "[unaccounted_record_changed] record 'u1' changed fields ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "silently changed",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "4e64f079002469de2d855d2b5b67b384bb3c2274af52fbcc139533807312496c",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "6a0d4518236410abdfd58541189a449408e3cc1e7fa085806ef3f0a9857d69ba",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S06",
+      "description": "SUPERSEDE: successor value differs from candidate value",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "successor_differs_from_candidate"
+      ],
+      "message": "[successor_differs_from_candidate] record 'c1' differs from the candidate in ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "not what the candidate said",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "1c0ec1c6ef2dd2888f140524205f10e642f0ce3623d8e86ff79289c8ad68e050",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "e02dd8e6347b337aad1ec2613b209af9c0ec3fd9e6f219653f962f2b856daf2a",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S07",
+      "description": "SUPERSEDE: unrelated record deactivated",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_changed"
+      ],
+      "message": "[unaccounted_record_changed] record 'u1' changed fields ['active']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "cdf1fd2e62dfe32033ccdc4b70870d2c69471e30423acb772774675fd177bade",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "496fb56cf89a9c907fa024c0deeb7b53695e9b5425f7d981e9060a381326c9a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S08",
+      "description": "SUPERSEDE: extra unannounced active record inserted",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_added"
+      ],
+      "message": "[unaccounted_record_added] record 'x9' was added without being announced",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        },
+        {
+          "record_id": "x9",
+          "memory_type": "episodic_fact",
+          "value": "injected",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": null
+        }
+      ],
+      "event": {
+        "event_id": "1689e5b2edaf70631dee6a43ab6f36949eee945a2d9e91b153e91b0c954e869a",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "da3e802a489a7a4d0f1696e10eb52e84b123716edf3a90906d9c6652540464e6",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S09",
+      "description": "SUPERSEDE: event predecessor_record_id field wrong (points to unrelated record)",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "event_predecessor_id_mismatch"
+      ],
+      "message": "[event_predecessor_id_mismatch] event predecessor 'u1', expected 'p1'",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "797f37fdb5b2c584669e00525eee51c98795caac1b792df2c195f61bead9c717",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "u1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S10",
+      "description": "SUPERSEDE: event candidate_record_id field wrong",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "event_candidate_id_mismatch"
+      ],
+      "message": "[event_candidate_id_mismatch] event candidate 'zzz' differs from the supplied candidate 'c1'",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "742a299911e732db8813097ae560122e8a405341a75c190011f7ae7b2cceaaae",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "zzz",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S11",
+      "description": "SUPERSEDE of a prior that was already inactive before the transition",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "prior_not_active_before"
+      ],
+      "message": "[prior_not_active_before] Supersede requires the compared prior 'p1' to be active in the before state",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "d77b13cf2b3234db1af93420364958b4e866a23d6d5eae7ba5054a1954d857be",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "aedfe5077e415fa44163e54a29718dc43c9078223a4249fd70c7e54c8b9a5cfa",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C03",
+      "description": "Control: builder-produced single-slot SUPERSEDE with history",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p0",
+          "memory_type": "stable_pref",
+          "value": "oldest",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "781f420bb3e60bc469a5fceb9ac47e4db125e60587e0cadf1984981d2fc59425"
+        },
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p0"
+          },
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p0",
+          "memory_type": "stable_pref",
+          "value": "oldest",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "781f420bb3e60bc469a5fceb9ac47e4db125e60587e0cadf1984981d2fc59425"
+        },
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": {
+            "record_id": "p0"
+          },
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "a59509f7c54f2844d304d3552b8c2e1ec88595686ca0d4372741de08c9145750",
+        "action": "Supersede",
+        "store_mode": "single_slot_versioned",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "d9e4e9bb1556cd7a06513ca3fb1dc43e7920309db6c15cb208fad001efb8de4e",
+        "after_digest": "19c8645496862400899ec5d47224ca52119e3730d74f16e4daff2d3c6cbe1790",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "S12",
+      "description": "SINGLE_SLOT SUPERSEDE: older inactive ancestor deleted and lineage pointer rewritten",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_removed",
+        "retained_predecessor_mutated"
+      ],
+      "message": "[unaccounted_record_removed] record 'p0' was deleted; [retained_predecessor_mutated] retained predecessor 'p1' changed fields ['predecessor']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p0",
+          "memory_type": "stable_pref",
+          "value": "oldest",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "781f420bb3e60bc469a5fceb9ac47e4db125e60587e0cadf1984981d2fc59425"
+        },
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p0"
+          },
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "886efe933774cd52056db746fed5fad7ed44b362dd899745e1bb8ad3f67802af",
+        "action": "Supersede",
+        "store_mode": "single_slot_versioned",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "d9e4e9bb1556cd7a06513ca3fb1dc43e7920309db6c15cb208fad001efb8de4e",
+        "after_digest": "bd591392a1a64bcccfe1cadf5024e6f3eb28aaf653514a753e8adbd9249b0c51",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C04",
+      "description": "Control: builder-produced multi-record KEEP without admission",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "event": {
+        "event_id": "203ab28a0fb71e1e5a00c3abf17eaa283e14ef28c58dfde6ab069dbef67587c7",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "K01",
+      "description": "MULTI KEEP (keep_admitted_candidate=False): candidate silently inserted",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_added"
+      ],
+      "message": "[unaccounted_record_added] record 'c1' was added without being announced",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "632972ca9d1952f0425194851ea7334398ce9c86cd0d209792c543581de5a79f",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "5988928d3bed94264be96c06a85536eee178f19820b1257dc3ffa6b82047b45d",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "K02",
+      "description": "MULTI KEEP: unrelated record deleted",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_removed"
+      ],
+      "message": "[unaccounted_record_removed] record 'u1' was deleted",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        }
+      ],
+      "event": {
+        "event_id": "8f37444e988788831320012f74e04b2877bbfcb8482f15224aa99bcc5f54c598",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "89d7032b4b275f6089b3c372af522f50764dc75584d30959f6381cf8b18f2085",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "K03",
+      "description": "MULTI KEEP: unrelated record value mutated",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_changed"
+      ],
+      "message": "[unaccounted_record_changed] record 'u1' changed fields ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "changed",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "event": {
+        "event_id": "ba11d29eb3854fb714052b3059d433d66e9a4edc9b7b7ab5a969a0666e5cdb0a",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "7970afd3c35533b5aad0de289a003ee6c6002cf61903d12849c9cd32e5c1b848",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "K04",
+      "description": "MULTI KEEP with prior_record_id=None: compared prior rewritten",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_changed"
+      ],
+      "message": "[unaccounted_record_changed] record 'p1' changed fields ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "changed",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "event": {
+        "event_id": "64b736b4a2ac182740898e2544e019e4eff7dd490c022937a7d14ccf5eb1ae79",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": null,
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "98838a439eb1d5cc55d218954e87cd7ee971875a4f0d629ef1b30544d4bcae78",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "K05",
+      "description": "TEMPORAL_EVENT KEEP: arbitrary mutation of unrelated record",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "unaccounted_record_changed"
+      ],
+      "message": "[unaccounted_record_changed] record 'u1' changed fields ['value']",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "changed",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "event": {
+        "event_id": "32d9d3e6b0cb80b84f439b3f9a3a4ee9224bde7e1c7592b160e9f02b399741d5",
+        "action": "Keep",
+        "store_mode": "temporal_event",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "7970afd3c35533b5aad0de289a003ee6c6002cf61903d12849c9cd32e5c1b848",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "I01",
+      "description": "Event id not equal to digest of event body",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "event_id_mismatch"
+      ],
+      "message": "[event_id_mismatch] event identifier is not the digest of the event body",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "87288d68ed71bf8fa35e531a1e56f3b3705fa0eea54a2aa689b41694a8f83f5b",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "I02",
+      "description": "Trace evidence_digest does not equal digest of its evidence_references",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "reason_codes": [
+        "trace_evidence_digest_mismatch"
+      ],
+      "message": "[trace_evidence_digest_mismatch] trace evidence digest is not the digest of its evidence references",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "3db849444daffbadc7522211cdac031a7406a616ebf765800d978892d0ff7aa3",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "3b7c6a0f5c00b2aa80f278ab9dcf965bcc9570604463c4fd03c37bcbd5c67cc2",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C05",
+      "description": "Control: builder-produced multi-record KEEP with candidate admission",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "2218edcc84ff86fc19501ff2383869962980137e7ddfcb1837e76ca33fd7f096",
+        "action": "Keep",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "5988928d3bed94264be96c06a85536eee178f19820b1257dc3ffa6b82047b45d",
+        "keep_admitted_candidate": true,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C06",
+      "description": "Control: builder-produced single-slot KEEP with history",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p0",
+          "memory_type": "stable_pref",
+          "value": "oldest",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "781f420bb3e60bc469a5fceb9ac47e4db125e60587e0cadf1984981d2fc59425"
+        },
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p0"
+          },
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p0",
+          "memory_type": "stable_pref",
+          "value": "oldest",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "781f420bb3e60bc469a5fceb9ac47e4db125e60587e0cadf1984981d2fc59425"
+        },
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p0"
+          },
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        }
+      ],
+      "event": {
+        "event_id": "033aba46e34f4be764d14883a3085de0202fde23651ee43e48a117b6f4dc2557",
+        "action": "Keep",
+        "store_mode": "single_slot_versioned",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": null,
+        "predecessor_record_id": null,
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "d9e4e9bb1556cd7a06513ca3fb1dc43e7920309db6c15cb208fad001efb8de4e",
+        "after_digest": "d9e4e9bb1556cd7a06513ca3fb1dc43e7920309db6c15cb208fad001efb8de4e",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C07",
+      "description": "Control: builder-produced SUPERSEDE in temporal_event mode (multi-record rules only)",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "d765aae7ecf6f0561214b5b5f1e84411fb18b7872cdbd936982f82a734688262",
+        "action": "Supersede",
+        "store_mode": "temporal_event",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    },
+    {
+      "probe_id": "C08",
+      "description": "Control: replay_transition reproduces the preserved SUPERSEDE event",
+      "expected": "ACCEPTED",
+      "observed": "ACCEPTED",
+      "reason_codes": [],
+      "message": "",
+      "verdict": "AS_EXPECTED",
+      "before": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        }
+      ],
+      "after": [
+        {
+          "record_id": "p1",
+          "memory_type": "stable_pref",
+          "value": "old value",
+          "active": false,
+          "predecessor": null,
+          "evidence_digest": "47441e64abaa3780ba02c3270ad7fad202718419378b0ce62161f4be531c6b2e"
+        },
+        {
+          "record_id": "u1",
+          "memory_type": "episodic_fact",
+          "value": "unrelated fact",
+          "active": true,
+          "predecessor": null,
+          "evidence_digest": "eab476c8e34153fec0005a396e5b9a0d3c68de8c1554029e0d01c2c60a5baf01"
+        },
+        {
+          "record_id": "c1",
+          "memory_type": "stable_pref",
+          "value": "new value",
+          "active": true,
+          "predecessor": {
+            "record_id": "p1"
+          },
+          "evidence_digest": "a500b003babf59359ddd2462e8b4f9d3d269e4190e6560a16e6aea0a343678b0"
+        }
+      ],
+      "event": {
+        "event_id": "ffdec22c74ddfb405aefe3f6a9d92ddf1f0664c1db6b4269c4120467bf26eaa1",
+        "action": "Supersede",
+        "store_mode": "multi_record",
+        "prior_record_id": "p1",
+        "candidate_record_id": "c1",
+        "resulting_record_id": "c1",
+        "predecessor_record_id": "p1",
+        "configuration": {
+          "configuration_id": "cfg-A",
+          "adapter_version": "ask-mgp/v1",
+          "sha256": "f15374d11d143dc703bdbeb4771ee9ff04c488eee49f0bd272185ae3bf84476e"
+        },
+        "evidence_digest": "46119e634dd456288b6166af7950cc23d85aec6fab9d55210ce410d57e9e7e89",
+        "before_digest": "c2fb6b4a02f8f6a2d0f4646a0ae9f24f887fca12c50cb4ae46f2737c8195b893",
+        "after_digest": "0040848202973cf3d5377f75e39149611c867e077205f038369e31f9b533f5a2",
+        "keep_admitted_candidate": false,
+        "metadata": {}
+      }
+    }
+  ],
+  "configuration_and_replay_probes": [
+    {
+      "probe_id": "R01",
+      "description": "ConfigurationIdentity sha256='0'*64 verified against its frozen configuration",
+      "expected": "REJECTED",
+      "result": "REJECTED",
+      "codes": [
+        "configuration_digest_mismatch"
+      ],
+      "message": "[configuration_digest_mismatch] configuration identity 'lme' carries digest 000000000000... but the supplied configuration hashes to 848e2e3a19a4...",
+      "step": "ASKLMEAdapter(identity sha256=0*64).verify_configuration_identity()",
+      "validator_path": {
+        "result": "REJECTED",
+        "codes": [
+          "configuration_digest_mismatch"
+        ],
+        "message": "[configuration_digest_mismatch] configuration identity 'lme' carries digest 000000000000... but the supplied configuration hashes to 848e2e3a19a4...",
+        "step": "validator.validate(configuration=frozen mapping) on a transition carrying the zero identity"
+      }
+    },
+    {
+      "probe_id": "R02",
+      "description": "Replay under thresholds shifted +0.01 (action unchanged)",
+      "expected": "REJECTED",
+      "result": "REJECTED",
+      "codes": [
+        "configuration_digest_mismatch"
+      ],
+      "message": "[configuration_digest_mismatch] configuration identity 'lme' carries digest 848e2e3a19a4... but the supplied configuration hashes to 6729e466449d...",
+      "step": "strict replay, shifted config keeps the identity of the default config",
+      "default_replay_unchanged_behavior": {
+        "result": "ACCEPTED",
+        "codes": [],
+        "message": "Supersede"
+      },
+      "strict_replay_shifted_config_with_its_own_identity": {
+        "result": "REJECTED",
+        "codes": [
+          "trace_configuration_mismatch"
+        ],
+        "message": "[trace_configuration_mismatch] trace configuration identity differs from the replaying adapter identity"
+      },
+      "strict_replay_unshifted_control": {
+        "result": "ACCEPTED",
+        "codes": [],
+        "message": "Supersede"
+      }
+    },
+    {
+      "probe_id": "R03",
+      "description": "Replay under a configuration whose theta_sup shift flips the action",
+      "expected": "REJECTED",
+      "result": "REJECTED",
+      "codes": [],
+      "message": "ASK-LME policy replay differs from logged action",
+      "step": "replay"
+    },
+    {
+      "probe_id": "R04",
+      "description": "Declared sufficient_fields absent as keys in trace inputs/intermediates",
+      "expected": "NOT_ADDRESSED_BY_PATCH",
+      "result": "UNCHANGED",
+      "codes": [],
+      "message": "[\"thresholds\", \"configuration\"]",
+      "step": "inspection"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+comparator,bib_key,Abstain_features,Abstain_codes,Abstain_mark,Lineage_features,Lineage_codes,Lineage_mark,Typed/prov._features,Typed/prov._codes,Typed/prov._mark,Log_features,Log_codes,Log_mark,Replay_features,Replay_codes,Replay_mark,Action eval._features,Action eval._codes,Action eval._mark
+GPM,arxiv_2608_12476,F06,1,partial,F05+F13+F14,222,yes,F11+F12,22,yes,F18,2,yes,F23+F24,12,partial,F25,1,partial
+MemTX,arxiv_2607_23929,F06,2,yes,F05+F13+F14,221,partial,F11+F12,22,yes,F18,1,partial,F23+F24,1U,partial,F25,2,yes
+TARL,arxiv_2608_03699,F06,2,yes,F05+F13+F14,222,yes,F11+F12,11,partial,F18,1,partial,F23+F24,UU,not stated,F25,2,yes
+Persona,persona_symmetry_2026,F06,2,yes,F05+F13+F14,21U,partial,F11+F12,21,partial,F18,1,partial,F23+F24,UU,not stated,F25,2,yes
+TOKI,arxiv_2606_06240,F06,0,no,F05+F13+F14,221,partial,F11+F12,12,partial,F18,2,yes,F23+F24,21,partial,F25,1,partial
+Quipu,arxiv_2608_16813,F06,1,partial,F05+F13+F14,22U,partial,F11+F12,22,yes,F18,2,yes,F23+F24,21,partial,F25,2,yes
+MemGuard-verifier,arxiv_2608_21867,F06,2,yes,F05+F13+F14,222,yes,F11+F12,22,yes,F18,1,partial,F23+F24,UU,not stated,F25,2,yes
+ECHO,arxiv_2608_21755,F06,U,not stated,F05+F13+F14,222,yes,F11+F12,22,yes,F18,1,partial,F23+F24,1U,partial,F25,U,not stated
+STALE,arxiv_2605_06527,F06,1,partial,F05+F13+F14,221,partial,F11+F12,22,yes,F18,1,partial,F23+F24,UU,not stated,F25,1,partial
+SodaMem,arxiv_2608_08055,F06,1,partial,F05+F13+F14,222,yes,F11+F12,22,yes,F18,1,partial,F23+F24,UU,not stated,F25,U,not stated
+Eywa,arxiv_2605_30771,F06,2,yes,F05+F13+F14,121,partial,F11+F12,22,yes,F18,1,partial,F23+F24,UU,not stated,F25,1,partial
+GraphNativeBeliefRevision,arxiv_2603_17244,F06,U,not stated,F05+F13+F14,222,yes,F11+F12,22,yes,F18,2,yes,F23+F24,UU,not stated,F25,U,not stated

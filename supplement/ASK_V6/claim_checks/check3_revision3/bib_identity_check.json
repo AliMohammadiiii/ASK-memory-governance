@@ -1,0 +1,282 @@
+[
+ {
+  "key": "arxiv_2508_19828",
+  "bib_title": "Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinfo",
+  "arxiv_from_key": "2508.19828",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:Memory-R1"
+ },
+ {
+  "key": "arxiv_2511_03506",
+  "bib_title": "HaluMem: Evaluating Hallucinations in Memory Systems of Agents",
+  "arxiv_from_key": "2511.03506",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:HaluMem"
+ },
+ {
+  "key": "arxiv_2602_23193",
+  "bib_title": "ESAA: Event Sourcing for Autonomous Agents in LLM-Based Software Engineering",
+  "arxiv_from_key": "2602.23193",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:ESAA"
+ },
+ {
+  "key": "arxiv_2603_04549",
+  "bib_title": "Adaptive Memory Admission Control for LLM Agents",
+  "arxiv_from_key": "2603.04549",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:A-MAC"
+ },
+ {
+  "key": "arxiv_2603_11768",
+  "bib_title": "Governing Evolving Memory in LLM Agents: Risks, Mechanisms, and the Stability and Safety G",
+  "arxiv_from_key": "2603.11768",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:SSGM"
+ },
+ {
+  "key": "arxiv_2603_15994",
+  "bib_title": "Selective Memory for Artificial Intelligence: Write-Time Gating with Hierarchical Archivin",
+  "arxiv_from_key": "2603.15994",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:SelectiveMemory"
+ },
+ {
+  "key": "arxiv_2603_17244",
+  "bib_title": "Graph-Native Cognitive Memory for AI Agents: Formal Belief Revision Semantics for Versione",
+  "arxiv_from_key": "2603.17244",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:GraphNativeBeliefRevision"
+ },
+ {
+  "key": "arxiv_2604_07877",
+  "bib_title": "MemReader: From Passive to Active Extraction for Long-Term Agent Memory",
+  "arxiv_from_key": "2604.07877",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:MemReader"
+ },
+ {
+  "key": "arxiv_2605_06527",
+  "bib_title": "STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?",
+  "arxiv_from_key": "2605.06527",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:STALE"
+ },
+ {
+  "key": "arxiv_2605_14421",
+  "bib_title": "MemLineage: Lineage-Guided Enforcement for LLM Agent Memory",
+  "arxiv_from_key": "2605.14421",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:MemLineage"
+ },
+ {
+  "key": "arxiv_2605_21997",
+  "bib_title": "The Log is the Agent: Event-Sourced Reactive Graphs for Auditable, Forkable Agentic System",
+  "arxiv_from_key": "2605.21997",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:LogIsAgent"
+ },
+ {
+  "key": "arxiv_2605_28009",
+  "bib_title": "MemGuard: Preventing Memory Contamination in Long-Term Memory-Augmented Large Language Mod",
+  "arxiv_from_key": "2605.28009",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MemGuard-contamination"
+ },
+ {
+  "key": "arxiv_2605_30771",
+  "bib_title": "Eywa: Provenance-Grounded Long-Term Memory for AI Agents",
+  "arxiv_from_key": "2605.30771",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:Eywa"
+ },
+ {
+  "key": "arxiv_2606_03463",
+  "bib_title": "DMF: A Deterministic Memory Framework for Conversational AI Agents",
+  "arxiv_from_key": "2606.03463",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:DMF"
+ },
+ {
+  "key": "arxiv_2606_06240",
+  "bib_title": "TOKI: A Bitemporal Operator Algebra for Contradiction Resolution in LLM-Agent Persistent M",
+  "arxiv_from_key": "2606.06240",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:TOKI"
+ },
+ {
+  "key": "arxiv_2606_17328",
+  "bib_title": "MemTrace: Probing What Final Accuracy Misses in Long-Term Memory",
+  "arxiv_from_key": "2606.17328",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MemTrace"
+ },
+ {
+  "key": "arxiv_2606_24535",
+  "bib_title": "Governed Shared Memory for Multi-Agent LLM Systems",
+  "arxiv_from_key": "2606.24535",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:GovernedSharedMemory"
+ },
+ {
+  "key": "arxiv_2606_27472",
+  "bib_title": "Supersede: Diagnosing and Training the Memory-Update Gap in LLM Agents",
+  "arxiv_from_key": "2606.27472",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:Supersede"
+ },
+ {
+  "key": "arxiv_2607_02579",
+  "bib_title": "When Not to Write Memory: Governing False Promotion from Correlated Agent Traces",
+  "arxiv_from_key": "2607.02579",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:GovMem"
+ },
+ {
+  "key": "arxiv_2607_12893",
+  "bib_title": "MemOps: Benchmarking Lifecycle Memory Operations in Long-Horizon Conversations",
+  "arxiv_from_key": "2607.12893",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MemOps"
+ },
+ {
+  "key": "arxiv_2607_23929",
+  "bib_title": "MemTX: Transactional Belief Commit for Stateful Agent Memory",
+  "arxiv_from_key": "2607.23929",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MemTX"
+ },
+ {
+  "key": "arxiv_2607_27834",
+  "bib_title": "MemTxn: A Transaction Boundary for Source-Supported Updates and Complete-State Recovery in",
+  "arxiv_from_key": "2607.27834",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:MemTxn"
+ },
+ {
+  "key": "arxiv_2608_03699",
+  "bib_title": "TARL: Transaction-Aware Reliable Ledgers for Executable Memory Management in Long-Term Age",
+  "arxiv_from_key": "2608.03699",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:TARL"
+ },
+ {
+  "key": "arxiv_2608_07429",
+  "bib_title": "TEPA: Revoking Stale Memories for Conflict-Robust Language Agents",
+  "arxiv_from_key": "2608.07429",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:TEPA"
+ },
+ {
+  "key": "arxiv_2608_08055",
+  "bib_title": "SodaMem: Evidence-Grounded Temporal Graph Memory for LLM Agents",
+  "arxiv_from_key": "2608.08055",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:SodaMem"
+ },
+ {
+  "key": "arxiv_2608_08253",
+  "bib_title": "SuperLocalMemory 4.0: The Governed Memory Operating System for AI Agents",
+  "arxiv_from_key": "2608.08253",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:SuperLocalMemory4"
+ },
+ {
+  "key": "arxiv_2608_12476",
+  "bib_title": "Governed Persistent Memory: Source-Bound State Semantics and Fail-Closed Release for Long-",
+  "arxiv_from_key": "2608.12476",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:GPM"
+ },
+ {
+  "key": "arxiv_2608_16813",
+  "bib_title": "Quipu: A Governed Bitemporal Knowledge Graph Store",
+  "arxiv_from_key": "2608.16813",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:Quipu"
+ },
+ {
+  "key": "arxiv_2608_19564",
+  "bib_title": "Remember, Verify, or Ask? Cross-Family Evaluation of Memory Commitment in LLM Agents",
+  "arxiv_from_key": "2608.19564",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MCB"
+ },
+ {
+  "key": "arxiv_2608_21755",
+  "bib_title": "ECHO: A Cognitively Inspired, Auditable Memory Plane for Long-Horizon Agents",
+  "arxiv_from_key": "2608.21755",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:ECHO"
+ },
+ {
+  "key": "arxiv_2608_21867",
+  "bib_title": "MemGuard: Persisting Verifier Signals for LLM-Agent Memory Governance",
+  "arxiv_from_key": "2608.21867",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "dossier:MemGuard-verifier"
+ },
+ {
+  "key": "arxiv_2609_30813",
+  "bib_title": "A Benchmark and Diagnostic Study of Epistemic Admission in Shared Agent Memory",
+  "arxiv_from_key": "2609.30813",
+  "status": "ID_MATCH_TITLE_OK",
+  "title_similarity": 1.0,
+  "source": "new_candidates:CPB"
+ },
+ {
+  "key": "mgp_hkuds_2026",
+  "bib_title": "MGP}: Memory Governance Protocol",
+  "arxiv_from_key": "",
+  "status": "NO_SOURCE_FILE_MATCH",
+  "title_similarity": 0.46,
+  "source": ""
+ },
+ {
+  "key": "persona_symmetry_2026",
+  "bib_title": "Verification-Gated Persona State Transitions for Memory-Augmented Language Agents",
+  "arxiv_from_key": "",
+  "status": "TITLE_MATCH_OK",
+  "title_similarity": 1.0,
+  "source": ""
+ },
+ {
+  "key": "arxiv_2410_10813",
+  "bib_title": "LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory",
+  "arxiv_from_key": "2410.10813",
+  "status": "NO_SOURCE_FILE_MATCH",
+  "title_similarity": null,
+  "source": ""
+ }
+]

@@ -1,0 +1,302 @@
+{
+ "a_first_id|Gemini low|E-A": [
+  0.05,
+  0.1889
+ ],
+ "a_first_id|Gemini low|B-D": [
+  0.0194,
+  0.1806
+ ],
+ "a_first_id|Gemini low|B-A": [
+  0.0444,
+  0.2139
+ ],
+ "a_first_id|Gemini low|D-A": [
+  -0.025,
+  0.0833
+ ],
+ "a_first_id|Gemini low|B-E": [
+  -0.05,
+  0.0722
+ ],
+ "a_first_id|Gemini medium|E-A": [
+  0.0194,
+  0.1444
+ ],
+ "a_first_id|Gemini medium|B-D": [
+  -0.0111,
+  0.1528
+ ],
+ "a_first_id|Gemini medium|B-A": [
+  -0.0056,
+  0.1528
+ ],
+ "a_first_id|Gemini medium|D-A": [
+  -0.0584,
+  0.0639
+ ],
+ "a_first_id|Gemini medium|B-E": [
+  -0.0611,
+  0.05
+ ],
+ "a_first_id|Gemini high (1 repeat)|E-A": [
+  -0.1611,
+  -0.0278
+ ],
+ "a_first_id|Gemini high (1 repeat)|B-D": [
+  -0.15,
+  0.0167
+ ],
+ "a_first_id|Gemini high (1 repeat)|B-A": [
+  -0.1889,
+  -0.0389
+ ],
+ "a_first_id|Gemini high (1 repeat)|D-A": [
+  -0.1,
+  0.0056
+ ],
+ "a_first_id|Gemini high (1 repeat)|B-E": [
+  -0.0778,
+  0.0444
+ ],
+ "a_first_id|GLM 5.3 Flash|E-A": [
+  0.2167,
+  0.3472
+ ],
+ "a_first_id|GLM 5.3 Flash|B-D": [
+  0.0056,
+  0.1278
+ ],
+ "a_first_id|GLM 5.3 Flash|B-A": [
+  0.2833,
+  0.4333
+ ],
+ "a_first_id|GLM 5.3 Flash|D-A": [
+  0.225,
+  0.3667
+ ],
+ "a_first_id|GLM 5.3 Flash|B-E": [
+  0.0194,
+  0.1361
+ ],
+ "a_first_id|gpt-oss-120b|E-A": [
+  0.1639,
+  0.3083
+ ],
+ "a_first_id|gpt-oss-120b|B-D": [
+  0.0083,
+  0.1583
+ ],
+ "a_first_id|gpt-oss-120b|B-A": [
+  0.3389,
+  0.4722
+ ],
+ "a_first_id|gpt-oss-120b|D-A": [
+  0.2667,
+  0.3667
+ ],
+ "a_first_id|gpt-oss-120b|B-E": [
+  0.0667,
+  0.2583
+ ],
+ "b_key|Gemini low|E-A": [
+  0.0472,
+  0.1861
+ ],
+ "b_key|Gemini low|B-D": [
+  0.0167,
+  0.1778
+ ],
+ "b_key|Gemini low|B-A": [
+  0.0417,
+  0.2139
+ ],
+ "b_key|Gemini low|D-A": [
+  -0.025,
+  0.0861
+ ],
+ "b_key|Gemini low|B-E": [
+  -0.05,
+  0.0694
+ ],
+ "b_key|Gemini medium|E-A": [
+  0.0194,
+  0.1444
+ ],
+ "b_key|Gemini medium|B-D": [
+  -0.0139,
+  0.1528
+ ],
+ "b_key|Gemini medium|B-A": [
+  -0.0083,
+  0.1528
+ ],
+ "b_key|Gemini medium|D-A": [
+  -0.0584,
+  0.0639
+ ],
+ "b_key|Gemini medium|B-E": [
+  -0.0611,
+  0.05
+ ],
+ "b_key|Gemini high (1 repeat)|E-A": [
+  -0.1611,
+  -0.0278
+ ],
+ "b_key|Gemini high (1 repeat)|B-D": [
+  -0.15,
+  0.0167
+ ],
+ "b_key|Gemini high (1 repeat)|B-A": [
+  -0.1889,
+  -0.0389
+ ],
+ "b_key|Gemini high (1 repeat)|D-A": [
+  -0.1,
+  0.0056
+ ],
+ "b_key|Gemini high (1 repeat)|B-E": [
+  -0.0778,
+  0.0444
+ ],
+ "b_key|GLM 5.3 Flash|E-A": [
+  0.2167,
+  0.3472
+ ],
+ "b_key|GLM 5.3 Flash|B-D": [
+  0.0028,
+  0.1278
+ ],
+ "b_key|GLM 5.3 Flash|B-A": [
+  0.2833,
+  0.4306
+ ],
+ "b_key|GLM 5.3 Flash|D-A": [
+  0.2222,
+  0.3667
+ ],
+ "b_key|GLM 5.3 Flash|B-E": [
+  0.0194,
+  0.1361
+ ],
+ "b_key|gpt-oss-120b|E-A": [
+  0.1611,
+  0.3083
+ ],
+ "b_key|gpt-oss-120b|B-D": [
+  0.0083,
+  0.1583
+ ],
+ "b_key|gpt-oss-120b|B-A": [
+  0.3361,
+  0.4722
+ ],
+ "b_key|gpt-oss-120b|D-A": [
+  0.2667,
+  0.3639
+ ],
+ "b_key|gpt-oss-120b|B-E": [
+  0.0694,
+  0.2611
+ ],
+ "c_reversed|Gemini low|E-A": [
+  0.0472,
+  0.1889
+ ],
+ "c_reversed|Gemini low|B-D": [
+  0.0167,
+  0.1806
+ ],
+ "c_reversed|Gemini low|B-A": [
+  0.0417,
+  0.2167
+ ],
+ "c_reversed|Gemini low|D-A": [
+  -0.025,
+  0.0861
+ ],
+ "c_reversed|Gemini low|B-E": [
+  -0.05,
+  0.0722
+ ],
+ "c_reversed|Gemini medium|E-A": [
+  0.0194,
+  0.1417
+ ],
+ "c_reversed|Gemini medium|B-D": [
+  -0.0139,
+  0.1528
+ ],
+ "c_reversed|Gemini medium|B-A": [
+  -0.0056,
+  0.1528
+ ],
+ "c_reversed|Gemini medium|D-A": [
+  -0.0611,
+  0.0639
+ ],
+ "c_reversed|Gemini medium|B-E": [
+  -0.0611,
+  0.0528
+ ],
+ "c_reversed|Gemini high (1 repeat)|E-A": [
+  -0.1611,
+  -0.0333
+ ],
+ "c_reversed|Gemini high (1 repeat)|B-D": [
+  -0.15,
+  0.0167
+ ],
+ "c_reversed|Gemini high (1 repeat)|B-A": [
+  -0.1889,
+  -0.0444
+ ],
+ "c_reversed|Gemini high (1 repeat)|D-A": [
+  -0.1,
+  0.0056
+ ],
+ "c_reversed|Gemini high (1 repeat)|B-E": [
+  -0.0778,
+  0.0444
+ ],
+ "c_reversed|GLM 5.3 Flash|E-A": [
+  0.2167,
+  0.3472
+ ],
+ "c_reversed|GLM 5.3 Flash|B-D": [
+  0.0028,
+  0.1278
+ ],
+ "c_reversed|GLM 5.3 Flash|B-A": [
+  0.2806,
+  0.4333
+ ],
+ "c_reversed|GLM 5.3 Flash|D-A": [
+  0.2194,
+  0.3667
+ ],
+ "c_reversed|GLM 5.3 Flash|B-E": [
+  0.0194,
+  0.1361
+ ],
+ "c_reversed|gpt-oss-120b|E-A": [
+  0.1639,
+  0.3083
+ ],
+ "c_reversed|gpt-oss-120b|B-D": [
+  0.0111,
+  0.1583
+ ],
+ "c_reversed|gpt-oss-120b|B-A": [
+  0.3389,
+  0.4694
+ ],
+ "c_reversed|gpt-oss-120b|D-A": [
+  0.2694,
+  0.3667
+ ],
+ "c_reversed|gpt-oss-120b|B-E": [
+  0.0722,
+  0.2583
+ ]
+}

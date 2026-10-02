@@ -1,0 +1,80 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: FINAL_EVALUATION_PROTOCOL.md [vs docs/evaluation/FINAL_EVALUATION_PROTOCOL.md]
+# raw changed lines (deleted+added): 22 (deleted 11, added 11); hunks 6
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 6 (deleted 3, added 3)
+--- evaluated:FINAL_EVALUATION_PROTOCOL.md (git blob 140c68726bd3039b8a0822c61dd97b6afdda9e0d, sha256 744a40279ad9)
++++ baseline-commit f6bf66e4766d:docs/evaluation/FINAL_EVALUATION_PROTOCOL.md (git blob 064ea109e94feab9a822fb4f82daa9631bc5568b) [relocated path]
+@@ -22,14 +22,14 @@ single homogeneous LongMemEval-M rerun defined here.
+ 
+ Two tracks, one frozen protocol.
+ 
+-### 1.1 MGP-6 v2 — final tables ALREADY LOCKED
++### 1.1 MGP-6 v2, final tables ALREADY LOCKED
+ All MGP-6 v2 headline numbers are final-candidate quality and are frozen in the
+ ledger (recomputed 2026-07-12 from 180-line prediction files by
+ `benchmarks/mgp6/metrics_mgp6.py`). The final tables are *regenerated*, not
+ re-run, from the ledger by `scripts/analysis/build_final_results.py`. The
+ remaining MGP-6 checks are local (no hosted model needed):
+ 
+-- **Few-shot (6-shot) decision baseline metric recompute — completed, run incomplete.**
++- **Few-shot (6-shot) decision baseline metric recompute, completed, run incomplete.**
+   Coverage-aware rescoring over 180 gold items (174 predictions plus six
+   aligned as INVALID) gives 0.7833 action accuracy and 0.7692 macro-F1. The
+   frozen output is `runs_local/mgp6_few6_rescore/few6_report.json`. Because the
+@@ -38,7 +38,7 @@ remaining MGP-6 checks are local (no hosted model needed):
+ - **Verification rescore** of the locked rows (defensive; confirms the ledger
+   values reproduce from the archived predictions).
+ 
+-### 1.2 LongMemEval-M — homogeneous rerun is the ONLY path to a final number
++### 1.2 LongMemEval-M, homogeneous rerun is the ONLY path to a final number
+ **No existing LongMemEval number is final.** The reported 77.2% (139/180) is a
+ selection-biased `failure_replay_only` construction: 110 retained v7 successes
+ (judge Gemma-4-31b-it, produced under a provider-contaminated run) + 25 machine
+@@ -72,8 +72,8 @@ the verifier rejects any hidden model substitution.
+ | S2 | flat-vector retrieval (b2) | yes | yes | retrieval-only baseline |
+ | S3 | recency (b3) | yes | yes | recency-only baseline |
+ | S4 | naive-overwrite (b4) | yes | yes | destructive-update baseline |
+-| S5 | rule-KSA controller | yes | yes (controller) | contribution (rule policy) |
+-| S6 | LLM-KSA controller (qwen3.5-9b) | yes | (via controller path) | contribution (LLM-backed) |
++| S5 | rule-ASK controller | yes | yes (controller) | contribution (rule policy) |
++| S6 | LLM-ASK controller (qwen3.5-9b) | yes | (via controller path) | contribution (LLM-backed) |
+ | S7 | zero-shot LLM decision baseline | yes | - | decision-only ablation of the controller |
+ | S8 | few-shot (6-shot) LLM decision baseline | incomplete (coverage-aware rescore complete) | - | decision-only ablation |
+ | X | external adapters (Mem0, Letta/MemGPT, Graphiti, MemOS) | **MGP-6 only** | - | third-party comparison |
+@@ -90,7 +90,7 @@ Rules:
+   cannot observe `replaced_old`, so supersession is inexpressible; it is never
+   reported as a capability measurement (`diagnostic_only`).
+ - The two decision baselines (S7, S8) isolate "LLM makes the action call with no
+-  KSA scaffold" and are reported next to the LLM-KSA controller.
++  ASK scaffold" and are reported next to the LLM-ASK controller.
+ 
+ ---
+ 
+@@ -145,11 +145,11 @@ legacy deploy layer and records it in the run manifest.
+   non-empty and `--resume` was not passed, the wrapper exits with an error and
+   changes nothing.
+ - `--resume` is the only way to continue an existing run dir; it resumes by shard
+-  union (per-shard resume + `src/ksa/eval/merge.py` dedup by `session_id`) and
++  union (per-shard resume + `src/ask/eval/merge.py` dedup by `session_id`) and
+   never rewrites already-scored items.
+ - Summaries are written atomically (`.tmp` then rename) so an interrupted write
+   never leaves a half-file that a later resume would trust.
+-- Raw evidence archives (`../ksa_controller/`, `../mgp6_v2/`) and
++- Raw evidence archives (`../ask_controller/`, `../mgp6_v2/`) and
+   `artifacts/results_ledger.json` are **read-only inputs** and are never modified.
+ 
+ ---
+@@ -183,9 +183,9 @@ The following inputs are frozen for `final-2.0`. Actual sha256 values live in
+ | `configs/models/openrouter_qwen_gemma.yaml` | model + judge routing spec |
+ | `configs/release/final.yaml` (self-hash) | this freeze's machine config |
+ | `scripts/analysis/check_controller_accuracy_gate.py` | full-run controller acceptance gate (>=153/180) |
+-| `src/ksa/baselines/embeddings.py` | MiniLM client, including proxy-free loopback transport |
+-| `src/ksa/controller/computation.py` | deterministic temporal/numeric reconstruction |
+-| `src/ksa/pipeline/orchestrator.py` | answer contracts, including grounded SSP handling |
++| `src/ask/baselines/embeddings.py` | MiniLM client, including proxy-free loopback transport |
++| `src/ask/controller/computation.py` | deterministic temporal/numeric reconstruction |
++| `src/ask/pipeline/orchestrator.py` | answer contracts, including grounded SSP handling |
+ 
+ Recompute the combined prompts hash exactly as:
+ 
+

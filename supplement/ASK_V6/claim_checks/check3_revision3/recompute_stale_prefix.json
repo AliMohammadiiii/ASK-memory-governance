@@ -1,0 +1,131 @@
+{
+ "n_groups": 20,
+ "group_sizes": [
+  66,
+  63,
+  6,
+  56,
+  48,
+  42,
+  39,
+  33,
+  85,
+  86,
+  67,
+  50,
+  12,
+  19,
+  24,
+  1,
+  4,
+  17,
+  70,
+  34
+ ],
+ "matches": [
+  {
+   "shard": "2",
+   "n": 66,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "7",
+   "n": 63,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 6,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 56,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "6",
+   "n": 48,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "5",
+   "n": 42,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "3",
+   "n": 39,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "0",
+   "n": 33,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "5",
+   "n": 85,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "2",
+   "n": 86,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "6",
+   "n": 67,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "7",
+   "n": 50,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "4",
+   "n": 12,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "4",
+   "n": 19,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "0",
+   "n": 24,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "2",
+   "n": 1,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 4,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 17,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 70,
+   "n_matching_starts": 1
+  },
+  {
+   "shard": "1",
+   "n": 34,
+   "n_matching_starts": 1
+  }
+ ],
+ "groups_with_contiguous_match": 20,
+ "groups_with_unique_match": 20,
+ "rows_in_matched_groups": 822,
+ "stale_rows": 822
+}

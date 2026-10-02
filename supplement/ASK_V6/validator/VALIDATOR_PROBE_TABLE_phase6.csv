@@ -1,0 +1,30 @@
+probe_id,description,expected,observed,verdict,requirement_class,requirement_source
+C01,Control: builder-produced SUPERSEDE (multi-record),ACCEPTED,ACCEPTED,AS_EXPECTED,CONTROL,control
+C02,Control: builder-produced ABSTAIN,ACCEPTED,ACCEPTED,AS_EXPECTED,CONTROL,control
+S01,SUPERSEDE: retained predecessor value altered while deactivated,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,"delta: ""The prior value is retained, not deleted"""
+S02,SUPERSEDE: retained predecessor memory_type altered,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,delta: prior retained
+S03,SUPERSEDE: retained predecessor evidence_digest altered,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,delta: prior retained; h_E binds evidence
+S04,SUPERSEDE: unrelated active record deleted,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition (records not named by the transition are unchanged)
+S05,SUPERSEDE: unrelated record value mutated,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition
+S06,SUPERSEDE: successor value differs from candidate value,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,delta: successor is the candidate u
+S07,SUPERSEDE: unrelated record deactivated,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition
+S08,SUPERSEDE: extra unannounced active record inserted,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition; multi-record mode
+S09,SUPERSEDE: event predecessor_record_id field wrong (points to unrelated record),REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,event z binds predecessor identifier i_pi
+S10,SUPERSEDE: event candidate_record_id field wrong,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,event z binds candidate identifier i_u
+S11,SUPERSEDE of a prior that was already inactive before the transition,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,"delta: supersede applies to the prior ACTIVE record; builder enforces, validator does not"
+C03,Control: builder-produced single-slot SUPERSEDE with history,ACCEPTED,ACCEPTED,AS_EXPECTED,CONTROL,control
+S12,SINGLE_SLOT SUPERSEDE: older inactive ancestor deleted and lineage pointer rewritten,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,delta: prior value retained; lineage history deleted and pointer rewritten
+C04,Control: builder-produced multi-record KEEP without admission,ACCEPTED,ACCEPTED,AS_EXPECTED,CONTROL,control
+K01,MULTI KEEP (keep_admitted_candidate=False): candidate silently inserted,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,event/state inconsistency: keep_admitted_candidate=False while candidate inserted
+K02,MULTI KEEP: unrelated record deleted,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition
+K03,MULTI KEEP: unrelated record value mutated,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,unstated frame condition
+K04,MULTI KEEP with prior_record_id=None: compared prior rewritten,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,no compared prior declared; arbitrary state change accepted
+K05,TEMPORAL_EVENT KEEP: arbitrary mutation of unrelated record,REJECTED,ACCEPTED,VALIDATOR_GAP,C_UNSTATED_FRAME_OR_MODE_CONDITION,TEMPORAL_EVENT treated like multi-record; no temporal semantics
+I01,Event id not equal to digest of event body,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,"""immutable event"" with event identifier; id not recomputed from body"
+I02,Trace evidence_digest does not equal digest of its evidence_references,REJECTED,ACCEPTED,VALIDATOR_GAP,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,manuscript: h_E binds the exact evidence set
+R01,ConfigurationIdentity sha256='0'*64 (not a digest of any config) accepted,binding,ACCEPTED (object constructed),CONFIG_DIGEST_NOT_BOUND,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,manuscript: h_C binds the exact configuration; adapter declares sufficient fields
+R02,Replay under adapter config with all thresholds shifted +0.01 (action unchanged),binding,"ACCEPTED replay -> Supersede although thresholds differ from logged intermediates 0.75,0.7",THRESHOLDS_NOT_BOUND,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,manuscript: h_C binds the exact configuration; adapter declares sufficient fields
+R03,Replay under config whose theta_sup shift flips the action,binding,REJECTED: ASK-LME policy replay differs from logged action,DETECTED_ONLY_VIA_ACTION_MISMATCH,INFO,manuscript: h_C binds the exact configuration; adapter declares sufficient fields
+R04,Declared sufficient_fields absent as keys in trace inputs/intermediates,binding,"[""thresholds"", ""configuration""]",DECLARED_FIELDS_NOT_PRESENT,B_STATED_TRANSITION_OR_BINDING_SEMANTICS,manuscript: h_C binds the exact configuration; adapter declares sufficient fields
+R05,Logged trace action / theta values,binding,"{""action"": ""Supersede"", ""theta_sup"": 0.75, ""theta_abs"": 0.7}",INFO,INFO,manuscript: h_C binds the exact configuration; adapter declares sufficient fields
+D01,Reference module performs file/database I/O for events,n/a,NO file or database I/O in ask.protocol.core,EVENT_IS_IN_MEMORY_OBJECT_ONLY,INFO,test name test_abstain_preserves_state_and_emits_durable_event

@@ -1,0 +1,265 @@
+{
+ "controller": {
+  "llm_call_files": 8,
+  "n_llm_calls": 31384,
+  "requested_models": {
+   "qwen/qwen3.5-9b": 31244,
+   "google/gemma-4-31b-it": 140
+  },
+  "routed_models": {
+   "qwen/qwen3.5-9b": 31244,
+   "google/gemma-4-31b-it": 140
+  },
+  "base_urls": {
+   "https://openrouter.ai/api/v1": 31384
+  },
+  "provider_preferences": {
+   "{\"allow_fallbacks\": true, \"only\": [\"venice\", \"deepinfra\", \"siliconflow\"]}": 31214,
+   "null": 170
+  },
+  "fallback_used_calls": 0,
+  "prompt_tokens_total": 56854913,
+  "completion_tokens_total": 3079191,
+  "attempt_index_dist": {
+   "0": 31384
+  },
+  "valid_schema_task_flags": {
+   "(True, True, True)": 30308,
+   "(False, False, True)": 837,
+   "(False, False, False)": 30,
+   "(False, True, True)": 209
+  },
+  "prediction_model_ids": {
+   "qwen/qwen3.5-9b": 172,
+   "qwen/qwen3.5-9b+computation-verified": 6,
+   "qwen/qwen3.5-9b+computation-preferred": 2
+  },
+  "seeds": {
+   "0": 180
+  },
+  "baseline_names": {
+   "controller": 180
+  },
+  "extras_keys_top": {
+   "action_counts": 180,
+   "action_log_path": 180,
+   "answer_context_item_refs": 180,
+   "answer_context_session_ids": 180,
+   "answer_context_support_coverage": 180,
+   "answer_context_supporting_sessions": 180,
+   "answer_final_line_parsed": 180,
+   "answer_llm_calls": 180,
+   "answer_looks_truncated": 180,
+   "answer_raw_text": 180,
+   "answer_retry_original_text": 180,
+   "answer_retry_reason": 180
+  }
+ },
+ "b1": {
+  "llm_call_files": 20,
+  "n_llm_calls": 180,
+  "requested_models": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "routed_models": {
+   "qwen/qwen3.5-9b-20260310": 180
+  },
+  "base_urls": {
+   "https://openrouter.ai/api/v1": 180
+  },
+  "provider_preferences": {
+   "{\"allow_fallbacks\": true, \"only\": [\"venice\", \"deepinfra\", \"siliconflow\"], \"order\": [\"venice\", \"deepinfra\", \"siliconflow\"]}": 180
+  },
+  "fallback_used_calls": 0,
+  "prompt_tokens_total": 17043,
+  "completion_tokens_total": 360,
+  "attempt_index_dist": {
+   "0": 180
+  },
+  "valid_schema_task_flags": {
+   "(False, True, True)": 180
+  },
+  "prediction_model_ids": {
+   "qwen/qwen3.5-9b-20260310": 180
+  },
+  "seeds": {
+   "0": 180
+  },
+  "baseline_names": {
+   "no_memory": 180
+  },
+  "extras_keys_top": {
+   "llm_call": 180
+  }
+ },
+ "b2": {
+  "llm_call_files": 20,
+  "n_llm_calls": 270,
+  "requested_models": {
+   "qwen/qwen3.5-9b": 185,
+   "google/gemma-4-31b-it": 85
+  },
+  "routed_models": {
+   "qwen/qwen3.5-9b-20260310": 185,
+   "google/gemma-4-31b-it-20260402": 80,
+   "google/gemma-4-31b-it": 5
+  },
+  "base_urls": {
+   "https://openrouter.ai/api/v1": 270
+  },
+  "provider_preferences": {
+   "{\"allow_fallbacks\": true, \"only\": [\"venice\", \"deepinfra\", \"siliconflow\"], \"order\": [\"venice\", \"deepinfra\", \"siliconflow\"]}": 185,
+   "{\"allow_fallbacks\": true, \"only\": [\"wandb\", \"venice\"], \"order\": [\"wandb\", \"venice\"]}": 80,
+   "null": 5
+  },
+  "fallback_used_calls": 0,
+  "prompt_tokens_total": 694465,
+  "completion_tokens_total": 3088,
+  "attempt_index_dist": {
+   "0": 270
+  },
+  "valid_schema_task_flags": {
+   "(False, True, True)": 185,
+   "(True, True, True)": 80,
+   "(False, False, False)": 5
+  },
+  "prediction_model_ids": {
+   "qwen/qwen3.5-9b-20260310": 180
+  },
+  "seeds": {
+   "0": 180
+  },
+  "baseline_names": {
+   "flat_vector": 180
+  },
+  "extras_keys_top": {
+   "embedder_model_id": 180,
+   "k": 180,
+   "llm_call": 180,
+   "memory_session_ids": 180,
+   "n_indexed": 180,
+   "n_retrieved": 180,
+   "retrieval_scores": 180,
+   "retrieval_session_ids": 180,
+   "retrieval_turn_idxs": 180,
+   "supporting_session_ids": 180,
+   "unresolved_memory_ids": 180,
+   "unresolved_supporting_ids": 180
+  }
+ },
+ "b3": {
+  "llm_call_files": 20,
+  "n_llm_calls": 12794,
+  "requested_models": {
+   "qwen/qwen3.5-9b": 12742,
+   "google/gemma-4-31b-it": 52
+  },
+  "routed_models": {
+   "qwen/qwen3.5-9b-20260310": 12710,
+   "google/gemma-4-31b-it-20260402": 40,
+   "qwen/qwen3.5-9b": 32,
+   "google/gemma-4-31b-it": 12
+  },
+  "base_urls": {
+   "https://openrouter.ai/api/v1": 12794
+  },
+  "provider_preferences": {
+   "{\"allow_fallbacks\": true, \"only\": [\"venice\", \"deepinfra\", \"siliconflow\"], \"order\": [\"venice\", \"deepinfra\", \"siliconflow\"]}": 12710,
+   "{\"allow_fallbacks\": true, \"only\": [\"wandb\", \"venice\"], \"order\": [\"wandb\", \"venice\"]}": 40,
+   "null": 44
+  },
+  "fallback_used_calls": 0,
+  "prompt_tokens_total": 43203330,
+  "completion_tokens_total": 1685960,
+  "attempt_index_dist": {
+   "0": 12794
+  },
+  "valid_schema_task_flags": {
+   "(True, True, True)": 12044,
+   "(False, False, True)": 514,
+   "(False, True, True)": 192,
+   "(False, False, False)": 44
+  },
+  "prediction_model_ids": {
+   "qwen/qwen3.5-9b-20260310": 180
+  },
+  "seeds": {
+   "0": 180
+  },
+  "baseline_names": {
+   "recency": 180
+  },
+  "extras_keys_top": {
+   "capacity": 180,
+   "embedder_model_id": 180,
+   "extractor_mode": 180,
+   "k": 180,
+   "llm_call": 180,
+   "memory_prefilter_top_k": 180,
+   "memory_session_ids": 180,
+   "n_active": 180,
+   "n_admitted": 180,
+   "n_evicted": 180,
+   "n_retrieved": 180,
+   "raw_turn_fallback": 180
+  }
+ },
+ "b4": {
+  "llm_call_files": 20,
+  "n_llm_calls": 19233,
+  "requested_models": {
+   "qwen/qwen3.5-9b": 19065,
+   "google/gemma-4-31b-it": 168
+  },
+  "routed_models": {
+   "qwen/qwen3.5-9b-20260310": 19049,
+   "qwen/qwen3.5-9b": 16,
+   "google/gemma-4-31b-it": 39,
+   "google/gemma-4-31b-it-20260402": 129
+  },
+  "base_urls": {
+   "https://openrouter.ai/api/v1": 19233
+  },
+  "provider_preferences": {
+   "{\"allow_fallbacks\": true, \"only\": [\"venice\", \"deepinfra\", \"siliconflow\"], \"order\": [\"venice\", \"deepinfra\", \"siliconflow\"]}": 19049,
+   "null": 55,
+   "{\"allow_fallbacks\": true, \"only\": [\"wandb\", \"venice\"], \"order\": [\"wandb\", \"venice\"]}": 129
+  },
+  "fallback_used_calls": 0,
+  "prompt_tokens_total": 14818548,
+  "completion_tokens_total": 1249626,
+  "attempt_index_dist": {
+   "0": 19233
+  },
+  "valid_schema_task_flags": {
+   "(True, True, True)": 18783,
+   "(False, False, False)": 55,
+   "(False, True, True)": 288,
+   "(False, False, True)": 107
+  },
+  "prediction_model_ids": {
+   "qwen/qwen3.5-9b-20260310": 175,
+   "qwen/qwen3.5-9b-20260310+computation-verified": 5
+  },
+  "seeds": {
+   "0": 180
+  },
+  "baseline_names": {
+   "naive_overwrite": 180
+  },
+  "extras_keys_top": {
+   "action_counts": 180,
+   "action_log_path": 180,
+   "answer_final_line_parsed": 180,
+   "answer_llm_calls": 180,
+   "answer_looks_truncated": 180,
+   "answer_raw_text": 180,
+   "answer_retry_original_text": 180,
+   "answer_retry_used": 180,
+   "answer_system_prompt_variant": 180,
+   "answer_text_length": 180,
+   "computation_answer": 180,
+   "computation_answerer": 180
+  }
+ }
+}

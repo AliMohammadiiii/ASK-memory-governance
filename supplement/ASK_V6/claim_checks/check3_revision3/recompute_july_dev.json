@@ -1,0 +1,240 @@
+{
+ "ablation_no_abstain_qwen35_9b_v3": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "ablation_no_lineage_qwen35_9b_v3": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "ablation_no_provenance_qwen35_9b_v3": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "ablation_no_typing_qwen35_9b_v3": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "b1_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "b2_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "b3_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "b4_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "decision_zero_shot_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 27,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "live_model_controller_evidence_v2_qwen35_9b_clean": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "live_model_controller_hybrid_v3_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "live_model_controller_qwen35_9b": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "qwen/qwen3.5-9b": 180
+  },
+  "has_model_field": true,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "stop": 180
+  }
+ },
+ "rules_controller_v1": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "rules_controller": 180
+  },
+  "has_model_field": false,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "null": 180
+  }
+ },
+ "rules_controller_v1_c37b887": {
+  "n": 180,
+  "n_ids": 180,
+  "strict_invalid": 0,
+  "tolerant_invalid": 0,
+  "fenced": 0,
+  "strict_ne_tolerant": 0,
+  "max_len": 22,
+  "model_or_system": {
+   "rules_controller": 180
+  },
+  "has_model_field": false,
+  "fallback_used": 0,
+  "finish_reasons": {
+   "null": 180
+  }
+ }
+}

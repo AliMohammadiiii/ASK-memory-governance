@@ -1,0 +1,15 @@
+{
+ "rows": 12654,
+ "mismatch_counts": {},
+ "max_abs_dev": {
+  "s_rev": 0.0,
+  "s_abs": 0.0,
+  "theta_sup": 0.0,
+  "theta_abs": 0.0
+ },
+ "distinct_action_values_in_log": {
+  "Keep": 11478,
+  "Supersede": 397,
+  "Abstain": 779
+ }
+}

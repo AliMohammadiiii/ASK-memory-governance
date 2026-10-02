@@ -1,0 +1,64 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: scripts/evaluation/run_longmemeval_final.sh
+# raw changed lines (deleted+added): 40 (deleted 15, added 25); hunks 2
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 26 (deleted 8, added 18)
+--- evaluated:scripts/evaluation/run_longmemeval_final.sh (git blob 819270176c5b57119c1be483757e891461cee42a, sha256 82ba1a001765)
++++ baseline-commit f6bf66e4766d:scripts/evaluation/run_longmemeval_final.sh (git blob b72cf709898bdd49038a4ec0fe69fafac0d75e1f)
+@@ -496,16 +496,16 @@ hashed_code_paths = [
+     Path("scripts/run_baseline.py"),
+     Path("scripts/verify_homogeneous_run.py"),
+     Path("scripts/analysis/check_controller_accuracy_gate.py"),
+-    Path("src/ksa/baselines/embeddings.py"),
+-    Path("src/ksa/controller/computation.py"),
+-    Path("src/ksa/eval/longmemeval.py"),
+-    Path("src/ksa/eval/merge.py"),
+-    Path("src/ksa/inference/openai_compatible.py"),
+-    Path("src/ksa/pipeline/orchestrator.py"),
++    Path("src/ask/baselines/embeddings.py"),
++    Path("src/ask/controller/computation.py"),
++    Path("src/ask/eval/longmemeval.py"),
++    Path("src/ask/eval/merge.py"),
++    Path("src/ask/inference/openai_compatible.py"),
++    Path("src/ask/pipeline/orchestrator.py"),
+ ]
+ code_hashes = {str(path): sha256_file(path) for path in hashed_code_paths}
+ prompt_bundle_hash = sha256_tree(
+-    [Path("prompts"), Path("src/ksa/baselines/prompts")]
++    [Path("prompts"), Path("src/ask/baselines/prompts")]
+ )
+ try:
+     git_head = subprocess.check_output(
+@@ -732,14 +732,24 @@ JUDGE_VERIFY_ARGS=()
+ if [ -n "$JUDGE_FALLBACK" ]; then
+   JUDGE_VERIFY_ARGS+=(--allowed-judge-fallback "$JUDGE_FALLBACK")
+ fi
+-"$PYTHON" scripts/verify_homogeneous_run.py \
+-  --run-root "$OUT" --slice "$STRAT_SLICE" \
+-  --sample-from 0 --sample-to "$SAMPLE_TO" \
+-  --systems "$SYSTEMS" --expected-n "$RUN_N" \
+-  --expected-answer-model "$ANSWER_MODEL" \
+-  --allowed-auxiliary-model "$MAIN_MODEL" \
+-  --expected-judge-primary "$JUDGE_PRIMARY" \
+-  "${JUDGE_VERIFY_ARGS[@]}"
++if [ -n "$JUDGE_FALLBACK" ]; then
++  "$PYTHON" scripts/verify_homogeneous_run.py \
++    --run-root "$OUT" --slice "$STRAT_SLICE" \
++    --sample-from 0 --sample-to "$SAMPLE_TO" \
++    --systems "$SYSTEMS" --expected-n "$RUN_N" \
++    --expected-answer-model "$ANSWER_MODEL" \
++    --allowed-auxiliary-model "$MAIN_MODEL" \
++    --expected-judge-primary "$JUDGE_PRIMARY" \
++    "${JUDGE_VERIFY_ARGS[@]}"
++else
++  "$PYTHON" scripts/verify_homogeneous_run.py \
++    --run-root "$OUT" --slice "$STRAT_SLICE" \
++    --sample-from 0 --sample-to "$SAMPLE_TO" \
++    --systems "$SYSTEMS" --expected-n "$RUN_N" \
++    --expected-answer-model "$ANSWER_MODEL" \
++    --allowed-auxiliary-model "$MAIN_MODEL" \
++    --expected-judge-primary "$JUDGE_PRIMARY"
++fi
+ 
+ # --- explicit controller >=85% acceptance gate (full runs only) -------- #
+ ACCURACY_GATE_PATH="$OUT/controller_accuracy_gate.json"
+

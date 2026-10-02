@@ -1,0 +1,86 @@
+{
+ "n": 180,
+ "post_correct": 137,
+ "pre_correct": 128,
+ "pre_by_source": {
+  "model_judge": {
+   "n": 138,
+   "correct": 118
+  },
+  "guard": {
+   "n": 40,
+   "correct": 8
+  },
+  "fallback": {
+   "n": 2,
+   "correct": 2
+  }
+ },
+ "judge_called": 140,
+ "guards_incorrect_pre": 32,
+ "adjudicated": {
+  "n": 9,
+  "by_competency": {
+   "single-session-preference": 7,
+   "single-session-user": 1,
+   "temporal-reasoning": 1
+  },
+  "by_source": {
+   "model_judge": 8,
+   "guard": 1
+  },
+  "type": {
+   "manual": 9
+  },
+  "direction_incorrect_to_correct": 9
+ },
+ "by_type": {
+  "knowledge-update": {
+   "n": 30,
+   "pre": 29,
+   "post": 29
+  },
+  "multi-session": {
+   "n": 30,
+   "pre": 19,
+   "post": 19
+  },
+  "single-session-assistant": {
+   "n": 30,
+   "pre": 29,
+   "post": 29
+  },
+  "single-session-preference": {
+   "n": 30,
+   "pre": 9,
+   "post": 16
+  },
+  "single-session-user": {
+   "n": 30,
+   "pre": 24,
+   "post": 25
+  },
+  "temporal-reasoning": {
+   "n": 30,
+   "pre": 18,
+   "post": 19
+  }
+ },
+ "abstention_questions": {
+  "n": 9,
+  "correct_pre": 8,
+  "correct_post": 8
+ },
+ "clopper_pearson": {
+  "128/180": [
+   0.639,
+   0.7761
+  ],
+  "137/180": [
+   0.692,
+   0.8214
+  ],
+  "0.711": 0.7111111111111111,
+  "0.761": 0.7611111111111111
+ }
+}

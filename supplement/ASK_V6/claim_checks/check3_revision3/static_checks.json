@@ -1,0 +1,112 @@
+{
+ "bib_entries": 35,
+ "bib_dup_keys": [],
+ "cited_keys": 35,
+ "cited_not_in_bib": [],
+ "bib_not_cited": [],
+ "references_core_keys": [
+  "arxiv_2410_10813"
+ ],
+ "labels": 25,
+ "dup_labels": [],
+ "undefined_refs": [],
+ "unused_labels": [
+  "sec:conclusion",
+  "sec:discussion",
+  "sec:intro",
+  "sec:mgp6-protocol",
+  "tab:parser"
+ ],
+ "banned_word_hits": {
+  "first": 19,
+  "because": 11,
+  "new": 6,
+  "therefore": 12,
+  "separates": 3,
+  "validate": 2,
+  "effect": 1,
+  "causes": 1,
+  "explains": 1
+ },
+ "em_dash": 0,
+ "en_dash_unicode": 0,
+ "latex_triple_hyphen": 0,
+ "latex_double_hyphen": [],
+ "figures_included": [
+  "figures/fig_models.pdf",
+  "figures/fig_lme.pdf"
+ ],
+ "figure_files_exist": {
+  "figures/fig_models.pdf": true,
+  "figures/fig_lme.pdf": true
+ },
+ "inputs": [
+  "author_info",
+  "sections/00_abstract",
+  "sections/01_introduction",
+  "sections/02_related_work",
+  "sections/03_interface",
+  "sections/04_mgp6",
+  "sections/05_lme",
+  "sections/06_discussion",
+  "sections/07_conclusion",
+  "sections/08_appendix",
+  "tables/tab_models_acc",
+  "tables/tab_models_prompt",
+  "tables/tab_models_routing",
+  "tables/tab_parser_sensitivity"
+ ],
+ "input_exists": {
+  "author_info": true,
+  "sections/00_abstract": true,
+  "sections/01_introduction": true,
+  "sections/02_related_work": true,
+  "sections/03_interface": true,
+  "sections/04_mgp6": true,
+  "sections/05_lme": true,
+  "sections/06_discussion": true,
+  "sections/07_conclusion": true,
+  "sections/08_appendix": true,
+  "tables/tab_models_acc": true,
+  "tables/tab_models_prompt": true,
+  "tables/tab_models_routing": true,
+  "tables/tab_parser_sensitivity": true
+ },
+ "env_balance": {
+  "table": [
+   14,
+   14
+  ],
+  "itemize": [
+   2,
+   2
+  ],
+  "enumerate": [
+   1,
+   1
+  ],
+  "description": [
+   1,
+   1
+  ],
+  "tabular": [
+   7,
+   7
+  ],
+  "tabularx": [
+   7,
+   7
+  ],
+  "abstract": [
+   1,
+   1
+  ],
+  "figure": [
+   2,
+   2
+  ]
+ },
+ "uses_tabularx_pkg": true,
+ "uses_enumitem_nosep": true,
+ "footnote_or_unicode_nonascii": []
+}

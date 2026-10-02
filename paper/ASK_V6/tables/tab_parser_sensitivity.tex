@@ -1,0 +1,20 @@
+\begin{tabularx}{\linewidth}{llYYYYYr}
+\toprule
+Model & Rule & A & D & E & B & B+g & Rejected \\
+\midrule
+Gemini low & tolerant & 0.761 & 0.792 & 0.881 & 0.892 & 0.928 & 0 \\
+ & strict & 0.714 & 0.772 & 0.856 & 0.883 & 0.919 & 49 of 1440 \\
+\addlinespace
+Gemini medium & tolerant & 0.808 & 0.811 & 0.889 & 0.883 & 0.922 & 0 \\
+ & strict & 0.406 & 0.600 & 0.578 & 0.808 & 0.842 & 471 of 1440 \\
+\addlinespace
+Gemini high (1 repeat) & tolerant & 0.961 & 0.917 & 0.867 & 0.850 & 0.900 & 0 \\
+ & strict & 0.478 & 0.767 & 0.567 & 0.783 & 0.822 & 212 of 720 \\
+\addlinespace
+GLM 5.3 Flash & tolerant & 0.503 & 0.797 & 0.783 & 0.861 & 0.889 & 0 \\
+ & strict & 0.503 & 0.797 & 0.783 & 0.861 & 0.889 & 0 of 1440 \\
+\addlinespace
+gpt-oss-120b & tolerant & 0.339 & 0.658 & 0.575 & 0.742 & 0.767 & 0 \\
+ & strict & 0.339 & 0.658 & 0.575 & 0.742 & 0.767 & 0 of 1440 \\
+\bottomrule
+\end{tabularx}

@@ -1,0 +1,337 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: src/ask/baselines/embeddings.py
+# raw changed lines (deleted+added): 145 (deleted 55, added 90); hunks 21
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 139 (deleted 52, added 87)
+--- evaluated:src/ask/baselines/embeddings.py (git blob b729d7deb89f258116431d063c1e82ecfc0840bc, sha256 c4eb6a4d47b0)
++++ baseline-commit f6bf66e4766d:src/ask/baselines/embeddings.py (git blob b242395c78bb401335672cb3281f7462dd992891)
+@@ -18,7 +18,7 @@ Design (carried in `NOTES/m1w3_design.md` §2):
+     `tests/test_embeddings.py::test_rows_are_l2_normalized` enforces
+     norm ≈ 1.0 to float32 tolerance.
+ 
+-Implementation discipline (mirrors `ksa.inference.llm.HuggingFaceLLM`):
++Implementation discipline (mirrors `ask.inference.llm.HuggingFaceLLM`):
+ 
+   * Heavy deps (`sentence_transformers`, `torch`) are imported LAZILY on
+     the first `embed()` call so `pytest` on the skeleton does not pull
+@@ -32,6 +32,7 @@ Implementation discipline (mirrors `ksa.inference.llm.HuggingFaceLLM`):
+ from __future__ import annotations
+ 
+ import json
++import logging
+ import os
+ import time
+ import urllib.error
+@@ -44,14 +45,16 @@ from typing import Any, Protocol, runtime_checkable
+ import numpy as np
+ from pydantic import BaseModel, ConfigDict
+ 
+-from ksa.inference.openai_headers import openai_compatible_headers
++from ask.endpoints import is_loopback_host, validate_http_endpoint
++from ask.inference.openai_headers import openai_compatible_headers
+ 
+-_LOOPBACK_HOSTS = frozenset({"localhost", "127.0.0.1", "::1"})
++logger = logging.getLogger(__name__)
+ 
+ 
+ def _is_loopback_url(url: str) -> bool:
+     """Return whether *url* targets this machine's loopback interface."""
+-    return urllib.parse.urlparse(url).hostname in _LOOPBACK_HOSTS
++    host = urllib.parse.urlparse(url).hostname
++    return bool(host and is_loopback_host(host))
+ 
+ 
+ def _urlopen(
+@@ -73,6 +76,7 @@ def _urlopen(
+         return opener.open(request, timeout=timeout)
+     return urllib.request.urlopen(request, timeout=timeout)
+ 
++
+ # --------------------------------------------------------------------- #
+ # Public Protocol                                                        #
+ # --------------------------------------------------------------------- #
+@@ -130,12 +134,12 @@ def role_tag(role: str, content: str) -> str:
+ # Module-level singleton cache                                           #
+ # --------------------------------------------------------------------- #
+ #
+-# Keyed by `(model_id, device)` because a future caller might want one
++# Keyed by `(model_id, revision, device, trust_remote_code)` because a future caller might want one
+ # CPU embedder and one CUDA embedder side-by-side. Within one process,
+ # every `TurnEmbedder` instance with the same `(model_id, device)` reuses
+ # the same loaded weights.
+ 
+-_MODEL_CACHE: dict[tuple[str, str, bool], Any] = {}
++_MODEL_CACHE: dict[tuple[str, str | None, str, bool], Any] = {}
+ 
+ 
+ _REMOTE_IMPORT_SHIM_APPLIED = False
+@@ -169,7 +173,7 @@ def _apply_remote_code_import_shim() -> None:
+         return
+     try:
+         from transformers import dynamic_module_utils  # type: ignore[import-not-found]
+-    except Exception:
++    except ImportError:
+         return
+ 
+     _original_get_imports = dynamic_module_utils.get_imports
+@@ -187,11 +191,11 @@ def _torch_cuda_is_available() -> bool:
+     """Return whether the installed torch build can actually use CUDA."""
+     try:
+         import torch  # type: ignore[import-not-found]
+-    except Exception:
++    except ImportError:
+         return False
+     try:
+         return bool(torch.cuda.is_available())
+-    except Exception:
++    except (AssertionError, RuntimeError):
+         return False
+ 
+ 
+@@ -207,21 +211,23 @@ def _resolve_sentence_transformer_device(device: str) -> str:
+     if not requested or requested_l == "auto":
+         return "cuda" if _torch_cuda_is_available() else "cpu"
+     if requested_l.startswith("cuda") and not _torch_cuda_is_available():
+-        print(
+-            "[embedder] requested CUDA for sentence-transformer embeddings, "
+-            "but torch.cuda.is_available() is false; falling back to CPU. "
+-            "In Colab, select a GPU runtime or install a CUDA-enabled torch "
+-            "wheel if you need GPU embeddings.",
+-            flush=True,
++        logger.warning(
++            "requested CUDA for sentence-transformer embeddings, but CUDA is unavailable; "
++            "falling back to CPU"
+         )
+         return "cpu"
+     return requested
+ 
+ 
+-def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = False) -> Any:
++def _get_or_load_model(
++    model_id: str,
++    device: str,
++    revision: str | None = None,
++    trust_remote_code: bool = False,
++) -> Any:
+     """Lazy-load the sentence-transformers model the first time it's needed."""
+     resolved_device = _resolve_sentence_transformer_device(device)
+-    key = (model_id, resolved_device, bool(trust_remote_code))
++    key = (model_id, revision, resolved_device, bool(trust_remote_code))
+     if key in _MODEL_CACHE:
+         return _MODEL_CACHE[key]
+     try:
+@@ -236,11 +242,17 @@ def _get_or_load_model(model_id: str, device: str, trust_remote_code: bool = Fal
+         # jina-embeddings-v5 (EuroBERT) trips a transformers get_imports bug;
+         # see _apply_remote_code_import_shim. No-op for plain models.
+         _apply_remote_code_import_shim()
++    load_kwargs: dict[str, Any] = {
++        "device": resolved_device,
++        "trust_remote_code": trust_remote_code,
++    }
++    if revision is not None:
++        load_kwargs["revision"] = revision
+     try:
+-        model = SentenceTransformer(
+-            model_id, device=resolved_device, trust_remote_code=trust_remote_code
+-        )
+-    except TypeError:
++        model = SentenceTransformer(model_id, **load_kwargs)
++    except TypeError as exc:
++        if revision is not None:
++            raise RuntimeError("the installed sentence-transformers cannot pin a revision") from exc
+         # Very old sentence-transformers without the trust_remote_code kwarg.
+         model = SentenceTransformer(model_id, device=resolved_device)
+     _MODEL_CACHE[key] = model
+@@ -284,10 +296,11 @@ class TurnEmbedder:
+     The model is loaded lazily (first `embed()` call) so test suites and
+     the harness can construct the embedder without paying the model
+     download. Loaded weights are shared across instances via a
+-    module-level singleton keyed by `(model_id, device)`.
++    module-level singleton keyed by `(model_id, revision, device, trust_remote_code)`.
+     """
+ 
+     model_id: str = _DEFAULT_MODEL_ID
++    revision: str | None = None
+     device: str = _DEFAULT_DEVICE
+     batch_size: int = _DEFAULT_BATCH_SIZE
+     # Custom-architecture embedders (e.g. jinaai/jina-embeddings-v5-*) need
+@@ -327,7 +340,7 @@ class TurnEmbedder:
+                 if callable(fn):
+                     try:
+                         value = fn()
+-                    except Exception:
++                    except (AttributeError, RuntimeError, TypeError, ValueError):
+                         value = None
+                     if value:
+                         dim = int(value)
+@@ -341,7 +354,12 @@ class TurnEmbedder:
+ 
+     def _ensure_loaded(self) -> None:
+         if self._model is None:
+-            self._model = _get_or_load_model(self.model_id, self.device, self.trust_remote_code)
++            self._model = _get_or_load_model(
++                self.model_id,
++                self.device,
++                self.revision,
++                self.trust_remote_code,
++            )
+ 
+     def embed(self, texts: list[str]) -> np.ndarray:
+         """Embed a list of strings. Always returns L2-normalized float32 rows.
+@@ -407,9 +425,16 @@ class OllamaEmbedder:
+     truncate: bool = True
+     max_retries: int = 5
+     backoff_s: float = 2.0
++    allow_insecure_http: bool = False
+ 
+     _embedding_dim: int | None = field(default=None, init=False, repr=False)
+ 
++    def __post_init__(self) -> None:
++        validate_http_endpoint(
++            self.host,
++            allow_insecure_http=self.allow_insecure_http,
++        )
++
+     @property
+     def embedding_dim(self) -> int:
+         if self._embedding_dim is None:
+@@ -472,11 +497,13 @@ class OllamaEmbedder:
+                 last_exc = exc
+                 if exc.code in {500, 502, 503, 504} and attempt < self.max_retries:
+                     delay = self.backoff_s * (2**attempt)
+-                    print(
+-                        f"[ollama-embed] {url} returned HTTP {exc.code}; "
+-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
+-                        f"{self.max_retries})",
+-                        flush=True,
++                    logger.warning(
++                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
++                        url,
++                        exc.code,
++                        delay,
++                        attempt + 1,
++                        self.max_retries,
+                     )
+                     time.sleep(delay)
+                     continue
+@@ -485,10 +512,13 @@ class OllamaEmbedder:
+                 last_exc = exc
+                 if attempt < self.max_retries:
+                     delay = self.backoff_s * (2**attempt)
+-                    print(
+-                        f"[ollama-embed] {url} failed ({exc}); retrying in "
+-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
+-                        flush=True,
++                    logger.warning(
++                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
++                        url,
++                        exc,
++                        delay,
++                        attempt + 1,
++                        self.max_retries,
+                     )
+                     time.sleep(delay)
+                     continue
+@@ -534,10 +564,17 @@ class OpenAICompatibleEmbedder:
+     min_interval_s: float = 0.0
+     max_batch_chars: int = 0
+     extra_headers: dict[str, str] = field(default_factory=dict)
++    allow_insecure_http: bool = False
+ 
+     _embedding_dim: int | None = field(default=None, init=False, repr=False)
+     _last_request_at: float = field(default=0.0, init=False, repr=False)
+ 
++    def __post_init__(self) -> None:
++        validate_http_endpoint(
++            self.base_url,
++            allow_insecure_http=self.allow_insecure_http,
++        )
++
+     @property
+     def embedding_dim(self) -> int:
+         if self._embedding_dim is None:
+@@ -652,15 +689,14 @@ class OpenAICompatibleEmbedder:
+         for attempt in range(self.max_retries + 1):
+             try:
+                 with _urlopen(req, url=url, timeout=self.timeout_s) as resp:
+-                    data = json.loads(resp.read().decode("utf-8"))
+-                    return data
++                    return json.loads(resp.read().decode("utf-8"))
+             except urllib.error.HTTPError as exc:
+                 last_exc = exc
+                 body = ""
+                 try:
+                     body = exc.read().decode("utf-8")[:500]
+-                except Exception:
+-                    pass
++                except (OSError, UnicodeError):
++                    body = ""
+                 if exc.code in {429, 500, 502, 503, 504} and attempt < self.max_retries:
+                     delay = self.backoff_s * (2**attempt)
+                     self._write_log(
+@@ -674,19 +710,17 @@ class OpenAICompatibleEmbedder:
+                             "input_chars": input_chars,
+                         }
+                     )
+-                    print(
+-                        f"[api-call:retry] provider=embedding-openai-compatible {url} returned HTTP {exc.code}; "
+-                        f"retrying in {delay:.1f}s (attempt {attempt + 1}/"
+-                        f"{self.max_retries})",
+-                        flush=True,
++                    logger.warning(
++                        "%s returned HTTP %s; retrying in %.1fs (attempt %s/%s)",
++                        url,
++                        exc.code,
++                        delay,
++                        attempt + 1,
++                        self.max_retries,
+                     )
+                     time.sleep(delay)
+                     continue
+-                print(
+-                    f"[api-call:error] provider=embedding-openai-compatible url={url} "
+-                    f"HTTP {exc.code}: {body}",
+-                    flush=True,
+-                )
++                logger.error("request failed url=%s HTTP %s: %s", url, exc.code, body)
+                 raise RuntimeError(f"HTTP {exc.code} from {url}: {body}") from exc
+             except (urllib.error.URLError, TimeoutError) as exc:
+                 last_exc = exc
+@@ -703,10 +737,13 @@ class OpenAICompatibleEmbedder:
+                             "input_chars": input_chars,
+                         }
+                     )
+-                    print(
+-                        f"[api-call:retry] provider=embedding-openai-compatible {url} failed ({exc}); retrying in "
+-                        f"{delay:.1f}s (attempt {attempt + 1}/{self.max_retries})",
+-                        flush=True,
++                    logger.warning(
++                        "%s failed (%s); retrying in %.1fs (attempt %s/%s)",
++                        url,
++                        exc,
++                        delay,
++                        attempt + 1,
++                        self.max_retries,
+                     )
+                     time.sleep(delay)
+                     continue
+@@ -736,7 +773,7 @@ class OpenAICompatibleEmbedder:
+ class FakeEmbedder:
+     """Deterministic non-ML embedder for tests and the e2e smoke script.
+ 
+-    Mirrors `ksa.inference.fake.FakeLLM`'s role for the LLM Protocol.
++    Mirrors `ask.inference.fake.FakeLLM`'s role for the LLM Protocol.
+ 
+     Hashes each input string into a `dim`-vector via repeated SHA-256,
+     then L2-normalizes. Properties:
+@@ -756,9 +793,7 @@ class FakeEmbedder:
+     def embed(self, texts: list[str]) -> np.ndarray:
+         if not texts:
+             return np.zeros((0, self.embedding_dim), dtype=np.float32)
+-        out: np.ndarray = np.zeros(
+-            (len(texts), self.embedding_dim), dtype=np.float32
+-        )
++        out: np.ndarray = np.zeros((len(texts), self.embedding_dim), dtype=np.float32)
+         for i, t in enumerate(texts):
+             out[i] = _sha256_to_vec(t, self.embedding_dim)
+         # L2-normalize — same contract as TurnEmbedder.
+

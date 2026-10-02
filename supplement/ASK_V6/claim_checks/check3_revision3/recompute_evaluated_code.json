@@ -1,0 +1,53 @@
+{
+ "rows": 17,
+ "run_manifest_entries": 17,
+ "tar_files": 17,
+ "recorded_hash_equals_run_manifest": 17,
+ "recorded_hash_found_in_tarball_by_content": 17,
+ "reachability": {
+  "UNREFERENCED": 10,
+  "reachable": 7
+ },
+ "storage_pack": {
+  "7b7b92dd856f(cruft)": 10,
+  "f576fef2d255": 7
+ },
+ "cruft_mtime": {
+  "2026-08-05T16:59:03+00:00": 10
+ },
+ "relation_to_baseline_same_path": {
+  "absent at same path": 4,
+  "identical": 2,
+  "differs (raw 4 added / 0 deleted baseline-side; normalised 4": 1,
+  "differs (raw 25 added / 15 deleted baseline-side; normalised": 1,
+  "differs (raw 44 added / 21 deleted baseline-side; normalised": 1,
+  "differs (raw 11 added / 10 deleted baseline-side; normalised": 1,
+  "differs (raw 1 added / 1 deleted baseline-side; normalised 1": 1,
+  "differs (raw 90 added / 55 deleted baseline-side; normalised": 1,
+  "differs (raw 81 added / 48 deleted baseline-side; normalised": 1,
+  "differs (raw 13 added / 11 deleted baseline-side; normalised": 1,
+  "differs (raw 7 added / 5 deleted baseline-side; normalised 7": 1,
+  "differs (raw 183 added / 115 deleted baseline-side; normalis": 1,
+  "differs (raw 542 added / 372 deleted baseline-side; normalis": 1
+ },
+ "public_repo_contains_blob": {
+  "False": 10,
+  "True": 7
+ },
+ "reachable_scopes": {
+  "": 10,
+  "branches,remotes,tags,stash,codex_checkpoint_trees,reflog": 2,
+  "branches,remotes,tags,stash,reflog": 5
+ },
+ "oldest_commit_with_blob": {
+  "ca0febce32ef2b1c7b3a5c6612066ec233ed1dcd": 6,
+  "a284b2efcf947bf69f7456ea87348059594f26da": 1
+ },
+ "orchestrator": {
+  "raw_changed_lines": "914",
+  "normalised_changed_lines": "912",
+  "relation_to_baseline_commit_same_path": "differs (raw 542 added / 372 deleted baseline-side; normalised 541/371)",
+  "evaluated_lines": 4301,
+  "baseline_lines": 4471
+ }
+}

@@ -1,0 +1,16 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: FINAL_RUN_MATRIX.yaml [vs docs/evaluation/FINAL_RUN_MATRIX.yaml]
+# raw changed lines (deleted+added): 2 (deleted 1, added 1); hunks 1
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 0 (deleted 0, added 0)
+--- evaluated:FINAL_RUN_MATRIX.yaml (git blob e7a65e90736b5f3ea83bce60d311903fc0336418, sha256 0f1817675758)
++++ baseline-commit f6bf66e4766d:docs/evaluation/FINAL_RUN_MATRIX.yaml (git blob 1bf40ea02f7df8212670d5c535a336e5f37ead49) [relocated path]
+@@ -279,7 +279,7 @@ runs:
+   # -------------------------------------------------------------------
+   - id: judge_audit
+     benchmark: cross_cutting
+-    inputs: "every judgments.jsonl under runs_local/ (and, read-only, ../ksa_controller/runs/)"
++    inputs: "every judgments.jsonl under runs_local/ (and, read-only, ../ask_controller/runs/)"
+     fields_used: [judge_model_id, used_fallback, correct, competency]
+     wrapper: scripts/evaluation/run_judge_audit.sh
+     command: bash scripts/evaluation/run_judge_audit.sh runs_local/lme_final_5systems_v12_qwen_180
+

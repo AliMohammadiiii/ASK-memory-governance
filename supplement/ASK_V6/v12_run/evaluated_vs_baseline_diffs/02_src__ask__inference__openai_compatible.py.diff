@@ -1,0 +1,409 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: src/ask/inference/openai_compatible.py
+# raw changed lines (deleted+added): 298 (deleted 115, added 183); hunks 13
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 298 (deleted 115, added 183)
+--- evaluated:src/ask/inference/openai_compatible.py (git blob 5da428a5fb74e3ce86e9514d4e1981396f2e4ec5, sha256 d32ee0f770d7)
++++ baseline-commit f6bf66e4766d:src/ask/inference/openai_compatible.py (git blob c874a4bd04ce258225759d4712a2598002124890)
+@@ -9,6 +9,7 @@ from __future__ import annotations
+ 
+ import hashlib
+ import json
++import logging
+ import time
+ import urllib.error
+ import urllib.request
+@@ -17,11 +18,15 @@ from dataclasses import dataclass, field
+ from pathlib import Path
+ from typing import Any
+ 
+-from pydantic import BaseModel, ConfigDict, Field
++from pydantic import BaseModel, ConfigDict, Field, ValidationError
++
++from ask.endpoints import validate_http_endpoint
+ 
+ from .llm import LLMResponse, _strip_think_blocks
+ from .openai_headers import openai_compatible_headers
+ 
++logger = logging.getLogger(__name__)
++
+ TaskValidator = Callable[[str, dict[str, Any] | None], tuple[bool, str | None]]
+ 
+ 
+@@ -90,6 +95,10 @@ class OpenAICompatibleFatalError(RuntimeError):
+     """Account/auth failure that another model retry cannot recover from."""
+ 
+ 
++class OpenAICompatibleRequestError(RuntimeError):
++    """Recoverable transport or response-contract failure."""
++
++
+ @dataclass
+ class OpenAICompatibleLLM:
+     """LLM Protocol implementation for `/v1/chat/completions`.
+@@ -135,6 +144,13 @@ class OpenAICompatibleLLM:
+     # guard is OFF and an oversized prompt is rejected by vLLM with HTTP 400
+     # ("maximum context length is N tokens").
+     num_ctx: int | None = None
++    allow_insecure_http: bool = False
++
++    def __post_init__(self) -> None:
++        validate_http_endpoint(
++            self.base_url,
++            allow_insecure_http=self.allow_insecure_http,
++        )
+ 
+     def generate(
+         self,
+@@ -181,7 +197,7 @@ class OpenAICompatibleLLM:
+                 # only repeats paid requests and then causes every shard restart
+                 # to do the same work again.
+                 raise
+-            except Exception as exc:
++            except (OpenAICompatibleRequestError, ValidationError, IndexError) as exc:
+                 last_error = exc
+                 self._write_log(
+                     LLMCallLogRow(
+@@ -211,7 +227,9 @@ class OpenAICompatibleLLM:
+             # text but failed a strict gate. Downstream structured wrappers can
+             # still repair or report the parse failure.
+             return last_response
+-        raise RuntimeError(f"OpenAI-compatible request failed for all models: {last_error}")
++        raise OpenAICompatibleRequestError(
++            f"request failed for all configured models: {last_error}"
++        ) from last_error
+ 
+     def _generate_once(
+         self,
+@@ -224,48 +242,26 @@ class OpenAICompatibleLLM:
+         stop: list[str] | None,
+         attempt_index: int,
+     ) -> LLMResponse:
+-        messages: list[dict[str, str]] = []
+-        if self.system:
+-            messages.append({"role": "system", "content": self.system})
+-        messages.append({"role": "user", "content": prompt})
+-        payload: dict[str, Any] = {
+-            "model": model,
+-            "messages": messages,
+-            "temperature": float(temperature),
+-            "max_tokens": int(max_new_tokens),
+-        }
+-        if stop:
+-            payload["stop"] = list(stop)
+-        if seed is not None:
+-            payload["seed"] = int(seed)
+-        if self.response_format is not None:
+-            payload["response_format"] = _normalize_response_format(self.response_format)
+-        # vLLM server-side extensions.
+-        if self.chat_template_kwargs:
+-            payload["chat_template_kwargs"] = dict(self.chat_template_kwargs)
+-        if self.guided_json is not None:
+-            payload["guided_json"] = self.guided_json
+-        if self.extra_body:
+-            for key, value in self.extra_body.items():
+-                payload.setdefault(key, value)
+-
+-        provider_preferences = payload.get("provider")
+-        provider_preferences_json = (
+-            json.dumps(provider_preferences, sort_keys=True, separators=(",", ":"))
+-            if provider_preferences is not None
+-            else None
+-        )
+-        provider_part = (
+-            f" provider_preferences={provider_preferences_json}"
+-            if provider_preferences_json is not None
+-            else ""
++        payload = self._chat_payload(
++            model=model,
++            prompt=prompt,
++            max_new_tokens=max_new_tokens,
++            temperature=temperature,
++            seed=seed,
++            stop=stop,
+         )
+-        print(
+-            f"[api-call:start] provider=openai-compatible base_url={self.base_url} "
+-            f"path=/chat/completions model={model} require_json={self.require_json} "
+-            f"max_tokens={max_new_tokens} prompt_chars={len(prompt)} attempt={attempt_index}"
+-            f"{provider_part}",
+-            flush=True,
++        provider_preferences = payload.get("provider")
++        provider_part = _provider_log_suffix(provider_preferences)
++        logger.info(
++            "request start base_url=%s path=/chat/completions model=%s require_json=%s "
++            "max_tokens=%s prompt_chars=%s attempt=%s%s",
++            self.base_url,
++            model,
++            self.require_json,
++            max_new_tokens,
++            len(prompt),
++            attempt_index,
++            provider_part,
+         )
+         t0 = time.perf_counter()
+         raw = self._post_json("/chat/completions", payload)
+@@ -274,13 +270,8 @@ class OpenAICompatibleLLM:
+         parsed_response = OpenAIChatCompletion.model_validate_json(raw)
+         choice = parsed_response.choices[0]
+         text = choice.message.content or ""
+-        if self.strip_think:
+-            text = _strip_think_blocks(text)
+-        if stop:
+-            for s in stop:
+-                idx = text.find(s)
+-                if idx >= 0:
+-                    text = text[:idx]
++        text = _strip_think_blocks(text) if self.strip_think else text
++        text = _truncate_at_stop(text, stop)
+         usage = parsed_response.usage or OpenAIUsage()
+         parsed_json, json_error = _parse_strict_json_object(text)
+         valid_json = parsed_json is not None
+@@ -322,13 +313,19 @@ class OpenAICompatibleLLM:
+         metadata["gate_pass"] = gate_pass
+         metadata["route"] = route
+         routed_provider = str(provider) if provider is not None else "unreported"
+-        print(
+-            f"[api-call:done] provider=openai-compatible base_url={self.base_url} "
+-            f"routed_provider={routed_provider} model={routed_model} "
+-            f"requested_model={model} latency_ms={latency_ms:.1f} "
+-            f"prompt_tokens={usage.prompt_tokens} completion_tokens={usage.completion_tokens} "
+-            f"gate_pass={gate_pass} valid_json={valid_json}",
+-            flush=True,
++        logger.info(
++            "request done base_url=%s routed_provider=%s model=%s requested_model=%s "
++            "latency_ms=%.1f prompt_tokens=%s completion_tokens=%s "
++            "gate_pass=%s valid_json=%s",
++            self.base_url,
++            routed_provider,
++            routed_model,
++            model,
++            latency_ms,
++            usage.prompt_tokens,
++            usage.completion_tokens,
++            gate_pass,
++            valid_json,
+         )
+         return LLMResponse(
+             text=text,
+@@ -341,6 +338,41 @@ class OpenAICompatibleLLM:
+             metadata=metadata,
+         )
+ 
++    def _chat_payload(
++        self,
++        *,
++        model: str,
++        prompt: str,
++        max_new_tokens: int,
++        temperature: float,
++        seed: int,
++        stop: list[str] | None,
++    ) -> dict[str, Any]:
++        messages: list[dict[str, str]] = []
++        if self.system:
++            messages.append({"role": "system", "content": self.system})
++        messages.append({"role": "user", "content": prompt})
++        payload: dict[str, Any] = {
++            "model": model,
++            "messages": messages,
++            "temperature": float(temperature),
++            "max_tokens": int(max_new_tokens),
++            "seed": int(seed),
++        }
++        if stop:
++            payload["stop"] = list(stop)
++        if self.response_format is not None:
++            payload["response_format"] = _normalize_response_format(self.response_format)
++        # vLLM server-side extensions.
++        if self.chat_template_kwargs:
++            payload["chat_template_kwargs"] = dict(self.chat_template_kwargs)
++        if self.guided_json is not None:
++            payload["guided_json"] = self.guided_json
++        if self.extra_body:
++            for key, value in self.extra_body.items():
++                payload.setdefault(key, value)
++        return payload
++
+     def _post_json(self, path: str, payload: dict[str, Any]) -> str:
+         url = f"{self.base_url.rstrip('/')}{path}"
+         headers = openai_compatible_headers(
+@@ -359,67 +391,70 @@ class OpenAICompatibleLLM:
+             try:
+                 with urllib.request.urlopen(req, timeout=self.timeout_s) as resp:
+                     body = resp.read().decode("utf-8")
+-                # Some OpenRouter upstreams return an OpenAI error envelope in
+-                # a successful HTTP response (observed with provider code 504).
+-                # Passing that envelope to OpenAIChatCompletion produces a
+-                # misleading Pydantic "choices missing" traceback and skips the
+-                # transport retry policy. Treat a top-level error object exactly
+-                # like the equivalent HTTP failure instead.
+-                error_payload: Any = None
+-                try:
+-                    decoded = json.loads(body)
+-                    if isinstance(decoded, dict):
+-                        error_payload = decoded.get("error")
+-                except (TypeError, ValueError):
+-                    pass
+-                if not isinstance(error_payload, dict):
++                status = _embedded_error_status(body)
++                if status is None:
+                     return body
+-
+-                raw_status = error_payload.get("code") or error_payload.get("status") or 500
+-                try:
+-                    status = int(raw_status)
+-                except (TypeError, ValueError):
+-                    status = 500
+-                body_excerpt = body[:500]
+-                print(
+-                    f"[api-call:error] provider=openai-compatible url={url} "
+-                    f"attempt={attempt}/{attempts} embedded HTTP {status}: {body_excerpt}",
+-                    flush=True,
++                self._handle_status_error(
++                    url,
++                    status=status,
++                    body=body,
++                    attempt=attempt,
++                    attempts=attempts,
++                    retry_after=None,
++                    cause=None,
+                 )
+-                if attempt >= attempts or status not in self.retry_status_codes:
+-                    error = f"embedded HTTP {status} error from {url}: {body_excerpt}"
+-                    if status == 402:
+-                        raise OpenAICompatibleFatalError(error)
+-                    raise RuntimeError(error)
+-                self._sleep_before_retry(attempt, None, body)
+             except urllib.error.HTTPError as exc:
+-                body = ""
+-                try:
+-                    body = exc.read().decode("utf-8")
+-                except Exception:
+-                    pass
+-                body_excerpt = body[:500]
+-                print(
+-                    f"[api-call:error] provider=openai-compatible url={url} "
+-                    f"attempt={attempt}/{attempts} HTTP {exc.code}: {body_excerpt}",
+-                    flush=True,
++                body = _read_http_error_body(exc)
++                self._handle_status_error(
++                    url,
++                    status=exc.code,
++                    body=body,
++                    attempt=attempt,
++                    attempts=attempts,
++                    retry_after=exc.headers.get("Retry-After") if exc.headers else None,
++                    cause=exc,
+                 )
+-                if attempt >= attempts or exc.code not in self.retry_status_codes:
+-                    error = f"HTTP {exc.code} from {url}: {body_excerpt}"
+-                    if exc.code == 402:
+-                        raise OpenAICompatibleFatalError(error) from exc
+-                    raise RuntimeError(error) from exc
+-                self._sleep_before_retry(attempt, exc.headers.get("Retry-After"), body)
+             except urllib.error.URLError as exc:
+-                print(
+-                    f"[api-call:error] provider=openai-compatible url={url} "
+-                    f"attempt={attempt}/{attempts} error={exc}",
+-                    flush=True,
++                logger.warning(
++                    "request error url=%s attempt=%s/%s error=%s",
++                    url,
++                    attempt,
++                    attempts,
++                    exc,
+                 )
+                 if attempt >= attempts:
+-                    raise RuntimeError(f"request failed at {url}: {exc}") from exc
++                    raise OpenAICompatibleRequestError(f"request failed at {url}: {exc}") from exc
+                 self._sleep_before_retry(attempt, None, None)
+-        raise RuntimeError(f"request failed at {url}: exhausted retry attempts")
++        raise OpenAICompatibleRequestError(f"request failed at {url}: exhausted retry attempts")
++
++    def _handle_status_error(
++        self,
++        url: str,
++        *,
++        status: int,
++        body: str,
++        attempt: int,
++        attempts: int,
++        retry_after: str | None,
++        cause: BaseException | None,
++    ) -> None:
++        body_excerpt = body[:500]
++        logger.warning(
++            "request error url=%s attempt=%s/%s HTTP %s: %s",
++            url,
++            attempt,
++            attempts,
++            status,
++            body_excerpt,
++        )
++        if attempt < attempts and status in self.retry_status_codes:
++            self._sleep_before_retry(attempt, retry_after, body)
++            return
++        error = f"HTTP {status} from {url}: {body_excerpt}"
++        error_type = OpenAICompatibleFatalError if status == 402 else OpenAICompatibleRequestError
++        if cause is None:
++            raise error_type(error)
++        raise error_type(error) from cause
+ 
+     def _sleep_before_retry(
+         self,
+@@ -439,10 +474,7 @@ class OpenAICompatibleLLM:
+     def _task_pass(self, text: str, parsed_json: dict[str, Any] | None) -> tuple[bool, str | None]:
+         if self.task_validator is None:
+             return True, None
+-        try:
+-            return self.task_validator(text, parsed_json)
+-        except Exception as exc:
+-            return False, f"task validator raised {type(exc).__name__}: {exc}"
++        return self.task_validator(text, parsed_json)
+ 
+     def _write_log(self, row: LLMCallLogRow) -> None:
+         if self.log_path is None:
+@@ -455,6 +487,42 @@ class OpenAICompatibleLLM:
+             fh.write("\n")
+ 
+ 
++def _provider_log_suffix(preferences: Any) -> str:
++    if preferences is None:
++        return ""
++    encoded = json.dumps(preferences, sort_keys=True, separators=(",", ":"))
++    return f" provider_preferences={encoded}"
++
++
++def _truncate_at_stop(text: str, stop: list[str] | None) -> str:
++    if not stop:
++        return text
++    indexes = [index for marker in stop if (index := text.find(marker)) >= 0]
++    return text[: min(indexes)] if indexes else text
++
++
++def _embedded_error_status(body: str) -> int | None:
++    try:
++        decoded = json.loads(body)
++    except (TypeError, ValueError):
++        return None
++    if not isinstance(decoded, dict) or not isinstance(decoded.get("error"), dict):
++        return None
++    error = decoded["error"]
++    raw_status = error.get("code") or error.get("status") or 500
++    try:
++        return int(raw_status)
++    except (TypeError, ValueError):
++        return 500
++
++
++def _read_http_error_body(error: urllib.error.HTTPError) -> str:
++    try:
++        return error.read().decode("utf-8")
++    except (OSError, UnicodeError):
++        return ""
++
++
+ def _normalize_response_format(value: str | dict[str, Any]) -> dict[str, Any]:
+     if isinstance(value, str):
+         if value.lower() == "json":
+

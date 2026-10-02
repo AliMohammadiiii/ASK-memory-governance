@@ -1,0 +1,300 @@
+{
+ "first": [
+  [
+   "sections/00_abstract.tex",
+   2,
+   "eam or priority claim. the reference protocol was first committed after both evaluations and is"
+  ],
+  [
+   "sections/01_introduction.tex",
+   9,
+   "~\\ref{sec:interface}). the reference protocol was first committed after the longmemeval run and"
+  ],
+  [
+   "sections/03_interface.tex",
+   31,
+   "\\item \\textbf{chronology.} the protocol was first committed on 2026-08-03, after the long"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   4,
+   "the first version, mgp-6 v2, contained 180 scenar"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   11,
+   "tly (0 of 900 items, because one packet added the first dialogue turn to every selection). beca"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   38,
+   "cy, for two reasons that we verified in the code. first, only the live controller receives the"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   64,
+   "un, our own runner extracted the text between the first and last brace; on all stored replies t"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   66,
+   "contrasts; per-item results averaged over repeats first). item-level intervals, which ignore th"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   72,
+   "mitted a supersession for 177 of 180 items in the first repeat) to 0.96 under the tolerant rule"
+  ],
+  [
+   "sections/05_lme.tex",
+   29,
+   "s that results be reported on the raw judge score first and that any adjudication be reported a"
+  ],
+  [
+   "sections/06_discussion.tex",
+   5,
+   "of the specification.} the reference protocol was first committed after the longmemeval run and"
+  ],
+  [
+   "sections/06_discussion.tex",
+   7,
+   "hed), the substitute models were chosen after the first results had been inspected, one configu"
+  ],
+  [
+   "sections/06_discussion.tex",
+   13,
+   "ation on a fresh slice, with raw results reported first and an adjudication ledger; the evaluat"
+  ],
+  [
+   "sections/07_conclusion.tex",
+   3,
+   "d runs. the reference protocol is a specification first committed after the longmemeval run and"
+  ],
+  [
+   "sections/08_appendix.tex",
+   83,
+   "gemini 3.8 flash at low reasoning was run first, and its accuracies had been inspected"
+  ],
+  [
+   "sections/08_appendix.tex",
+   83,
+   "flash at high reasoning was still running when we first analyzed the output directory and is in"
+  ],
+  [
+   "sections/08_appendix.tex",
+   85,
+   "ash produced 8 records for 5 distinct items. at a first cap of 1\\,024 completion tokens (inferr"
+  ],
+  [
+   "sections/08_appendix.tex",
+   89,
+   "e runner's own extraction of the text between the first and last brace; on every stored reply i"
+  ],
+  [
+   "sections/08_appendix.tex",
+   98,
+   "low (1 october) & runner's own brace extraction (first to last brace, parsed as json); equal t"
+  ]
+ ],
+ "because": [
+  [
+   "sections/01_introduction.tex",
+   3,
+   "tored item with a newer one, or decline to commit because the evidence does not settle the questi"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   11,
+   "selections never matched exactly (0 of 900 items, because one packet added the first dialogue tur"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   11,
+   "dded the first dialogue turn to every selection). because the labelling rule is deterministic by"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   15,
+   "cost-matrix analysis that accompanies the release because its weights were committed after the hi"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   18,
+   "of 540 items; wilson interval 0.8154 to 0.8760). because items within a component are not indepe"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   62,
+   "l across the four cells, and cell e is mismatched because the live prompt text describes two inde"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   64,
+   "y rule is a post-hoc analysis choice. we chose it because the question is which view and prompt l"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   72,
+   "of that configuration scores 0.478 and not 0.961, because 93 of its 180 replies in that cell are"
+  ],
+  [
+   "sections/05_lme.tex",
+   38,
+   "k as recorded in the run directory returned false because of a stale launcher hash, and it covere"
+  ],
+  [
+   "sections/08_appendix.tex",
+   56,
+   "er outperforms baselines on the development split because of the write policy & not supported & e"
+  ],
+  [
+   "sections/08_appendix.tex",
+   85,
+   "pletion tokens (inferred from the usage counters, because the cap was not stored in the record) 4"
+  ]
+ ],
+ "new": [
+  [
+   "sections/01_introduction.tex",
+   3,
+   "blem before they face a retrieval problem. when a new statement arrives, the memory can accep"
+  ],
+  [
+   "sections/03_interface.tex",
+   32,
+   "sts (132 passing in the five-file subset plus the new file). the accounting requirement that"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   15,
+   "with temperature 0, no reasoning, a limit of 128 new tokens and seed 4301. the configuration"
+  ],
+  [
+   "sections/05_lme.tex",
+   41,
+   "ntifier, that is, the candidate was inserted as a new active record; in this runtime \\keep{}"
+  ],
+  [
+   "sections/08_appendix.tex",
+   61,
+   "write governance, abstention or supersession are new & not claimed & each element has prior"
+  ],
+  [
+   "sections/08_appendix.tex",
+   73,
+   "model and setting & repeats & max new tokens & seed sent & run window (utc, 2"
+  ]
+ ],
+ "therefore": [
+  [
+   "sections/01_introduction.tex",
+   9,
+   "ions, and is not used by any evaluated system. we therefore treat the protocol as a specification a"
+  ],
+  [
+   "sections/02_related_work.tex",
+   45,
+   "edent in the works discussed here, and this paper therefore makes no priority claim."
+  ],
+  [
+   "sections/03_interface.tex",
+   8,
+   "eep{} rows carry a resulting identifier). \\keep{} therefore denotes a non-superseding decision and"
+  ],
+  [
+   "sections/03_interface.tex",
+   12,
+   "the two operational meanings of \\keep{} above are therefore related by the shared property that no"
+  ],
+  [
+   "sections/03_interface.tex",
+   36,
+   "we therefore describe the protocol as a specificatio"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   4,
+   "eld-out actions exactly. scenario recognition was therefore sufficient, and no v2 policy comparison"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   38,
+   "ceives a different, longer prompt. the comparison therefore confounds evidence routing with the dec"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   62,
+   "high reasoning was run once. absolute values are therefore not comparable with table~\\ref{tab:dev}"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   62,
+   "ssages that the full payload does not isolate. we therefore treat the experiment as a diagnostic co"
+  ],
+  [
+   "sections/04_mgp6.tex",
+   72,
+   "e router accounts for the development difference, therefore describes particular models and parsing"
+  ],
+  [
+   "sections/05_lme.tex",
+   29,
+   "e reported as a separate sensitivity analysis; we therefore treat 128 of 180 as the primary count a"
+  ],
+  [
+   "sections/06_discussion.tex",
+   7,
+   "r receives those sentences directly. a high score therefore reflects the model, together with the r"
+  ]
+ ],
+ "separates": [
+  [
+   "sections/02_related_work.tex",
+   9,
+   "mmit checks and machine-checked invariants . tarl separates a learned action predictor from a deter"
+  ],
+  [
+   "sections/02_related_work.tex",
+   13,
+   "aph{evaluation resources and benchmarks.} halumem separates extraction, update and question-answeri"
+  ],
+  [
+   "sections/02_related_work.tex",
+   13,
+   "d write actions or persisted state , and memtrace separates retrieval reach from evidence use . tar"
+  ]
+ ],
+ "validate": [
+  [
+   "sections/04_mgp6.tex",
+   11,
+   "items instantiating it; it does not independently validate the construct. the annotation exercise"
+  ],
+  [
+   "sections/06_discussion.tex",
+   7,
+   "ic rule, so agreement between annotators does not validate the construct. the labelling rule makes"
+  ]
+ ],
+ "effect": [
+  [
+   "sections/04_mgp6.tex",
+   38,
+   "and 0.367. this contrast should not be read as an effect of the write policy, for two reasons th"
+  ]
+ ],
+ "causes": [
+  [
+   "sections/06_discussion.tex",
+   11,
+   "e scores are calibrated, or that the write policy causes downstream accuracy. we do not claim a"
+  ]
+ ],
+ "explains": [
+  [
+   "sections/08_appendix.tex",
+   55,
+   "distractor capture explains the errors & not supported & distractor"
+  ]
+ ]
+}

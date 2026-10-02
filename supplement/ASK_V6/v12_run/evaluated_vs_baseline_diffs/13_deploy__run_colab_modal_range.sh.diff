@@ -1,0 +1,25 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: deploy/run_colab_modal_range.sh
+# raw changed lines (deleted+added): 4 (deleted 0, added 4); hunks 2
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 4 (deleted 0, added 4)
+--- evaluated:deploy/run_colab_modal_range.sh (git blob c55ec8d1e740796092026ced977f6116a835ca27, sha256 de684524fb5b)
++++ baseline-commit f6bf66e4766d:deploy/run_colab_modal_range.sh (git blob f47bbd38901802b2c0e0a71cae0a356838d92c19)
+@@ -43,6 +43,7 @@ START_EMBED_SERVER="${START_EMBED_SERVER:-1}"
+ EMBED_MODEL_PATH="${EMBED_MODEL_PATH:-jinaai/jina-embeddings-v5-text-nano}"
+ EMBED_MODEL_NAME="${EMBED_MODEL_NAME:-jina}"
+ EMBED_TASK="${EMBED_TASK:-retrieval}"
++EMBED_TRUST_REMOTE_CODE="${EMBED_TRUST_REMOTE_CODE:-1}"
+ EMBED_DEVICE="${EMBED_DEVICE:-mps}"
+ EMBED_BATCH_SIZE="${EMBED_BATCH_SIZE:-4}"
+ EMBED_CLIENT_BATCH_SIZE="${EMBED_CLIENT_BATCH_SIZE:-4}"
+@@ -258,6 +259,9 @@ PY
+   if [[ -n "${EMBED_TASK}" ]]; then
+     embed_cmd+=(--task "${EMBED_TASK}")
+   fi
++  if [[ "${EMBED_TRUST_REMOTE_CODE}" == "1" ]]; then
++    embed_cmd+=(--trust-remote-code)
++  fi
+   printf '[colab-modal] embed command:' > "${EMBED_LOG}"
+   printf ' %q' "${embed_cmd[@]}" >> "${EMBED_LOG}"
+   printf '\n\n' >> "${EMBED_LOG}"
+

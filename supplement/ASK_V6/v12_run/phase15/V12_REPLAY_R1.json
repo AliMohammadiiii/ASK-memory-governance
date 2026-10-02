@@ -1,0 +1,15 @@
+{
+ "n_rows": 12654,
+ "n_replayed": 12654,
+ "errors": {},
+ "action_mismatches": {},
+ "n_action_mismatch": 0,
+ "rows_with_score_or_threshold_deviation_gt_1e-9": 0,
+ "max_abs_deviation": 0.0,
+ "action_log_sha256": "08ebd01376534dbab37f084cc9384ab53b400d950f045aef041af10eb9c3912c",
+ "candidate_types": {
+  "transient_pref": 2416,
+  "episodic_fact": 9857,
+  "stable_pref": 381
+ }
+}

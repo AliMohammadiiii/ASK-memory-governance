@@ -5,3 +5,8 @@
 *.pdf binary
 *.docx binary
 *.zip binary
+
+# ASK V6 byte-preserved release artifacts
+paper/ASK_V6/** -text -eol
+releases/ASK_V6/** -text -eol
+supplement/ASK_V6/** -text -eol

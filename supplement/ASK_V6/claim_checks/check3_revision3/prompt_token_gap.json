@@ -1,0 +1,122 @@
+{
+ "prompt_hash_match": {
+  "gemini_low": [
+   1440,
+   1440
+  ],
+  "gemini_medium": [
+   1440,
+   1440
+  ],
+  "gemini_high": [
+   720,
+   720
+  ],
+  "glm_5.3_flash": [
+   1440,
+   1440
+  ],
+  "gpt_oss_120b_medium": [
+   1440,
+   1440
+  ]
+ },
+ "gap": {
+  "gemini_low": {
+   "A_zero_payload": {
+    "mean_gap_tokens_vs_chars_div4": 2394.0,
+    "mean_tokens_per_char": 1.325
+   },
+   "B_live_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2184.0,
+    "mean_tokens_per_char": 1.528
+   },
+   "D_zero_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2306.0,
+    "mean_tokens_per_char": 2.949
+   },
+   "E_live_payload": {
+    "mean_gap_tokens_vs_chars_div4": 2275.0,
+    "mean_tokens_per_char": 0.986
+   }
+  },
+  "gemini_medium": {
+   "A_zero_payload": {
+    "mean_gap_tokens_vs_chars_div4": 3041.0,
+    "mean_tokens_per_char": 1.615
+   },
+   "B_live_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2347.0,
+    "mean_tokens_per_char": 1.623
+   },
+   "D_zero_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2597.0,
+    "mean_tokens_per_char": 3.291
+   },
+   "E_live_payload": {
+    "mean_gap_tokens_vs_chars_div4": 2537.0,
+    "mean_tokens_per_char": 1.071
+   }
+  },
+  "gemini_high": {
+   "A_zero_payload": {
+    "mean_gap_tokens_vs_chars_div4": 7754.0,
+    "mean_tokens_per_char": 3.714
+   },
+   "B_live_routed": {
+    "mean_gap_tokens_vs_chars_div4": 3012.0,
+    "mean_tokens_per_char": 2.011
+   },
+   "D_zero_routed": {
+    "mean_gap_tokens_vs_chars_div4": 6758.0,
+    "mean_tokens_per_char": 8.149
+   },
+   "E_live_payload": {
+    "mean_gap_tokens_vs_chars_div4": 4194.0,
+    "mean_tokens_per_char": 1.596
+   }
+  },
+  "glm_5.3_flash": {
+   "A_zero_payload": {
+    "mean_gap_tokens_vs_chars_div4": 1969.0,
+    "mean_tokens_per_char": 1.133
+   },
+   "B_live_routed": {
+    "mean_gap_tokens_vs_chars_div4": 1956.0,
+    "mean_tokens_per_char": 1.395
+   },
+   "D_zero_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2001.0,
+    "mean_tokens_per_char": 2.592
+   },
+   "E_live_payload": {
+    "mean_gap_tokens_vs_chars_div4": 1924.0,
+    "mean_tokens_per_char": 0.873
+   }
+  },
+  "gpt_oss_120b_medium": {
+   "A_zero_payload": {
+    "mean_gap_tokens_vs_chars_div4": 2022.0,
+    "mean_tokens_per_char": 1.157
+   },
+   "B_live_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2010.0,
+    "mean_tokens_per_char": 1.426
+   },
+   "D_zero_routed": {
+    "mean_gap_tokens_vs_chars_div4": 2056.0,
+    "mean_tokens_per_char": 2.657
+   },
+   "E_live_payload": {
+    "mean_gap_tokens_vs_chars_div4": 1976.0,
+    "mean_tokens_per_char": 0.89
+   }
+  }
+ },
+ "prompt_chars_mean": {
+  "A_zero_payload": 2250,
+  "B_live_routed": 1709,
+  "D_zero_routed": 855,
+  "E_live_payload": 3104
+ }
+}

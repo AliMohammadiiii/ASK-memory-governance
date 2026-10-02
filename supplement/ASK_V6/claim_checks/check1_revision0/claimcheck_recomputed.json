@@ -1,0 +1,433 @@
+{
+ "hidden": {
+  "accuracy": 0.8481481481481481,
+  "n_correct": 458,
+  "n": 540,
+  "wilson95": [
+   0.8154270561073689,
+   0.8759509069006364
+  ],
+  "cluster_ci_acc": [
+   0.8037037037037037,
+   0.8888888888888888
+  ],
+  "cluster_ci_mf1": [
+   0.8020749634748688,
+   0.889351432442434
+  ],
+  "macro_f1": 0.847872957121512,
+  "mcc": 0.7728426536370914,
+  "kappa": 0.7722222222222221,
+  "confusion_gold_rows": {
+   "ABSTAIN": {
+    "ABSTAIN": 142,
+    "KEEP": 30,
+    "SUPERSEDE": 8
+   },
+   "KEEP": {
+    "ABSTAIN": 18,
+    "KEEP": 151,
+    "SUPERSEDE": 11
+   },
+   "SUPERSEDE": {
+    "ABSTAIN": 6,
+    "KEEP": 9,
+    "SUPERSEDE": 165
+   }
+  },
+  "errors_by_gold": {
+   "ABSTAIN": 38,
+   "KEEP": 29,
+   "SUPERSEDE": 15
+  },
+  "total_errors": 82,
+  "share_errors_gold_abstain": 0.4634146341463415,
+  "non_abstain_predictions": 374,
+  "non_abstain_correct": 316,
+  "guard": {
+   "ABSTAIN->KEEP": 30,
+   "ABSTAIN->SUPERSEDE": 6
+  },
+  "model_abstain_outputs": 202,
+  "fallbacks": 0
+ },
+ "dev_table2": {
+  "live_model_controller": [
+   0.8444444444444444,
+   0.8458035427182433
+  ],
+  "decision_zero_shot": [
+   0.3388888888888889,
+   0.1788199150627993
+  ],
+  "b1": [
+   0.36666666666666664,
+   0.31181589753018324
+  ],
+  "b2": [
+   0.35555555555555557,
+   0.2439540991931569
+  ],
+  "b3": [
+   0.3277777777777778,
+   0.21747694511594592
+  ],
+  "b4": [
+   0.3388888888888889,
+   0.18914807302231237
+  ],
+  "ablation_no_abstain": [
+   0.3333333333333333,
+   0.24651309352040732
+  ],
+  "ablation_no_typing": [
+   0.34444444444444444,
+   0.18992515038802404
+  ],
+  "ablation_no_lineage": [
+   0.35,
+   0.201975061039414
+  ],
+  "ablation_no_provenance": [
+   0.3388888888888889,
+   0.1887105852788763
+  ]
+ },
+ "twobytwo": {
+  "accuracy": {
+   "A_zero_payload": [
+    0.7722222222222223,
+    0.75
+   ],
+   "D_zero_routed": [
+    0.8111111111111111,
+    0.7722222222222223
+   ],
+   "E_live_payload": [
+    0.8777777777777778,
+    0.8833333333333333
+   ],
+   "B_live_routed": [
+    0.8888888888888888,
+    0.8944444444444445
+   ]
+  },
+  "confusion_repeat0_rows_K_S_A": {
+   "A_zero_payload": [
+    [
+     57,
+     2,
+     1
+    ],
+    [
+     2,
+     58,
+     0
+    ],
+    [
+     30,
+     6,
+     24
+    ]
+   ],
+   "D_zero_routed": [
+    [
+     60,
+     0,
+     0
+    ],
+    [
+     3,
+     56,
+     1
+    ],
+    [
+     28,
+     2,
+     30
+    ]
+   ],
+   "E_live_payload": [
+    [
+     57,
+     0,
+     3
+    ],
+    [
+     0,
+     44,
+     16
+    ],
+    [
+     3,
+     0,
+     57
+    ]
+   ],
+   "B_live_routed": [
+    [
+     59,
+     0,
+     1
+    ],
+    [
+     1,
+     46,
+     13
+    ],
+    [
+     5,
+     0,
+     55
+    ]
+   ]
+  },
+  "returned_models": {
+   "gemini-3.8-flash": 1440
+  },
+  "requested_models": {
+   "ag/gemini-3.8-flash-low": 1440
+  },
+  "reasoning_tokens_present": 1436,
+  "contrasts": {
+   "prompt_full": [
+    0.11944444444444445,
+    [
+     0.04722222222222222,
+     0.19166666666666668
+    ]
+   ],
+   "prompt_routed": [
+    0.1,
+    [
+     0.03888888888888889,
+     0.1638888888888889
+    ]
+   ],
+   "routing_oneline": [
+    0.030555555555555555,
+    [
+     -0.016666666666666666,
+     0.08055555555555556
+    ]
+   ],
+   "routing_live": [
+    0.011111111111111112,
+    [
+     -0.030555555555555555,
+     0.05277777777777778
+    ]
+   ],
+   "total": [
+    0.13055555555555556,
+    [
+     0.06111111111111111,
+     0.2
+    ]
+   ]
+  }
+ },
+ "lme": {
+  "n": 180,
+  "correct_final": 137,
+  "correct_raw": 128,
+  "by_competency_final": {
+   "knowledge-update": 29,
+   "multi-session": 19,
+   "single-session-user": 25,
+   "single-session-preference": 16,
+   "single-session-assistant": 29,
+   "temporal-reasoning": 19
+  },
+  "by_competency_raw": {
+   "knowledge-update": 29,
+   "multi-session": 19,
+   "single-session-user": 24,
+   "single-session-preference": 9,
+   "single-session-assistant": 29,
+   "temporal-reasoning": 18
+  },
+  "n_per_competency": {
+   "knowledge-update": 30,
+   "multi-session": 30,
+   "single-session-user": 30,
+   "single-session-preference": 30,
+   "single-session-assistant": 30,
+   "temporal-reasoning": 30
+  },
+  "adjudicated": 9,
+  "adjudicated_direction_pre_correct": {
+   "false": 9
+  },
+  "adjudicated_by_competency": {
+   "single-session-preference": 7,
+   "single-session-user": 1,
+   "temporal-reasoning": 1
+  },
+  "adjudicated_with_judge_called": 8,
+  "not_model_judged": 40,
+  "not_model_judged_correct": 9,
+  "scoring_fallback": 2,
+  "scoring_fallback_correct": 2,
+  "abstention_questions": 9,
+  "abstention_correct_final": 8,
+  "raw_failures_by_competency": {
+   "knowledge-update": 1,
+   "multi-session": 11,
+   "single-session-user": 6,
+   "single-session-preference": 21,
+   "single-session-assistant": 1,
+   "temporal-reasoning": 12
+  },
+  "clopper_pearson": {
+   "128": [
+    0.6390066803541821,
+    0.7761160696937864
+   ],
+   "137": [
+    0.6920152662178711,
+    0.8213986824034571
+   ]
+  }
+ },
+ "baselines": {
+  "b1": {
+   "correct": 9,
+   "overrides": 1,
+   "override_direction_orig_to_final": [
+    [
+     true,
+     false
+    ]
+   ],
+   "identical_to_providerpool": true
+  },
+  "b2": {
+   "correct": 80,
+   "overrides": 0,
+   "override_direction_orig_to_final": [],
+   "identical_to_providerpool": true
+  },
+  "b3": {
+   "correct": 43,
+   "overrides": 0,
+   "override_direction_orig_to_final": [],
+   "identical_to_providerpool": true
+  },
+  "b4": {
+   "correct": 114,
+   "overrides": 2,
+   "override_direction_orig_to_final": [
+    [
+     false,
+     true
+    ],
+    [
+     false,
+     true
+    ]
+   ],
+   "identical_to_providerpool": true
+  }
+ },
+ "action_log": {
+  "n": 12654,
+  "sha256": "08ebd01376534dbab37f084cc9384ab53b400d950f045aef041af10eb9c3912c",
+  "actions": {
+   "KEEP": 11478,
+   "SUPERSEDE": 397,
+   "ABSTAIN": 779
+  },
+  "types": {
+   "transient_pref": 2416,
+   "episodic_fact": 9857,
+   "stable_pref": 381
+  },
+  "sessions": 3547,
+  "supersede_with_prior_and_result": 397,
+  "abstain_with_result": 0,
+  "keep_with_result": 11464,
+  "r1_mismatches_independent_reimplementation": 0,
+  "r1_max_abs_dev": 0.0,
+  "rows_repeating_session_candidate_pair": 88,
+  "repeated_text_groups_session_type_text": 1277,
+  "repeated_text_groups_diff_candidate_id": 1227,
+  "repeated_text_groups_diff_action": 51,
+  "repeated_text_groups_global_text_only": 1447
+ },
+ "extraction": {
+  "trace_rows": 11491,
+  "validated_items": 11771,
+  "trace_rows_without_validated_output": 13
+ },
+ "answers": {
+  "n": 180,
+  "seed_values": {
+   "0": 180
+  },
+  "model_ids": {
+   "qwen/qwen3.5-9b": 172,
+   "qwen/qwen3.5-9b+computation-verified": 6,
+   "qwen/qwen3.5-9b+computation-preferred": 2
+  },
+  "prior_top_k": {
+   "3": 180
+  }
+ },
+ "manifest": {
+  "status": "running",
+  "exit_code": 1,
+  "shards": 8,
+  "freeze_version": "final-2.0",
+  "judge_primary": "google/gemma-4-31b-it",
+  "judge_fallback": null,
+  "answer_provider_policy": {
+   "allow_fallbacks": true,
+   "provider_only": [
+    "venice",
+    "deepinfra",
+    "siliconflow"
+   ],
+   "provider_order": [],
+   "reasoning_enabled": false
+  },
+  "n_attempts": 3
+ },
+ "homogeneity": {
+  "homogeneous": false,
+  "global_errors": [
+   "manifest code/protocol hash stale: scripts/evaluation/run_longmemeval_final.sh"
+  ],
+  "per_system_errors": {
+   "controller": []
+  },
+  "seeds": [
+   "0"
+  ],
+  "systems_checked": [
+   "controller"
+  ]
+ },
+ "derived_manifest_output_hashes_match": {
+  "b4/judgments.jsonl": true,
+  "b4/report.json": true,
+  "controller/action_log.jsonl": true,
+  "controller/judgments.jsonl": true,
+  "controller/report.json": true
+ },
+ "derived_manifest_covers": [
+  "b4/judgments.jsonl",
+  "b4/report.json",
+  "controller/action_log.jsonl",
+  "controller/judgments.jsonl",
+  "controller/report.json"
+ ],
+ "adjacent_mcnemar_baseline_hash_match": {
+  "b1": true,
+  "b2": true,
+  "b3": true,
+  "b4": true
+ },
+ "code_hashes_recovered_match": null,
+ "recovered_code_tar_present": true
+}

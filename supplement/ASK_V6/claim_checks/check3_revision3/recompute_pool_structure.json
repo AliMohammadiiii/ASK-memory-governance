@@ -1,0 +1,16 @@
+{
+ "train": {
+  "components": 20,
+  "triples": 60,
+  "triples_with_disjoint_cover_of_pool": 60,
+  "components_with_one_six_sentence_pool_across_all_nine_items": 20,
+  "triples_where_numbering_differs_between_actions": 60
+ },
+ "dev": {
+  "components": 20,
+  "triples": 60,
+  "triples_with_disjoint_cover_of_pool": 60,
+  "components_with_one_six_sentence_pool_across_all_nine_items": 20,
+  "triples_where_numbering_differs_between_actions": 60
+ }
+}

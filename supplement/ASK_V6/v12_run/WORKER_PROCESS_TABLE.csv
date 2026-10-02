@@ -1,0 +1,45 @@
+shard,worker,log_start_line,resume_completed_at_start,questions_started,questions_completed,end_state,cascade_retry_marker_follows,action_log_mode_at_open,rows_surviving_in_final_log,stale_rows,stale_question,last_row_utc,attempt_by_timestamp
+0,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+0,1,369,0,10,9,RuntimeError,True,truncate (completed=0),733,33,6b7dfb22,2026-07-19T03:06:25.334576Z,1
+0,2,4836,9,12,11,KeyboardInterrupt,False,append,674,24,gpt4_483dd43c,2026-07-19T05:46:12.338977Z,1
+0,3,9671,20,3,3,completed,False,append,190,0,,2026-07-19T06:44:40.652241Z,2
+0,4,11129,,0,0,skipped_complete_report,False,none,0,0,,,
+1,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+1,1,318,0,10,9,RuntimeError,True,truncate (completed=0),616,6,6e984302,2026-07-19T02:57:15.288019Z,1
+1,2,4477,9,1,0,RuntimeError,False,append,56,56,6e984302,2026-07-19T03:06:17.373487Z,1
+1,3,4863,9,9,8,RuntimeError,True,append,505,4,dccbc061,2026-07-19T07:59:08.973038Z,2
+1,4,8490,17,2,1,RuntimeError,True,append,65,17,eeda8a6d_abs,2026-07-19T08:22:44.825902Z,2
+1,5,8909,18,3,2,RuntimeError,False,append,150,70,gpt4_4929293a,2026-07-19T08:49:19.878396Z,2
+1,6,9935,20,3,2,RuntimeError,True,append,178,34,gpt4_e414231f,2026-07-19T09:21:48.713624Z,3
+1,7,11074,22,1,1,completed,False,append,84,0,,2026-07-19T09:34:47.026602Z,3
+2,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+2,1,296,0,10,9,RuntimeError,True,truncate (completed=0),694,66,7024f17c,2026-07-19T03:06:23.867237Z,1
+2,2,4918,9,9,8,RuntimeError,False,append,740,86,dd2973ad,2026-07-19T05:13:50.787633Z,1
+2,3,9040,17,6,5,RuntimeError,True,append,377,1,gpt4_fe651585,2026-07-19T07:16:34.136140Z,2
+2,4,11148,22,1,1,completed,False,append,70,0,,2026-07-19T07:38:06.660087Z,2
+2,5,11664,,0,0,skipped_complete_report,False,none,0,0,,,
+3,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+3,1,323,0,13,12,RuntimeError,True,truncate (completed=0),727,39,95228167,2026-07-19T03:06:27.457928Z,1
+3,2,5380,12,11,11,completed,False,append,682,0,,2026-07-19T05:05:01.882173Z,1
+3,3,9727,,0,0,skipped_complete_report,False,none,0,0,,,
+3,4,9734,,0,0,skipped_complete_report,False,none,0,0,,,
+4,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+4,1,351,0,22,21,RuntimeError,True,truncate (completed=0),1356,12,gpt4_93159ced,2026-07-19T05:14:02.227249Z,1
+4,2,9677,21,1,0,KeyboardInterrupt,False,append,19,19,gpt4_93159ced,2026-07-19T05:45:59.077778Z,1
+4,3,9849,21,1,1,completed,False,append,84,0,,2026-07-19T06:06:30.548381Z,2
+4,4,10305,,0,0,skipped_complete_report,False,none,0,0,,,
+5,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+5,1,283,0,12,11,RuntimeError,True,truncate (completed=0),688,42,8aef76bc,2026-07-19T03:06:38.469939Z,1
+5,2,5094,11,9,8,RuntimeError,False,append,621,85,gpt4_2c50253f,2026-07-19T05:13:56.427192Z,1
+5,3,9901,19,3,3,completed,False,append,227,0,,2026-07-19T06:36:30.275399Z,2
+5,4,11094,,0,0,skipped_complete_report,False,none,0,0,,,
+6,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+6,1,345,0,12,11,RuntimeError,True,truncate (completed=0),690,48,8e9d538c,2026-07-19T03:06:20.735700Z,1
+6,2,5185,11,10,9,KeyboardInterrupt,False,append,657,67,gpt4_6dc9b45b,2026-07-19T05:46:25.455763Z,1
+6,3,9584,20,2,2,completed,False,append,153,0,,2026-07-19T06:17:47.476451Z,2
+6,4,10259,,0,0,skipped_complete_report,False,none,0,0,,,
+7,0,3,0,1,0,RuntimeError,True,truncate (completed=0),0,0,,,
+7,1,330,0,11,10,RuntimeError,True,truncate (completed=0),722,63,88432d0a,2026-07-19T03:05:57.911240Z,1
+7,2,4885,10,12,11,RuntimeError,False,append,787,50,gpt4_b0863698,2026-07-19T05:14:14.314156Z,1
+7,3,9462,21,1,1,completed,False,append,109,0,,2026-07-19T06:10:36.450928Z,2
+7,4,9927,,0,0,skipped_complete_report,False,none,0,0,,,

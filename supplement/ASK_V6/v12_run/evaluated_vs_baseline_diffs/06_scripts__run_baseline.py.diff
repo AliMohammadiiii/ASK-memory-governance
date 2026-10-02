@@ -1,0 +1,237 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: scripts/run_baseline.py
+# raw changed lines (deleted+added): 65 (deleted 21, added 44); hunks 22
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 25 (deleted 1, added 24)
+--- evaluated:scripts/run_baseline.py (git blob 870b1556b72147d44946f4bc2753f3cc3def1dd2, sha256 bcd982a6086c)
++++ baseline-commit f6bf66e4766d:scripts/run_baseline.py (git blob 755b2533830f07fa1417790ce21162018e764334)
+@@ -50,7 +50,7 @@ from m4w13_validation import action_log_required, validate_run_dir
+ _THIS = Path(__file__).resolve()
+ sys.path.insert(0, str(_THIS.parents[1] / "src"))
+ 
+-from ksa.baselines import (  # noqa: E402
++from ask.baselines import (  # noqa: E402
+     FlatVectorBaseline,
+     FlatVectorStore,
+     NaiveOverwriteBaseline,
+@@ -62,11 +62,11 @@ from ksa.baselines import (  # noqa: E402
+     build_session_corpus,
+     build_session_corpus_for_recency,
+ )
+-from ksa.classifier import RelationClassifier  # noqa: E402
+-from ksa.controller.active import ScorecardConfig, load_scorecard_config  # noqa: E402
+-from ksa.data.longmemeval import iter_longmemeval_s  # noqa: E402
+-from ksa.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
+-from ksa.eval.longmemeval import (  # noqa: E402
++from ask.classifier import RelationClassifier  # noqa: E402
++from ask.controller.active import ScorecardConfig, load_scorecard_config  # noqa: E402
++from ask.data.longmemeval import iter_longmemeval_s  # noqa: E402
++from ask.eval.judge import JudgeBackendConfig, build_judge_backend  # noqa: E402
++from ask.eval.longmemeval import (  # noqa: E402
+     GradeResult,
+     JudgmentCache,
+     LongMemEvalGrader,
+@@ -74,14 +74,14 @@ from ksa.eval.longmemeval import (  # noqa: E402
+     evaluate_baseline,
+     looks_degenerate_answer,
+ )
+-from ksa.extraction import Extractor  # noqa: E402
+-from ksa.inference.llm import (  # noqa: E402
++from ask.extraction import Extractor  # noqa: E402
++from ask.inference.llm import (  # noqa: E402
+     LLM,
+     HuggingFaceLLM,
+     InferenceConfig,
+     StructuredLLM,  # noqa: E402
+ )
+-from ksa.pipeline import ControllerOrchestrator  # noqa: E402
++from ask.pipeline import ControllerOrchestrator  # noqa: E402
+ 
+ _BASELINES_M1_W2 = {"no_memory"}
+ _BASELINES_M1_W3 = {"flat_vector"}
+@@ -198,7 +198,7 @@ def _load_resume_state(
+ def _build_llm(args: argparse.Namespace) -> LLM:
+     """Resolve the answerer LLM from CLI flags."""
+     if args.fake:
+-        from ksa.inference.fake import FakeLLM
++        from ask.inference.fake import FakeLLM
+ 
+         return FakeLLM()
+     if args.openai_compatible:
+@@ -210,7 +210,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
+     if args.hf:
+         return HuggingFaceLLM(_hf_config(args, args.hf_model))
+     if args.ollama:
+-        from ksa.inference.ollama import OllamaLLM
++        from ask.inference.ollama import OllamaLLM
+ 
+         return OllamaLLM(
+             model_id=args.ollama_model,
+@@ -219,7 +219,7 @@ def _build_llm(args: argparse.Namespace) -> LLM:
+             think=args.ollama_think,
+             num_ctx=args.ollama_num_ctx,
+         )
+-    from ksa.inference.llm import build_llm, load_inference_config
++    from ask.inference.llm import build_llm, load_inference_config
+ 
+     cfg = load_inference_config(args.config) if args.config else None
+     return build_llm(cfg)
+@@ -238,9 +238,9 @@ def _openai_llm(
+     fallback_model_ids: tuple[str, ...] | None = None,
+     use_openmodel_primary: bool = True,
+ ) -> LLM:
+-    from ksa.inference.fallback import FallbackLLM
+-    from ksa.inference.openai_compatible import OpenAICompatibleLLM
+-    from ksa.inference.openmodel_messages import OpenModelMessagesLLM
++    from ask.inference.fallback import FallbackLLM
++    from ask.inference.openai_compatible import OpenAICompatibleLLM
++    from ask.inference.openmodel_messages import OpenModelMessagesLLM
+ 
+     response_format = {"type": "json_object"} if require_json else None
+     # Provider-specific chat template kwargs. vLLM uses enable_thinking; NVIDIA
+@@ -320,6 +320,7 @@ def _split_csv(value: str | None) -> tuple[str, ...]:
+ def _hf_config(args: argparse.Namespace, model_id: str) -> InferenceConfig:
+     return InferenceConfig(
+         model_id=model_id,
++        model_revision=args.hf_revision,
+         dtype=args.hf_dtype,
+         device_map=args.hf_device_map,
+         load_in_4bit=args.hf_load_in_4bit,
+@@ -333,7 +334,7 @@ def _hf_config(args: argparse.Namespace, model_id: str) -> InferenceConfig:
+ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
+     """Resolve the judge LLM from explicit M4 backend flags."""
+     if args.fake_judge:
+-        from ksa.inference.fake import FakeLLM
++        from ask.inference.fake import FakeLLM
+ 
+         return FakeLLM()
+ 
+@@ -366,6 +367,7 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
+             timeout_s=args.judge_timeout_s,
+             response_format="json" if args.judge_json_format else None,
+             think=args.judge_think,
++            hf_revision=args.hf_revision,
+             hf_dtype=args.hf_dtype,
+             hf_device_map=args.hf_device_map,
+             hf_load_in_4bit=args.hf_load_in_4bit,
+@@ -382,6 +384,7 @@ def _build_judge(args: argparse.Namespace, answerer: LLM) -> LLM:
+             timeout_s=args.judge_timeout_s,
+             response_format="json" if args.judge_json_format else None,
+             think=args.judge_think,
++            hf_revision=args.hf_revision,
+             hf_dtype=args.hf_dtype,
+             hf_device_map=args.hf_device_map,
+             hf_load_in_4bit=args.hf_load_in_4bit,
+@@ -434,7 +437,7 @@ def _sha256(path: Path) -> str | None:
+ def _build_embedder(args: argparse.Namespace):
+     """Build the retrieval embedder shared by memory baselines."""
+     if args.fake_embedder:
+-        from ksa.baselines.embeddings import FakeEmbedder
++        from ask.baselines.embeddings import FakeEmbedder
+ 
+         return FakeEmbedder(embedding_dim=64)
+     if args.embedder_backend == "ollama":
+@@ -467,6 +470,8 @@ def _build_embedder(args: argparse.Namespace):
+     embedder_kwargs: dict[str, Any] = {"device": args.embedder_device}
+     if getattr(args, "embedder_st_model", None):
+         embedder_kwargs["model_id"] = args.embedder_st_model
++    if getattr(args, "embedder_revision", None):
++        embedder_kwargs["revision"] = args.embedder_revision
+     if getattr(args, "embedder_trust_remote_code", False):
+         embedder_kwargs["trust_remote_code"] = True
+     if getattr(args, "embedder_task", None):
+@@ -479,7 +484,7 @@ def _build_embedder(args: argparse.Namespace):
+ def _build_extractor(args: argparse.Namespace, out_dir: Path):
+     """Build the shared M2 extractor."""
+     if args.ollama:
+-        from ksa.inference.ollama import OllamaLLM
++        from ask.inference.ollama import OllamaLLM
+ 
+         extractor_model = args.extractor_ollama_model or args.ollama_model
+         extractor_inner = OllamaLLM(
+@@ -515,7 +520,7 @@ def _build_extractor_and_classifier(args: argparse.Namespace, out_dir: Path):
+     """Build the shared M3-W10 extractor + relation classifier."""
+     extractor = _build_extractor(args, out_dir)
+     if args.ollama:
+-        from ksa.inference.ollama import OllamaLLM
++        from ask.inference.ollama import OllamaLLM
+ 
+         classifier_model = args.classifier_ollama_model or args.ollama_model
+         classifier_inner = OllamaLLM(
+@@ -571,7 +576,7 @@ def _build_classifier_escalation(args: argparse.Namespace, out_dir: Path):
+     elif args.hf and esc_hf:
+         inner = HuggingFaceLLM(_hf_config(args, esc_hf))
+     elif args.ollama and esc_hf:
+-        from ksa.inference.ollama import OllamaLLM
++        from ask.inference.ollama import OllamaLLM
+ 
+         inner = OllamaLLM(
+             model_id=esc_hf,
+@@ -601,7 +606,11 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
+     `answer_session_ids`. The no-memory baseline ignores it.
+     """
+     if args.baseline == "no_memory":
+-        return NoMemoryBaseline(llm=llm, seed=args.seed)
++        return NoMemoryBaseline(
++            llm=llm,
++            seed=args.seed,
++            max_new_tokens=args.answer_max_new_tokens,
++        )
+ 
+     if args.baseline == "flat_vector":
+         # Build session corpus over the slice. The baseline resolves the
+@@ -618,6 +627,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
+             corpus=corpus,
+             k=args.k,
+             seed=args.seed,
++            max_new_tokens=args.answer_max_new_tokens,
+         )
+ 
+     if args.baseline == "recency":
+@@ -637,12 +647,14 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
+             capacity=args.capacity,
+             k=args.k,
+             seed=args.seed,
++            max_new_tokens=args.answer_max_new_tokens,
+             action_log_path=action_log_path,
+             append_action_log=getattr(args, "append_action_log", False),
+             extraction_max_new_tokens=args.extraction_max_new_tokens,
+             memory_prefilter_top_k=args.recency_memory_top_k,
+             raw_turn_fallback=args.recency_raw_turn_fallback,
+             progress=args.recency_progress,
++            reporter=print if args.recency_progress else None,
+         )
+ 
+     if args.baseline in {"naive_overwrite", "controller"}:
+@@ -673,6 +685,7 @@ def _build_baseline(args: argparse.Namespace, llm: LLM, sessions):
+             extraction_max_new_tokens=args.extraction_max_new_tokens,
+             relation_max_new_tokens=args.relation_max_new_tokens,
+             progress=args.controller_progress,
++            reporter=print if args.controller_progress else None,
+             memory_prefilter_top_k=args.controller_memory_top_k,
+             raw_turn_fallback=args.controller_raw_turn_fallback,
+             retrieval_neighbor_window=args.controller_retrieval_neighbor_window,
+@@ -919,6 +932,11 @@ def main() -> int:
+         "jinaai/jina-embeddings-v5-text-small — needs "
+         "--embedder-trust-remote-code and a recent transformers.",
+     )
++    p.add_argument(
++        "--embedder-revision",
++        default=None,
++        help="Optional immutable Hugging Face commit revision for the sentence-transformers model.",
++    )
+     p.add_argument(
+         "--embedder-trust-remote-code",
+         action="store_true",
+@@ -1599,6 +1617,11 @@ def main() -> int:
+     p.add_argument(
+         "--hf-model", default="Qwen/Qwen2.5-3B-Instruct", help="HuggingFace model id for --hf runs."
+     )
++    p.add_argument(
++        "--hf-revision",
++        default=None,
++        help="Optional immutable Hugging Face commit revision for model and tokenizer loading.",
++    )
+     p.add_argument("--hf-dtype", choices=("bfloat16", "float16", "float32"), default="float16")
+     p.add_argument("--hf-device-map", default="auto")
+     p.add_argument("--hf-load-in-4bit", action=argparse.BooleanOptionalAction, default=False)
+

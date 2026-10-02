@@ -1,0 +1,103 @@
+{
+ "module_sha256": "f1d70129bcf0fc97e28e114e5d72328569249e6649170ae2fd7effc51d47f45c",
+ "runs": {
+  "ablation_no_abstain_qwen35_9b_v3": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "ablation_no_lineage_qwen35_9b_v3": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "ablation_no_provenance_qwen35_9b_v3": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "ablation_no_typing_qwen35_9b_v3": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "b1_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "b2_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "b3_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "b4_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "decision_zero_shot_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "live_model_controller_evidence_v2_qwen35_9b_clean": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "live_model_controller_hybrid_v3_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "live_model_controller_qwen35_9b": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "rules_controller_v1": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  },
+  "rules_controller_v1_c37b887": {
+   "n": 180,
+   "strict_or_module_valid": 180,
+   "invalid": 0,
+   "fenced": 0,
+   "nonstring": 0
+  }
+ }
+}

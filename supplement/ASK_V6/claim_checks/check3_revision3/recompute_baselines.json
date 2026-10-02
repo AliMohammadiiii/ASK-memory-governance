@@ -1,0 +1,86 @@
+{
+ "b1": {
+  "n": 180,
+  "correct_post": 9,
+  "correct_orig_file": 10,
+  "rows_differing_from_orig": 1,
+  "direction": {
+   "True->False": 1
+  },
+  "rows_with_override_fields": 1,
+  "extra_keys_vs_orig": [
+   "judge_original_correct",
+   "judge_original_rationale",
+   "judge_overridden"
+  ],
+  "report_overall_post": 0.05,
+  "report_overall_orig": 0.05555555555555555,
+  "judge_models_used": null,
+  "model_ids_in_judgments": {
+   "google/gemma-4-31b-it": 180
+  },
+  "requested_judge": {
+   "null": 180
+  }
+ },
+ "b2": {
+  "n": 180,
+  "correct_post": 80,
+  "correct_orig_file": 80,
+  "rows_differing_from_orig": 0,
+  "direction": {},
+  "rows_with_override_fields": 0,
+  "extra_keys_vs_orig": [],
+  "report_overall_post": 0.4444444444444444,
+  "report_overall_orig": 0.4444444444444444,
+  "judge_models_used": null,
+  "model_ids_in_judgments": {
+   "google/gemma-4-31b-it": 180
+  },
+  "requested_judge": {
+   "null": 180
+  }
+ },
+ "b3": {
+  "n": 180,
+  "correct_post": 43,
+  "correct_orig_file": 43,
+  "rows_differing_from_orig": 0,
+  "direction": {},
+  "rows_with_override_fields": 0,
+  "extra_keys_vs_orig": [],
+  "report_overall_post": 0.2388888888888889,
+  "report_overall_orig": 0.2388888888888889,
+  "judge_models_used": null,
+  "model_ids_in_judgments": {
+   "google/gemma-4-31b-it": 180
+  },
+  "requested_judge": {
+   "null": 180
+  }
+ },
+ "b4": {
+  "n": 180,
+  "correct_post": 114,
+  "correct_orig_file": 112,
+  "rows_differing_from_orig": 2,
+  "direction": {
+   "False->True": 2
+  },
+  "rows_with_override_fields": 2,
+  "extra_keys_vs_orig": [
+   "judge_original_correct",
+   "judge_original_rationale",
+   "judge_overridden"
+  ],
+  "report_overall_post": 0.6333333333333333,
+  "report_overall_orig": 0.6222222222222222,
+  "judge_models_used": null,
+  "model_ids_in_judgments": {
+   "google/gemma-4-31b-it": 180
+  },
+  "requested_judge": {
+   "null": 180
+  }
+ }
+}

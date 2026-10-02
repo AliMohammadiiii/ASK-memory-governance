@@ -1,0 +1,2 @@
+{"public_id": "MGP43-007143950560FC30F630", "cell": "A_zero_payload", "repeat": 0, "prompt_sha256": "191fc3c3de39a52b8a308dc06c4e6cb6c45e5eb8a26c6e6a0531f24fe316e382", "requested_model": "ocg/qwen3.5-plus", "action": "FAILED", "http": 400, "error": "HTTP Error 400: Bad Request"}
+{"public_id": "MGP43-00A1D9C9DA990B3E2800", "cell": "A_zero_payload", "repeat": 0, "prompt_sha256": "1e4cdb344246fdda303feb5ca68d0dea48e9569751663c2972fa86951417e7f6", "requested_model": "ocg/qwen3.5-plus", "action": "FAILED", "http": 400, "error": "HTTP Error 400: Bad Request"}

@@ -1,0 +1,60 @@
+# Unified diff, direction: evaluated version (minus lines) to baseline-commit version (plus lines).
+# file: src/ask/eval/longmemeval.py
+# raw changed lines (deleted+added): 24 (deleted 11, added 13); hunks 4
+# normalised changed lines (rename ksa->ask, CRLF->LF, trailing whitespace stripped): 16 (deleted 7, added 9)
+--- evaluated:src/ask/eval/longmemeval.py (git blob 168d63ae55f88e5869a4b316405a4f9132e1238c, sha256 b30942b1cc7c)
++++ baseline-commit f6bf66e4766d:src/ask/eval/longmemeval.py (git blob f187507a4ab44a2927b01348419323ac50e99b2f)
+@@ -1,7 +1,7 @@
+ """LongMemEval-S grader, evaluator driver, and per-competency report (M1-W2 §3.2).
+ 
+ This module is *baseline-agnostic*: the same evaluator runs every later
+-baseline + the eventual KSA controller (Month 4). Bugs introduced here
++baseline + the eventual ASK controller (Month 4). Bugs introduced here
+ propagate to every result in Chapter 4 of the thesis — hence the explicit
+ test for bootstrap-CI agreement with the analytical Wilson interval and the
+ explicit cache contract.
+@@ -36,9 +36,9 @@ from dataclasses import dataclass, field
+ from pathlib import Path
+ from typing import Any
+ 
+-from ksa.baselines.base import BaselineAnswer
+-from ksa.data.longmemeval import LongMemEvalSession
+-from ksa.inference.llm import LLM
++from ask.baselines.base import BaselineAnswer
++from ask.data.longmemeval import LongMemEvalSession
++from ask.inference.llm import LLM
+ 
+ # --------------------------------------------------------------------- #
+ # Judge prompt                                                           #
+@@ -277,8 +277,8 @@ def bootstrap_accuracy_ci(
+             s += arr[rng.randrange(n)]
+         means.append(s / n)
+     means.sort()
+-    lo_idx = int(math.floor((alpha / 2) * n_resamples))
+-    hi_idx = int(math.ceil((1 - alpha / 2) * n_resamples)) - 1
++    lo_idx = math.floor((alpha / 2) * n_resamples)
++    hi_idx = math.ceil((1 - alpha / 2) * n_resamples) - 1
+     lo_idx = max(0, min(lo_idx, n_resamples - 1))
+     hi_idx = max(0, min(hi_idx, n_resamples - 1))
+     return (means[lo_idx], means[hi_idx])
+@@ -741,12 +741,14 @@ def normalized_substring_grade(*, predicted: str, gold: str, competency: str) ->
+     LongMemEval-published judge (eval_protocol.md §3) should remove all
+     grades routed through this fallback.
+     """
+-    if _is_abstention_competency(competency) or _looks_like_abstention_gold(gold):
++    # Some synthetic abstention golds are positive placeholder statements. Those
++    # cases deliberately fall through to token-set matching unless the prediction
++    # itself is a refusal.
++    if (
++        _is_abstention_competency(competency) or _looks_like_abstention_gold(gold)
++    ) and _looks_like_refusal(predicted):
+         # Heuristic: a correct abstention answer hedges or refuses.
+-        if _looks_like_refusal(predicted):
+-            return True, "[substring-fallback] abstention: prediction declines/hedges"
+-        # Some abstention golds in the synthetic slice are positive statements
+-        # (placeholder format); fall through to token-set match in that case.
++        return True, "[substring-fallback] abstention: prediction declines/hedges"
+ 
+     pred_tokens = _normalize_text(predicted)
+     gold_tokens = _normalize_text(gold)
+

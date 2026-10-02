@@ -1,0 +1,33 @@
+\section{Introduction}
+\label{sec:intro}
+Agents that keep a persistent memory across sessions face a write problem before they face a retrieval problem. When a new statement arrives, the memory can accept it without replacing anything, replace a stored item with a newer one, or decline to commit because the evidence does not settle the question. These are different operations with different failure costs. In a memory that overwrites in place, replacing a value on weak evidence destroys information, and in any memory, refusing a well-supported update leaves it stale. Common evaluations of long-term memory report the accuracy of final answers \citep{arxiv_2410_10813}, which mixes the quality of the write decision with extraction, retrieval, answer generation and judging; recent work argues that final accuracy also hides retrieval and evidence-use failures \citep{arxiv_2606_17328}. A correct answer does not show that the intermediate memory state was correct, and a wrong answer does not show that the write decision was wrong.
+
+Our starting point is that write decisions should be explicit, inspectable and evaluated separately from downstream question answering. ASK is an interface that does this for one decision. It names three actions: \keep{} leaves the compared prior item active and does not replace it (the candidate may also be admitted as an additional record, depending on the store; Section~\ref{sec:interface}), \supersede{} replaces a stored item with a successor while retaining the predecessor and a link to it, and \abstain{} records the decision without changing the stored state. Each decision is written as a record that carries the candidate, the identifiers of the prior and resulting items, the features and thresholds that produced the action, and a rationale string.
+
+We have tried to state only what the evidence supports. The paper makes four bounded contributions, each supported by its own evidence stream.
+\begin{enumerate}
+\item \textbf{An interface and a specification.} We describe the decision semantics, the decision rule used in our runs, the decision record, and a reference protocol with a validator and replay-scope declarations (Section~\ref{sec:interface}). The reference protocol was first committed after the LongMemEval run and after the MGP-6 hidden evaluation described below and is imported only by tests. Its validator at the baseline commit accepted all 19 of our self-consistent tampering probes. We supply a corrected validator as a patch that rejects all 19 and a configuration-identity check bound to a frozen configuration; the patch is not part of the baseline commit, was written by us after the evaluations with the help of an AI research assistant, and is not used by any evaluated system. We therefore treat the protocol as a specification and not as evidence of conformance.
+\item \textbf{A controlled synthetic decision diagnostic with a retained failure.} MGP-6 v4.3 keeps the evidence sentences fixed within a component and varies which sentences the dialogue indexes to the target slot (the numbering of the sentences changes as well; verified on the 40 public components) (Section~\ref{sec:mgp6}). One configuration frozen before hidden scoring reached 0.848 action accuracy on 540 hidden items. The earlier MGP-6 v2 failed its own construct-validity check and is kept as a record of that failure.
+\item \textbf{An exploratory downstream run with a decision log.} A controller-only LongMemEval-M run on 180 questions scored 128 correct on the grader's output, the primary count; nine one-sided manual adjudications raise it to 137, which we treat as a sensitivity count (Section~\ref{sec:lme}). The run is exploratory by the terms of its own frozen analysis plan, and we make no comparison with other systems. Its merged log of 12\,654 decisions permits exact recomputation of every logged action and score from the logged features (replay level R1); 11\,832 of the rows belong to completed question runs and 822 are replayed rows of stopped runs. Higher replay levels are not established.
+\item \textbf{A diagnostic contrast of evidence view and prompt.} On the public development split, a 2 $\times$ 2 contrast run with five substitute configurations of three models found accuracy differences associated with evidence routing and with the prompt that differ among configurations and, for the Gemini settings, depend on how replies are parsed (Section~\ref{sec:mgp6}). The manuscript model was not run.
+\end{enumerate}
+Each element of ASK has prior or concurrent precedent (Section~\ref{sec:related}); the contribution is the specification, the diagnostic and the evidence record, not the idea of gating, superseding or abstaining on memory writes.
+
+\paragraph{Evidence roles.} Table~\ref{tab:roles} lists the evidence streams and what each can support. We do not combine action-label evidence from the synthetic diagnostic with answer evidence from LongMemEval into one notion of validation, we do not treat exact deterministic replay as correctness, and we do not treat a final answer score as evidence about the intermediate memory state. Appendix~\ref{app:claims} lists the status of selected claims.
+
+\begin{table}[t]
+\centering\small
+\caption{Evidence streams, what each supports, and what it does not.}
+\label{tab:roles}
+\begin{tabular}{p{2.6cm}p{3.7cm}p{3.7cm}p{3.7cm}}
+\toprule
+Stream & Object & Supports & Does not support \\
+\midrule
+MGP-6 v4.3 (hidden split) & Action labels on controlled synthetic items & Accuracy of one frozen configuration on this construction & Downstream answer quality; human-data generalization \\
+MGP-6 v2 & Pilot with a label-determining field & A documented construct-validity failure & Any policy comparison \\
+LongMemEval-M, V12 controller-only run & Answer correctness graded by a model judge, with deterministic guards for 40 answers and a substring fallback for 2 & Exploratory accuracy of one controller on a slice reused from tuning & Comparison with baselines; correctness of intermediate memory state \\
+V12 decision log & 12\,654 logged decisions (11\,832 from completed question runs, 822 replayed rows of stopped runs) & Recomputation of the scorecard from logged features (R1) & Replay of state, retrieval or answers (R2 to R7) \\
+MGP-6 v4.3 development split, substitute models & Accuracy by evidence view and prompt for five configurations of three models & A model-dependent split between routing and prompt on the 180 public development items & Any statement about the manuscript model, the hidden split or ASK components \\
+\bottomrule
+\end{tabular}
+\end{table}

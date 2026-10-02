@@ -1,0 +1,150 @@
+{
+ "units": {
+  "action_log_rows": 12654,
+  "cache_entries": 11477,
+  "cache_items": 11771,
+  "trace_rows": 11491,
+  "trace_rows_with_no_llm_response": 13,
+  "trace_distinct_session_turn_content": 11034,
+  "final_run_turn_lookups": 11520,
+  "final_run_cache_hits": 1077,
+  "questions": 180,
+  "lookups_per_question": 64
+ },
+ "identity": {
+  "surplus_as_stated": 883,
+  "stale_rows": 822,
+  "final_rows": 11832,
+  "final_minus_cache_items": 61,
+  "reuse_excess_rows": 61,
+  "cache_items_without_final_decision": 0
+ },
+ "stale": {
+  "rows": 822,
+  "worker_deaths_with_stale_rows": 20,
+  "questions": 18,
+  "distinct_support_sessions": 260,
+  "prefix_replay_rows_exact": 822,
+  "timestamps_precede_completing_rows": true
+ },
+ "reuse": {
+  "rows": 61,
+  "keys": 61,
+  "questions": 38,
+  "distinct_support_sessions": 22,
+  "distinct_cache_entries_behind_them": 27
+ },
+ "actions": {
+  "all": {
+   "Keep": 11478,
+   "Supersede": 397,
+   "Abstain": 779
+  },
+  "final": {
+   "Keep": 10712,
+   "Supersede": 373,
+   "Abstain": 747
+  },
+  "stale": {
+   "Keep": 766,
+   "Supersede": 24,
+   "Abstain": 32
+  },
+  "final_types": {
+   "transient_pref": 2273,
+   "episodic_fact": 9192,
+   "stable_pref": 367
+  }
+ },
+ "mechanism_table": [
+  {
+   "mechanism": "M1 stale partial-question rows left in the append-mode action log by a worker that stopped mid-question, then re-written in full by the restarted worker",
+   "rows_explained": 822,
+   "distinct_support_sessions": 260,
+   "distinct_questions": 18,
+   "worker_stops": 20,
+   "evidence": "Per-shard action-log candidate_id resets (new worker process) aligned with ordered \"ingest memory_session\" progress lines; all 20 stale groups equal, in order, the first n rows of the same question rerun by the completing worker (822 of 822 rows); stale timestamps precede the completing rows; run_baseline resume code opens the log in append mode and rewrites only answers/judgments",
+   "confidence": "high (row-level, exact)"
+  },
+  {
+   "mechanism": "  M1a RuntimeError then shard-level retry",
+   "rows_explained": 365,
+   "distinct_support_sessions": 126,
+   "distinct_questions": 12,
+   "worker_stops": 12,
+   "evidence": "worker end state from shard log (exception class name or KeyboardInterrupt) and presence of the cascade \"attempt k failed; retrying\" marker",
+   "confidence": "high for row counts; cause labels are log-derived"
+  },
+  {
+   "mechanism": "  M1b RuntimeError, retry budget exhausted, next cascade attempt",
+   "rows_explained": 347,
+   "distinct_support_sessions": 109,
+   "distinct_questions": 5,
+   "worker_stops": 5,
+   "evidence": "worker end state from shard log (exception class name or KeyboardInterrupt) and presence of the cascade \"attempt k failed; retrying\" marker",
+   "confidence": "high for row counts; cause labels are log-derived"
+  },
+  {
+   "mechanism": "  M1c KeyboardInterrupt",
+   "rows_explained": 110,
+   "distinct_support_sessions": 34,
+   "distinct_questions": 3,
+   "worker_stops": 3,
+   "evidence": "worker end state from shard log (exception class name or KeyboardInterrupt) and presence of the cascade \"attempt k failed; retrying\" marker",
+   "confidence": "high for row counts; cause labels are log-derived"
+  },
+  {
+   "mechanism": "M2 repeated decisions on one cached extraction output, i.e. the same turn extraction (same cache key) used by two or more questions of the same shard",
+   "rows_explained": 61,
+   "distinct_support_sessions": 22,
+   "distinct_questions": 38,
+   "worker_stops": "",
+   "evidence": "After removing M1, 11,832 completing-worker rows versus 11,771 cache items: per-shard join on (candidate text hash, type) gives 61 rows of positive excess, 0 of negative excess, every excess key decided by at least 2 questions of the same shard; independent count identity 11,520 final turn lookups (180 questions x 64) minus 11,477 cache entries = 43 repeated lookups",
+   "confidence": "high for the count (remainder of an exact partition); medium-high for the mechanism (27 of the 43 repeated lookups can be tied to items; the other 16 are not visible at item level)"
+  },
+  {
+   "mechanism": "Unexplained",
+   "rows_explained": 0,
+   "distinct_support_sessions": 0,
+   "distinct_questions": 0,
+   "worker_stops": "",
+   "evidence": "none remaining under the stated assumptions",
+   "confidence": "-"
+  },
+  {
+   "mechanism": "TOTAL explained",
+   "rows_explained": 883,
+   "distinct_support_sessions": "",
+   "distinct_questions": "",
+   "worker_stops": "",
+   "evidence": "12,654 - 11,771 = 883 = 822 + 61",
+   "confidence": ""
+  }
+ ],
+ "statement": "883 of 883 allocated (822 by M1, 61 by M2); 0 of 883 unexplained under the assumptions in SURPLUS_883_RECONCILIATION.md",
+ "cross_checks": {
+  "duplicate_session_candidate_id_pairs": 88,
+  "duplicate_pair_classes": {
+   "('same_shard', ('final', 'stale'), 'same_q')": 75,
+   "('cross_shard', ('final', 'final'), 'diff_q')": 13
+  },
+  "text_type_groups_with_multiple_decisions": 1277,
+  "group_classes": {
+   "('intra_question_repeat',)": 86,
+   "('multi_question_final',)": 391,
+   "('stale_replay', 'multi_question_final')": 54,
+   "('multi_question_final', 'intra_question_repeat')": 9,
+   "('stale_replay',)": 722,
+   "('stale_replay', 'intra_question_repeat')": 12,
+   "('stale_replay', 'multi_question_final', 'intra_question_repeat')": 3
+  },
+  "groups_with_different_actions_by_class": {
+   "('intra_question_repeat',)": 14,
+   "('stale_replay', 'multi_question_final')": 4,
+   "('multi_question_final',)": 30,
+   "('multi_question_final', 'intra_question_repeat')": 1,
+   "('stale_replay', 'intra_question_repeat')": 1,
+   "('stale_replay', 'multi_question_final', 'intra_question_repeat')": 1
+  }
+ }
+}
