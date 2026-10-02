@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from typing import Any
 
 from ask.controller.features import FeatureSnapshot
 from ask.controller.policy import decide as decide_lme
@@ -10,6 +11,7 @@ from ask.controller.score import DEFAULT_SCORECARD_CONFIG, ScorecardConfig
 from ask.memory.models import ControllerAction
 from ask.protocol.core import (
     Action,
+    ASKValidationError,
     ConfigurationIdentity,
     DecisionTrace,
     EvidenceReference,
@@ -17,6 +19,21 @@ from ask.protocol.core import (
     StoreMode,
     evidence_set_digest,
 )
+
+_MGP_COMPOSITION_RULE = "rule_proposal_if_model_abstains_and_rule_not_abstain_else_model_proposal"
+_LME_FEATURE_SCHEMA = "ask-lme-features/v1"
+_LME_ORDERED_RULES = ("Abstain", "Supersede", "Keep")
+_LME_RELATION_GUARD = "r < 0"
+
+
+def _require_strict_binding(adapter: ASKMGPAdapter | ASKLMEAdapter, trace: DecisionTrace) -> None:
+    """Strict replay: the adapter identity must hash its configuration and match the trace."""
+    adapter.verify_configuration_identity()
+    if trace.configuration != adapter.configuration:
+        raise ASKValidationError(
+            "trace_configuration_mismatch",
+            "trace configuration identity differs from the replaying adapter identity",
+        )
 
 
 @dataclass(frozen=True)
@@ -30,6 +47,41 @@ class ASKMGPAdapter:
     def __post_init__(self) -> None:
         if self.configuration.adapter_version != self.adapter_version:
             raise ValueError("ASK-MGP configuration uses a different adapter version")
+
+    def frozen_configuration(self) -> dict[str, Any]:
+        """Declared configuration mapping whose digest is the identity of this adapter.
+
+        The mapping holds declared values only. It does not hash the composition code.
+        """
+        return _mgp_frozen_configuration(
+            adapter_id=self.adapter_id,
+            adapter_version=self.adapter_version,
+            replay_scope=self.replay_scope,
+            store_mode=self.store_mode,
+        )
+
+    def verify_configuration_identity(self) -> None:
+        """Reject an identity whose digest is not that of ``frozen_configuration()``."""
+        self.configuration.verify(self.frozen_configuration())
+
+    @classmethod
+    def bound(
+        cls,
+        configuration_id: str,
+        *,
+        store_mode: StoreMode = StoreMode.SINGLE_SLOT_VERSIONED,
+    ) -> ASKMGPAdapter:
+        """Construct an adapter whose identity is computed from its frozen configuration."""
+        frozen = _mgp_frozen_configuration(
+            adapter_id=cls.adapter_id,
+            adapter_version=cls.adapter_version,
+            replay_scope=cls.replay_scope,
+            store_mode=store_mode,
+        )
+        identity = ConfigurationIdentity.from_configuration(
+            configuration_id, cls.adapter_version, frozen
+        )
+        return cls(identity, store_mode=store_mode)
 
     def decide(
         self,
@@ -74,9 +126,11 @@ class ASKMGPAdapter:
         )
         return final_action, trace
 
-    def replay(self, trace: DecisionTrace) -> Action:
+    def replay(self, trace: DecisionTrace, *, strict: bool = False) -> Action:
         if trace.adapter_id != self.adapter_id or trace.replay_scope != self.replay_scope:
             raise ValueError("trace does not declare ASK-MGP composition replay")
+        if strict:
+            _require_strict_binding(self, trace)
         model = ControllerAction(str(trace.inputs["model_proposal"]))
         rule = ControllerAction(str(trace.inputs["rule_proposal"]))
         replayed = (
@@ -102,6 +156,45 @@ class ASKLMEAdapter:
         if self.configuration.adapter_version != self.adapter_version:
             raise ValueError("ASK-LME configuration uses a different adapter version")
 
+    def frozen_configuration(self) -> dict[str, Any]:
+        """Declared configuration mapping whose digest is the identity of this adapter.
+
+        It holds the scorecard weights and thresholds that the replay uses, and the declared
+        rule order. It does not hash the policy code.
+        """
+        return _lme_frozen_configuration(
+            adapter_id=self.adapter_id,
+            adapter_version=self.adapter_version,
+            replay_scope=self.replay_scope,
+            store_mode=self.store_mode,
+            config=self.config,
+        )
+
+    def verify_configuration_identity(self) -> None:
+        """Reject an identity whose digest is not that of ``frozen_configuration()``."""
+        self.configuration.verify(self.frozen_configuration())
+
+    @classmethod
+    def bound(
+        cls,
+        configuration_id: str,
+        *,
+        config: ScorecardConfig = DEFAULT_SCORECARD_CONFIG,
+        store_mode: StoreMode = StoreMode.MULTI_RECORD,
+    ) -> ASKLMEAdapter:
+        """Construct an adapter whose identity is computed from its frozen configuration."""
+        frozen = _lme_frozen_configuration(
+            adapter_id=cls.adapter_id,
+            adapter_version=cls.adapter_version,
+            replay_scope=cls.replay_scope,
+            store_mode=store_mode,
+            config=config,
+        )
+        identity = ConfigurationIdentity.from_configuration(
+            configuration_id, cls.adapter_version, frozen
+        )
+        return cls(identity, config=config, store_mode=store_mode)
+
     def decide(
         self,
         *,
@@ -120,7 +213,7 @@ class ASKLMEAdapter:
             evidence_references=evidence_references,
             evidence_digest=evidence_set_digest(evidence_references),
             inputs={
-                "feature_schema_version": "ask-lme-features/v1",
+                "feature_schema_version": _LME_FEATURE_SCHEMA,
                 "memory_type": memory_type,
                 "prior_record_id": prior_record_id,
                 "candidate_record_id": candidate_record_id,
@@ -135,8 +228,8 @@ class ASKLMEAdapter:
                 "s_abs": decision.s_abs,
                 "theta_sup": decision.theta_sup,
                 "theta_abs": decision.theta_abs,
-                "relation_guard": "r < 0",
-                "ordered_rules": ("Abstain", "Supersede", "Keep"),
+                "relation_guard": _LME_RELATION_GUARD,
+                "ordered_rules": _LME_ORDERED_RULES,
             },
             final_action=decision.action,
             sufficient_fields=(
@@ -155,9 +248,11 @@ class ASKLMEAdapter:
         )
         return decision.action, trace
 
-    def replay(self, trace: DecisionTrace) -> Action:
+    def replay(self, trace: DecisionTrace, *, strict: bool = False) -> Action:
         if trace.adapter_id != self.adapter_id or trace.replay_scope != self.replay_scope:
             raise ValueError("trace does not declare ASK-LME final-policy replay")
+        if strict:
+            _require_strict_binding(self, trace)
         inputs = trace.inputs
         features = FeatureSnapshot(
             c=float(inputs["c"]),
@@ -166,7 +261,58 @@ class ASKLMEAdapter:
             r=float(inputs["r"]),
             rho=float(inputs["rho"]),
         )
-        replayed = decide_lme(features, str(inputs["memory_type"]), self.config).action
+        decision = decide_lme(features, str(inputs["memory_type"]), self.config)
+        if strict:
+            replayed_thresholds = (
+                ("theta_sup", decision.theta_sup),
+                ("theta_abs", decision.theta_abs),
+            )
+            for name, value in replayed_thresholds:
+                logged = trace.intermediates.get(name)
+                if logged is None or float(logged) != value:
+                    raise ASKValidationError(
+                        "logged_threshold_mismatch",
+                        f"logged {name} {logged!r} differs from replaying value {value!r}",
+                    )
+        replayed = decision.action
         if replayed != trace.final_action:
             raise ValueError("ASK-LME policy replay differs from logged action")
         return replayed
+
+
+def _mgp_frozen_configuration(
+    *,
+    adapter_id: str,
+    adapter_version: str,
+    replay_scope: ReplayScope,
+    store_mode: StoreMode,
+) -> dict[str, Any]:
+    return {
+        "adapter_id": adapter_id,
+        "adapter_version": adapter_version,
+        "replay_scope": replay_scope.value,
+        "store_mode": store_mode.value,
+        "composition_rule": _MGP_COMPOSITION_RULE,
+    }
+
+
+def _lme_frozen_configuration(
+    *,
+    adapter_id: str,
+    adapter_version: str,
+    replay_scope: ReplayScope,
+    store_mode: StoreMode,
+    config: ScorecardConfig,
+) -> dict[str, Any]:
+    return {
+        "adapter_id": adapter_id,
+        "adapter_version": adapter_version,
+        "replay_scope": replay_scope.value,
+        "store_mode": store_mode.value,
+        "feature_schema_version": _LME_FEATURE_SCHEMA,
+        "weights": asdict(config.weights),
+        "theta_sup": {key: config.theta_sup[key] for key in sorted(config.theta_sup)},
+        "theta_abs": {key: config.theta_abs[key] for key in sorted(config.theta_abs)},
+        "ordered_rules": list(_LME_ORDERED_RULES),
+        "relation_guard": _LME_RELATION_GUARD,
+    }

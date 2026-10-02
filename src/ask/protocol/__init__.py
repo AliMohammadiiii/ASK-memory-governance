@@ -2,10 +2,12 @@
 
 from ask.protocol.adapters import ASKLMEAdapter, ASKMGPAdapter
 from ask.protocol.core import (
+    UNVERIFIED,
     Action,
     ASKAdapter,
     ASKInvariantValidator,
     ASKStore,
+    ASKValidationError,
     CandidateRecord,
     ConfigurationIdentity,
     DecisionTrace,
@@ -16,16 +18,23 @@ from ask.protocol.core import (
     ReplayScope,
     StoreMode,
     TransitionEvent,
+    ValidationReport,
     apply_transition,
+    canonical_json_bytes,
+    compute_event_id,
+    configuration_digest,
     replay_transition,
+    validate_event_chain,
 )
 
 __all__ = [
+    "UNVERIFIED",
     "ASKAdapter",
     "ASKInvariantValidator",
     "ASKLMEAdapter",
     "ASKMGPAdapter",
     "ASKStore",
+    "ASKValidationError",
     "Action",
     "CandidateRecord",
     "ConfigurationIdentity",
@@ -37,6 +46,11 @@ __all__ = [
     "ReplayScope",
     "StoreMode",
     "TransitionEvent",
+    "ValidationReport",
     "apply_transition",
+    "canonical_json_bytes",
+    "compute_event_id",
+    "configuration_digest",
     "replay_transition",
+    "validate_event_chain",
 ]
