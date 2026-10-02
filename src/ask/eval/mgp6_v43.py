@@ -612,14 +612,38 @@ def rules_controller_action(record: MGP6V43Record) -> tuple[str, dict[str, Any]]
 
 
 def parse_action_response(raw_response: str) -> str:
-    """Parse either the required JSON object or a bare allowed action."""
+    """Parse the required action, allowing only a strict JSON Markdown fence normalization."""
     candidate = raw_response.strip()
+
+    # Normalize only an exact fenced JSON response:
+    #
+    # ```json
+    # {"action":"KEEP"}
+    # ```
+    #
+    # Do not extract JSON from surrounding prose, multiple objects, or reasoning.
+    lines = candidate.splitlines()
+    if (
+        len(lines) >= 3
+        and lines[0].strip().lower() == "```json"
+        and lines[-1].strip() == "```"
+    ):
+        inner = "\n".join(lines[1:-1]).strip()
+        if "```" in inner:
+            raise MGP6V43Error("response contains a nested Markdown fence")
+        candidate = inner
+
     if candidate in VALID_ACTIONS:
         return candidate
+
     try:
         value = json.loads(candidate)
     except json.JSONDecodeError as exc:
         raise MGP6V43Error("response is not an action or JSON action object") from exc
+
+    if not isinstance(value, dict):
+        raise MGP6V43Error("response JSON must be an object")
+
     try:
         return MGP6V43Prediction.model_validate(
             {"public_id": "MGP43-00000000000000000000", **value}
