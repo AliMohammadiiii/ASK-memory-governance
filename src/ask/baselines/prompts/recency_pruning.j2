@@ -1,0 +1,28 @@
+{{ system_prompt }}
+Use the retrieved memory block as context. Prefer exact facts from retrieved memory.
+
+{% if retrieved_memory -%}
+----- RETRIEVED MEMORY (top-{{ retrieved_memory | length }} active memory_items by cosine similarity to question) -----
+{% for r in retrieved_memory -%}
+[{{ "%.3f" | format(r.score) }}] {{ r.role | upper }} (session {{ r.session_id }}, turn {{ r.turn_idx }}{% if r.timestamp is defined and r.timestamp %}, {{ r.timestamp }}{% endif %}): {{ r.text }}
+{% endfor -%}
+{% else -%}
+----- RETRIEVED MEMORY -----
+[no relevant memory found]
+{% endif -%}
+{% if temporal_block is defined and temporal_block -%}
+{{ temporal_block }}
+{% endif -%}
+{% if computation_block is defined and computation_block -%}
+{{ computation_block }}
+{% endif -%}
+{% if conflict_block is defined and conflict_block -%}
+{{ conflict_block }}
+{% endif -%}
+----- DIALOG -----
+{% for turn in turns -%}
+{{ turn.role | upper }}: {{ turn.content }}
+{% endfor -%}
+----- QUESTION -----
+{{ question }}
+----- ANSWER (short answer only) -----

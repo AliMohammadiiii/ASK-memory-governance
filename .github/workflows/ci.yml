@@ -1,0 +1,44 @@
+name: Curated ASK package
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  package-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: python -m pip install -U pip
+      - run: python -m pip install -e '.[dev]' 'faiss-cpu>=1.8,<2'
+      - run: ruff check src tests benchmarks
+      - run: ruff format --check src tests benchmarks
+      - run: mypy src/ask
+      - run: python -m pytest -q -p no:cacheprovider tests
+
+  wheel-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: python -m pip install -U pip
+      - run: python -m pip install -e '.[dev]'
+      - run: python -m build --wheel
+      - name: Install wheel and run demo outside checkout
+        run: |
+          python -m venv "$RUNNER_TEMP/ask-wheel-smoke"
+          "$RUNNER_TEMP/ask-wheel-smoke/bin/python" -m pip install dist/*.whl
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/ask-wheel-smoke/bin/ask-offline-demo"
+          "$RUNNER_TEMP/ask-wheel-smoke/bin/python" -c 'from importlib.resources import files; import ask; assert files("ask.resources").joinpath("configs/inference.yaml").is_file(); assert files("ask.resources").joinpath("schema/schema.sql").is_file(); print("installed package resources: OK")'

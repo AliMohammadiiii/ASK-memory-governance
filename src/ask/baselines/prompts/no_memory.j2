@@ -1,0 +1,9 @@
+{{ system_prompt }}
+
+----- DIALOG -----
+{% for turn in turns -%}
+{{ turn.role | upper }}: {{ turn.content }}
+{% endfor -%}
+----- QUESTION -----
+{{ question }}
+----- ANSWER (short answer only) -----
